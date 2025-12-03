@@ -11,7 +11,9 @@
             --card-bg: #1E1E1E;
             --input-bg: #2C2C2C;
             --primary: #3B82F6;
-            --accent: #F59E0B;
+            --accent: #F59E0B; /* Tech/SaaS */
+            --crypto: #F7931A; /* Bitcoin Orange */
+            --stock: #E11D48; /* Stock Red (Sell Signal) */
             --text-main: #FFFFFF;
             --text-sub: #A3A3A3;
         }
@@ -38,11 +40,7 @@
         .hero-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
         .hero-sub { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 24px; }
 
-        .input-group {
-            position: relative;
-            margin-bottom: 10px;
-        }
-
+        .input-group { position: relative; margin-bottom: 10px; }
         .url-input {
             width: 100%; padding: 16px 16px 16px 44px;
             border-radius: 12px; border: 1px solid #444;
@@ -59,7 +57,7 @@
             box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
         }
 
-        /* Loading / Result Area (Simulation) */
+        /* Loading / Result Area */
         .result-area {
             display: none; /* Hidden by default */
             margin: 0 20px 30px;
@@ -72,27 +70,56 @@
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .result-header { background: rgba(59, 130, 246, 0.1); padding: 12px 16px; font-weight: 700; color: var(--primary); font-size: 0.9rem; }
+        .result-header { background: rgba(59, 130, 246, 0.1); padding: 12px 16px; font-weight: 700; color: var(--primary); font-size: 0.9rem; display: flex; justify-content: space-between; }
         .result-body { padding: 20px; }
-        .summary-item { margin-bottom: 12px; display: flex; gap: 10px; font-size: 0.95rem; line-height: 1.5; color: #E5E5E5; }
-        .check-icon { color: var(--primary); margin-top: 3px; }
         
+        .summary-item { margin-bottom: 12px; display: flex; gap: 10px; font-size: 0.95rem; line-height: 1.5; color: #E5E5E5; }
+        .check-icon { color: var(--primary); margin-top: 3px; flex-shrink: 0; }
+        
+        /* Action Suggestions Styles */
+        .action-label {
+            font-size: 0.8rem; color: var(--text-sub); margin: 20px 0 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+        }
+
         .action-suggestion {
-            margin-top: 20px;
+            margin-bottom: 12px;
             background: #2A2A2A;
             padding: 16px;
             border-radius: 8px;
-            border-left: 4px solid var(--accent);
+            border-left: 4px solid var(--text-sub);
+            transition: transform 0.1s;
         }
-        .suggestion-title { font-size: 0.85rem; color: var(--accent); font-weight: 700; margin-bottom: 6px; }
-        .suggestion-text { font-weight: 700; font-size: 1rem; margin-bottom: 12px; }
-        .buy-btn { width: 100%; padding: 10px; background: var(--text-main); color: black; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; }
+        .action-suggestion:active { transform: scale(0.98); }
 
-        /* Feed Title */
+        .suggestion-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .suggestion-type { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+        .suggestion-text { font-weight: 700; font-size: 1rem; margin-bottom: 12px; line-height: 1.4; }
+        
+        .buy-btn { 
+            width: 100%; padding: 12px; 
+            font-weight: 700; border: none; border-radius: 6px; cursor: pointer; 
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.95rem;
+        }
+
+        /* Specific Colors for Actions */
+        .action-saas { border-left-color: var(--accent); }
+        .action-saas .suggestion-type { color: var(--accent); }
+        .action-saas .buy-btn { background: var(--accent); color: black; }
+
+        .action-crypto { border-left-color: var(--crypto); }
+        .action-crypto .suggestion-type { color: var(--crypto); }
+        .action-crypto .buy-btn { background: var(--crypto); color: white; }
+
+        .action-stock { border-left-color: var(--stock); }
+        .action-stock .suggestion-type { color: var(--stock); }
+        .action-stock .buy-btn { background: var(--stock); color: white; }
+
+
+        /* Feed Section */
         .feed-title { padding: 0 20px; margin-bottom: 16px; font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; justify-content: space-between; align-items: flex-end; }
         .feed-title span { font-size: 0.8rem; color: var(--text-sub); font-weight: 400; }
 
-        /* Feed Card (Reuse) */
         .card { margin: 0 20px 16px; background: var(--card-bg); border-radius: 12px; padding: 16px; display: flex; gap: 16px; align-items: center; border: 1px solid #333; }
         .card-thumb { width: 80px; height: 80px; background: #333; border-radius: 8px; flex-shrink: 0; object-fit: cover; }
         .card-info { flex: 1; }
@@ -111,11 +138,11 @@
 
     <section class="hero-section">
         <h2 class="hero-title">이 뉴스,<br>나한테 돈이 될까?</h2>
-        <p class="hero-sub">뉴스 링크를 붙여넣으면 AI가 '할 일'을 알려줍니다.</p>
+        <p class="hero-sub">뉴스 링크를 넣으면 '매수/매도/구매' 타이밍을 알려줍니다.</p>
         
         <div class="input-group">
             <i class="fa-solid fa-link input-icon"></i>
-            <input type="text" class="url-input" id="urlInput" placeholder="https://..." value="https://news.naver.com/tech/ai-gpt5">
+            <input type="text" class="url-input" id="urlInput" placeholder="https://..." value="https://news.naver.com/economic/global-market">
         </div>
         <button class="analyze-btn" onclick="simulateAnalysis()">
             <i class="fa-solid fa-wand-magic-sparkles"></i> 분석하고 액션 찾기
@@ -124,25 +151,57 @@
 
     <div id="resultArea" class="result-area">
         <div class="result-header">
-            <i class="fa-solid fa-robot"></i> AI 분석 리포트
+            <span><i class="fa-solid fa-robot"></i> AI 분석 리포트</span>
+            <span style="font-size: 0.8rem; opacity: 0.7;">방금 완료</span>
         </div>
         <div class="result-body">
             <div class="summary-item">
                 <i class="fa-solid fa-check check-icon"></i>
-                <span><strong>핵심:</strong> GPT-5 출시로 단순 사무직 30% 감축 예상</span>
+                <span><strong>요약:</strong> 글로벌 시장 변동성 확대 및 바이오 섹터 고평가 논란</span>
             </div>
             <div class="summary-item">
                 <i class="fa-solid fa-check check-icon"></i>
-                <span><strong>기회:</strong> AI 에이전트 도입 시 인건비 월 500 절감 가능</span>
+                <span><strong>기회:</strong> 안전자산 선호 심리 증가로 비트코인 반등 예상</span>
             </div>
 
-            <div class="action-suggestion">
-                <div class="suggestion-title">RECOMMENDED ACTION</div>
-                <div class="suggestion-text">"지금 당장 우리 회사에 적용할 수 있는 가장 싼 AI 툴은?"</div>
-                <button class="buy-btn" onclick="alert('제휴 링크로 이동!')">
-                    👉 Fireflies 50% 할인받기
+            <div class="action-label">Recommended Actions (3)</div>
+
+            <div class="action-suggestion action-crypto">
+                <div class="suggestion-header">
+                    <span class="suggestion-type">CRYPTO / BUY</span>
+                    <i class="fa-brands fa-bitcoin" style="color:var(--crypto)"></i>
+                </div>
+                <div class="suggestion-text">"지금이 저점? 비트코인 분할 매수 타이밍"</div>
+                <button class="buy-btn" onclick="alert('거래소 수수료 할인 링크로 이동')">
+                    <span>⚡ 수수료 0%로 매수하기</span>
+                    <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
+
+            <div class="action-suggestion action-stock">
+                <div class="suggestion-header">
+                    <span class="suggestion-type">STOCK / SELL</span>
+                    <i class="fa-solid fa-arrow-trend-down" style="color:var(--stock)"></i>
+                </div>
+                <div class="suggestion-text">"삼성바이오로직스, 차익 실현 권장 구간"</div>
+                <button class="buy-btn" onclick="alert('증권사 매도 화면 또는 리포트로 이동')">
+                    <span>📉 매도 리포트 확인하기</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="action-suggestion action-saas">
+                <div class="suggestion-header">
+                    <span class="suggestion-type">TOOL / SAVE</span>
+                    <i class="fa-solid fa-bolt" style="color:var(--accent)"></i>
+                </div>
+                <div class="suggestion-text">"시장 대응하느라 바쁘시죠? 뉴스 요약 툴 쓰세요."</div>
+                <button class="buy-btn" onclick="alert('AI 툴 제휴 링크로 이동')">
+                    <span>🤖 뉴스요약 AI 30% 할인받기</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+
         </div>
     </div>
 
@@ -159,15 +218,6 @@
         </div>
     </div>
 
-    <div class="card" onclick="alert('상세 페이지 이동')">
-        <img src="https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=200" class="card-thumb">
-        <div class="card-info">
-            <span class="card-tag">Life / 골프</span>
-            <div class="card-title">타이거우즈가 극찬한 그 퍼터, 국내 상륙했습니다.</div>
-            <div class="card-action"><i class="fa-solid fa-arrow-right"></i> 최저가 링크 확인</div>
-        </div>
-    </div>
-
     <script>
         function simulateAnalysis() {
             const btn = document.querySelector('.analyze-btn');
@@ -179,17 +229,18 @@
                 return;
             }
 
-            // UI Interaction Simulation
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> 분석 중...';
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> 시장 데이터 분석 중...';
             btn.style.opacity = '0.7';
             
+            // Hide previous result if any
+            result.style.display = 'none';
+
             setTimeout(() => {
                 btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> 분석하고 액션 찾기';
                 btn.style.opacity = '1';
-                result.style.display = 'block'; // Show Result
+                result.style.display = 'block'; 
                 
-                // Scroll to result slightly
-                result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                result.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 1500);
         }
     </script>
