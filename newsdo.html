@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>News-Do | AI 뉴스 액션 분석기</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1E1E1E;
+            --input-bg: #2C2C2C;
+            --primary: #3B82F6;
+            --accent: #F59E0B;
+            --text-main: #FFFFFF;
+            --text-sub: #A3A3A3;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 100px; }
+
+        /* Header */
+        header {
+            position: sticky; top: 0; background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(10px);
+            padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100;
+            border-bottom: 1px solid #333;
+        }
+        .logo { font-weight: 900; font-size: 1.3rem; letter-spacing: -1px; }
+        .logo span { color: var(--primary); }
+
+        /* URL Input Section (Hero) */
+        .hero-section {
+            padding: 30px 20px;
+            background: linear-gradient(180deg, #1E1E1E 0%, #121212 100%);
+            text-align: center;
+        }
+
+        .hero-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
+        .hero-sub { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 24px; }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .url-input {
+            width: 100%; padding: 16px 16px 16px 44px;
+            border-radius: 12px; border: 1px solid #444;
+            background: var(--input-bg); color: white;
+            font-size: 1rem; outline: none; transition: all 0.2s;
+        }
+        .url-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+        .input-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-sub); }
+
+        .analyze-btn {
+            width: 100%; padding: 14px; border-radius: 12px;
+            background: var(--primary); color: white; font-weight: 800; font-size: 1rem;
+            border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Loading / Result Area (Simulation) */
+        .result-area {
+            display: none; /* Hidden by default */
+            margin: 0 20px 30px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--primary);
+            overflow: hidden;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .result-header { background: rgba(59, 130, 246, 0.1); padding: 12px 16px; font-weight: 700; color: var(--primary); font-size: 0.9rem; }
+        .result-body { padding: 20px; }
+        .summary-item { margin-bottom: 12px; display: flex; gap: 10px; font-size: 0.95rem; line-height: 1.5; color: #E5E5E5; }
+        .check-icon { color: var(--primary); margin-top: 3px; }
+        
+        .action-suggestion {
+            margin-top: 20px;
+            background: #2A2A2A;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
+        .suggestion-title { font-size: 0.85rem; color: var(--accent); font-weight: 700; margin-bottom: 6px; }
+        .suggestion-text { font-weight: 700; font-size: 1rem; margin-bottom: 12px; }
+        .buy-btn { width: 100%; padding: 10px; background: var(--text-main); color: black; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; }
+
+        /* Feed Title */
+        .feed-title { padding: 0 20px; margin-bottom: 16px; font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; justify-content: space-between; align-items: flex-end; }
+        .feed-title span { font-size: 0.8rem; color: var(--text-sub); font-weight: 400; }
+
+        /* Feed Card (Reuse) */
+        .card { margin: 0 20px 16px; background: var(--card-bg); border-radius: 12px; padding: 16px; display: flex; gap: 16px; align-items: center; border: 1px solid #333; }
+        .card-thumb { width: 80px; height: 80px; background: #333; border-radius: 8px; flex-shrink: 0; object-fit: cover; }
+        .card-info { flex: 1; }
+        .card-tag { font-size: 0.7rem; color: var(--primary); font-weight: 700; margin-bottom: 4px; display: block; }
+        .card-title { font-size: 0.95rem; font-weight: 600; line-height: 1.4; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-action { font-size: 0.75rem; color: var(--text-sub); display: flex; align-items: center; gap: 4px; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">News<span>-Do</span></div>
+        <i class="fa-regular fa-user" style="font-size: 1.2rem;"></i>
+    </header>
+
+    <section class="hero-section">
+        <h2 class="hero-title">이 뉴스,<br>나한테 돈이 될까?</h2>
+        <p class="hero-sub">뉴스 링크를 붙여넣으면 AI가 '할 일'을 알려줍니다.</p>
+        
+        <div class="input-group">
+            <i class="fa-solid fa-link input-icon"></i>
+            <input type="text" class="url-input" id="urlInput" placeholder="https://..." value="https://news.naver.com/tech/ai-gpt5">
+        </div>
+        <button class="analyze-btn" onclick="simulateAnalysis()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> 분석하고 액션 찾기
+        </button>
+    </section>
+
+    <div id="resultArea" class="result-area">
+        <div class="result-header">
+            <i class="fa-solid fa-robot"></i> AI 분석 리포트
+        </div>
+        <div class="result-body">
+            <div class="summary-item">
+                <i class="fa-solid fa-check check-icon"></i>
+                <span><strong>핵심:</strong> GPT-5 출시로 단순 사무직 30% 감축 예상</span>
+            </div>
+            <div class="summary-item">
+                <i class="fa-solid fa-check check-icon"></i>
+                <span><strong>기회:</strong> AI 에이전트 도입 시 인건비 월 500 절감 가능</span>
+            </div>
+
+            <div class="action-suggestion">
+                <div class="suggestion-title">RECOMMENDED ACTION</div>
+                <div class="suggestion-text">"지금 당장 우리 회사에 적용할 수 있는 가장 싼 AI 툴은?"</div>
+                <button class="buy-btn" onclick="alert('제휴 링크로 이동!')">
+                    👉 Fireflies 50% 할인받기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="feed-title">
+        오늘의 필수 액션 <span>대표님이 놓치면 안 될 3가지</span>
+    </div>
+
+    <div class="card" onclick="alert('상세 페이지 이동')">
+        <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=200" class="card-thumb">
+        <div class="card-info">
+            <span class="card-tag">Biz / 회생</span>
+            <div class="card-title">자본잠식 기업도 회생 가능하다? 바뀐 법안 3분 요약</div>
+            <div class="card-action"><i class="fa-solid fa-arrow-right"></i> 무료 자가진단 하기</div>
+        </div>
+    </div>
+
+    <div class="card" onclick="alert('상세 페이지 이동')">
+        <img src="https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=200" class="card-thumb">
+        <div class="card-info">
+            <span class="card-tag">Life / 골프</span>
+            <div class="card-title">타이거우즈가 극찬한 그 퍼터, 국내 상륙했습니다.</div>
+            <div class="card-action"><i class="fa-solid fa-arrow-right"></i> 최저가 링크 확인</div>
+        </div>
+    </div>
+
+    <script>
+        function simulateAnalysis() {
+            const btn = document.querySelector('.analyze-btn');
+            const result = document.getElementById('resultArea');
+            const input = document.getElementById('urlInput');
+
+            if(!input.value) {
+                alert('URL을 입력해주세요!');
+                return;
+            }
+
+            // UI Interaction Simulation
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> 분석 중...';
+            btn.style.opacity = '0.7';
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> 분석하고 액션 찾기';
+                btn.style.opacity = '1';
+                result.style.display = 'block'; // Show Result
+                
+                // Scroll to result slightly
+                result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 1500);
+        }
+    </script>
+
+</body>
+</html>
