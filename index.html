@@ -3,177 +3,350 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>뉴스 스탠드</title>
+    <title>LiveRe Vault-Sync | 주요 언론사 도입 사례</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
+        @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css");
+        body { font-family: 'Pretendard', sans-serif; }
+        
+        /* 커스텀 애니메이션 */
+        .animate-pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
         }
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
     </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // 라이브리 브랜드 컬러 (Red & Gray)
+                        livere: {
+                            DEFAULT: '#D70035', // 메인 레드
+                            light: '#fff0f3',   // 배경용 아주 연한 레드
+                            soft: '#ffcdd9',    // 장식용 연한 레드
+                            dark: '#b0002b',    // 호버용 짙은 레드
+                        },
+                        sub: {
+                            DEFAULT: '#8F8F87', // 서브 그레이
+                            light: '#f4f4f3',   // 배경용 연한 그레이
+                            dark: '#5e5e59',    // 텍스트용 짙은 그레이
+                        }
+                    },
+                    boxShadow: {
+                        'glow': '0 0 20px rgba(215, 0, 53, 0.15)',
+                        'card': '0 10px 30px -5px rgba(0, 0, 0, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
+<body class="bg-white text-gray-800 antialiased selection:bg-livere selection:text-white">
 
-    <!-- Mobile Frame Container -->
-    <div class="w-full max-w-md bg-white rounded-xl shadow-xl overflow-hidden min-h-[80vh]">
-        
-        <!-- Header -->
-        <header class="bg-white p-4 border-b border-gray-200 sticky top-0 z-10 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold">N</div>
-                <h1 class="text-lg font-bold text-gray-800">뉴스 스탠드</h1>
-            </div>
-            <div class="flex gap-4 text-gray-500">
-                <button><i class="fas fa-search"></i></button>
-                <button><i class="fas fa-bars"></i></button>
-            </div>
-        </header>
-
-        <!-- Navigation Tabs -->
-        <nav class="flex border-b border-gray-200 bg-white">
-            <button class="flex-1 py-3 text-sm font-bold text-blue-600 border-b-2 border-blue-600">구독</button>
-            <button class="flex-1 py-3 text-sm text-gray-500 hover:text-gray-800">뉴스홈</button>
-            <button class="flex-1 py-3 text-sm text-gray-500 hover:text-gray-800">연예</button>
-            <button class="flex-1 py-3 text-sm text-gray-500 hover:text-gray-800">스포츠</button>
-        </nav>
-
-        <!-- Main Content -->
-        <main class="p-4">
-            
-            <!-- Edited Section Title -->
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-bold text-gray-800">구독한 언론사</h2>
-                <button class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded hover:bg-gray-200">설정</button>
-            </div>
-
-            <!-- Press Cards Grid -->
-            <div class="grid grid-cols-1 gap-4">
-                
-                <!-- Card 1: The Requested Change -->
-                <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
-                    <div class="flex justify-between items-start mb-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-500">
-                                <i class="fas fa-newspaper text-lg"></i>
-                            </div>
-                            <div>
-                                <!-- 변경된 텍스트 적용 -->
-                                <h3 class="font-bold text-gray-900">주요 언론사</h3>
-                                <p class="text-xs text-gray-500">종합 뉴스 채널</p>
-                            </div>
-                        </div>
-                        <button class="text-gray-400 hover:text-blue-500"><i class="fas fa-times"></i></button>
+    <!-- 네비게이션 -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-2">
+                    <!-- 로고 -->
+                    <div class="w-8 h-8 bg-livere rounded-lg flex items-center justify-center text-white">
+                        <i class="fa-solid fa-vault text-sm"></i>
                     </div>
-                    
-                    <!-- News List within the card -->
-                    <ul class="space-y-2">
-                        <li class="flex items-start gap-2">
-                            <span class="w-1.5 h-1.5 bg-gray-300 rounded-full mt-1.5 shrink-0"></span>
-                            <span class="text-sm text-gray-700 line-clamp-1">오늘의 주요 헤드라인 뉴스 요약</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="w-1.5 h-1.5 bg-gray-300 rounded-full mt-1.5 shrink-0"></span>
-                            <span class="text-sm text-gray-700 line-clamp-1">경제 지표 변동에 따른 시장 분석</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="w-1.5 h-1.5 bg-gray-300 rounded-full mt-1.5 shrink-0"></span>
-                            <span class="text-sm text-gray-700 line-clamp-1">주말 날씨 예보 및 나들이 추천</span>
-                        </li>
-                    </ul>
-                    <div class="mt-3 text-xs text-gray-400 text-right">방금 업데이트됨</div>
+                    <span class="text-xl font-bold text-gray-900 tracking-tight">LiveRe <span class="text-livere">Vault</span></span>
                 </div>
+                <div class="flex items-center">
+                    <a href="#contact" class="bg-gray-900 hover:bg-livere text-white px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 shadow-md hover:shadow-glow transform hover:-translate-y-0.5">
+                        도입 문의하기
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
+    <!-- 히어로 섹션 -->
+    <header class="relative overflow-hidden pt-20 pb-32 lg:pt-32">
+        <!-- 배경 그래픽 -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
+            <div class="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] rounded-full bg-livere-light/50 blur-3xl animate-float"></div>
+            <div class="absolute top-[20%] -left-[10%] w-[600px] h-[600px] rounded-full bg-sub-light blur-3xl animate-float" style="animation-delay: 2s;"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <!-- 뱃지 -->
+            <div class="inline-flex items-center gap-2 bg-white border border-livere/20 text-livere px-4 py-1.5 rounded-full text-sm font-bold mb-8 shadow-sm animate-fade-in-up">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-livere opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-livere"></span>
+                </span>
+                주요 언론사 도입 성공 사례
+            </div>
+            
+            <!-- 메인 타이틀 -->
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-8 text-gray-900 tracking-tight">
+                언론사 회원과 소셜 데이터를<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-livere to-red-500">하나로 연결하세요.</span>
+            </h1>
+            
+            <p class="text-lg md:text-xl text-sub-dark max-w-2xl mx-auto mb-12 leading-relaxed font-medium">
+                라이브리에 로그인하면 언론사에도 로그인됩니다.<br>
+                단절되었던 사용자 경험을 연결하고, <span class="text-gray-900 font-bold underline decoration-livere/30 underline-offset-4">데이터 주권</span>을 확보하세요.
+            </p>
+            
+            <!-- CTA 버튼 -->
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#features" class="bg-livere hover:bg-livere-dark text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-xl shadow-livere/20 hover:shadow-livere/40 hover:-translate-y-1">
+                    주요 기능 보기
+                </a>
+                <a href="#tech-specs" class="bg-white border border-gray-200 text-sub-dark hover:text-livere hover:border-livere px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-lg">
+                    기술 가이드
+                </a>
+            </div>
+            
+            <!-- 신뢰도 섹션 -->
+            <div class="mt-20 pt-10 border-t border-gray-100 flex flex-col items-center">
+                <p class="text-xs font-bold text-sub uppercase tracking-wider mb-6">Trusted by Market Leaders</p>
+                <div class="flex items-center justify-center gap-12 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+                    <span class="text-2xl font-serif font-black text-gray-900">주요 언론사</span>
+                    <div class="h-4 w-px bg-gray-300"></div>
+                    <span class="text-xl font-bold text-gray-400">K-Media Group</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 핵심 가치 섹션 (Benefits) -->
+    <section id="features" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="group bg-white p-8 rounded-3xl border border-gray-100 shadow-card hover:border-livere/30 hover:shadow-xl transition-all duration-300">
+                    <div class="w-14 h-14 bg-livere-light rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-users-viewfinder text-2xl text-livere"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-900 group-hover:text-livere transition-colors">사용자 경험(UX) 혁신</h3>
+                    <p class="text-sub-dark leading-relaxed">
+                        댓글을 쓰려다 로그인이 풀려 이탈하는 독자는 이제 없습니다. 한 번의 로그인으로 댓글과 기사 읽기 경험이 끊김 없이 이어집니다.
+                    </p>
+                </div>
                 <!-- Card 2 -->
-                <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
-                    <div class="flex justify-between items-start mb-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
-                                <i class="fas fa-laptop-code text-lg"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-gray-900">IT/테크 투데이</h3>
-                                <p class="text-xs text-gray-500">기술 트렌드</p>
-                            </div>
-                        </div>
-                        <button class="text-gray-400 hover:text-blue-500"><i class="fas fa-times"></i></button>
+                <div class="group bg-white p-8 rounded-3xl border border-gray-100 shadow-card hover:border-sub/50 hover:shadow-xl transition-all duration-300">
+                    <div class="w-14 h-14 bg-sub-light rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-database text-2xl text-sub"></i>
                     </div>
-                    <ul class="space-y-2">
-                        <li class="flex items-start gap-2">
-                            <span class="w-1.5 h-1.5 bg-gray-300 rounded-full mt-1.5 shrink-0"></span>
-                            <span class="text-sm text-gray-700 line-clamp-1">새로운 AI 모델 출시 발표</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="w-1.5 h-1.5 bg-gray-300 rounded-full mt-1.5 shrink-0"></span>
-                            <span class="text-sm text-gray-700 line-clamp-1">스마트폰 신제품 유출 이미지 공개</span>
-                        </li>
-                    </ul>
-                    <div class="mt-3 text-xs text-gray-400 text-right">10분 전</div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-900 group-hover:text-sub transition-colors">데이터 주권 확보</h3>
+                    <p class="text-sub-dark leading-relaxed">
+                        소셜 로그인 사용자도 언론사의 자체 회원 데이터로 안전하게 매핑됩니다. 미래 데이터 전략을 위한 핵심 자산을 확보하세요.
+                    </p>
+                </div>
+                <!-- Card 3 -->
+                <div class="group bg-white p-8 rounded-3xl border border-gray-100 shadow-card hover:border-livere/30 hover:shadow-xl transition-all duration-300">
+                    <div class="w-14 h-14 bg-livere-light rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-arrow-trend-up text-2xl text-livere"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-900 group-hover:text-livere transition-colors">신규 회원 유입 가속</h3>
+                    <p class="text-sub-dark leading-relaxed">
+                        댓글 참여를 위해 유입된 소셜 사용자를 자연스럽게 언론사 자체 회원가입으로 유도하여 충성 독자층을 넓힙니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 작동 원리 다이어그램 섹션 -->
+    <section class="py-28 bg-sub-light/30 relative overflow-hidden">
+        <!-- 배경 장식 -->
+        <div class="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-50"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">어떻게 작동하나요?</h2>
+            <p class="text-sub-dark mb-16 text-lg">LiveRe Vault가 중개자가 되어 양쪽 시스템의 로그인 상태를 실시간으로 동기화합니다.</p>
+
+            <div class="flex flex-col md:flex-row justify-center items-center gap-6 max-w-6xl mx-auto">
+                
+                <!-- System 1: 언론사 -->
+                <div class="w-full md:w-1/4 bg-white p-8 rounded-2xl shadow-sm border border-gray-200 z-10 relative group hover:-translate-y-1 transition-transform duration-300">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-sub text-white text-xs px-3 py-1 rounded-full font-bold">Client</div>
+                    <div class="mb-6 text-sub/30 group-hover:text-sub transition-colors"><i class="fa-regular fa-newspaper text-5xl"></i></div>
+                    <h4 class="font-bold text-lg text-gray-800">언론사 웹사이트</h4>
+                    <p class="text-sm text-sub mt-1">자체 회원 시스템</p>
                 </div>
 
-                <!-- Card 3 -->
-                <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
-                    <div class="flex justify-between items-start mb-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
-                                <i class="fas fa-chart-line text-lg"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-gray-900">글로벌 경제</h3>
-                                <p class="text-xs text-gray-500">재테크 정보</p>
-                            </div>
-                        </div>
-                        <button class="text-gray-400 hover:text-blue-500"><i class="fas fa-times"></i></button>
+                <!-- Arrow Left -->
+                <div class="hidden md:flex flex-1 relative h-20 justify-center items-center px-4">
+                    <div class="w-full h-0.5 border-t-2 border-dashed border-sub/30 relative">
+                        <i class="fa-solid fa-caret-left absolute -left-1 -top-2.5 text-sub/30 text-lg"></i>
+                        <i class="fa-solid fa-caret-right absolute -right-1 -top-2.5 text-sub/30 text-lg"></i>
                     </div>
-                    <ul class="space-y-2">
-                        <li class="flex items-start gap-2">
-                            <span class="w-1.5 h-1.5 bg-gray-300 rounded-full mt-1.5 shrink-0"></span>
-                            <span class="text-sm text-gray-700 line-clamp-1">금리 인상과 부동산 시장 전망</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="w-1.5 h-1.5 bg-gray-300 rounded-full mt-1.5 shrink-0"></span>
-                            <span class="text-sm text-gray-700 line-clamp-1">비트코인 등 암호화폐 시황</span>
-                        </li>
-                    </ul>
-                    <div class="mt-3 text-xs text-gray-400 text-right">1시간 전</div>
+                    <div class="absolute bg-livere-light text-livere px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2 shadow-sm border border-livere/20">
+                        <i class="fa-solid fa-arrows-rotate animate-spin-slow"></i> Sync
+                    </div>
+                </div>
+                
+                <!-- System 2: Vault (Center) -->
+                <div class="w-full md:w-1/3 bg-white p-10 rounded-3xl border-2 border-livere shadow-2xl shadow-livere/10 z-20 transform scale-105 relative">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-livere text-white text-sm px-4 py-1.5 rounded-full font-bold shadow-lg">Core Engine</div>
+                    <div class="mb-6 text-livere animate-pulse-slow"><i class="fa-solid fa-vault text-6xl"></i></div>
+                    <h4 class="font-bold text-2xl text-gray-900">LiveRe Vault</h4>
+                    <p class="text-sm text-livere font-bold mt-2">로그인 싱크 브로커</p>
+                </div>
+
+                <!-- Arrow Right -->
+                <div class="hidden md:flex flex-1 relative h-20 justify-center items-center px-4">
+                    <div class="w-full h-0.5 border-t-2 border-dashed border-sub/30 relative">
+                        <i class="fa-solid fa-caret-left absolute -left-1 -top-2.5 text-sub/30 text-lg"></i>
+                        <i class="fa-solid fa-caret-right absolute -right-1 -top-2.5 text-sub/30 text-lg"></i>
+                    </div>
+                    <div class="absolute bg-livere-light text-livere px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2 shadow-sm border border-livere/20">
+                        <i class="fa-solid fa-arrows-rotate animate-spin-slow"></i> Sync
+                    </div>
+                </div>
+
+                <!-- System 3: 위젯 -->
+                <div class="w-full md:w-1/4 bg-white p-8 rounded-2xl shadow-sm border border-gray-200 z-10 relative group hover:-translate-y-1 transition-transform duration-300">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-sub text-white text-xs px-3 py-1 rounded-full font-bold">Widget</div>
+                    <div class="mb-6 text-sub/30 group-hover:text-sub transition-colors"><i class="fa-regular fa-comments text-5xl"></i></div>
+                    <h4 class="font-bold text-lg text-gray-800">라이브리 위젯</h4>
+                    <p class="text-sm text-sub mt-1">댓글 모듈</p>
                 </div>
 
             </div>
             
-            <!-- Add Button -->
-            <button class="w-full mt-4 py-3 border border-gray-300 rounded-lg text-gray-500 font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
-                <i class="fas fa-plus"></i> 언론사 추가하기
-            </button>
+            <!-- 모바일용 화살표 -->
+            <div class="md:hidden flex flex-col items-center gap-2 my-4 text-livere">
+                <i class="fa-solid fa-arrow-down-up text-xl animate-bounce"></i>
+            </div>
+        </div>
+    </section>
 
-        </main>
-        
-        <!-- Tab Bar (Bottom) -->
-        <footer class="bg-white border-t border-gray-200 p-2 flex justify-around sticky bottom-0">
-            <button class="flex flex-col items-center gap-1 p-2 text-blue-600">
-                <i class="fas fa-home text-lg"></i>
-                <span class="text-[10px]">홈</span>
-            </button>
-            <button class="flex flex-col items-center gap-1 p-2 text-gray-400 hover:text-gray-600">
-                <i class="fas fa-compass text-lg"></i>
-                <span class="text-[10px]">발견</span>
-            </button>
-            <button class="flex flex-col items-center gap-1 p-2 text-gray-400 hover:text-gray-600">
-                <i class="fas fa-bookmark text-lg"></i>
-                <span class="text-[10px]">저장</span>
-            </button>
-            <button class="flex flex-col items-center gap-1 p-2 text-gray-400 hover:text-gray-600">
-                <i class="fas fa-user text-lg"></i>
-                <span class="text-[10px]">마이</span>
-            </button>
-        </footer>
+    <!-- 기술 구현 방식 (Tech Specs) -->
+    <section id="tech-specs" class="py-24 bg-white">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">유연한 기술 구현 방식</h2>
+                <p class="text-sub-dark text-lg">고객사의 개발 환경과 니즈에 맞춰 최적의 연동 방식을 지원합니다.</p>
+            </div>
 
-    </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Option A: Recommended (Red Theme) -->
+                <div class="bg-white rounded-2xl shadow-card border-2 border-livere overflow-hidden relative transform hover:-translate-y-1 transition duration-300">
+                    <div class="bg-livere text-white text-center py-3 text-sm font-bold tracking-wide">
+                        RECOMMENDED (주요 언론사 적용)
+                    </div>
+                    <div class="p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-bold text-gray-900">A. 자체 회원 연동 수정</h3>
+                            <span class="bg-livere-light text-livere text-xs font-bold px-3 py-1 rounded-full border border-livere/10">Fast Track</span>
+                        </div>
+                        <p class="text-sub-dark mb-8 leading-relaxed h-12">
+                            기존 회원 시스템의 로그인 세션(Cookie/LocalStorage) 정보를 라이브리 Vault와 안전하게 공유하는 방식입니다.
+                        </p>
+                        <ul class="space-y-4 mb-8">
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-circle-check text-livere mt-1 mr-3"></i>
+                                <span class="text-gray-700"><strong>빠른 도입:</strong> 개발 공수를 획기적으로 단축</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-circle-check text-livere mt-1 mr-3"></i>
+                                <span class="text-gray-700"><strong>레거시 호환:</strong> 기존 구조 변경 불필요</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-circle-check text-livere mt-1 mr-3"></i>
+                                <span class="text-gray-700"><strong>검증된 보안:</strong> 주요 언론사 도입으로 입증</span>
+                            </li>
+                        </ul>
+                        <!-- Code Snippet -->
+                        <div class="bg-gray-900 rounded-xl p-4 font-mono text-xs text-gray-300 border border-gray-800 shadow-inner">
+                            <div class="flex gap-1.5 mb-3 border-b border-gray-700 pb-2">
+                                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                            </div>
+                            <p><span class="text-livere">localStorage</span>.setItem(<span class="text-green-400">'livere_auth'</span>, token);</p>
+                            <p class="text-gray-500 mt-1">// 프론트엔드 작업만으로 연동 가능</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Option B: Standard (Gray Theme) -->
+                <div class="bg-white rounded-2xl shadow-card border border-gray-200 overflow-hidden relative transform hover:-translate-y-1 transition duration-300 hover:border-sub hover:shadow-lg">
+                    <div class="bg-sub text-white text-center py-3 text-sm font-bold tracking-wide">
+                        STANDARD
+                    </div>
+                    <div class="p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-bold text-gray-900">B. OIDC 표준 프로토콜</h3>
+                            <span class="bg-sub-light text-sub-dark text-xs font-bold px-3 py-1 rounded-full border border-gray-200">Global Standard</span>
+                        </div>
+                        <p class="text-sub-dark mb-8 leading-relaxed h-12">
+                            업계 표준인 OpenID Connect 인증 프로토콜을 통해 인증 정보를 서버 간 교환하는 방식입니다.
+                        </p>
+                        <ul class="space-y-4 mb-8">
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-circle-check text-sub mt-1 mr-3"></i>
+                                <span class="text-gray-700"><strong>표준 준수:</strong> OAuth 2.0 / OIDC 기반 인증</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-circle-check text-sub mt-1 mr-3"></i>
+                                <span class="text-gray-700"><strong>높은 확장성:</strong> 타 시스템 연동성 확보</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-circle-exclamation text-yellow-500 mt-1 mr-3"></i>
+                                <span class="text-gray-700">자체 인증 서버(OP) 구축 필요 (높은 공수)</span>
+                            </li>
+                        </ul>
+                        <!-- Code Snippet -->
+                        <div class="bg-gray-50 rounded-xl p-4 font-mono text-xs text-gray-500 border border-gray-200 shadow-inner">
+                            <div class="flex gap-1.5 mb-3 border-b border-gray-200 pb-2">
+                                <div class="w-2.5 h-2.5 rounded-full bg-gray-300"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-gray-300"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-gray-300"></div>
+                            </div>
+                            <p>GET /authorize?response_type=code</p>
+                            <p class="text-gray-400 mt-1">// 표준 인증 서버 구축 필요</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 문의하기 (Footer CTA - Dark Theme) -->
+    <section id="contact" class="bg-gray-900 py-24 text-center relative overflow-hidden">
+        <div class="max-w-4xl mx-auto px-4 relative z-10">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">언론사 로그인 전략,<br>지금 업그레이드하세요.</h2>
+            <p class="text-gray-400 mb-12 text-lg">
+                주요 언론사가 선택한 Vault-Sync 솔루션, 귀사에도 도입 가능합니다.<br>
+                현재 특별 프로모션 기간으로 무상 기술 컨설팅을 제공하고 있습니다.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
+                <a href="mailto:biz@cizion.com" class="bg-livere hover:bg-livere-dark text-white font-bold py-4 px-12 rounded-full text-lg transition duration-300 shadow-lg shadow-livere/30 hover:-translate-y-1">
+                    <i class="fa-regular fa-envelope mr-2"></i> 도입 문의하기
+                </a>
+                <span class="text-gray-500">or</span>
+                <a href="https://livere.com" target="_blank" class="text-gray-400 hover:text-white font-medium border-b border-gray-600 hover:border-white transition pb-1">
+                    라이브리 홈페이지 방문 <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
+                </a>
+            </div>
+
+            <div class="mt-20 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm">
+                <p>&copy; 2025 Cizion Inc. All rights reserved.</p>
+                <div class="flex gap-4 mt-4 md:mt-0">
+                    <span class="hover:text-white cursor-pointer transition">Privacy Policy</span>
+                    <span class="hover:text-white cursor-pointer transition">Terms of Service</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
 </body>
 </html>
