@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>News-Do | 퀵 액션 뉴스</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0F0F0F;
+            --card-bg: #1C1C1E;
+            --primary: #3B82F6; /* Action Blue */
+            --accent: #F59E0B; /* Warning/Insight */
+            --crypto: #F7931A; /* Bitcoin */
+            --stock-up: #EF4444; /* Stock Red (Rise) */
+            --stock-down: #3B82F6; /* Stock Blue (Fall) */
+            --text-main: #FFFFFF;
+            --text-sub: #8E8E93;
+            --border: #2C2C2E;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 80px; }
+
+        /* 1. Header */
+        header {
+            position: sticky; top: 0; background: rgba(15, 15, 15, 0.95); backdrop-filter: blur(10px);
+            padding: 14px 16px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border); z-index: 100;
+        }
+        .logo { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; display: flex; align-items: center; gap: 6px; }
+        .logo span { color: var(--primary); }
+        .logo i { font-size: 0.9rem; color: var(--primary); }
+
+        /* 2. Category Tabs (Scrollable) */
+        .tabs {
+            display: flex; gap: 8px; padding: 12px 16px; overflow-x: auto; scrollbar-width: none;
+            border-bottom: 1px solid var(--border); background: var(--bg-color);
+        }
+        .tab {
+            padding: 8px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; white-space: nowrap;
+            background: var(--card-bg); color: var(--text-sub); border: 1px solid var(--border); transition: all 0.2s;
+        }
+        .tab.active { background: #FFFFFF; color: #000000; border-color: #FFFFFF; }
+        
+        /* 3. Feed List (Coinness Style) */
+        .feed-list { padding: 0; }
+
+        .news-item {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex; flex-direction: column; gap: 10px;
+            transition: background 0.1s;
+        }
+        .news-item:active { background: #181818; }
+
+        .news-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .news-source { font-size: 0.75rem; color: var(--text-sub); display: flex; align-items: center; gap: 6px; }
+        .news-source img { width: 16px; height: 16px; border-radius: 50%; }
+        .news-time { font-size: 0.75rem; color: var(--text-sub); }
+
+        .news-title {
+            font-size: 1rem; font-weight: 600; line-height: 1.45; color: #E5E5E5;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+
+        /* 4. Quick Action Bar (The Core Feature) */
+        .quick-action-area {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-top: 6px;
+            background: #252525;
+            border-radius: 8px;
+            padding: 4px 4px 4px 12px;
+        }
+
+        .action-insight {
+            font-size: 0.8rem; font-weight: 700; color: var(--accent);
+            display: flex; align-items: center; gap: 6px;
+        }
+        
+        .btn-quick {
+            padding: 8px 16px; border-radius: 6px; font-weight: 700; font-size: 0.85rem;
+            border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;
+            color: white; transition: transform 0.1s;
+        }
+        .btn-quick:active { transform: scale(0.96); }
+
+        /* Specific Action Styles */
+        .btn-crypto { background: linear-gradient(135deg, #F7931A, #E67E00); }
+        .btn-saas { background: linear-gradient(135deg, #3B82F6, #2563EB); }
+        .btn-stock { background: linear-gradient(135deg, #EF4444, #DC2626); }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; background: rgba(15, 15, 15, 0.98);
+            border-top: 1px solid var(--border); padding: 10px 0 20px;
+            display: flex; justify-content: space-around; backdrop-filter: blur(10px);
+        }
+        .nav-item { color: var(--text-sub); font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item i { font-size: 1.2rem; }
+        .nav-item.active { color: var(--primary); }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo"><i class="fa-solid fa-bolt"></i> News<span>-Do</span></div>
+        <i class="fa-regular fa-bell" style="color:white; font-size: 1.1rem;"></i>
+    </header>
+
+    <div class="tabs">
+        <div class="tab active">전체</div>
+        <div class="tab">Crypto</div>
+        <div class="tab">Tech/AI</div>
+        <div class="tab">Biz/Stock</div>
+    </div>
+
+    <div class="feed-list">
+        
+        <div class="news-item">
+            <div class="news-header">
+                <span class="news-source"><i class="fa-brands fa-bitcoin" style="color:#F7931A;"></i> 코인니스</span>
+                <span class="news-time">방금 전</span>
+            </div>
+            <div class="news-title">
+                비트코인 98K 돌파 임박, 기관 매수세 역대 최고치 경신 중... "지금이 마지막 탑승 기회"
+            </div>
+            <div class="quick-action-area">
+                <div class="action-insight">
+                    <i class="fa-solid fa-arrow-trend-up"></i> 강력 매수 신호
+                </div>
+                <button class="btn-quick btn-crypto" onclick="alert('거래소 수수료 할인 링크로 이동!')">
+                    ⚡ Quick Buy
+                </button>
+            </div>
+        </div>
+
+        <div class="news-item">
+            <div class="news-header">
+                <span class="news-source"><i class="fa-solid fa-robot" style="color:#3B82F6;"></i> 테크크런치</span>
+                <span class="news-time">12분 전</span>
+            </div>
+            <div class="news-title">
+                "회의록 작성 끝났다" GPT-5 기반 AI 에이전트 출시, 업무 효율 500% 증가 입증
+            </div>
+            <div class="quick-action-area">
+                <div class="action-insight" style="color:#3B82F6;">
+                    <i class="fa-solid fa-bolt"></i> 업무 시간 -2h
+                </div>
+                <button class="btn-quick btn-saas" onclick="alert('제휴 할인 링크로 이동!')">
+                    🚀 50% 할인받기
+                </button>
+            </div>
+        </div>
+
+        <div class="news-item">
+            <div class="news-header">
+                <span class="news-source"><i class="fa-solid fa-chart-line" style="color:#EF4444;"></i> 블룸버그</span>
+                <span class="news-time">1시간 전</span>
+            </div>
+            <div class="news-title">
+                삼성바이오로직스 고평가 논란, 외국인 3일 연속 순매도... 차익 실현 구간 진입하나?
+            </div>
+            <div class="quick-action-area">
+                <div class="action-insight" style="color:#EF4444;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> 매도 검토
+                </div>
+                <button class="btn-quick btn-stock" onclick="alert('유료 리포트 페이지로 이동!')">
+                    📉 대응 전략 보기
+                </button>
+            </div>
+        </div>
+
+        <div class="news-item">
+            <div class="news-header">
+                <span class="news-source"><i class="fa-solid fa-newspaper"></i> 한국경제</span>
+                <span class="news-time">2시간 전</span>
+            </div>
+            <div class="news-title">
+                자본잠식 스타트업 회생 절차 간소화 법안 통과... 대표자 연대보증 책임 완화되나
+            </div>
+            <div class="quick-action-area" style="background: transparent; border: 1px dashed #333;">
+                <div class="action-insight" style="color:#8E8E93;">
+                    <i class="fa-solid fa-comment-dots"></i> 40대 대표 커뮤니티
+                </div>
+                <button class="btn-quick" style="background:#333; color:#ccc;" onclick="alert('커뮤니티로 이동')">
+                    💬 의견 나누기
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active">
+            <i class="fa-solid fa-house"></i>
+            <span>피드</span>
+        </div>
+        <div class="nav-item">
+            <i class="fa-solid fa-fire"></i>
+            <span>인기</span>
+        </div>
+        <div class="nav-item">
+            <i class="fa-solid fa-wallet"></i>
+            <span>내 지갑</span>
+        </div>
+        <div class="nav-item">
+            <i class="fa-solid fa-bars"></i>
+            <span>메뉴</span>
+        </div>
+    </div>
+
+</body>
+</html>
