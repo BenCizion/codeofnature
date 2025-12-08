@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiveRe Vault-Sync | 주요 언론사 도입 사례</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css");
+        body { font-family: 'Pretendard', sans-serif; }
+        
+        /* 커스텀 애니메이션 */
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .login-icon-hover:hover { transform: translateY(-3px); filter: brightness(1.1); }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        livere: {
+                            DEFAULT: '#D70035', // 메인 레드
+                            light: '#fff0f3',
+                            soft: '#ffcdd9',
+                            dark: '#b0002b',
+                        },
+                        sub: {
+                            DEFAULT: '#8F8F87', // 서브 그레이
+                            light: '#f4f4f3',
+                            dark: '#5e5e59',
+                        }
+                    },
+                    boxShadow: {
+                        'glow': '0 0 30px rgba(215, 0, 53, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white text-gray-800 antialiased selection:bg-livere selection:text-white">
+
+    <!-- 네비게이션 -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-livere rounded-lg flex items-center justify-center text-white">
+                        <i class="fa-solid fa-vault text-sm"></i>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900 tracking-tight">LiveRe <span class="text-livere">Vault</span></span>
+                </div>
+                <div class="flex items-center">
+                    <a href="#contact" class="bg-gray-900 hover:bg-livere text-white px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 shadow-md hover:shadow-glow transform hover:-translate-y-0.5">
+                        도입 문의하기
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 히어로 섹션 (수정됨: 로그인 예시 시각화 포함) -->
+    <header class="relative overflow-hidden pt-16 pb-24 lg:pt-32 lg:pb-40 bg-gradient-to-b from-gray-50 to-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex flex-col lg:flex-row items-center gap-16">
+                
+                <!-- Left: 텍스트 영역 -->
+                <div class="w-full lg:w-1/2 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 bg-white border border-livere/20 text-livere px-4 py-1.5 rounded-full text-sm font-bold mb-8 shadow-sm">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-livere opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-livere"></span>
+                        </span>
+                        주요 언론사 도입 완료
+                    </div>
+                    
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-6 text-gray-900 tracking-tight">
+                        언론사 회원과 소셜을<br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-livere to-red-500">완벽하게 하나로.</span>
+                    </h1>
+                    
+                    <p class="text-lg text-sub-dark mb-10 leading-relaxed font-medium">
+                        기존 로그인 방식과 소셜 로그인이 <strong>자동으로 연동</strong>됩니다.<br>
+                        단 한 번의 설치로 UX 혁신과 데이터 주권을 동시에 확보하세요.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="#pricing" class="bg-livere hover:bg-livere-dark text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-xl shadow-livere/20 hover:-translate-y-1">
+                            요금제 보기
+                        </a>
+                        <a href="#features" class="bg-white border border-gray-200 text-sub-dark hover:text-livere hover:border-livere px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300">
+                            기능 상세
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right: 로그인 예시 시각화 (Mockup) -->
+                <div class="w-full lg:w-1/2 relative animate-float">
+                    <!-- 데코레이션 배경 -->
+                    <div class="absolute -inset-4 bg-gradient-to-r from-livere/20 to-sub/20 rounded-[2rem] blur-2xl opacity-50"></div>
+                    
+                    <!-- 브라우저 창 Mockup -->
+                    <div class="bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden relative z-10">
+                        <!-- 브라우저 헤더 -->
+                        <div class="bg-gray-100 px-4 py-3 border-b border-gray-200 flex items-center gap-2">
+                            <div class="flex gap-1.5">
+                                <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                            </div>
+                            <div class="flex-1 bg-white h-6 rounded-md mx-4 border border-gray-200"></div>
+                        </div>
+
+                        <!-- 컨텐츠 영역 -->
+                        <div class="p-6 md:p-8">
+                            <!-- 뉴스 헤드라인 -->
+                            <div class="flex items-center gap-3 mb-8">
+                                <div class="w-10 h-10 bg-livere rounded-lg flex items-center justify-center text-white font-serif font-bold text-xl">news</div>
+                                <h3 class="text-xl md:text-2xl font-bold text-gray-800 line-clamp-1">[속보] 언론사-라이브리 로그인 연동 성공</h3>
+                            </div>
+
+                            <!-- [핵심] 로그인 통합 바 -->
+                            <div class="border-2 border-livere/30 bg-livere-light/30 rounded-2xl p-6 relative">
+                                <!-- 주석: 화살표 및 설명 -->
+                                <div class="absolute -top-3 left-8 bg-white text-livere text-xs font-bold px-2 py-1 border border-livere/30 rounded shadow-sm">
+                                    ▼ 자체 회원 로그인
+                                </div>
+                                <div class="absolute -top-3 right-8 bg-livere text-white text-xs font-bold px-2 py-1 rounded shadow-sm">
+                                    ▼ 소셜 로그인 자동 연동
+                                </div>
+
+                                <div class="flex items-center justify-between gap-4 overflow-x-auto pb-2 md:pb-0">
+                                    <!-- 자체 로그인 버튼 -->
+                                    <div class="flex flex-col items-center gap-2 cursor-pointer group">
+                                        <div class="w-12 h-12 rounded-full bg-livere flex items-center justify-center text-white text-xl shadow-md group-hover:scale-110 transition-transform relative">
+                                            <i class="fa-solid fa-quote-right"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- 구분선 -->
+                                    <div class="h-8 w-px bg-gray-300"></div>
+
+                                    <!-- 소셜 로그인 그룹 (배지 추가됨) -->
+                                    <div class="flex gap-3">
+                                        <!-- 카카오 -->
+                                        <div class="relative w-12 h-12 rounded-full bg-[#FEE500] flex items-center justify-center text-[#3c1e1e] text-xl shadow-sm cursor-pointer login-icon-hover">
+                                            <i class="fa-solid fa-comment"></i>
+                                            <!-- 언론사 배지 -->
+                                            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-livere rounded-full border-2 border-white flex items-center justify-center shadow-sm">
+                                                <i class="fa-solid fa-quote-right text-white text-[8px]"></i>
+                                            </div>
+                                        </div>
+                                        <!-- 네이버 -->
+                                        <div class="relative w-12 h-12 rounded-full bg-[#03C75A] flex items-center justify-center text-white text-xl shadow-sm cursor-pointer login-icon-hover">
+                                            <span class="font-bold text-sm">N</span>
+                                            <!-- 언론사 배지 -->
+                                            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-livere rounded-full border-2 border-white flex items-center justify-center shadow-sm">
+                                                <i class="fa-solid fa-quote-right text-white text-[8px]"></i>
+                                            </div>
+                                        </div>
+                                        <!-- 구글 -->
+                                        <div class="relative w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xl shadow-sm cursor-pointer login-icon-hover">
+                                            <i class="fa-brands fa-google text-gray-600"></i>
+                                            <!-- 언론사 배지 -->
+                                            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-livere rounded-full border-2 border-white flex items-center justify-center shadow-sm">
+                                                <i class="fa-solid fa-quote-right text-white text-[8px]"></i>
+                                            </div>
+                                        </div>
+                                        <!-- X -->
+                                        <div class="relative w-12 h-12 rounded-full bg-black flex items-center justify-center text-white text-xl shadow-sm cursor-pointer login-icon-hover">
+                                            <i class="fa-brands fa-x-twitter"></i>
+                                            <!-- 언론사 배지 -->
+                                            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-livere rounded-full border-2 border-white flex items-center justify-center shadow-sm">
+                                                <i class="fa-solid fa-quote-right text-white text-[8px]"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 댓글 입력창 Placeholder -->
+                                <div class="mt-4 bg-white border border-gray-300 rounded-lg p-3 text-sm text-gray-400">
+                                    로그인 후 댓글을 남겨보세요.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 기술 요약 스트립 (피쳐 한줄 요약) -->
+    <div class="bg-sub-dark py-6 border-y border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap justify-center gap-8 md:gap-16 text-gray-300 text-sm font-medium">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-circle-check text-livere"></i> <span>A/B안 유연한 연동 지원</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-circle-check text-livere"></i> <span>국제 표준 OIDC 호환</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-circle-check text-livere"></i> <span>실시간 세션 동기화</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-circle-check text-livere"></i> <span>Enterprise급 보안 적용</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 핵심 가치 섹션 (Benefits) -->
+    <section id="features" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">도입 즉시 확인되는 효과</h2>
+                <p class="text-sub-dark">로그인 통합 하나로 사용자 경험과 데이터 전략이 바뀝니다.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="p-8 rounded-3xl border border-gray-100 shadow-sm hover:border-livere/30 hover:shadow-xl transition-all duration-300 bg-white">
+                    <div class="w-14 h-14 bg-livere-light rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-users-viewfinder text-2xl text-livere"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-900">사용자 이탈 방지</h3>
+                    <p class="text-sub-dark leading-relaxed text-sm">
+                        댓글 작성 시 별도 로그인이 필요 없어, 로그인 과정에서의 사용자 이탈을 90% 이상 줄입니다.
+                    </p>
+                </div>
+                <!-- Card 2 -->
+                <div class="p-8 rounded-3xl border border-gray-100 shadow-sm hover:border-sub hover:shadow-xl transition-all duration-300 bg-white">
+                    <div class="w-14 h-14 bg-sub-light rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-database text-2xl text-sub"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-900">데이터 주권 확보</h3>
+                    <p class="text-sub-dark leading-relaxed text-sm">
+                        소셜 로그인 사용자 정보를 언론사 자체 DB와 매핑하여 미래 데이터 전략의 자산으로 활용합니다.
+                    </p>
+                </div>
+                <!-- Card 3 -->
+                <div class="p-8 rounded-3xl border border-gray-100 shadow-sm hover:border-livere/30 hover:shadow-xl transition-all duration-300 bg-white">
+                    <div class="w-14 h-14 bg-livere-light rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-arrow-trend-up text-2xl text-livere"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-900">신규 회원 유입</h3>
+                    <p class="text-sub-dark leading-relaxed text-sm">
+                        소셜 사용자를 자연스럽게 언론사 자체 회원으로 전환 유도하여 충성 독자층을 확대합니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 가격 모델 섹션 (Pricing Updated) -->
+    <section id="pricing" class="py-24 bg-sub-light/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">합리적인 가격 모델</h2>
+                <p class="text-sub-dark">언론사의 규모와 니즈에 맞는 최적의 플랜을 선택하세요.</p>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-center gap-8 max-w-5xl mx-auto">
+                <!-- Plan 1: Essential -->
+                <div class="w-full md:w-1/2 bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow relative">
+                    <div class="p-8">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Vault-Sync Essential</h3>
+                        <p class="text-sm text-sub-dark mb-6">로그인 편의성과 데이터 확보를 위한 필수 플랜</p>
+                        <div class="text-3xl font-bold text-gray-900 mb-6">
+                            60만원 <span class="text-sm font-normal text-gray-500">/ 월</span>
+                        </div>
+                        <a href="mailto:cs@cizion.com" class="block w-full text-center bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold py-3 rounded-xl transition-colors">
+                            도입 문의하기
+                        </a>
+                        <div class="mt-8 space-y-4">
+                            <div class="flex items-center text-sm text-gray-700">
+                                <i class="fa-solid fa-check text-livere mr-3"></i> 양방향 로그인 싱크
+                            </div>
+                            <div class="flex items-center text-sm text-gray-700">
+                                <i class="fa-solid fa-check text-livere mr-3"></i> A안(자체연동) / B안(OIDC) 지원
+                            </div>
+                            <div class="flex items-center text-sm text-gray-700">
+                                <i class="fa-solid fa-check text-livere mr-3"></i> 기본 기술 지원 (이메일)
+                            </div>
+                            <div class="flex items-center text-sm text-gray-700">
+                                <i class="fa-solid fa-check text-livere mr-3"></i> 월 100,000 콜 기본 제공
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plan 2: Premium -->
+                <div class="w-full md:w-1/2 bg-white rounded-3xl shadow-xl border-2 border-livere overflow-hidden relative transform md:-translate-y-4">
+                    <div class="bg-livere text-white text-center py-2 text-xs font-bold uppercase tracking-wide">
+                        Best Choice
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-xl font-bold text-livere mb-2">Vault-Sync Premium</h3>
+                        <p class="text-sm text-sub-dark mb-6">매출 증대를 위한 카카오 마케팅 연동 플랜</p>
+                        <div class="text-3xl font-bold text-gray-900 mb-6">
+                            120만원 <span class="text-sm font-normal text-gray-500">/ 월</span>
+                        </div>
+                        <a href="mailto:cs@cizion.com" class="block w-full text-center bg-livere hover:bg-livere-dark text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-livere/30">
+                            프리미엄 상담 신청
+                        </a>
+                        <div class="mt-8 space-y-4">
+                            <div class="flex items-center text-sm text-gray-900 font-semibold">
+                                <i class="fa-solid fa-circle-check text-livere mr-3"></i> <strong>Essential 플랜 기능 전체 포함</strong>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-700">
+                                <i class="fa-solid fa-check text-livere mr-3"></i> <strong>카카오 싱크 (Kakao Sync) 연동</strong>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-700">
+                                <i class="fa-solid fa-check text-livere mr-3"></i> 카카오 알림톡/친구톡 발송 지원
+                            </div>
+                            <div class="flex items-center text-sm text-gray-700">
+                                <i class="fa-solid fa-check text-livere mr-3"></i> 전담 기술 매니저 배정
+                            </div>
+                            <div class="flex items-center text-sm text-gray-700">
+                                <i class="fa-solid fa-check text-livere mr-3"></i> API 호출 무제한
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 문의하기 (Footer CTA) -->
+    <section id="contact" class="bg-gray-900 py-24 text-center relative overflow-hidden">
+        <!-- 배경 효과 -->
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gray-900 via-livere to-gray-900"></div>
+        
+        <div class="max-w-4xl mx-auto px-4 relative z-10">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">로그인 전략, 지금 업그레이드하세요.</h2>
+            <p class="text-gray-400 mb-12 text-lg">
+                주요 언론사가 선택한 Vault-Sync 솔루션,<br>
+                현재 특별 프로모션 기간으로 무상 기술 컨설팅을 제공하고 있습니다.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
+                <a href="mailto:cs@cizion.com" class="bg-livere hover:bg-white hover:text-livere text-white font-bold py-4 px-12 rounded-full text-lg transition duration-300 shadow-lg shadow-livere/30 hover:-translate-y-1">
+                    <i class="fa-regular fa-envelope mr-2"></i> 도입 문의 (cs@cizion.com)
+                </a>
+                <span class="text-gray-500">or</span>
+                <a href="https://livere.com" target="_blank" class="text-gray-400 hover:text-white font-medium border-b border-gray-600 hover:border-white transition pb-1">
+                    라이브리 홈페이지 <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
+                </a>
+            </div>
+
+            <div class="mt-20 pt-8 border-t border-gray-800 text-gray-600 text-sm">
+                &copy; 2025 Cizion Inc. All rights reserved.
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>
