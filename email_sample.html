@@ -3,21 +3,33 @@
 <head>
 <meta charset="utf-8">
 <style>
-  body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+  /* 폰트 및 기본 텍스트 컬러(Dark Gray) 적용 */
+  body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; line-height: 1.6; color: #5e5e59; margin: 0; padding: 0; }
   .container { max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
-  .header { background-color: #2c3e50; padding: 20px; text-align: center; color: #ffffff; font-size: 18px; font-weight: bold; }
-  .content { padding: 30px 20px; background-color: #ffffff; }
-  .meta-info { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
-  .comment-box { background-color: #f9f9f9; padding: 20px; border-left: 5px solid #00b386; border-radius: 4px; margin: 20px 0; color: #555; }
-  .link-btn { display: inline-block; color: #00b386; font-weight: bold; text-decoration: none; margin-top: 10px; }
   
-  /* 안내 박스 스타일 */
+  /* [변경] 헤더: 라이브리 시그니처 레드(#D70035) 적용 */
+  .header { background-color: #D70035; padding: 25px 20px; text-align: center; color: #ffffff; font-size: 20px; font-weight: bold; letter-spacing: -0.5px; }
+  
+  .content { padding: 30px 20px; background-color: #ffffff; }
+  
+  /* 작성자 정보 등 메타 데이터: Sub Gray(#8F8F87) 적용 */
+  .meta-info { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #f4f4f3; color: #8F8F87; }
+  .meta-info strong { color: #5e5e59; } /* 라벨은 조금 더 진하게 */
+  
+  /* [변경] 댓글 박스: 배경은 Light Gray(#f4f4f3), 포인트는 Main Red(#D70035) */
+  .comment-box { background-color: #f4f4f3; padding: 20px; border-left: 5px solid #D70035; border-radius: 4px; margin: 20px 0; color: #5e5e59; }
+  
+  /* [변경] 링크 색상: Main Red(#D70035) 적용 */
+  .link-btn { display: inline-block; color: #D70035; font-weight: bold; text-decoration: none; margin-top: 10px; }
+  
+  /* 안내 박스 (기능적 경고 의미 유지를 위해 노란색 계열 유지하되, 톤을 맞춤) */
   .notice-box { background-color: #fff8e1; border: 1px solid #ffe0b2; padding: 15px; border-radius: 6px; font-size: 13px; color: #795548; margin-top: 30px; }
-  .notice-title { font-weight: bold; display: block; margin-bottom: 8px; color: #f57c00; }
+  .notice-title { font-weight: bold; display: block; margin-bottom: 8px; color: #e65100; }
   .notice-list { margin: 0; padding-left: 20px; }
   .notice-list li { margin-bottom: 4px; }
 
-  .footer { background-color: #f5f5f5; padding: 15px; text-align: center; font-size: 12px; color: #999; }
+  /* 푸터: Light Gray 배경 */
+  .footer { background-color: #f4f4f3; padding: 15px; text-align: center; font-size: 12px; color: #8F8F87; }
 </style>
 </head>
 <body>
@@ -27,15 +39,15 @@
     </div>
 
     <div class="content">
-      <p style="font-size: 16px; margin-top: 0;">안녕하세요, 관리자님.<br>
+      <p style="font-size: 16px; margin-top: 0; color: #5e5e59;">안녕하세요, 관리자님.<br>
       운영 중이신 사이트에 새로운 소통이 시작되었습니다.</p>
       
       <div class="meta-info">
-        <strong>👤 작성자:</strong> {{user_name}} <span style="color:#888; font-size:14px;">({{user_id}})</span><br>
+        <strong>👤 작성자:</strong> {{user_name}} <span style="font-size:14px;">({{user_id}})</span><br>
         <strong>🕒 작성일:</strong> {{created_at}}
       </div>
 
-      <strong>💬 댓글 내용:</strong>
+      <strong style="color: #5e5e59;">💬 댓글 내용:</strong>
       <div class="comment-box">
         {{comment_content}}
       </div>
