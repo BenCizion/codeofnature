@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+  .container { max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
+  .header { background-color: #2c3e50; padding: 20px; text-align: center; color: #ffffff; font-size: 18px; font-weight: bold; }
+  .content { padding: 30px 20px; background-color: #ffffff; }
+  .meta-info { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+  .comment-box { background-color: #f9f9f9; padding: 20px; border-left: 5px solid #00b386; border-radius: 4px; margin: 20px 0; color: #555; }
+  .link-btn { display: inline-block; color: #00b386; font-weight: bold; text-decoration: none; margin-top: 10px; }
+  
+  /* 안내 박스 스타일 */
+  .notice-box { background-color: #fff8e1; border: 1px solid #ffe0b2; padding: 15px; border-radius: 6px; font-size: 13px; color: #795548; margin-top: 30px; }
+  .notice-title { font-weight: bold; display: block; margin-bottom: 8px; color: #f57c00; }
+  .notice-list { margin: 0; padding-left: 20px; }
+  .notice-list li { margin-bottom: 4px; }
+
+  .footer { background-color: #f5f5f5; padding: 15px; text-align: center; font-size: 12px; color: #999; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      [LiveRe] 새로운 댓글 알림
+    </div>
+
+    <div class="content">
+      <p style="font-size: 16px; margin-top: 0;">안녕하세요, 관리자님.<br>
+      운영 중이신 사이트에 새로운 소통이 시작되었습니다.</p>
+      
+      <div class="meta-info">
+        <strong>👤 작성자:</strong> {{user_name}} <span style="color:#888; font-size:14px;">({{user_id}})</span><br>
+        <strong>🕒 작성일:</strong> {{created_at}}
+      </div>
+
+      <strong>💬 댓글 내용:</strong>
+      <div class="comment-box">
+        {{comment_content}}
+      </div>
+
+      <div>
+        📍 <strong>원문 게시글:</strong> 
+        <a href="{{post_url}}" class="link-btn">[{{post_title}} 바로가기]</a>
+      </div>
+
+      <div class="notice-box">
+        <span class="notice-title">⚠️ 댓글 알림이 왔는데, 댓글이 보이지 않는 경우?</span>
+        <ul class="notice-list">
+          <li><strong>악성댓글의 경우:</strong> AI(인공지능) 자동 필터링에 의해서 삭제되었을 수 있습니다. 이 경우, 보이지 않을 수 있습니다.</li>
+          <li><strong>작성자 수정:</strong> 댓글 작성자가 내용을 수정하거나 삭제했을 수 있습니다.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer">
+      ⚠️ 본 메일은 발신 전용입니다.<br>
+      Copyright © LiveRe. All rights reserved.
+    </div>
+  </div>
+</body>
+</html>
