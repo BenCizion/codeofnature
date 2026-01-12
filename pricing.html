@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>LiveRe 2026 Pricing</title>
+<style>
+  .pricing-container { font-family: 'Pretendard', sans-serif; max-width: 1000px; margin: 0 auto; text-align: center; padding: 50px 20px; }
+  .pricing-header { margin-bottom: 40px; }
+  .pricing-header h2 { font-size: 2.5rem; color: #333; margin-bottom: 10px; }
+  .pricing-header p { color: #666; font-size: 1.1rem; }
+  
+  .pricing-switch { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 50px; }
+  .badge { background-color: #ff4757; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; }
+  
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .card { border: 1px solid #eee; border-radius: 10px; padding: 30px; background: #fff; transition: transform 0.3s; position: relative; }
+  .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+  
+  .card.popular { border: 2px solid #007bff; background: #f8faff; }
+  .popular-tag { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: #007bff; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
+  
+  .plan-name { font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; display: block; }
+  .price { font-size: 2.5rem; font-weight: 800; color: #333; }
+  .period { font-size: 1rem; color: #999; font-weight: normal; }
+  .desc { color: #666; margin-bottom: 30px; min-height: 40px; }
+  
+  .features { list-style: none; padding: 0; text-align: left; margin-bottom: 30px; }
+  .features li { margin-bottom: 10px; color: #555; display: flex; align-items: center; }
+  .features li::before { content: "✔"; color: #007bff; margin-right: 10px; font-weight: bold; }
+  
+  .btn { display: block; width: 100%; padding: 15px; border-radius: 5px; text-decoration: none; font-weight: bold; transition: background 0.3s; }
+  .btn-outline { border: 1px solid #ddd; color: #333; }
+  .btn-primary { background: #007bff; color: white; }
+  .btn-dark { background: #333; color: white; }
+  
+  @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="pricing-container">
+  <div class="pricing-header">
+    <h2>2026 LiveRe Pricing</h2>
+    <p>비즈니스 성장을 위한 최적의 플랜을 선택하세요.</p>
+  </div>
+
+  <div class="pricing-switch">
+    <strong>월간 결제</strong>
+    <div style="width: 50px; height: 26px; background: #ddd; border-radius: 13px; position: relative;">
+      <div style="width: 22px; height: 22px; background: #fff; border-radius: 50%; position: absolute; top: 2px; right: 2px;"></div>
+    </div>
+    <strong>연간 결제</strong>
+    <span class="badge">20% 할인</span>
+  </div>
+
+  <div class="pricing-grid">
+    <div class="card">
+      <span class="plan-name">City</span>
+      <div class="price">Free</div>
+      <p class="desc">개인 블로그 및 소규모 사이트를 위한 기본 플랜</p>
+      <ul class="features">
+        <li>일 방문자 1,000명 이하</li>
+        <li>기본 소셜 로그인</li>
+        <li>기본 스팸 필터링</li>
+        <li>텍스트 댓글 작성</li>
+      </ul>
+      <a href="#" class="btn btn-outline">시작하기</a>
+    </div>
+
+    <div class="card popular">
+      <span class="popular-tag">BEST VALUE</span>
+      <span class="plan-name">Premium</span>
+      <div class="price">₩80,000<span class="period">/월</span></div>
+      <p class="desc" style="font-size:0.9rem; color:#007bff;">(연간 결제 시 월 환산 금액)</p>
+      <ul class="features">
+        <li><strong>무제한 트래픽</strong></li>
+        <li><strong>AI 악성 댓글 자동 차단</strong></li>
+        <li>이미지/동영상 첨부 기능</li>
+        <li>실시간 관리자 대시보드</li>
+        <li>데이터 백업 지원</li>
+      </ul>
+      <a href="#" class="btn btn-primary">지금 도입하기</a>
+    </div>
+
+    <div class="card">
+      <span class="plan-name">Enterprise</span>
+      <div class="price">문의<span class="period"></span></div>
+      <p class="desc">대규모 트래픽과 커스텀 기능이 필요한 기업</p>
+      <ul class="features">
+        <li>Premium 기능 전체 포함</li>
+        <li><strong>단독 서버 구축 (On-premise 가능)</strong></li>
+        <li>커스텀 UI/UX 개발</li>
+        <li>전담 기술지원 매니저 (SLA)</li>
+        <li>SSO 연동 지원</li>
+      </ul>
+      <a href="#" class="btn btn-dark">도입 문의</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
