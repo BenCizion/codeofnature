@@ -1,0 +1,170 @@
+<style>
+    /* Quota Visualization Styles */
+    .quota-visual-section {
+        background: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 40px;
+        margin-bottom: 60px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+    
+    .quota-title {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .quota-title h3 { font-size: 1.5rem; margin-bottom: 10px; color: #000; }
+    .quota-title p { color: var(--livere-gray); }
+
+    .quota-dashboard {
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-end;
+        gap: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f9f9f9;
+        border-radius: 8px;
+        position: relative;
+    }
+
+    /* Logic Arrow */
+    .upgrade-trigger {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.9);
+        padding: 10px 20px;
+        border: 2px solid var(--livere-red);
+        border-radius: 50px;
+        color: var(--livere-red);
+        font-weight: bold;
+        box-shadow: 0 5px 15px rgba(215, 0, 53, 0.2);
+        z-index: 10;
+        animation: pulse 2s infinite;
+        display: none; /* JS로 켜거나 CSS 애니메이션으로 처리 */
+    }
+
+    /* Gauge Container */
+    .gauge-wrapper {
+        text-align: center;
+        width: 120px;
+    }
+    
+    .gauge-container {
+        width: 40px;
+        height: 150px;
+        background: #e0e0e0;
+        border-radius: 20px;
+        margin: 0 auto 15px;
+        position: relative;
+        overflow: hidden;
+        border: 3px solid #fff;
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .gauge-fill {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: var(--livere-gray); /* Default Color */
+        border-radius: 0 0 15px 15px;
+        transition: height 1.5s ease-out, background 0.3s;
+        
+        /* Animation setup */
+        height: 0%; 
+        animation-fill-mode: forwards;
+    }
+
+    /* Animation Keyframes */
+    @keyframes fillPV { from { height: 0%; } to { height: 40%; } }
+    @keyframes fillStorage { from { height: 0%; } to { height: 20%; } }
+    @keyframes fillComment { 
+        0% { height: 0%; background: #4CAF50; } 
+        50% { background: #FFC107; }
+        100% { height: 100%; background: var(--livere-red); } 
+    }
+
+    .gauge-fill.pv { animation: fillPV 1.5s 0.5s forwards; background: #4CAF50; } /* Green */
+    .gauge-fill.storage { animation: fillStorage 1.5s 0.5s forwards; background: #4CAF50; } /* Green */
+    .gauge-fill.comment { animation: fillComment 2s 0.5s forwards; } /* Turns Red */
+
+    /* Alert Icon */
+    .alert-icon {
+        opacity: 0;
+        color: var(--livere-red);
+        font-size: 1.2rem;
+        margin-top: 5px;
+        animation: popIn 0.5s 2.5s forwards;
+    }
+    @keyframes popIn { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: scale(1); } }
+    @keyframes pulse { 0% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.05); } 100% { transform: translate(-50%, -50%) scale(1); } }
+
+    .gauge-label { font-weight: bold; color: #333; margin-top: 5px; font-size: 0.9rem; }
+    .gauge-value { font-size: 0.8rem; color: #666; }
+
+    /* Logic Description */
+    .logic-desc {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 1rem;
+        background: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 5px solid var(--livere-red);
+        display: inline-block;
+    }
+</style>
+
+<div class="quota-visual-section">
+    <div class="quota-title">
+        <h3>How Quota Works?</h3>
+        <p>어느 하나라도 가득 차면(Max), 상위 플랜으로 이동해야 합니다.</p>
+    </div>
+
+    <div class="quota-dashboard">
+        <div class="upgrade-trigger" style="display:block; animation-delay: 2.5s; opacity:0; animation: popIn 0.5s 2.5s forwards;">
+            Upgrade Required! <i class="fas fa-arrow-up"></i>
+        </div>
+
+        <div class="gauge-wrapper">
+            <div class="gauge-container">
+                <div class="gauge-fill pv"></div>
+                <div style="position: absolute; top: 10px; width: 100%; text-align: center; color: rgba(0,0,0,0.3); font-size: 0.7rem; font-weight:bold;">MAX</div>
+            </div>
+            <div class="gauge-label">PV (호출)</div>
+            <div class="gauge-value">40% Used</div>
+        </div>
+
+        <div class="gauge-wrapper">
+            <div class="gauge-container" style="border-color: rgba(215, 0, 53, 0.3);">
+                <div class="gauge-fill comment"></div>
+                <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i> Full</div>
+            </div>
+            <div class="gauge-label" style="color:var(--livere-red);">AI 필터링</div>
+            <div class="gauge-value" style="color:var(--livere-red); font-weight:bold;">100% Reached</div>
+        </div>
+
+        <div class="gauge-wrapper">
+            <div class="gauge-container">
+                <div class="gauge-fill storage"></div>
+                <div style="position: absolute; top: 10px; width: 100%; text-align: center; color: rgba(0,0,0,0.3); font-size: 0.7rem; font-weight:bold;">MAX</div>
+            </div>
+            <div class="gauge-label">저장공간</div>
+            <div class="gauge-value">20% Used</div>
+        </div>
+    </div>
+
+    <div style="text-align:center;">
+        <div class="logic-desc">
+            <strong>"PV와 저장공간이 남았더라도..."</strong><br>
+            <span style="color:var(--livere-gray); font-size:0.9rem;">
+            댓글(AI 필터링) 쿼터가 <strong>100%</strong>에 도달했으므로,<br>
+            서비스 중단을 막기 위해 <strong>다음 티어로 업그레이드</strong>가 필요합니다.
+            </span>
+        </div>
+    </div>
+</div>
