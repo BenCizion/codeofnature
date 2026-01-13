@@ -7,35 +7,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Grok 스타일의 폰트 및 스크롤바 숨김 */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
         
         body {
             font-family: 'Inter', 'Noto Sans KR', sans-serif;
-            background-color: #000000; /* Grok의 리얼 블랙 */
+            background-color: #000000;
             color: #ffffff;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* 스크롤바 숨기기 (깔끔함 유지) */
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* 탭 활성화 스타일 */
-        .tab-active {
-            color: #ffffff;
-            border-bottom: 2px solid #ffffff;
-        }
-        .tab-inactive {
-            color: #6b7280;
-        }
+        .tab-active { color: #ffffff; border-bottom: 2px solid #ffffff; }
+        .tab-inactive { color: #6b7280; }
 
-        /* 텍스트 말줄임 */
         .line-clamp-3 {
             display: -webkit-box;
             -webkit-line-clamp: 3;
@@ -43,7 +29,6 @@
             overflow: hidden;
         }
         
-        /* 이미지 로딩 효과 */
         .img-skeleton {
             background-color: #1a1a1a;
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -56,25 +41,20 @@
 </head>
 <body class="flex justify-center min-h-screen bg-black">
 
-    <!-- 모바일 컨테이너 (최대 폭 제한으로 앱 느낌) -->
     <div class="w-full max-w-[480px] bg-black min-h-screen border-x border-gray-900 relative">
         
-        <!-- 1. 헤더 (Grok 스타일: 심플, 로고 중심) -->
         <header class="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-gray-800 px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <!-- 브랜드 로고 -->
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center text-black font-bold text-lg font-serif">
                     t
                 </div>
                 <span class="font-bold text-lg tracking-tight">t'order reviews</span>
             </div>
-            <!-- 관리자/필터 아이콘 -->
             <button class="text-gray-400 hover:text-white">
                 <i class="fa-solid fa-sliders"></i>
             </button>
         </header>
 
-        <!-- 2. 매장 요약 (AI 요약 느낌) -->
         <div class="p-4 border-b border-gray-800">
             <h1 class="text-2xl font-bold mb-1">꽃게당 제주점</h1>
             <div class="flex items-center gap-2 text-sm text-gray-400 mb-3">
@@ -84,27 +64,22 @@
                 <span>•</span>
                 <span class="text-green-500">영업중</span>
             </div>
-            <!-- AI 요약 텍스트 -->
             <div class="bg-[#111111] p-3 rounded-lg border border-gray-800 text-sm text-gray-300 leading-relaxed">
                 <i class="fa-solid fa-wand-magic-sparkles text-purple-400 mr-1"></i>
                 <b>AI 요약:</b> "티오더로 편리하게 주문한 간장게장 정식이 인기입니다. 살이 꽉 찬 게장과 얼큰한 꽃게탕 조합이 베스트이며, #티오더 해시태그 이벤트 참여가 활발합니다."
             </div>
         </div>
 
-        <!-- 3. 탭 메뉴 (인스타, 지도 리뷰 통합) -->
         <div class="flex border-b border-gray-800 sticky top-[57px] z-40 bg-black/90 backdrop-blur">
             <button class="flex-1 py-3 text-sm font-medium text-center tab-active">전체</button>
             <button class="flex-1 py-3 text-sm font-medium text-center tab-inactive"><i class="fa-brands fa-instagram"></i> 사진</button>
             <button class="flex-1 py-3 text-sm font-medium text-center tab-inactive"><i class="fa-solid fa-map-location-dot"></i> 지도리뷰</button>
         </div>
 
-        <!-- 4. 콘텐츠 그리드 (Masonry 느낌의 2열 격자) -->
         <div class="p-2 grid grid-cols-2 gap-2 pb-24">
-            
-            <!-- Item 1: 음식 접사 (간장게장 느낌의 해산물 이미지로 교체) -->
+            <!-- Item 1 -->
             <div class="bg-[#111111] rounded-lg overflow-hidden border border-gray-800 break-inside-avoid relative group">
                 <div class="relative">
-                    <!-- URL 교체 완료: 안정적인 해산물/음식 이미지 -->
                     <img src="https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500&auto=format&fit=crop&q=60" class="w-full aspect-square object-cover img-skeleton" alt="음식 사진">
                     <div class="absolute top-2 right-2 bg-black/60 rounded-full p-1 px-2 backdrop-blur-sm">
                         <i class="fa-brands fa-instagram text-white text-xs"></i>
@@ -121,7 +96,7 @@
                 </div>
             </div>
 
-            <!-- Item 2: 텍스트 리뷰형 (네이버) -->
+            <!-- Item 2 -->
             <div class="bg-[#111111] rounded-lg p-3 border border-gray-800 flex flex-col justify-between h-auto">
                 <div>
                     <div class="flex justify-between items-start mb-2">
@@ -138,13 +113,12 @@
                         직원 부를 필요 없이 태블릿으로 리필 요청하니까 너무 편해요. 게장 맛은 말할 것도 없음!
                     </p>
                 </div>
-                <!-- 사장님 답글 -->
                 <div class="mt-2 pt-2 border-t border-gray-800">
                     <p class="text-[10px] text-gray-500"><i class="fa-solid fa-reply transform rotate-180 mr-1"></i>사장님: 편하게 식사하셨다니 다행입니다! 🙇‍♂️</p>
                 </div>
             </div>
 
-            <!-- Item 3: 세로형 릴스 (태블릿 주문 장면) -->
+            <!-- Item 3 -->
             <div class="bg-[#111111] rounded-lg overflow-hidden border border-gray-800 row-span-2">
                 <div class="relative h-full">
                     <img src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?w=500&auto=format&fit=crop&q=60" class="w-full h-full object-cover img-skeleton" alt="매장 분위기">
@@ -158,7 +132,7 @@
                 </div>
             </div>
 
-            <!-- Item 4: 구글 맵 리뷰 -->
+            <!-- Item 4 -->
             <div class="bg-[#111111] rounded-lg p-3 border border-gray-800">
                 <div class="flex justify-between items-start mb-2">
                     <div class="flex items-center gap-1">
@@ -172,7 +146,7 @@
                 </p>
             </div>
 
-             <!-- Item 5: 음식 전체 샷 -->
+             <!-- Item 5 -->
              <div class="bg-[#111111] rounded-lg overflow-hidden border border-gray-800">
                 <div class="relative">
                     <img src="https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500&auto=format&fit=crop&q=60" class="w-full aspect-square object-cover img-skeleton" alt="상차림">
@@ -185,7 +159,7 @@
                 </div>
             </div>
 
-            <!-- Item 6: 매장 분위기/태블릿 -->
+            <!-- Item 6 -->
             <div class="bg-[#111111] rounded-lg overflow-hidden border border-gray-800">
                 <div class="relative">
                     <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&auto=format&fit=crop&q=60" class="w-full aspect-square object-cover img-skeleton" alt="매장 전경">
@@ -200,16 +174,29 @@
                     <p class="text-xs text-gray-400">분위기 맛집 ✨</p>
                 </div>
             </div>
-
         </div>
 
-        <!-- 5. 하단 플로팅 버튼 -->
         <div class="fixed bottom-6 left-0 right-0 flex justify-center z-50 pointer-events-none">
-            <button class="pointer-events-auto bg-white text-black px-5 py-3 rounded-full font-bold shadow-xl shadow-black/50 flex items-center gap-2 hover:bg-gray-200 transition transform active:scale-95 text-sm">
+            <!-- onclick 이벤트 추가 -->
+            <button onclick="goToInstagramPost()" class="pointer-events-auto bg-white text-black px-5 py-3 rounded-full font-bold shadow-xl shadow-black/50 flex items-center gap-2 hover:bg-gray-200 transition transform active:scale-95 text-sm">
                 <i class="fa-solid fa-camera text-red-500"></i> #티오더 리뷰 남기기
             </button>
         </div>
 
     </div>
+
+    <script>
+        function goToInstagramPost() {
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            if (/android/i.test(userAgent) || (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream)) {
+                window.location.href = "instagram://library";
+                setTimeout(function () {
+                    window.location.href = "https://www.instagram.com/create/select/";
+                }, 500);
+            } else {
+                window.open("https://www.instagram.com/", "_blank");
+            }
+        }
+    </script>
 </body>
 </html>
