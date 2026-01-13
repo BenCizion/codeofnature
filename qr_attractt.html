@@ -101,11 +101,35 @@
 
         <!-- 4. 하단 플로팅 버튼 -->
         <div class="fixed bottom-6 left-0 right-0 flex justify-center z-50 pointer-events-none">
-            <button class="pointer-events-auto bg-white text-black px-5 py-3 rounded-full font-bold shadow-xl shadow-purple-900/20 flex items-center gap-2 hover:bg-gray-200 transition transform active:scale-95 text-sm border border-gray-300">
+            <!-- onclick 이벤트 추가 -->
+            <button onclick="goToInstagramPost()" class="pointer-events-auto bg-white text-black px-5 py-3 rounded-full font-bold shadow-xl shadow-purple-900/20 flex items-center gap-2 hover:bg-gray-200 transition transform active:scale-95 text-sm border border-gray-300">
                 <i class="fa-brands fa-instagram text-pink-600 text-lg"></i> 나도 올리기
             </button>
         </div>
 
     </div>
+
+    <script>
+        function goToInstagramPost() {
+            // 사용자 에이전트 확인
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            // 모바일 기기(안드로이드, iOS) 체크
+            if (/android/i.test(userAgent) || (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream)) {
+                // 인스타그램 앱 스킴 호출 (라이브러리 화면)
+                // 앱이 설치되어 있다면 앱이 열리고, 작성 화면으로 이동 시도
+                window.location.href = "instagram://library";
+                
+                // 앱이 실행되지 않을 경우(설치 안됨 등)를 대비해 잠시 후 웹페이지로 이동
+                // (일부 브라우저에서는 이 방식이 차단될 수 있으나 일반적인 딥링크 폴백 방식입니다)
+                setTimeout(function () {
+                    window.location.href = "https://www.instagram.com/create/select/";
+                }, 500);
+            } else {
+                // PC 등 비모바일 환경에서는 인스타그램 웹사이트 새 창 열기
+                window.open("https://www.instagram.com/", "_blank");
+            }
+        }
+    </script>
 </body>
 </html>
