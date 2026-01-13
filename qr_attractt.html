@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>티오더 리뷰 라운지 - 실시간</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Grok 스타일 폰트 및 기본 설정 */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 스크롤바 숨기기 */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 탭 스타일 */
+        .tab-active { color: #ffffff; border-bottom: 2px solid #ffffff; }
+        .tab-inactive { color: #6b7280; }
+
+        /* 어트랙트 컨테이너 강제 스타일 오버라이딩 (다크모드 최적화) */
+        /* 어트랙트 내부 CSS가 로드된 후 적용되도록 유도 */
+        .attractt-container {
+            width: 100% !important;
+            min-height: 500px;
+            background-color: #000000 !important; /* 배경을 블랙으로 */
+        }
+    </style>
+</head>
+<body class="flex justify-center min-h-screen bg-black">
+
+    <!-- 모바일 컨테이너 -->
+    <div class="w-full max-w-[480px] bg-black min-h-screen border-x border-gray-900 relative flex flex-col">
+        
+        <!-- 1. 헤더 (Grok Style) -->
+        <header class="sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-gray-800 px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <!-- 브랜드 로고 -->
+                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center text-black font-bold text-lg font-serif">
+                    t
+                </div>
+                <span class="font-bold text-lg tracking-tight">t'order reviews</span>
+            </div>
+            <button class="text-gray-400 hover:text-white">
+                <i class="fa-solid fa-sliders"></i>
+            </button>
+        </header>
+
+        <!-- 2. 매장 요약 (AI Insight) -->
+        <div class="p-4 border-b border-gray-800 bg-[#050505]">
+            <div class="flex justify-between items-start mb-3">
+                <div>
+                    <h1 class="text-xl font-bold mb-1">꽃게당 제주점</h1>
+                    <div class="flex items-center gap-2 text-xs text-gray-400">
+                        <span class="text-yellow-500"><i class="fa-solid fa-star"></i> 4.9</span>
+                        <span>•</span>
+                        <span>실시간 리뷰 피드</span>
+                    </div>
+                </div>
+                <span class="bg-green-900/30 text-green-400 text-[10px] px-2 py-1 rounded-full border border-green-800">
+                    Live
+                </span>
+            </div>
+            
+            <!-- AI 요약 박스 -->
+            <div class="bg-[#111111] p-3 rounded-lg border border-gray-800 text-sm text-gray-300 leading-relaxed relative overflow-hidden">
+                <!-- 그라데이션 효과 -->
+                <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-purple-500 to-blue-500"></div>
+                <div class="pl-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-purple-400 mr-1"></i>
+                    <b>AI Insight:</b> "현재 #티오더 해시태그로 실시간 리뷰가 수집되고 있습니다. 8.88초 챌린지 성공 인증샷이 트렌딩 중입니다."
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. 어트랙트 보드 영역 -->
+        <!-- 배경을 어둡게 처리하고 패딩을 주어 그록 UI와 일체감 형성 -->
+        <div class="flex-1 bg-black p-1">
+            <!-- 어트랙트 설치 코드 시작 -->
+            <script type="text/javascript">
+                (function(d, s) {
+                    var j, e = d.getElementsByTagName(s)[0], h = "https://cdn.attractt.com/embed_v2/index.js";
+                    if (typeof AttracttTower === "function" || e.src === h) { return; }
+                    j = d.createElement(s);
+                    j.src = h;
+                    j.async = true;
+                    e.parentNode.insertBefore(j, e);
+                })(document, "script");
+            </script>
+            <!-- data-board="grid" 로 설정하여 격자형 노출 -->
+            <div class="attractt-container" data-idx="0" data-code="3SwYxPrHIjtMpYA" data-board="grid"></div>
+            <!-- 어트랙트 설치 코드 끝 -->
+        </div>
+
+        <!-- 4. 하단 플로팅 버튼 -->
+        <div class="fixed bottom-6 left-0 right-0 flex justify-center z-50 pointer-events-none">
+            <button class="pointer-events-auto bg-white text-black px-5 py-3 rounded-full font-bold shadow-xl shadow-purple-900/20 flex items-center gap-2 hover:bg-gray-200 transition transform active:scale-95 text-sm border border-gray-300">
+                <i class="fa-brands fa-instagram text-pink-600 text-lg"></i> 나도 올리기
+            </button>
+        </div>
+
+    </div>
+</body>
+</html>
