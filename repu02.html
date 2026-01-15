@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>RepuNote Storm Radar</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --khu-crimson: #8B0029;
+            --danger-red: #ef4444;
+            --warning-orange: #f59e0b;
+            --safe-green: #10b981;
+            --text-gray: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: white;
+            font-family: 'Pretendard', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* 헤더 영역 */
+        header {
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            background: var(--danger-red);
+            animation: pulse 2s infinite;
+        }
+
+        /* 메인 레이더 캔버스 영역 */
+        #radar-container {
+            flex: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 플랫폼 노드 스타일 */
+        .node {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .node.active {
+            border-color: var(--danger-red);
+            box-shadow: 0 0 20px var(--danger-red);
+        }
+
+        .node-name { font-weight: bold; font-size: 14px; margin-bottom: 5px; }
+        .node-status { font-size: 12px; color: var(--text-gray); }
+
+        /* 노드 위치 설정 (확산 경로 흐름) */
+        #origin { left: 10%; top: 50%; transform: translateY(-50%); } /* 발원지 */
+        #community { left: 40%; top: 30%; } /* 확산처 1 */
+        #sns { left: 40%; top: 70%; }       /* 확산처 2 */
+        #portal { left: 80%; top: 50%; transform: translateY(-50%); } /* 최종 상륙(네이버 뉴스) */
+
+        /* 연결선 (SVG) */
+        svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .path {
+            fill: none;
+            stroke: rgba(255,255,255,0.1);
+            stroke-width: 3;
+            stroke-dasharray: 10, 5;
+            animation: flow 30s linear infinite;
+        }
+
+        .path.danger {
+            stroke: var(--danger-red);
+            stroke-width: 5;
+            animation: flow 5s linear infinite;
+        }
+
+        @keyframes flow {
+            to { stroke-dashoffset: -500; }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* 하단 액션 바 */
+        .action-panel {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            width: 350px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--khu-crimson);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-robex {
+            width: 100%;
+            padding: 12px;
+            background: var(--khu-crimson);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-robex:hover { background: #6b001f; }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1 style="margin:0; font-size: 24px;">RepuNote Sentiment Radar</h1>
+        <p style="margin:5px 0 0; color: var(--text-gray);">경희대학교 온라인 여론 확산 경로 실시간 분석</p>
+    </div>
+    <div class="status-badge">🚨 태풍 상륙 80% 진행 중 (네이버 뉴스 도달 임박)</div>
+</header>
+
+<div id="radar-container">
+    <svg>
+        <path id="p1" class="path danger" d="M 180 450 Q 350 450 480 270" />
+        <path id="p2" class="path danger" d="M 180 450 Q 350 450 480 630" />
+        <path id="p3" class="path danger" d="M 580 270 Q 850 450 950 450" />
+        <path id="p4" class="path" d="M 580 630 Q 850 450 950 450" />
+    </svg>
+
+    <div id="origin" class="node active">
+        <div class="node-name">에브리타임</div>
+        <div class="node-status">발원지 (12:30)</div>
+        <div style="color:red; font-size:10px; margin-top:5px;">화력: 8.5/10</div>
+    </div>
+
+    <div id="community" class="node active">
+        <div class="node-name">디시인사이드</div>
+        <div class="node-status">확산 중 (14:15)</div>
+        <div style="color:red; font-size:10px; margin-top:5px;">댓글 500+</div>
+    </div>
+
+    <div id="sns" class="node">
+        <div class="node-name">X (트위터)</div>
+        <div class="node-status">징후 미약</div>
+    </div>
+
+    <div id="portal" class="node active" style="border-style: dashed;">
+        <div class="node-name">네이버 뉴스</div>
+        <div class="node-status">상륙 임박 (예상)</div>
+        <div style="color:var(--danger-red); font-size:10px; margin-top:5px;">기사화 90%</div>
+    </div>
+
+    <div class="action-panel">
+        <h3 style="margin-top:0;">⚡ ROBEX 긴급 개입 섹션</h3>
+        <p style="font-size: 13px; color: var(--text-gray);">현재 에브리타임에서 시작된 '입시 비리 오보'가 디시인사이드를 거쳐 메이저 언론사로 확산 중입니다.</p>
+        <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 5px; font-size: 12px;">
+            <strong>채증 현황:</strong> PDF 12건, 작성자 ID 5건 확보 완료
+        </div>
+        <button class="btn-robex" onclick="alert('로벡스 법무팀에 실시간 증거 데이터가 전송되었습니다. 즉시 내용증명 발송 절차를 개시합니다.')">로벡스 내용증명 즉시 발송</button>
+        <button class="btn-robex" style="background: transparent; border: 1px solid white;">포탈 상륙 차단 (기사 밀어내기)</button>
+    </div>
+</div>
+
+</body>
+</html>
