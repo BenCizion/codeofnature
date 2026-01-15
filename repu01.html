@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+    .dashboard { display: grid; grid-template-columns: 200px 1fr; gap: 10px; background: white; padding: 20px; border-radius: 10px; }
+    .header { grid-column: 1 / span 2; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .kpi-container { display: flex; gap: 20px; }
+    .kpi-card { background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 8px; text-align: center; min-width: 120px; }
+    .kpi-val { font-size: 24px; font-weight: bold; color: #8B0029; }
+    
+    .heatmap { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+    .label { padding: 10px; background: #eee; text-align: center; font-size: 12px; }
+    .row-label { display: flex; align-items: center; justify-content: flex-end; padding-right: 15px; font-size: 13px; font-weight: bold; }
+    
+    /* 히트맵 셀 색상 정의 */
+    .cell { height: 60px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; cursor: pointer; }
+    .high { background-color: #ff4d4d; box-shadow: 0 0 10px rgba(255,0,0,0.5); } /* 위기 상 */
+    .mid { background-color: #ffad33; } /* 위기 중 */
+    .low { background-color: #66cc66; } /* 안전 */
+    .none { background-color: #f9f9f9; border: 1px solid #eee; color: #ccc; }
+    
+    .legal-btn { margin-top: 10px; padding: 5px 10px; background: white; color: #8B0029; border: 1px solid #8B0029; border-radius: 4px; cursor: pointer; font-size: 10px; }
+    .legal-btn:hover { background: #8B0029; color: white; }
+</style>
+</head>
+<body>
+
+<div class="dashboard">
+    <div class="header">
+        <div>
+            <h2>RepuNote : 경희대학교 위기 관제 센터</h2>
+            <p>실시간 온라인 영토 오염도 히트맵 (2026-01-15 기준)</p>
+        </div>
+        <div class="kpi-container">
+            <div class="kpi-card"><div>전체 오염도</div><div class="kpi-val">42%</div></div>
+            <div class="kpi-card"><div>법적 대응 가능</div><div class="kpi-val">12건</div></div>
+        </div>
+    </div>
+
+    <div class="row-labels">
+        <div style="height: 30px;"></div> <div class="row-label" style="height: 60px;">입시/학사 공정성</div>
+        <div class="row-label" style="height: 60px;">교수/임직원 갑질</div>
+        <div class="row-label" style="height: 60px;">캠퍼스 시설/안전</div>
+        <div class="row-label" style="height: 60px;">재단/경영 이슈</div>
+    </div>
+
+    <div>
+        <div class="heatmap">
+            <div class="label">네이버 뉴스</div>
+            <div class="label">에브리타임</div>
+            <div class="label">디시인사이드</div>
+            <div class="label">에프엠코리아</div>
+            <div class="label">유튜브/SNS</div>
+            
+            <div class="cell low">안전</div>
+            <div class="cell high">폭발<br><button class="legal-btn">로벡스 전송</button></div>
+            <div class="cell mid">주의</div>
+            <div class="cell none">-</div>
+            <div class="cell low">안전</div>
+
+            <div class="cell mid">주의</div>
+            <div class="cell none">-</div>
+            <div class="cell high">위험<br><button class="legal-btn">로벡스 전송</button></div>
+            <div class="cell none">-</div>
+            <div class="cell mid">주의</div>
+
+            <div class="cell none">-</div>
+            <div class="cell high">위험<br><button class="legal-btn">로벡스 전송</button></div>
+            <div class="cell low">안전</div>
+            <div class="cell low">안전</div>
+            <div class="cell none">-</div>
+
+            <div class="cell low">안전</div>
+            <div class="cell none">-</div>
+            <div class="cell none">-</div>
+            <div class="cell mid">주의</div>
+            <div class="cell none">-</div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
