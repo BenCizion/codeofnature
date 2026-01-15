@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>RepuNote | 실시간 여론 관제 레이더</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --khu-crimson: #8B0029;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --safe: #10b981;
+            --node-bg: rgba(30, 41, 59, 0.7);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #f8fafc;
+            font-family: 'Pretendard', sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            padding: 20px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .radar-stage {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+        }
+
+        .node {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            background: var(--node-bg);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 5;
+            transition: all 0.8s ease;
+        }
+
+        /* 위험 감지 시 변하는 스타일 */
+        .node.active {
+            border-color: var(--danger);
+            box-shadow: 0 0 40px rgba(239, 68, 68, 0.6);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .node h4 { margin: 0; font-size: 16px; }
+        .node p { margin: 5px 0 0; font-size: 12px; color: #94a3b8; }
+
+        #n1 { left: 10%; top: 40%; } 
+        #n2 { left: 40%; top: 20%; } 
+        #n3 { left: 40%; top: 65%; } 
+        #n4 { left: 80%; top: 40%; } 
+
+        svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0; left: 0;
+            pointer-events: none;
+        }
+
+        .flow-line {
+            fill: none;
+            stroke: rgba(255,255,255,0.05);
+            stroke-width: 2;
+            transition: all 1s ease;
+        }
+
+        .flow-line.active {
+            stroke: var(--danger);
+            stroke-width: 4;
+            stroke-dasharray: 10, 5;
+            animation: dash-flow 2s linear infinite;
+        }
+
+        @keyframes dash-flow { to { stroke-dashoffset: -30; } }
+
+        .control-panel {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            width: 380px;
+            background: rgba(30, 41, 59, 0.9);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--khu-crimson);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 15px;
+            background: var(--khu-crimson);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h2 style="margin:0;">RepuNote Sentiment Radar</h2>
+        <span id="update-time" style="color: #94a3b8; font-size: 13px;">데이터 연결 대기 중...</span>
+    </div>
+    <div id="status-badge" style="background: var(--safe); padding: 5px 15px; border-radius: 4px; font-weight: bold; font-size: 14px;">
+        상태: 양호
+    </div>
+</header>
+
+<div class="radar-stage">
+    <svg>
+        <path id="l1" class="flow-line" d="M 230 460 Q 350 460 410 260" />
+        <path id="l2" class="flow-line" d="M 230 460 Q 350 460 410 720" />
+        <path id="l3" class="flow-line" d="M 540 260 Q 750 460 810 460" />
+    </svg>
+
+    <div id="n1" class="node">
+        <h4>에브리타임</h4>
+        <p>커뮤니티 여론</p>
+    </div>
+
+    <div id="n2" class="node">
+        <h4>디시인사이드</h4>
+        <p>확산 모니터링</p>
+    </div>
+
+    <div id="n4" class="node">
+        <h4>네이버 뉴스</h4>
+        <p>포털 상륙 여부</p>
+    </div>
+
+    <div class="control-panel">
+        <h3 style="margin-top:0;">ROBEX 법무 대응 센터</h3>
+        <p id="alert-text" style="font-size: 13px; color: #cbd5e1;">현재 경희대 관련 특이사항이 발견되지 않았습니다.</p>
+        <button class="btn-action" onclick="alert('로벡스 법무팀에 데이터가 전송되었습니다.')">
+            ROBEX 긴급 개입 개시
+        </button>
+    </div>
+</div>
+
+<script>
+    // 1. 배포한 웹앱 URL을 아래 따옴표 안에 넣으세요.
+    const API_URL = "https://script.google.com/a/macros/cizion.com/s/AKfycbxzKekl69MVv7snMZirhjryO1qHbIoe2BVKCJwzIIWs1N80gdnHAqi0v4cQxlbn3hdEFw/exec";
+
+    async function updateRadar() {
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            
+            const now = new Date();
+            document.getElementById('update-time').innerText = "최근 업데이트: " + now.toLocaleTimeString();
+
+            // 시트에 위험(상) 데이터가 1개라도 있는 경우
+            if (data.isPortalInfected) {
+                // 노드 활성화 (빨간 불)
+                document.getElementById('n1').classList.add('active');
+                document.getElementById('n2').classList.add('active');
+                document.getElementById('n4').classList.add('active');
+                
+                // 연결선 활성화 (흐르는 빨간 선)
+                document.getElementById('l1').classList.add('active');
+                document.getElementById('l3').classList.add('active');
+
+                // 텍스트 업데이트
+                document.getElementById('status-badge').innerText = "위기 등급: 심각";
+                document.getElementById('status-badge').style.background = "#ef4444";
+                document.getElementById('alert-text').innerHTML = `<strong>긴급!</strong> 네이버 뉴스에서 위험 기사 ${data.naverNewsCount}건이 감지되었습니다.`;
+            } else {
+                // 평시 상태로 되돌리기
+                document.querySelectorAll('.node, .flow-line').forEach(el => el.classList.remove('active'));
+                document.getElementById('status-badge').innerText = "상태: 양호";
+                document.getElementById('status-badge').style.background = "#10b981";
+                document.getElementById('alert-text').innerText = "현재 경희대 관련 특이사항이 발견되지 않았습니다.";
+            }
+        } catch (e) {
+            console.error("데이터 연동 에러:", e);
+            document.getElementById('update-time').innerText = "연동 에러 발생";
+        }
+    }
+
+    // 10초마다 시트 데이터를 확인합니다.
+    setInterval(updateRadar, 10000);
+    updateRadar(); // 페이지 로드 시 즉시 실행
+</script>
+
+</body>
+</html>
