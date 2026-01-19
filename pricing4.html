@@ -7,32 +7,34 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .check-icon { color: #10B981; margin-right: 0.5rem; }
-        .cross-icon { color: #9CA3AF; margin-right: 0.5rem; }
-        .feature-item { display: flex; align-items: center; margin-bottom: 0.75rem; font-size: 0.95rem; color: #4B5563; }
-        .highlight-border { border: 2px solid #3B82F6; position: relative; }
-        .badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background-color: #3B82F6; color: white; padding: 4px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: bold; }
+        /* 라이브리 브랜드 컬러 적용 */
+        .check-icon { color: #DC2626; /* Red-600 */ margin-right: 0.5rem; }
+        .cross-icon { color: #9CA3AF; /* Gray-400 */ margin-right: 0.5rem; }
+        .feature-item { display: flex; align-items: center; margin-bottom: 0.75rem; font-size: 0.95rem; color: #4B5563; /* Gray-600 */ }
+        /* 하이라이트 테두리 및 배지 컬러를 레드로 변경 */
+        .highlight-border { border: 2px solid #DC2626; position: relative; }
+        .badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background-color: #DC2626; color: white; padding: 4px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: bold; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3); }
     </style>
 </head>
-<body class="bg-gray-50 font-sans">
+<body class="bg-gray-50 font-sans text-gray-700">
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-        <h2 class="text-base text-blue-600 font-semibold tracking-wide uppercase">Pricing Plan</h2>
+        <h2 class="text-base text-red-600 font-semibold tracking-wide uppercase">Pricing Plan</h2>
         <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
             규모에 맞는 합리적인 요금제
         </p>
         <p class="mt-4 max-w-2xl text-xl text-gray-500 mx-auto">
             핵심 기준은 <strong>'AI 필터링 수(댓글 수)'</strong> 입니다.<br>
-            <span class="text-sm bg-yellow-100 text-yellow-800 px-2 py-1 rounded-md mt-2 inline-block">
-                <i class="fas fa-info-circle"></i> 참고: 이미지 댓글 1개는 텍스트 댓글 3개로 차감됩니다.
+            <span class="text-sm bg-red-50 text-red-700 px-3 py-1 rounded-full mt-3 inline-block border border-red-100">
+                <i class="fas fa-info-circle mr-1"></i> 참고: 이미지 댓글 1개는 텍스트 댓글 3개로 차감됩니다.
             </span>
         </p>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 items-start">
 
-            <div class="bg-white rounded-2xl shadow-sm p-8 border border-gray-200 flex flex-col">
+            <div class="bg-white rounded-2xl shadow-sm p-8 border border-gray-200 flex flex-col transition hover:shadow-md">
                 <h3 class="text-lg font-medium text-gray-900">Starter (입문)</h3>
                 <div class="mt-4 flex items-baseline text-gray-900">
                     <span class="text-4xl font-extrabold tracking-tight">Free</span>
@@ -43,18 +45,18 @@
                     <ul role="list" class="space-y-4">
                         <li class="feature-item"><i class="fas fa-check check-icon"></i> <strong>월 1,000건</strong> 필터링</li>
                         <li class="feature-item"><i class="fas fa-check check-icon"></i> 기본 댓글 기능</li>
-                        <li class="feature-item text-red-500"><i class="fas fa-exclamation-circle mr-2"></i> <strong>광고 노출 (필수)</strong></li>
+                        <li class="feature-item text-red-600 font-medium"><i class="fas fa-exclamation-circle mr-2"></i> <strong>광고 노출 (필수)</strong></li>
                         <li class="feature-item text-gray-500"><i class="fas fa-ruler-combined mr-2"></i> 월 3만 PV 제한</li>
                         <li class="feature-item text-gray-500"><i class="fas fa-hdd mr-2"></i> 저장소 500MB 제한</li>
                         <li class="feature-item"><i class="fas fa-times cross-icon"></i> 이미지 댓글 불가</li>
                     </ul>
                 </div>
-                <a href="#" class="mt-8 block w-full bg-gray-100 border border-transparent rounded-md py-2 text-sm font-semibold text-gray-800 text-center hover:bg-gray-200">무료로 시작하기</a>
+                <a href="#" class="mt-8 block w-full bg-gray-100 border border-transparent rounded-md py-2 text-sm font-semibold text-gray-800 text-center hover:bg-gray-200 transition">무료로 시작하기</a>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-lg p-8 highlight-border flex flex-col">
+            <div class="bg-white rounded-2xl shadow-xl p-8 highlight-border flex flex-col transform scale-105 z-10 relative">
                 <div class="badge">BEST CHOICE</div>
-                <h3 class="text-lg font-medium text-blue-600">Personal (개인)</h3>
+                <h3 class="text-lg font-bold text-red-600">Personal (개인)</h3>
                 <div class="mt-4 flex items-baseline text-gray-900">
                     <span class="text-4xl font-extrabold tracking-tight">₩10,000</span>
                     <span class="ml-1 text-xl font-semibold text-gray-500">/월</span>
@@ -70,10 +72,10 @@
                         <li class="feature-item"><i class="fas fa-check check-icon"></i> 이메일 기술 지원</li>
                     </ul>
                 </div>
-                <a href="#" class="mt-8 block w-full bg-blue-600 border border-transparent rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-blue-700">구독하기</a>
+                <a href="#" class="mt-8 block w-full bg-red-600 border border-transparent rounded-md py-2 text-sm font-bold text-white text-center hover:bg-red-700 shadow-md transition">지금 구독하기</a>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm p-8 border border-gray-200 flex flex-col">
+            <div class="bg-white rounded-2xl shadow-sm p-8 border border-gray-200 flex flex-col transition hover:shadow-md">
                 <h3 class="text-lg font-medium text-gray-900">Business (비즈니스)</h3>
                 <div class="mt-4 flex items-baseline text-gray-900">
                     <span class="text-4xl font-extrabold tracking-tight">₩100,000</span>
@@ -90,10 +92,10 @@
                         <li class="feature-item"><i class="fas fa-check check-icon"></i> 우선 이메일 지원</li>
                     </ul>
                 </div>
-                <a href="#" class="mt-8 block w-full bg-blue-50 border border-transparent rounded-md py-2 text-sm font-semibold text-blue-700 text-center hover:bg-blue-100">선택하기</a>
+                <a href="#" class="mt-8 block w-full bg-red-50 border border-transparent rounded-md py-2 text-sm font-semibold text-red-700 text-center hover:bg-red-100 transition">선택하기</a>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm p-8 border border-gray-200 flex flex-col">
+            <div class="bg-white rounded-2xl shadow-sm p-8 border border-gray-200 flex flex-col transition hover:shadow-md">
                 <h3 class="text-lg font-medium text-gray-900">Pro (프로)</h3>
                 <div class="mt-4 flex items-baseline text-gray-900">
                     <span class="text-4xl font-extrabold tracking-tight">₩300,000</span>
@@ -110,58 +112,60 @@
                         <li class="feature-item"><i class="fas fa-check check-icon"></i> 어드민 계정 추가</li>
                     </ul>
                 </div>
-                <a href="#" class="mt-8 block w-full bg-blue-50 border border-transparent rounded-md py-2 text-sm font-semibold text-blue-700 text-center hover:bg-blue-100">선택하기</a>
+                <a href="#" class="mt-8 block w-full bg-red-50 border border-transparent rounded-md py-2 text-sm font-semibold text-red-700 text-center hover:bg-red-100 transition">선택하기</a>
             </div>
 
         </div>
     </div>
 
-    <div class="bg-gray-900 py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="bg-gray-800 py-16 border-t-4 border-red-600 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#DC2626_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="lg:flex lg:items-center lg:justify-between">
                 <div class="lg:w-2/3">
-                    <h2 class="text-2xl font-extrabold text-white sm:text-3xl">
-                        <span class="block">더 많은 트래픽과 관리가 필요하신가요?</span>
-                        <span class="block text-blue-400 text-xl mt-2">Enterprise (엔터프라이즈) 플랜</span>
+                    <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
+                        <span class="block">압도적인 트래픽과 관리가 필요하신가요?</span>
+                        <span class="block text-red-500 text-2xl mt-3 font-bold">Enterprise (엔터프라이즈) 플랜</span>
                     </h2>
-                    <p class="mt-4 text-lg text-gray-400">
-                        월 30만 건 이상의 대용량 트래픽 처리를 위한 종량제 플랜입니다.<br>
-                        전담 매니저 배정, 커스텀 기능, 데이터 마이그레이션 및 SLA(서비스 품질 보장)를 제공합니다.
+                    <p class="mt-6 text-lg text-gray-300 leading-relaxed max-w-2xl">
+                        월 30만 건 이상의 대용량 트래픽 처리를 위한 <strong>맞춤형 종량제 플랜</strong>입니다.<br>
+                        귀사 전담 매니저가 마이그레이션부터 커스텀 기능 개발, SLA 기반의 안정적인 운영까지 책임집니다.
                     </p>
-                    <div class="mt-4 grid grid-cols-2 gap-4 text-gray-300 text-sm sm:grid-cols-4">
-                        <div><i class="fas fa-check text-blue-400 mr-2"></i>월 50만원 부터</div>
-                        <div><i class="fas fa-check text-blue-400 mr-2"></i>전담 매니저</div>
-                        <div><i class="fas fa-check text-blue-400 mr-2"></i>커스텀 기능</div>
-                        <div><i class="fas fa-check text-blue-400 mr-2"></i>계산서 발행</div>
+                    <div class="mt-8 grid grid-cols-2 gap-y-4 gap-x-6 text-gray-300 text-base sm:grid-cols-4">
+                        <div class="flex items-center"><i class="fas fa-check-circle text-red-500 mr-2 text-lg"></i>월 50만원 부터</div>
+                        <div class="flex items-center"><i class="fas fa-user-tie text-red-500 mr-2 text-lg"></i>전담 매니저 배정</div>
+                        <div class="flex items-center"><i class="fas fa-cogs text-red-500 mr-2 text-lg"></i>커스텀 기능 개발</div>
+                        <div class="flex items-center"><i class="fas fa-file-invoice-dollar text-red-500 mr-2 text-lg"></i>세금계산서 발행</div>
                     </div>
                 </div>
-                <div class="mt-8 lg:mt-0 lg:w-1/3 lg:flex lg:justify-end">
-                    <a href="#" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-gray-900 bg-white hover:bg-gray-100">
-                        영업팀 문의하기
+                <div class="mt-10 lg:mt-0 lg:w-1/3 lg:flex lg:justify-end">
+                    <a href="#" class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-bold rounded-md text-white bg-red-600 hover:bg-red-700 shadow-lg transition transform hover:-translate-y-1">
+                        영업팀에 문의하기 <i class="fas fa-arrow-right ml-2"></i>
                     </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 border-t border-gray-200">
-        <h4 class="text-sm font-bold text-gray-500 uppercase tracking-wide">자주 묻는 질문 및 정책</h4>
-        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-gray-600">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-gray-200">
+        <h4 class="text-base font-bold text-gray-700 uppercase tracking-wide">자주 묻는 질문 및 정책</h4>
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 text-sm text-gray-600">
             <div>
-                <strong class="block text-gray-900 mb-1">Q. 한도를 초과하면 어떻게 되나요?</strong>
-                <p>무료 플랜은 서비스가 일시 중지되며 광고가 유지됩니다. 유료 플랜은 3개월 연속 초과 시 상위 플랜으로 전환을 제안드리며, 즉각적인 차단은 하지 않습니다.</p>
+                <strong class="block text-gray-900 text-base mb-2"><i class="far fa-question-circle text-red-500 mr-1"></i> 한도를 초과하면 어떻게 되나요?</strong>
+                <p class="leading-relaxed">무료 플랜은 서비스가 일시 중지되며 광고가 유지됩니다. 유료 플랜은 3개월 연속 초과 시 상위 플랜으로 전환을 제안드리며, 즉각적인 차단은 하지 않습니다.</p>
             </div>
             <div>
-                <strong class="block text-gray-900 mb-1">Q. 이미지 댓글 차감 기준은요?</strong>
-                <p>시스템 부하를 고려하여 이미지 댓글 1개 작성 시, 필터링 수 3건이 차감됩니다. (텍스트 댓글은 1건 차감)</p>
+                <strong class="block text-gray-900 text-base mb-2"><i class="far fa-question-circle text-red-500 mr-1"></i> 이미지 댓글 차감 기준은요?</strong>
+                <p class="leading-relaxed">시스템 부하를 고려하여 이미지 댓글 1개 작성 시, 필터링 수 3건이 차감됩니다. (텍스트 댓글은 1건 차감)</p>
             </div>
             <div>
-                <strong class="block text-gray-900 mb-1">Q. API 비용은 별도인가요?</strong>
-                <p>네, API 사용은 C(Business) 등급 이상부터 옵션으로 추가 가능하며, 호출량은 기본 필터링 수에 합산되어 차감됩니다.</p>
+                <strong class="block text-gray-900 text-base mb-2"><i class="far fa-question-circle text-red-500 mr-1"></i> API 비용은 별도인가요?</strong>
+                <p class="leading-relaxed">네, API 사용은 C(Business) 등급 이상부터 옵션으로 추가 가능하며, 호출량은 기본 필터링 수에 합산되어 차감됩니다.</p>
             </div>
             <div>
-                <strong class="block text-gray-900 mb-1">Q. 담당자 배정은 언제 되나요?</strong>
-                <p>전담 기술 지원 매니저는 F(Enterprise) 등급 고객에게만 배정됩니다. 그 외 등급은 이메일 및 커뮤니티 지원을 원칙으로 합니다.</p>
+                <strong class="block text-gray-900 text-base mb-2"><i class="far fa-question-circle text-red-500 mr-1"></i> 담당자 배정은 언제 되나요?</strong>
+                <p class="leading-relaxed">전담 기술 지원 매니저는 F(Enterprise) 등급 고객에게만 배정됩니다. 그 외 등급은 이메일 및 커뮤니티 지원을 원칙으로 합니다.</p>
             </div>
         </div>
     </div>
