@@ -58,7 +58,7 @@
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             
             <div class="bg-white rounded-2xl shadow-lg p-8 highlight-card flex flex-col h-full relative">
@@ -116,7 +116,43 @@
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
-        <h3 class="text-2xl font-bold text-gray-900 mb-6">Additional API Services (Add-on)</h3>
+        <div class="bg-gray-900 rounded-2xl shadow-xl overflow-hidden border border-gray-700">
+            <div class="lg:flex lg:items-center">
+                <div class="p-8 lg:p-10 lg:w-2/3">
+                    <h3 class="text-2xl font-bold text-white mb-2">
+                        <span class="text-red-500 block text-sm uppercase tracking-wider mb-1">Enterprise Plan</span>
+                        그 이상의 트래픽과 맞춤 관리가 필요하신가요?
+                    </h3>
+                    <p class="text-gray-300 text-sm md:text-base leading-relaxed mb-6">
+                        월 300만 건 이상의 초대형 트래픽 처리, 전담 기술 매니저 배정, 커스텀 기능 개발까지.<br>
+                        귀사의 비즈니스 요구사항에 완벽하게 맞춘 엔터프라이즈 솔루션을 제공합니다.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-gray-300 text-sm">
+                        <div class="flex items-center"><i class="fas fa-check-circle text-red-500 mr-2"></i> 무제한 트래픽 대응</div>
+                        <div class="flex items-center"><i class="fas fa-check-circle text-red-500 mr-2"></i> 전담 매니저 (Dedicated)</div>
+                        <div class="flex items-center"><i class="fas fa-check-circle text-red-500 mr-2"></i> SLA 서비스 품질 보장</div>
+                        <div class="flex items-center"><i class="fas fa-check-circle text-red-500 mr-2"></i> 커스텀 마이그레이션</div>
+                    </div>
+                </div>
+                <div class="bg-gray-800 p-8 lg:p-10 lg:w-1/3 flex flex-col justify-center items-center border-t lg:border-t-0 lg:border-l border-gray-700 h-full">
+                    <span class="text-white text-lg font-bold mb-1">맞춤 견적</span>
+                    <p class="text-gray-400 text-xs mb-6">비즈니스 규모별 별도 협의</p>
+                    <a href="#" class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-bold rounded-md text-white bg-red-600 hover:bg-red-700 transition shadow-lg">
+                        영업팀 문의하기
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+        <div class="flex items-center justify-center mb-10">
+            <span class="h-px w-16 bg-gray-300"></span>
+            <span class="text-gray-500 font-medium px-4">Optional Add-ons</span>
+            <span class="h-px w-16 bg-gray-300"></span>
+        </div>
+        
+        <h3 class="text-2xl font-bold text-center text-gray-900 mb-8">Additional API Services</h3>
         
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
@@ -185,24 +221,16 @@
         </div>
     </div>
 
-    <div class="bg-gray-900 py-12 border-t-4 border-red-600">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="lg:flex lg:items-center lg:justify-between">
-                <div class="lg:w-2/3">
-                    <h2 class="text-2xl font-extrabold text-white sm:text-3xl">
-                        <span class="text-red-500 block text-lg mb-1">Enterprise Plan</span>
-                        그 이상의 트래픽과 맞춤 관리가 필요하신가요?
-                    </h2>
-                    <p class="mt-4 text-gray-300">
-                        월 300만 건 이상의 초대형 트래픽, 전담 매니저 배정, 커스텀 기능 개발.<br>
-                        귀사의 비즈니스에 최적화된 엔터프라이즈 솔루션을 제안합니다.
-                    </p>
-                </div>
-                <div class="mt-8 lg:mt-0 lg:w-1/3 lg:flex lg:justify-end">
-                    <a href="#" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-bold rounded-md text-white bg-red-600 hover:bg-red-700 transition shadow-lg">
-                        엔터프라이즈 문의 <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
-                </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-gray-200">
+        <h4 class="text-sm font-bold text-gray-500 uppercase tracking-wide mb-6">자주 묻는 질문</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-gray-600">
+            <div>
+                <strong class="block text-gray-900 mb-1">Q. 한도를 초과하면 차단되나요?</strong>
+                <p>무료 플랜은 서비스가 일시 중지됩니다. 유료 플랜(Creator 이상)은 즉시 차단하지 않고, 상위 플랜 전환을 안내해 드립니다.</p>
+            </div>
+            <div>
+                <strong class="block text-gray-900 mb-1">Q. API 비용은 언제 청구되나요?</strong>
+                <p>기본 요금제와 함께 월 단위로 합산 청구됩니다. 사용량은 대시보드에서 실시간으로 확인 가능합니다.</p>
             </div>
         </div>
     </div>
