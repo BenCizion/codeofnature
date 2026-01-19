@@ -148,6 +148,84 @@
         </div>
     </div>
 
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="p-8 md:p-10 lg:flex lg:justify-between lg:items-center bg-gray-50 border-b border-gray-200">
+                <div class="lg:w-2/3">
+                    <h3 class="text-2xl font-bold text-gray-900">API 데이터 연동 (Add-on)</h3>
+                    <p class="mt-2 text-gray-600">
+                        웹사이트 외에 모바일 앱(App)이나 ERP 등 외부 시스템에서 댓글 데이터를 활용하세요.<br>
+                        <span class="text-sm text-red-600 font-medium mt-1 inline-block">
+                            * Business 등급 이상부터 신청 가능합니다.
+                        </span>
+                    </p>
+                </div>
+                <div class="mt-6 lg:mt-0 lg:w-1/3 text-left lg:text-right">
+                    <div class="flex items-baseline lg:justify-end">
+                        <span class="text-3xl font-extrabold text-gray-900">₩50,000</span>
+                        <span class="ml-1 text-gray-500">/월</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-1">기본 플랜 요금에 합산 청구</p>
+                </div>
+            </div>
+
+            <div class="p-8 md:p-10 grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div>
+                    <h4 class="text-lg font-bold text-gray-900 mb-4">과금 및 차감 기준</h4>
+                    <div class="bg-red-50 rounded-lg p-5 border border-red-100">
+                        <div class="flex items-start mb-4">
+                            <i class="fas fa-coins text-red-500 mt-1 mr-3"></i>
+                            <div>
+                                <strong class="block text-gray-900">통합 쿼터 사용 (Integrated Quota)</strong>
+                                <p class="text-sm text-gray-600 mt-1">
+                                    별도의 건당 과금 없이, <strong>사용 중인 플랜의 '월 필터링 한도'</strong> 내에서 API 호출량이 차감됩니다.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between bg-white rounded border border-red-200 p-3 shadow-sm">
+                            <span class="text-gray-600 font-medium">API 1회 호출 (Call)</span>
+                            <i class="fas fa-arrow-right text-gray-400"></i>
+                            <span class="text-red-600 font-bold">1 필터링 수 차감</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-bold text-gray-900 mb-4">제공 API 명세</h4>
+                    <ul class="divide-y divide-gray-100 text-sm">
+                        <li class="py-3 flex justify-between items-center">
+                            <div class="flex items-center">
+                                <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs font-bold mr-3">GET</span>
+                                <span class="text-gray-700">Comments List (댓글 목록 조회)</span>
+                            </div>
+                            <span class="text-gray-400"><i class="fas fa-check"></i></span>
+                        </li>
+                        <li class="py-3 flex justify-between items-center">
+                            <div class="flex items-center">
+                                <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs font-bold mr-3">GET</span>
+                                <span class="text-gray-700">Reply Count (댓글 수 카운트)</span>
+                            </div>
+                            <span class="text-gray-400"><i class="fas fa-check"></i></span>
+                        </li>
+                        <li class="py-3 flex justify-between items-center">
+                            <div class="flex items-center">
+                                <span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs font-bold mr-3">POST</span>
+                                <span class="text-gray-700">Write Comment (댓글 작성)</span>
+                            </div>
+                            <span class="text-gray-400"><i class="fas fa-check"></i></span>
+                        </li>
+                        <li class="py-3 flex justify-between items-center">
+                            <div class="flex items-center">
+                                <span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs font-bold mr-3">DOCS</span>
+                                <span class="text-gray-700">Swagger API 문서 제공</span>
+                            </div>
+                            <a href="#" class="text-red-600 hover:underline">문서 보기</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-gray-200">
         <h4 class="text-base font-bold text-gray-700 uppercase tracking-wide">자주 묻는 질문 및 정책</h4>
         <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 text-sm text-gray-600">
