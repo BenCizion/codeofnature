@@ -3,180 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Livere.AI Pricing</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>LiveRe Monitor AI | Dashboard</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <style>
-        /* Livere.AI Brand Colors */
-        .check-icon { color: #DC2626; margin-right: 0.5rem; flex-shrink: 0; }
-        .cross-icon { color: #9CA3AF; margin-right: 0.5rem; flex-shrink: 0; }
-        .feature-list { margin-top: 1rem; }
-        .feature-item { display: flex; align-items: start; margin-bottom: 0.6rem; font-size: 0.9rem; color: #4B5563; line-height: 1.4; }
-        
-        /* Highlight Effects */
-        .highlight-card { border: 2px solid #DC2626; transform: scale(1.02); z-index: 10; box-shadow: 0 10px 30px -5px rgba(220, 38, 38, 0.15); }
-        .badge { background-color: #DC2626; color: white; padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: bold; display: inline-block; margin-bottom: 0.5rem; }
-        
-        /* Custom Font */
-        body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; }
+        :root {
+            --livere-primary: #f3ba2f;
+            --livere-dark: #232526;
+            --livere-bg: #f4f5f8;
+            --livere-card: #ffffff;
+            --livere-text: #393b3c;
+            --danger: #d32f2f;
+            --warning: #ff9800;
+            --success: #43a047;
+        }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            margin: 0;
+            background-color: var(--livere-bg);
+            color: var(--livere-text);
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        aside {
+            width: 240px;
+            background-color: var(--livere-dark);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+        }
+
+        .logo {
+            padding: 0 24px 30px;
+            font-weight: 800;
+            font-size: 20px;
+            color: var(--livere-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        nav li {
+            padding: 14px 24px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.2s;
+        }
+
+        nav li:hover, nav li.active {
+            background-color: rgba(255,255,255,0.1);
+            color: var(--livere-primary);
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: white;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e6e8eb;
+        }
+
+        .container {
+            padding: 32px;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--livere-card);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-size: 13px;
+            color: #858596;
+            margin-bottom: 8px;
+        }
+
+        .card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--livere-dark);
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .bg-danger { background-color: var(--danger); }
+        .bg-warning { background-color: var(--warning); }
+        .bg-success { background-color: var(--success); }
+
+        /* Table Area */
+        .table-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background-color: #fafbfc;
+            padding: 16px;
+            font-size: 13px;
+            color: #858596;
+            border-bottom: 1px solid #e6e8eb;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #f4f5f8;
+            font-size: 14px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+            box-shadow: 0 0 8px rgba(103, 214, 174, 0.8);
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            border: 1px solid var(--livere-primary);
+            background: white;
+            color: var(--livere-dark);
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .btn-action:hover {
+            background: var(--livere-primary);
+            color: white;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-700">
+<body>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-        <h2 class="text-xl text-red-600 font-bold tracking-widest uppercase mb-2">
-            Social Intelligence, Livere.AI
-        </h2>
-        <p class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-6">
-            댓글 그 이상의 가치, <span class="text-red-600">AI 데이터 모니터링</span>
-        </p>
-        <p class="max-w-2xl mx-auto text-lg text-slate-500">
-            단순 위젯을 넘어, <strong>작성된 댓글과 수집(모니터링)된 데이터</strong>를 통합 관리하세요.<br>
-            인플루언서부터 미디어까지, 모든 비즈니스를 위한 올인원 솔루션입니다.
-        </p>
-        
-        <div class="mt-8 inline-flex items-center px-5 py-2 rounded-full bg-white border border-red-200 shadow-sm text-sm text-slate-600">
-            <i class="fas fa-info-circle text-red-500 mr-2 text-lg"></i>
-            <span><strong>과금 기준:</strong> (작성 댓글 수 + AI 모니터링 수) 합산 &nbsp;|&nbsp; <strong>이미지 가중치:</strong> 1장 = 5건 차감</span>
+    <aside>
+        <div class="logo">
+            <span>LiveRe Monitor AI</span>
         </div>
-    </div>
+        <nav>
+            <ul>
+                <li class="active">📊 실시간 대시보드</li>
+                <li>🏫 에브리타임 모니터링</li>
+                <li>📰 네이버 뉴스/카페</li>
+                <li>⚖️ 법률 대응 센터</li>
+                <li>⚙️ 기능 및 프롬프트 설정</li>
+            </ul>
+        </nav>
+    </aside>
 
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition duration-300">
-            <div class="md:flex">
-                <div class="md:w-2/3 p-8">
-                    <div class="flex items-center mb-3">
-                        <h3 class="text-2xl font-bold text-slate-900 mr-3">Free</h3>
-                        <span class="px-2.5 py-0.5 rounded text-xs font-bold bg-slate-100 text-slate-600">Basic AI</span>
-                    </div>
-                    <p class="text-slate-500 mb-5 text-sm">초기 진입 개인 사용자 및 테스트 용도</p>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
-                        <div class="feature-item"><i class="fas fa-check check-icon"></i> <strong>댓글 + 모니터링 월 1,000건</strong></div>
-                        <div class="feature-item text-red-600"><i class="fas fa-exclamation-circle check-icon"></i> <strong>배너 광고 필수 (수익쉐어 X)</strong></div>
-                        <div class="feature-item text-red-600"><i class="fas fa-ad check-icon"></i> 밈/데이터 제휴 광고 노출</div>
-                        <div class="feature-item text-slate-400"><i class="fas fa-times cross-icon"></i> 모니터링 키워드 미제공</div>
-                    </div>
+    <main>
+        <header>
+            <div style="font-weight: 600;">[경희대학교] 실시간 여론 리포트</div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="font-size: 13px;"><span class="status-dot" style="background:#67D6AE;"></span>AI 엔진 가동 중</span>
+                <span style="font-weight: 600; font-size: 14px;">김범진 매니저</span>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="stats-grid">
+                <div class="card">
+                    <div class="card-title">오늘의 수집 데이터</div>
+                    <div class="card-value">1,284 건</div>
+                    <div style="font-size: 12px; color: var(--success); margin-top: 4px;">▲ 12.5% vs 어제</div>
                 </div>
-                <div class="md:w-1/3 bg-slate-50 p-8 flex flex-col justify-center items-center border-l border-slate-100">
-                    <span class="text-4xl font-extrabold text-slate-900">₩0</span>
-                    <a href="#" class="mt-4 w-full block bg-white border border-slate-300 rounded-lg py-3 text-sm font-bold text-slate-700 text-center hover:bg-slate-100 transition">
-                        무료로 시작하기
-                    </a>
+                <div class="card">
+                    <div class="card-title">🔴 위기 감지 (상)</div>
+                    <div class="card-value" style="color: var(--danger);">3 건</div>
+                    <div style="font-size: 12px; color: #858596; margin-top: 4px;">즉각 대응 필요</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">AI 분석 정확도</div>
+                    <div class="card-value">98.2 %</div>
+                    <div style="font-size: 12px; color: #858596; margin-top: 4px;">Gemini 2.0 Flash</div>
+                </div>
+                <div class="card" style="background: var(--livere-primary); color: white;">
+                    <div class="card-title" style="color: white; opacity: 0.8;">평판 위험 지수</div>
+                    <div class="card-value" style="color: white;">주의 (42/100)</div>
+                    <div style="font-size: 12px; margin-top: 4px;">안정권 진입 중</div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10 text-center">
-        <div class="relative flex justify-center items-center">
-            <div class="h-px bg-slate-300 w-full absolute"></div>
-            <span class="relative px-6 bg-slate-50 text-lg font-bold text-slate-800 z-10">Premium AI Plans</span>
-        </div>
-    </div>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-start">
-            
-            <div class="bg-white rounded-2xl shadow-xl p-8 highlight-card flex flex-col h-full relative">
-                <div class="absolute top-0 right-0 -mt-3 mr-4"><span class="badge">INFLUENCER PICK</span></div>
-                <h3 class="text-xl font-bold text-red-600">Creator</h3>
-                <div class="mt-4 flex items-baseline text-slate-900">
-                    <span class="text-4xl font-extrabold tracking-tight">₩10만</span>
-                    <span class="ml-1 text-base text-slate-500">/월</span>
-                </div>
-                <p class="mt-2 text-sm text-slate-500 h-10">개인 인플루언서 및<br>콘텐츠 크리에이터</p>
-                
-                <div class="feature-list border-t border-slate-100 pt-6 flex-1">
-                    <ul class="space-y-3">
-                        <li class="feature-item"><i class="fas fa-check check-icon"></i> <strong>합산 50,000건</strong> (댓글+모니터링)</li>
-                        <li class="feature-item"><i class="fas fa-check check-icon"></i> <strong>개인 SNS 프로필 연동</strong><br><span class="text-xs text-slate-400 pl-6 block">(FB, Insta, Youtube 댓글 수집)</span></li>
-                        <li class="feature-item"><i class="fas fa-check check-icon"></i> <strong>광고 수익 쉐어 가능</strong></li>
-                        <li class="feature-item"><i class="fas fa-check check-icon"></i> 배너/네이티브 광고 선택 가능</li>
-                    </ul>
-                </div>
-                <a href="#" class="mt-8 block w-full bg-red-600 border border-transparent rounded-lg py-3 text-sm font-bold text-white text-center hover:bg-red-700 shadow-lg transition">
-                    크리에이터 구독
-                </a>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-sm p-8 border border-slate-200 flex flex-col h-full hover:shadow-md transition">
-                <h3 class="text-xl font-bold text-slate-900">Community</h3>
-                <div class="mt-4 flex items-baseline text-slate-900">
-                    <span class="text-4xl font-extrabold tracking-tight">₩50만</span>
-                    <span class="ml-1 text-base text-slate-500">/월</span>
-                </div>
-                <p class="mt-2 text-sm text-slate-500 h-10">중소형 커뮤니티 및<br>버티컬 플랫폼</p>
-                
-                <div class="feature-list border-t border-slate-100 pt-6 flex-1">
-                    <ul class="space-y-3">
-                        <li class="feature-item"><i class="fas fa-check check-icon"></i> <strong>합산 300,000건</strong> (댓글+모니터링)</li>
-                        <li class="feature-item"><i class="fas fa-search check-icon text-blue-600"></i> <strong>키워드 검색 1건 추가</strong><br><span class="text-xs text-slate-400 pl-6 block">(해시태그 모니터링)</span></li>
-                        <li class="feature-item"><i class="fas fa-plug check-icon text-blue-600"></i> <strong>API 사용 권한 제공</strong><br><span class="text-xs text-slate-400 pl-6 block">(Vault, Counter, Rank, Attract)</span></li>
-                        <li class="feature-item"><i class="fas fa-check check-icon"></i> 크리에이터 기능 전체 포함</li>
-                    </ul>
-                </div>
-                <a href="#" class="mt-8 block w-full bg-slate-50 border border-slate-200 rounded-lg py-3 text-sm font-bold text-slate-700 text-center hover:bg-slate-100 transition">
-                    커뮤니티 선택
-                </a>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-sm p-8 border border-slate-200 flex flex-col h-full hover:shadow-md transition">
-                <h3 class="text-xl font-bold text-slate-900">Media</h3>
-                <div class="mt-4 flex items-baseline text-slate-900">
-                    <span class="text-4xl font-extrabold tracking-tight">₩200만</span>
-                    <span class="ml-1 text-base text-slate-500">/월</span>
-                </div>
-                <p class="mt-2 text-sm text-slate-500 h-10">언론사, 방송사 및<br>대형 서비스 (한겨레/SBS 등)</p>
-                
-                <div class="feature-list border-t border-slate-100 pt-6 flex-1">
-                    <ul class="space-y-3">
-                        <li class="feature-item"><i class="fas fa-check check-icon"></i> <strong>합산 1,500,000건</strong> (대용량)</li>
-                        <li class="feature-item"><i class="fas fa-search check-icon text-blue-600"></i> <strong>키워드 검색 3건 추가</strong></li>
-                        <li class="feature-item"><i class="fas fa-sync check-icon text-blue-600"></i> <strong>내/외부 댓글 통합 연동</strong><br><span class="text-xs text-slate-400 pl-6 block">(레퓨노트 / Repunote)</span></li>
-                        <li class="feature-item"><i class="fas fa-headset check-icon"></i> 전담 기술 지원 (Tech Support)</li>
-                    </ul>
-                </div>
-                <a href="#" class="mt-8 block w-full bg-slate-800 border border-transparent rounded-lg py-3 text-sm font-bold text-white text-center hover:bg-slate-900 transition">
-                    미디어 문의
-                </a>
-            </div>
-
-        </div>
-    </div>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200 relative">
-            
-            <div class="lg:flex lg:items-stretch">
-                <div class="p-8 lg:p-12 lg:w-3/4">
-                    <div class="flex items-center mb-4">
-                        <h3 class="text-2xl font-bold text-slate-900 mr-4">Enterprise</h3>
-                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-600 text-white uppercase tracking-wide">Custom AI Solution</span>
-                    </div>
-                    <p class="text-slate-600 text-base leading-relaxed mb-8">
-                        대규모 트래픽 처리와 고도화된 AI 추론이 필요하신가요?<br>
-                        <strong>경희대, 배민</strong> 등 주요 파트너사가 선택한 맞춤형 컨설팅을 제공합니다.
-                    </p>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8 text-slate-600 text-sm">
-                        <div class="flex items-center"><i class="fas fa-robot text-red-600 mr-3 w-5"></i> AI 컨설팅 및 신규 모델 추론 지원</div>
-                        <div class="flex items-center"><i class="fas fa-balance-scale text-red-600 mr-3 w-5"></i> 데이터 법률 컨설팅 지원</div>
-                        <div class="flex items-center"><i class="fas fa-handshake text-red-600 mr-3 w-5"></i> 전략적 제휴 및 파트너십</div>
-                        <div class="flex items-center"><i class="fas fa-server text-red-600 mr-3 w-5"></i> 대규모 트래픽 인프라 구축</div>
-                    </div>
-                </div>
-                
-                <div class="bg-slate-50 p-8 lg:p-12 lg:w-1/4 flex flex-col justify-center items-center border-t lg:border-t-0 lg:border-l border-slate-100">
-                    <span class="text-slate-900 text-lg font-bold mb-1">별도 협의</span>
-                    <p class="text-slate-500 text-xs mb-6">Partner with Livere.AI</p>
-                    <a href="#" class="w-full inline-flex items-center justify-center px-6 py-4 border border-transparent text-base font-bold rounded-lg text-white bg-red-600 hover:bg-red-700 transition shadow-lg hover:shadow-red-500/30">
-                        컨설팅 문의하기
-                    </a>
-                </div>
+            <div class="table-card">
+                <div style="padding: 20px; font-weight: 700; border-bottom: 1px solid #e6e8eb;">최신 수집 현황</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>채널</th>
+                            <th>발행일시</th>
+                            <th>콘텐츠 제목</th>
+                            <th>AI 위기등급</th>
+                            <th>액션</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>[에타-게시판]</td>
+                            <td>14:20:54</td>
+                            <td>총장님 대담회 관련 공지 떴네요...</td>
+                            <td><span class="risk-badge bg-success">🟢 안전(하)</span></td>
+                            <td><button class="btn-action">상세보기</button></td>
+                        </tr>
+                        <tr>
+                            <td>[에타-검색]</td>
+                            <td>13:55:12</td>
+                            <td>법인 이사회 결과 유출된 거 아는 사람?</td>
+                            <td><span class="risk-badge bg-danger">🔴 위험(상)</span></td>
+                            <td><button class="btn-action">법률자문요청</button></td>
+                        </tr>
+                        <tr>
+                            <td>[네이버뉴스]</td>
+                            <td>13:40:00</td>
+                            <td>경희대, 2026 세계 대학 평가 순위 발표...</td>
+                            <td><span class="risk-badge bg-success">🟢 안전(하)</span></td>
+                            <td><button class="btn-action">상세보기</button></td>
+                        </tr>
+                        <tr>
+                            <td>[네이버카페]</td>
+                            <td>12:15:33</td>
+                            <td>경희대 정문 근처 소음 문제 심각하네요</td>
+                            <td><span class="risk-badge bg-warning">🟡 주의(중)</span></td>
+                            <td><button class="btn-action">모니터링</button></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
+    </main>
 
 </body>
 </html>
