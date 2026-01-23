@@ -11,67 +11,77 @@
             --livere-dark: #232526;
             --livere-bg: #F4F5F8;
             --livere-border: #E6E8EB;
+            --text-main: #393B3C;
+            --text-sub: #858596;
             --danger: #D32F2F;
             --warning: #ED6C02;
             --success: #2E7D32;
-            --text-secondary: #858596;
         }
 
-        body { font-family: 'Pretendard', sans-serif; margin: 0; background-color: var(--livere-bg); display: flex; height: 100vh; overflow: hidden; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Pretendard', sans-serif; margin: 0; background: var(--livere-bg); display: flex; height: 100vh; overflow: hidden; }
 
-        /* Sidebar */
-        aside { width: 260px; background-color: var(--livere-dark); color: white; display: flex; flex-direction: column; }
+        /* Sidebar - LiveRe Dark Theme */
+        aside { width: 260px; background: var(--livere-dark); color: #cfd2d4; display: flex; flex-direction: column; flex-shrink: 0; }
         .logo-area { padding: 30px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .logo-text { color: var(--livere-red); font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
         .brand-sub { display: block; font-size: 11px; color: #a7a8a8; margin-top: 4px; font-weight: 400; }
         
-        nav { flex: 1; padding: 20px 0; }
+        nav { flex: 1; padding: 20px 0; overflow-y: auto; }
+        .menu-label { padding: 10px 24px; font-size: 11px; color: #666; font-weight: 700; text-transform: uppercase; }
         nav ul { list-style: none; padding: 0; margin: 0; }
-        nav li { padding: 16px 24px; cursor: pointer; font-size: 14px; color: #cfd2d4; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
-        nav li:hover { color: white; background: rgba(229, 73, 110, 0.05); }
+        nav li { padding: 14px 24px; cursor: pointer; font-size: 13.5px; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        nav li:hover { color: white; background: rgba(229, 73, 110, 0.1); }
         nav li.active { color: white; background: var(--livere-red); font-weight: 600; box-shadow: 0 4px 12px rgba(229, 73, 110, 0.3); }
 
-        /* Main */
-        main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        header { background: white; padding: 0 32px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--livere-border); }
+        /* Main Content */
+        main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        header { background: white; height: 64px; display: flex; align-items: center; padding: 0 32px; border-bottom: 1px solid var(--livere-border); justify-content: space-between; flex-shrink: 0; }
         .page-title { font-weight: 700; font-size: 16px; color: var(--livere-dark); }
         
-        .content-area { padding: 32px; display: none; }
+        .content-area { padding: 32px; display: none; height: 100%; overflow-y: auto; }
         .content-area.active { display: block; }
 
-        /* Cards & UI */
+        /* Cards & Components */
         .card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 24px; border: 1px solid var(--livere-border); }
         .section-header { font-weight: 700; font-size: 15px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; color: var(--livere-dark); }
-        
+
+        /* Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px; }
         .stat-card { background: white; padding: 20px; border-radius: 12px; border-bottom: 4px solid var(--livere-border); }
         .stat-card.alert { border-bottom-color: var(--livere-red); }
-        .stat-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
+        .stat-label { font-size: 12px; color: var(--text-sub); margin-bottom: 8px; }
         .stat-value { font-size: 24px; font-weight: 800; color: var(--livere-dark); }
 
-        /* Tables */
+        /* Table UI with AI columns */
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 12px 16px; font-size: 13px; color: var(--text-secondary); background: #fafbfc; border-bottom: 1px solid var(--livere-border); }
-        td { padding: 16px; border-bottom: 1px solid #f4f5f8; font-size: 14px; color: #393b3c; }
+        th { text-align: left; padding: 12px 16px; font-size: 12px; color: var(--text-sub); background: #FAFBFB; border-bottom: 1px solid var(--livere-border); }
+        td { padding: 14px 16px; border-bottom: 1px solid #f4f5f8; font-size: 13px; color: var(--text-main); }
         
-        .badge { padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+        /* AI Status Badges */
+        .badge { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
         .badge-red { background: #FFE5E9; color: var(--livere-red); }
+        .badge-orange { background: #FFF4E5; color: #B76E00; }
         .badge-gray { background: #F1F1F1; color: #666; }
+        
+        .severity-val { font-weight: 700; color: var(--livere-red); }
+        .clue-tag { background: rgba(229, 73, 110, 0.1); color: var(--livere-red); padding: 2px 4px; border-radius: 2px; font-weight: 600; }
 
-        .channel-tag { font-size: 11px; padding: 2px 6px; border-radius: 3px; background: #EEE; color: #555; font-weight: 600; margin-right: 5px; }
+        /* Media Grid */
+        .social-divider { margin: 40px 0 30px; border: none; border-top: 2px dashed #cfd2d4; position: relative; }
+        .social-divider::after { content: "SOCIAL DATA (IMAGE/VIDEO)"; position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: var(--livere-bg); padding: 0 15px; font-size: 11px; color: var(--text-sub); font-weight: 800; }
         
-        /* Buttons */
-        .btn-red { padding: 8px 16px; background: var(--livere-red); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
-        .btn-red:hover { opacity: 0.9; }
-        .btn-outline { padding: 8px 16px; border: 1px solid var(--livere-border); background: white; color: var(--text-secondary); border-radius: 6px; cursor: pointer; font-size: 13px; }
-        
-        /* Switch */
-        .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 22px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--livere-red); }
-        input:checked + .slider:before { transform: translateX(18px); }
+        .social-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .media-card { background: white; border-radius: 10px; border: 1px solid var(--livere-border); overflow: hidden; }
+        .thumb-area { position: relative; height: 140px; background: #000; overflow: hidden; }
+        .thumb-area img { width: 100%; height: 100%; object-fit: cover; }
+        .play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 36px; height: 36px; background: var(--livere-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
+        .media-info { padding: 12px; }
+        .media-title { font-size: 12px; font-weight: 700; line-height: 1.4; height: 34px; overflow: hidden; margin-bottom: 8px; }
+
+        /* Button UI */
+        .btn-red { background: var(--livere-red); color: white; border: none; padding: 8px 16px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px; }
+        .btn-outline { border: 1px solid var(--livere-border); background: white; color: var(--text-sub); padding: 7px 15px; border-radius: 4px; cursor: pointer; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -79,15 +89,19 @@
     <aside>
         <div class="logo-area">
             <span class="logo-text">LiveRe Monitor AI</span>
-            <span class="brand-sub">네모전자 '프로덕트' 평판 분석</span>
+            <span class="brand-sub">네모전자 '프로덕트' 리스크 관리</span>
         </div>
         <nav>
+            <div class="menu-label">Insight</div>
             <ul>
-                <li onclick="showTab('tab-dashboard')" class="active" id="btn-dashboard">📊 분석 대시보드</li>
+                <li onclick="showTab('tab-dashboard')" class="active" id="btn-dashboard">🏠 종합 대시보드</li>
                 <li onclick="showTab('tab-raw')" id="btn-raw">📑 수집 Raw 데이터</li>
                 <li onclick="showTab('tab-crisis')" id="btn-crisis">🚨 위기 감지 내역</li>
-                <li onclick="showTab('tab-alarm')" id="btn-alarm">🔔 실시간 알람</li>
-                <li onclick="showTab('tab-monthly')" id="btn-monthly">🗓️ 월간 평판 리포트</li>
+            </ul>
+            <div class="menu-label">Setting</div>
+            <ul>
+                <li onclick="showTab('tab-alarm')" id="btn-alarm">🔔 실시간 알람 설정</li>
+                <li onclick="showTab('tab-monthly')" id="btn-monthly">🗓️ 월간 리포트</li>
             </ul>
         </nav>
     </aside>
@@ -96,52 +110,61 @@
         <header>
             <div class="page-title" id="current-title">종합 분석 대시보드</div>
             <div style="display:flex; align-items:center; gap:20px;">
-                <div style="font-size: 13px; color: var(--text-secondary);">
-                    <span style="display:inline-block; width:8px; height:8px; background:#67D6AE; border-radius:50%; margin-right:5px; box-shadow:0 0 8px #67D6AE"></span>
-                    AI Engine Active
-                </div>
-                <button class="btn-red" style="height:36px; padding: 0 15px;">리포트 생성</button>
+                <span style="font-size: 12px; color: #67D6AE;">● AI Engine Running</span>
+                <button class="btn-outline">데이터 새로고침</button>
             </div>
         </header>
 
         <div id="tab-dashboard" class="content-area active">
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">실시간 수집 건수 (24h)</div>
-                    <div class="stat-value">2,842 건</div>
-                </div>
                 <div class="stat-card alert">
-                    <div class="stat-label">🚨 미확인 위기 (상)</div>
-                    <div class="stat-value" style="color:var(--livere-red)">4 건</div>
+                    <div class="stat-label">🚨 신규 위기 (상)</div>
+                    <div class="stat-value" style="color:var(--livere-red)">3 건</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">라라랜드 브랜드 긍정도</div>
-                    <div class="stat-value" style="color:var(--success)">72.4%</div>
+                    <div class="stat-label">오늘의 수집량</div>
+                    <div class="stat-value">1,284 건</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">경쟁사 대비 언급량</div>
-                    <div class="stat-value">128% ▲</div>
+                    <div class="stat-label">AI 확신도 평균</div>
+                    <div class="stat-value">94.2%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">브랜드 긍정도</div>
+                    <div class="stat-value" style="color:var(--success)">68%</div>
                 </div>
             </div>
-            
+
             <div class="card">
-                <div class="section-header">실시간 위기 감지 피드</div>
+                <div class="section-header">최신 AI 분석 피드 (전 채널)</div>
                 <table>
                     <thead>
-                        <tr><th>구분</th><th>채널</th><th>발행시간</th><th>제목/내용 요약</th><th>AI 등급</th></tr>
+                        <tr>
+                            <th width="120">판단(Tag)</th>
+                            <th width="100">조치(Action)</th>
+                            <th width="80">심각도</th>
+                            <th>제목/내용 요약</th>
+                            <th width="100">확신도</th>
+                        </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>언론</td><td>조국일보</td><td>15:40</td><td>네모전자 홍길동 대표, 비자금 의혹 검찰 소환 통보...</td>
-                            <td><span class="badge badge-red">🔴 위험(상)</span></td>
+                            <td>스팸</td><td><span class="badge badge-orange">검토</span></td>
+                            <td><span class="severity-val">3/5</span></td>
+                            <td>블로그 내 '프로덕트' 홍보 빙자 카지노 링크 삽입...</td>
+                            <td>88%</td>
                         </tr>
                         <tr>
-                            <td>소셜</td><td>인스타그램</td><td>14:22</td><td>"라라랜드 프로덕트 쓰느니 옆집 세모전자꺼 씀 (분노)"</td>
-                            <td><span class="badge badge-red">🔴 위험(상)</span></td>
+                            <td>혐오</td><td><span class="badge badge-gray">숨김</span></td>
+                            <td><span class="severity-val">4/5</span></td>
+                            <td>에이비인사이드 내 네모전자 임직원 비하 발언</td>
+                            <td>97%</td>
                         </tr>
                         <tr>
-                            <td>소셜</td><td>유튜브</td><td>13:10</td><td>[조롱] 네모전자 신제품 수준 실화냐? (희화화 영상)</td>
-                            <td><span class="badge badge-red">🔴 위험(상)</span></td>
+                            <td>욕설</td><td><span class="badge badge-red">삭제</span></td>
+                            <td><span class="severity-val">5/5</span></td>
+                            <td>유튜브 댓글 내 총수 홍길동 대상 패륜적 욕설</td>
+                            <td>99%</td>
                         </tr>
                     </tbody>
                 </table>
@@ -150,89 +173,81 @@
 
         <div id="tab-raw" class="content-area">
             <div class="card">
-                <div class="section-header">채널별 수집 현황 <button class="btn-outline">필터링 적용</button></div>
+                <div class="section-header">텍스트 데이터 (포털 / 언론 / 커뮤니티)</div>
                 <table>
                     <thead>
-                        <tr><th>대분류</th><th>세부 채널</th><th>발행일시</th><th>수집 본문 요약</th></tr>
+                        <tr><th>대분류</th><th>매체사/사이트</th><th>발행일시</th><th>내용 요약</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td><span class="channel-tag">포털</span></td><td>네이버뉴스</td><td>17:05</td><td>네모전자, 라라랜드 브랜드 캠페인 '꿈의 혁신' 런칭...</td></tr>
-                        <tr><td><span class="channel-tag">포털</span></td><td>네이버카페</td><td>16:50</td><td>라라랜드 프로덕트 실구매 후기 공유합니다 (사용 편의성 중심)</td></tr>
-                        <tr><td><span class="channel-tag">언론</span></td><td>ABC News</td><td>16:10</td><td>Nemo Electronics unveils new tech at Global Expo...</td></tr>
-                        <tr><td><span class="channel-tag">커뮤니티</span></td><td>에이비인사이드</td><td>15:55</td><td>프로덕트 이거 업데이트 이후에 자꾸 렉 걸리는데 정상임?</td></tr>
-                        <tr><td><span class="channel-tag">커뮤니티</span></td><td>바스켓볼코리아</td><td>15:30</td><td>스포츠 현장에서 본 라라랜드 프로덕트의 내구성 테스트</td></tr>
-                        <tr><td><span class="channel-tag">커뮤니티</span></td><td>너무위키</td><td>14:20</td><td>[수정됨] 네모전자 홍길동 대표 인물 정보 항목 논란 서술 추가</td></tr>
-                        <tr><td><span class="channel-tag">소셜</span></td><td>유튜브</td><td>13:45</td><td>[리뷰] 라라랜드 프로덕트 100일간 사용해본 솔직한 심정</td></tr>
-                        <tr><td><span class="channel-tag">소셜</span></td><td>인스타그램</td><td>12:30</td><td>#라라랜드 #프로덕트 와 함께하는 감성 캠핑 라이프 (협찬)</td></tr>
+                        <tr><td><b>포털</b></td><td>네이버뉴스</td><td>14:05</td><td>네모전자, 라라랜드 브랜드 캠페인 '꿈의 혁신' 런칭...</td></tr>
+                        <tr><td><b>포털</b></td><td>네이버카페</td><td>13:50</td><td>라라랜드 프로덕트 실구매 후기 공유 (성능 위주)</td></tr>
+                        <tr><td><b>언론</b></td><td>ABC News</td><td>12:10</td><td>Nemo Electronics Global Market Share Up...</td></tr>
+                        <tr><td><b>언론</b></td><td>조국일보</td><td>11:40</td><td>[단독] 네모전자 홍길동 대표, 비자금 의혹 보도</td></tr>
+                        <tr><td><b>언론</b></td><td>블룸버그</td><td>10:20</td><td>Bloomberg Tech: Analysis on Product Series</td></tr>
+                        <tr><td><b>커뮤니티</b></td><td>에이비인사이드</td><td>09:55</td><td>프로덕트 이거 업데이트 이후 성능 저하 심한듯?</td></tr>
+                        <tr><td><b>커뮤니티</b></td><td>바스켓볼코리아</td><td>09:30</td><td>농구 동호회에서 본 라라랜드 프로덕트 실사 후기</td></tr>
+                        <tr><td><b>커뮤니티</b></td><td>너무위키</td><td>08:20</td><td>[수정됨] 홍길동(기업인) 논란 및 비판 항목 추가</td></tr>
                     </tbody>
                 </table>
+            </div>
+
+            <hr class="social-divider">
+
+            <div class="social-grid">
+                <div class="media-card">
+                    <div class="thumb-area">
+                        <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=400&q=80">
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="media-info">
+                        <div class="media-title">[조롱] 네모전자 프로덕트 멸망? (희화화 밈 확산)</div>
+                        <div style="font-size:11px; color:var(--text-sub);">🎥 유튜브 | 15:40</div>
+                    </div>
+                </div>
+                <div class="media-card">
+                    <div class="thumb-area">
+                        <img src="https://images.unsplash.com/photo-1611224885990-ab7363d1f2a9?auto=format&fit=crop&w=400&q=80">
+                        <div style="position:absolute; top:10px; right:10px; color:white; filter:drop-shadow(0 0 2px #000)">🖼️</div>
+                    </div>
+                    <div class="media-info">
+                        <div class="media-title">"라라랜드 디자인 진짜 실화인가요? (비방성)"</div>
+                        <div style="font-size:11px; color:var(--text-sub);">📸 인스타그램 | 14:22</div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div id="tab-crisis" class="content-area">
-            <div class="card" style="border-left: 5px solid var(--livere-red);">
-                <div class="section-header" style="color:var(--livere-red);">🚨 주요 평판 리스크 리포트</div>
+            <div class="card" style="border-left: 6px solid var(--livere-red);">
+                <div class="section-header" style="color:var(--livere-red);">🚨 주요 위기 분석 리포트</div>
                 
                 <div style="padding: 20px; background: #FFF5F7; border-radius: 8px; margin-bottom: 20px;">
-                    <div style="font-weight: 700; color: var(--livere-dark);">[기업 총수] 홍길동 대표 소환 예정 보도 확산</div>
-                    <div style="font-size: 13px; margin: 10px 0; color:#555; line-height: 1.6;">
-                        조국일보 및 블룸버그 발 기사로 홍길동 대표의 경영권 승계 관련 비자금 의혹 보도됨. 
-                        주요 커뮤니티(에이비인사이드 등)로 기사 링크 공유되며 여론 급속도로 악화 중.
-                    </div>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn-red">로백스 법률 검토 의뢰</button>
-                        <button class="btn-outline">대응 보도자료 초안 생성</button>
-                    </div>
+                    <div style="font-weight: 800; color: #222; font-size: 15px;">[총수 리스크] 홍길동 대표 비자금 의혹 보도 및 위키 수정</div>
+                    <p style="font-size: 13px; line-height: 1.6; color: #555; margin: 10px 0;">
+                        <b>감지 Clue:</b> <span class="clue-tag">조국일보</span>, <span class="clue-tag">검찰 소환</span>, <span class="clue-tag">비자금 의혹</span><br>
+                        주요 언론사발 부정 뉴스가 너무위키 등 지식 커뮤니티로 확산 중. 브랜드 '라라랜드'의 도덕성 이미지에 직접적 타격 예상.
+                    </p>
+                    <button class="btn-red">로백스 법률 검토 의뢰</button>
+                    <button class="btn-outline">대응 보도자료 초안</button>
                 </div>
 
                 <div style="padding: 20px; background: #FFF9F0; border-radius: 8px; margin-bottom: 20px;">
-                    <div style="font-weight: 700; color: var(--livere-dark);">[경쟁사 역바이럴 의혹] 인스타그램 내 비방 댓글 다수 발견</div>
-                    <div style="font-size: 13px; margin: 10px 0; color:#555; line-height: 1.6;">
-                        공식 인스타그램 계정 및 인플루언서 피드 내 "차라리 세모전자 제품이 백배 낫다"는 유사 패턴의 비방 댓글 20여건 실시간 포착. 
-                        동일 IP 대역 및 계정 성격 분석 시 역바이럴 가능성 85%.
-                    </div>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn-outline">댓글 증거 채증 (PDF)</button>
-                        <button class="btn-outline">계정 차단 요청</button>
-                    </div>
+                    <div style="font-weight: 800; color: #222; font-size: 15px;">[경쟁사 리스크] 인스타그램 내 조직적 비방 댓글 포착</div>
+                    <p style="font-size: 13px; line-height: 1.6; color: #555; margin: 10px 0;">
+                        <b>감지 Clue:</b> <span class="clue-tag">세모전자</span>, <span class="clue-tag">쓰레기 제품</span>, <span class="clue-tag">불매</span><br>
+                        공식 인스타그램 포스트 하단에 경쟁사 우위를 주장하는 매크로성 비방 댓글 45건 발견. 역바이럴 가능성 '매우 높음(92%)'.
+                    </p>
+                    <button class="btn-outline">댓글 증거 채증 (PDF)</button>
+                    <button class="btn-outline">계정 일괄 신고</button>
                 </div>
 
                 <div style="padding: 20px; background: #F1F1F1; border-radius: 8px;">
-                    <div style="font-weight: 700; color: var(--livere-dark);">[희화화 컨텐츠] 유튜브 '네모전자 홍길동 밈' 확산</div>
-                    <div style="font-size: 13px; margin: 10px 0; color:#555; line-height: 1.6;">
-                        유튜브 크리에이터 'OOO'의 영상 중 홍길동 대표의 발언을 희화화하여 조롱하는 숏츠 컨텐츠 조회수 50만회 돌파. 
-                        브랜드 정체성(라라랜드) 훼손 및 기업 이미지 실추 우려.
-                    </div>
-                    <button class="btn-outline">저작권/명예훼손 침해 신고</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-alarm" class="content-area">
-            <div class="card">
-                <div class="section-header">알림 수신 설정</div>
-                <div style="display: flex; flex-direction: column; gap: 24px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-weight: 600;">🔴 위기(상) 등급 발생 시 즉시 푸시</div>
-                            <div style="font-size: 12px; color:var(--text-secondary)">AI 판단 결과가 상급 위기일 경우 모든 채널 알림 발송</div>
-                        </div>
-                        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-weight: 600;">슬랙(Slack) 연동</div>
-                            <div style="font-size: 12px; color:var(--text-secondary)">#네모전자-위기대응-TF 채널 연동 중</div>
-                        </div>
-                        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-weight: 600;">유튜브 컨텐츠 희화화 필터링 알림</div>
-                            <div style="font-size: 12px; color:var(--text-secondary)">유튜버의 조롱성 컨텐츠 감지 시 즉시 알림</div>
-                        </div>
-                        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-                    </div>
+                    <div style="font-weight: 800; color: #222; font-size: 15px;">[이미지 리스크] 유튜브 희화화 컨텐츠 및 밈(Meme) 생성</div>
+                    <p style="font-size: 13px; line-height: 1.6; color: #555; margin: 10px 0;">
+                        <b>감지 Clue:</b> <span class="clue-tag">홍길동 밈</span>, <span class="clue-tag">프로덕트 멸망</span><br>
+                        유튜브 크리에이터 채널에서 제품의 단점을 극대화하여 조롱하는 컨텐츠가 인기 급상승 중. 댓글 내 희화화 밈 확산으로 인한 브랜드 권위 실추.
+                    </p>
+                    <button class="btn-outline">게시중단 요청 (저작권)</button>
                 </div>
             </div>
         </div>
@@ -250,11 +265,9 @@
             const titles = {
                 'tab-dashboard': '종합 분석 대시보드',
                 'tab-raw': '수집 데이터 통합 관리 (Raw)',
-                'tab-crisis': '브랜드 위기 및 법률 대응 내역',
-                'tab-alarm': '실시간 통합 알람 설정',
-                'tab-monthly': '월간 평판 분석 보고서'
+                'tab-crisis': '브랜드 위기 및 법률 대응 내역'
             };
-            document.getElementById('current-title').innerText = titles[tabId];
+            document.getElementById('current-title').innerText = titles[tabId] || '관리 시스템';
         }
     </script>
 </body>
