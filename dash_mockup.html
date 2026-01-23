@@ -21,7 +21,7 @@
         * { box-sizing: border-box; }
         body { font-family: 'Pretendard', sans-serif; margin: 0; background: var(--livere-bg); display: flex; height: 100vh; overflow: hidden; }
 
-        /* Sidebar - LiveRe Dark Theme */
+        /* Sidebar */
         aside { width: 260px; background: var(--livere-dark); color: #cfd2d4; display: flex; flex-direction: column; flex-shrink: 0; }
         .logo-area { padding: 30px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .logo-text { color: var(--livere-red); font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
@@ -42,7 +42,7 @@
         .content-area { padding: 32px; display: none; height: 100%; overflow-y: auto; }
         .content-area.active { display: block; }
 
-        /* Cards & Components */
+        /* Cards & UI */
         .card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 24px; border: 1px solid var(--livere-border); }
         .section-header { font-weight: 700; font-size: 15px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; color: var(--livere-dark); }
 
@@ -53,35 +53,39 @@
         .stat-label { font-size: 12px; color: var(--text-sub); margin-bottom: 8px; }
         .stat-value { font-size: 24px; font-weight: 800; color: var(--livere-dark); }
 
-        /* Table UI with AI columns */
+        /* Tables */
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; padding: 12px 16px; font-size: 12px; color: var(--text-sub); background: #FAFBFB; border-bottom: 1px solid var(--livere-border); }
         td { padding: 14px 16px; border-bottom: 1px solid #f4f5f8; font-size: 13px; color: var(--text-main); }
         
-        /* AI Status Badges */
+        /* AI Badges */
         .badge { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
         .badge-red { background: #FFE5E9; color: var(--livere-red); }
         .badge-orange { background: #FFF4E5; color: #B76E00; }
         .badge-gray { background: #F1F1F1; color: #666; }
-        
-        .severity-val { font-weight: 700; color: var(--livere-red); }
         .clue-tag { background: rgba(229, 73, 110, 0.1); color: var(--livere-red); padding: 2px 4px; border-radius: 2px; font-weight: 600; }
 
         /* Media Grid */
         .social-divider { margin: 40px 0 30px; border: none; border-top: 2px dashed #cfd2d4; position: relative; }
-        .social-divider::after { content: "SOCIAL DATA (IMAGE/VIDEO)"; position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: var(--livere-bg); padding: 0 15px; font-size: 11px; color: var(--text-sub); font-weight: 800; }
-        
+        .social-divider::after { content: "SOCIAL DATA FEED (IMAGE/VIDEO)"; position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: var(--livere-bg); padding: 0 15px; font-size: 11px; color: var(--text-sub); font-weight: 800; }
         .social-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
         .media-card { background: white; border-radius: 10px; border: 1px solid var(--livere-border); overflow: hidden; }
-        .thumb-area { position: relative; height: 140px; background: #000; overflow: hidden; }
-        .thumb-area img { width: 100%; height: 100%; object-fit: cover; }
+        .thumb-area { position: relative; height: 140px; background: #000; }
+        .thumb-area img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
         .play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 36px; height: 36px; background: var(--livere-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
         .media-info { padding: 12px; }
         .media-title { font-size: 12px; font-weight: 700; line-height: 1.4; height: 34px; overflow: hidden; margin-bottom: 8px; }
 
-        /* Button UI */
-        .btn-red { background: var(--livere-red); color: white; border: none; padding: 8px 16px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px; }
-        .btn-outline { border: 1px solid var(--livere-border); background: white; color: var(--text-sub); padding: 7px 15px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        /* Form & Switches */
+        .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 22px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--livere-red); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .btn-red { background: var(--livere-red); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; }
+        .btn-outline { border: 1px solid var(--livere-border); background: white; color: var(--text-sub); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -101,7 +105,7 @@
             <div class="menu-label">Setting</div>
             <ul>
                 <li onclick="showTab('tab-alarm')" id="btn-alarm">🔔 실시간 알람 설정</li>
-                <li onclick="showTab('tab-monthly')" id="btn-monthly">🗓️ 월간 리포트</li>
+                <li onclick="showTab('tab-monthly')" id="btn-monthly">🗓️ 월간 평판 리포트</li>
             </ul>
         </nav>
     </aside>
@@ -110,8 +114,7 @@
         <header>
             <div class="page-title" id="current-title">종합 분석 대시보드</div>
             <div style="display:flex; align-items:center; gap:20px;">
-                <span style="font-size: 12px; color: #67D6AE;">● AI Engine Running</span>
-                <button class="btn-outline">데이터 새로고침</button>
+                <span style="font-size: 12px; color: #67D6AE;"><span style="display:inline-block; width:8px; height:8px; background:#67D6AE; border-radius:50%; margin-right:5px; box-shadow:0 0 8px #67D6AE"></span>AI Engine Active</span>
             </div>
         </header>
 
@@ -126,46 +129,25 @@
                     <div class="stat-value">1,284 건</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">AI 확신도 평균</div>
+                    <div class="stat-label">AI 분석 평균 확신도</div>
                     <div class="stat-value">94.2%</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">브랜드 긍정도</div>
-                    <div class="stat-value" style="color:var(--success)">68%</div>
+                    <div class="stat-value" style="color:var(--success)">68.5%</div>
                 </div>
             </div>
 
             <div class="card">
-                <div class="section-header">최신 AI 분석 피드 (전 채널)</div>
+                <div class="section-header">실시간 위기 감지 피드</div>
                 <table>
                     <thead>
-                        <tr>
-                            <th width="120">판단(Tag)</th>
-                            <th width="100">조치(Action)</th>
-                            <th width="80">심각도</th>
-                            <th>제목/내용 요약</th>
-                            <th width="100">확신도</th>
-                        </tr>
+                        <tr><th>판단(Tag)</th><th>조치(Action)</th><th>심각도</th><th>제목/내용 요약</th><th>확신도</th></tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>스팸</td><td><span class="badge badge-orange">검토</span></td>
-                            <td><span class="severity-val">3/5</span></td>
-                            <td>블로그 내 '프로덕트' 홍보 빙자 카지노 링크 삽입...</td>
-                            <td>88%</td>
-                        </tr>
-                        <tr>
-                            <td>혐오</td><td><span class="badge badge-gray">숨김</span></td>
-                            <td><span class="severity-val">4/5</span></td>
-                            <td>에이비인사이드 내 네모전자 임직원 비하 발언</td>
-                            <td>97%</td>
-                        </tr>
-                        <tr>
-                            <td>욕설</td><td><span class="badge badge-red">삭제</span></td>
-                            <td><span class="severity-val">5/5</span></td>
-                            <td>유튜브 댓글 내 총수 홍길동 대상 패륜적 욕설</td>
-                            <td>99%</td>
-                        </tr>
+                        <tr><td>욕설</td><td><span class="badge badge-red">삭제</span></td><td>5/5</td><td>홍길동 대표 대상 인신공격성 욕설</td><td>99%</td></tr>
+                        <tr><td>혐오</td><td><span class="badge badge-gray">숨김</span></td><td>4/5</td><td>'라라랜드' 생산 공장 지역 비하 발언</td><td>96%</td></tr>
+                        <tr><td>스팸</td><td><span class="badge badge-orange">검토</span></td><td>3/5</td><td>프로덕트 후기 가장 도박 사이트 링크</td><td>88%</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -173,20 +155,18 @@
 
         <div id="tab-raw" class="content-area">
             <div class="card">
-                <div class="section-header">텍스트 데이터 (포털 / 언론 / 커뮤니티)</div>
+                <div class="section-header">텍스트 기반 데이터 (포털/언론/커뮤니티)</div>
                 <table>
                     <thead>
-                        <tr><th>대분류</th><th>매체사/사이트</th><th>발행일시</th><th>내용 요약</th></tr>
+                        <tr><th>매체구분</th><th>세부 채널</th><th>발행일시</th><th>내용 요약</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td><b>포털</b></td><td>네이버뉴스</td><td>14:05</td><td>네모전자, 라라랜드 브랜드 캠페인 '꿈의 혁신' 런칭...</td></tr>
-                        <tr><td><b>포털</b></td><td>네이버카페</td><td>13:50</td><td>라라랜드 프로덕트 실구매 후기 공유 (성능 위주)</td></tr>
-                        <tr><td><b>언론</b></td><td>ABC News</td><td>12:10</td><td>Nemo Electronics Global Market Share Up...</td></tr>
-                        <tr><td><b>언론</b></td><td>조국일보</td><td>11:40</td><td>[단독] 네모전자 홍길동 대표, 비자금 의혹 보도</td></tr>
-                        <tr><td><b>언론</b></td><td>블룸버그</td><td>10:20</td><td>Bloomberg Tech: Analysis on Product Series</td></tr>
-                        <tr><td><b>커뮤니티</b></td><td>에이비인사이드</td><td>09:55</td><td>프로덕트 이거 업데이트 이후 성능 저하 심한듯?</td></tr>
-                        <tr><td><b>커뮤니티</b></td><td>바스켓볼코리아</td><td>09:30</td><td>농구 동호회에서 본 라라랜드 프로덕트 실사 후기</td></tr>
-                        <tr><td><b>커뮤니티</b></td><td>너무위키</td><td>08:20</td><td>[수정됨] 홍길동(기업인) 논란 및 비판 항목 추가</td></tr>
+                        <tr><td>포털</td><td>네이버뉴스</td><td>11:05</td><td>네모전자, '라라랜드' 혁신 기술 공개...</td></tr>
+                        <tr><td>포털</td><td>네이버카페</td><td>10:50</td><td>프로덕트 실사용 1개월차 솔직 장단점 후기</td></tr>
+                        <tr><td>언론</td><td>블룸버그</td><td>09:20</td><td>Global Tech Analysis: Nemo Electronics</td></tr>
+                        <tr><td>언론</td><td>조국일보</td><td>08:40</td><td>[단독] 홍길동 대표, 비자금 의혹 검찰 소환 예정</td></tr>
+                        <tr><td>커뮤니티</td><td>에이비인사이드</td><td>07:55</td><td>라라랜드 이거 펌웨어 업데이트 이후 렉 걸림</td></tr>
+                        <tr><td>커뮤니티</td><td>너무위키</td><td>06:20</td><td>[수정됨] 홍길동 대표 인물 논란 서술 추가</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -196,21 +176,21 @@
             <div class="social-grid">
                 <div class="media-card">
                     <div class="thumb-area">
-                        <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=400&q=80">
+                        <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=400&q=80">
                         <div class="play-btn">▶</div>
                     </div>
                     <div class="media-info">
-                        <div class="media-title">[조롱] 네모전자 프로덕트 멸망? (희화화 밈 확산)</div>
+                        <div class="media-title">네모전자 홍길동 대표의 화법 조롱 밈 숏츠</div>
                         <div style="font-size:11px; color:var(--text-sub);">🎥 유튜브 | 15:40</div>
                     </div>
                 </div>
                 <div class="media-card">
                     <div class="thumb-area">
-                        <img src="https://images.unsplash.com/photo-1611224885990-ab7363d1f2a9?auto=format&fit=crop&w=400&q=80">
-                        <div style="position:absolute; top:10px; right:10px; color:white; filter:drop-shadow(0 0 2px #000)">🖼️</div>
+                        <img src="https://images.unsplash.com/photo-1611224885990-ab7363d1f2a9?w=400&q=80">
+                        <div style="position:absolute; top:10px; right:10px; color:white;">🖼️</div>
                     </div>
                     <div class="media-info">
-                        <div class="media-title">"라라랜드 디자인 진짜 실화인가요? (비방성)"</div>
+                        <div class="media-title">"라라랜드 디자인 진짜인가요?" (비방성 게시글)</div>
                         <div style="font-size:11px; color:var(--text-sub);">📸 인스타그램 | 14:22</div>
                     </div>
                 </div>
@@ -219,38 +199,71 @@
 
         <div id="tab-crisis" class="content-area">
             <div class="card" style="border-left: 6px solid var(--livere-red);">
-                <div class="section-header" style="color:var(--livere-red);">🚨 주요 위기 분석 리포트</div>
-                
+                <div class="section-header" style="color:var(--livere-red);">🚨 평판 리스크 집중 관리 사안</div>
                 <div style="padding: 20px; background: #FFF5F7; border-radius: 8px; margin-bottom: 20px;">
-                    <div style="font-weight: 800; color: #222; font-size: 15px;">[총수 리스크] 홍길동 대표 비자금 의혹 보도 및 위키 수정</div>
-                    <p style="font-size: 13px; line-height: 1.6; color: #555; margin: 10px 0;">
-                        <b>감지 Clue:</b> <span class="clue-tag">조국일보</span>, <span class="clue-tag">검찰 소환</span>, <span class="clue-tag">비자금 의혹</span><br>
-                        주요 언론사발 부정 뉴스가 너무위키 등 지식 커뮤니티로 확산 중. 브랜드 '라라랜드'의 도덕성 이미지에 직접적 타격 예상.
-                    </p>
-                    <button class="btn-red">로백스 법률 검토 의뢰</button>
-                    <button class="btn-outline">대응 보도자료 초안</button>
+                    <div style="font-weight: 800; font-size: 15px;">[거버넌스] 홍길동 대표 검찰 소환 보도 확산</div>
+                    <p style="font-size: 13px; color: #555; margin: 10px 0;">조국일보 및 블룸버그 뉴스 링크가 너무위키 논란 항목에 박제됨. 대응 보도자료 배포 시급.</p>
+                    <button class="btn-red">로백스 법률 대응 요청</button>
                 </div>
-
-                <div style="padding: 20px; background: #FFF9F0; border-radius: 8px; margin-bottom: 20px;">
-                    <div style="font-weight: 800; color: #222; font-size: 15px;">[경쟁사 리스크] 인스타그램 내 조직적 비방 댓글 포착</div>
-                    <p style="font-size: 13px; line-height: 1.6; color: #555; margin: 10px 0;">
-                        <b>감지 Clue:</b> <span class="clue-tag">세모전자</span>, <span class="clue-tag">쓰레기 제품</span>, <span class="clue-tag">불매</span><br>
-                        공식 인스타그램 포스트 하단에 경쟁사 우위를 주장하는 매크로성 비방 댓글 45건 발견. 역바이럴 가능성 '매우 높음(92%)'.
-                    </p>
-                    <button class="btn-outline">댓글 증거 채증 (PDF)</button>
-                    <button class="btn-outline">계정 일괄 신고</button>
-                </div>
-
                 <div style="padding: 20px; background: #F1F1F1; border-radius: 8px;">
-                    <div style="font-weight: 800; color: #222; font-size: 15px;">[이미지 리스크] 유튜브 희화화 컨텐츠 및 밈(Meme) 생성</div>
-                    <p style="font-size: 13px; line-height: 1.6; color: #555; margin: 10px 0;">
-                        <b>감지 Clue:</b> <span class="clue-tag">홍길동 밈</span>, <span class="clue-tag">프로덕트 멸망</span><br>
-                        유튜브 크리에이터 채널에서 제품의 단점을 극대화하여 조롱하는 컨텐츠가 인기 급상승 중. 댓글 내 희화화 밈 확산으로 인한 브랜드 권위 실추.
-                    </p>
-                    <button class="btn-outline">게시중단 요청 (저작권)</button>
+                    <div style="font-weight: 800; font-size: 15px;">[이미지 리스크] 인스타그램 경쟁사 우위 유도 비방 댓글</div>
+                    <p style="font-size: 13px; color: #555; margin: 10px 0;">해시태그 #라라랜드 하단 세모전자 제품 비교 댓글 40여건 포착. 채증 완료.</p>
+                    <button class="btn-outline">채증 PDF 다운로드</button>
                 </div>
             </div>
         </div>
+
+        <div id="tab-alarm" class="content-area">
+            <div class="card">
+                <div class="section-header">Push Notification Settings</div>
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid #f4f5f8;">
+                        <div>
+                            <div style="font-weight: 600;">🔴 위험(상) 등급 즉시 알람</div>
+                            <div style="font-size: 12px; color:var(--text-sub)">심각도 4/5 이상인 데이터 감지 시 즉시 전송</div>
+                        </div>
+                        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid #f4f5f8;">
+                        <div>
+                            <div style="font-weight: 600;">슬랙(Slack) 연동 설정</div>
+                            <div style="font-size: 12px; color:var(--text-sub)">#네모전자-리스크-TF 채널 연동 중</div>
+                        </div>
+                        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid #f4f5f8;">
+                        <div>
+                            <div style="font-weight: 600;">텔레그램(Telegram) 연동 설정</div>
+                            <div style="font-size: 12px; color:var(--text-sub)">브랜드 비상대응팀 전용 봇 비활성화</div>
+                        </div>
+                        <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600;">유튜브 희화화 컨텐츠 필터링 알람</div>
+                            <div style="font-size: 12px; color:var(--text-sub)">조롱 밈(Meme) 영상 알고리즘 노출 시 알람</div>
+                        </div>
+                        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-monthly" class="content-area">
+            <div class="card">
+                <div class="section-header">2026년 1월 브랜드 평판 요약</div>
+                <div style="height: 150px; background: #fafbfc; border: 1px dashed #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 13px;">
+                    [여론 추이 그래프 및 감성 분석 차트 데이터 로딩 중...]
+                </div>
+                <div style="margin-top: 25px; line-height: 1.8; font-size: 14px;">
+                    <p>• 1월 총 브랜드 언급량은 전월 대비 <strong>12.4% 증가</strong>했습니다.</p>
+                    <p>• 긍정 여론 주요 키워드: <strong>성능, 꿈의 혁신, 가성비</strong></p>
+                    <p>• 부정 여론 주요 키워드: <strong>홍길동 대표, 비자금, 조롱 밈</strong></p>
+                </div>
+                <button class="btn-red" style="margin-top: 20px;">PDF 전체 리포트 다운로드</button>
+            </div>
+        </div>
+
     </main>
 
     <script>
@@ -265,9 +278,11 @@
             const titles = {
                 'tab-dashboard': '종합 분석 대시보드',
                 'tab-raw': '수집 데이터 통합 관리 (Raw)',
-                'tab-crisis': '브랜드 위기 및 법률 대응 내역'
+                'tab-crisis': '브랜드 위기 및 법률 대응 내역',
+                'tab-alarm': '실시간 통합 알람 설정',
+                'tab-monthly': '월간 평판 분석 보고서'
             };
-            document.getElementById('current-title').innerText = titles[tabId] || '관리 시스템';
+            document.getElementById('current-title').innerText = titles[tabId];
         }
     </script>
 </body>
