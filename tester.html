@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>티오더 VAST 동영상 검증 (1280x750)</title>
+  <style>
+    body { background: #222; color: white; font-family: sans-serif; text-align: center; }
+    
+    /* 티오더 화면 크기 시뮬레이션 */
+    #mainContainer {
+      position: relative;
+      width: 1280px; 
+      height: 750px; /* 티오더 광고 영역 */
+      border: 5px solid #00ff00;
+      margin: 20px auto;
+      background: #000;
+      box-shadow: 0 0 20px rgba(0,255,0,0.2);
+    }
+    
+    #adContainer {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+    
+    #vastUrlInput {
+      width: 60%; padding: 10px; font-size: 16px;
+      border-radius: 5px; border: 1px solid #ccc; margin-right: 10px;
+    }
+
+    button {
+      padding: 10px 20px; font-size: 16px; cursor: pointer;
+      background: #00ff00; border: none; font-weight: bold; border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <br>
+  <h2>📺 티오더 VAST 동영상 검증기</h2>
+  <p>아래 초록색 박스 안에서 <b>동영상이 재생되면 성공</b>입니다.</p>
+  
+  <!-- 도메인 변경된 URL 기본 입력 -->
+  <input type="text" id="vastUrlInput" value="https://attractt-vast.livere.org/3SwYxPrHIjtMpYA/vast" placeholder="VAST XML URL">
+  <button id="playButton">▶ 광고 로드 & 재생</button>
+  <br><br>
+
+  <div id="mainContainer">
+    <div id="adContainer"></div>
+  </div>
+
+  <script type="text/javascript" src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+  <script type="text/javascript">
+    var adDisplayContainer;
+    var adsLoader;
+    var adsManager;
+
+    function init() {
+      // 컨테이너 설정
+      var adContainerElement = document.getElementById('adContainer');
+      adDisplayContainer = new google.ima.AdDisplayContainer(adContainerElement);
+      adDisplayContainer.initialize();
+
+      // 로더 설정
+      adsLoader = new google.ima.AdsLoader(adDisplayContainer);
+      
+      // 이벤트 리스너
+      adsLoader.addEventListener(
+          google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
+          onAdsManagerLoaded, false);
+      adsLoader.addEventListener(
+          google.ima.AdErrorEvent.Type.AD_ERROR,
+          onAdError, false);
+
+      // VAST 요청
+      var adsRequest = new google.ima.AdsRequest();
+      adsRequest.adTagUrl = document.getElementById('vastUrlInput').value;
+
+      // 화면 크기 지정 (Linear/Video 광고)
+      adsRequest.linearAdSlotWidth = 1280;
+      adsRequest.linearAdSlotHeight = 750;
+      
+      adsRequest.nonLinearAdSlotWidth = 1280;
+      adsRequest.nonLinearAdSlotHeight = 750;
+
+      adsLoader.requestAds(adsRequest);
+    }
+
+    function onAdsManagerLoaded(adsManagerLoadedEvent) {
+      console.log("Ads Manager Loaded! (XML 로드 성공)");
+      var adsRenderingSettings = new google.ima.AdsRenderingSettings();
+      
+      adsManager = adsManagerLoadedEvent.getAdsManager(
+          document.getElementById('adContainer'), adsRenderingSettings); 
+
+      adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError);
+      
+      // 광고 시작 이벤트
+      adsManager.addEventListener(google.ima.AdEvent.Type.STARTED, function() {
+          console.log("Ad Started! (재생 시작)");
+      });
+
+      try {
+        // 1280x750 크기로 초기화 및 재생
+        adsManager.init(1280, 750, google.ima.ViewMode.NORMAL);
+        adsManager.start();
+      } catch (adError) {
+        console.log("Ads Manager Init Error:", adError);
+      }
+    }
+
+    function onAdError(adErrorEvent) {
+      console.log("Ad Error:", adErrorEvent.getError());
+      alert("❌ 에러 발생: " + adErrorEvent.getError());
+    }
+
+    document.getElementById('playButton').addEventListener('click', init);
+  </script>
+</body>
+</html>
