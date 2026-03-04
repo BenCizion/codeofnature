@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PERME — 사이트 어드민 콘솔</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #07090f;
+  --surface: #0d1117;
+  --surface2: #131a24;
+  --surface3: #1a2333;
+  --border: rgba(99,179,237,0.1);
+  --border2: rgba(255,255,255,0.06);
+  --cyan: #63b3ed;
+  --cyan-dim: #4299e1;
+  --cyan-glow: rgba(99,179,237,0.15);
+  --green: #68d391;
+  --red: #fc8181;
+  --orange: #f6ad55;
+  --yellow: #f6e05e;
+  --text: #e2e8f0;
+  --text2: #718096;
+  --text3: #4a5568;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Sora', sans-serif;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height:100vh; overflow-x:hidden; }
+
+/* Grid noise bg */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image:
+    linear-gradient(rgba(99,179,237,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,179,237,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events:none; z-index:0;
+}
+
+body::after {
+  content:'';
+  position:fixed;
+  top:-20%; left:-10%;
+  width:600px; height:600px;
+  border-radius:50%;
+  background: radial-gradient(circle, rgba(99,179,237,0.04) 0%, transparent 70%);
+  pointer-events:none; z-index:0;
+}
+
+/* TOPBAR */
+.topbar {
+  position:fixed; top:0; left:0; right:0; height:52px;
+  background: rgba(7,9,15,0.95);
+  backdrop-filter:blur(12px);
+  border-bottom: 1px solid var(--border);
+  display:flex; align-items:center; padding:0 24px; gap:16px;
+  z-index:100;
+}
+
+.logo {
+  font-family: var(--mono);
+  font-size:15px; font-weight:600;
+  color: var(--cyan);
+  letter-spacing:0.05em;
+  display:flex; align-items:center; gap:8px;
+}
+
+.logo-badge {
+  font-size:9px; padding:2px 6px;
+  background: rgba(99,179,237,0.1);
+  border:1px solid rgba(99,179,237,0.2);
+  border-radius:3px;
+  color: var(--cyan); letter-spacing:0.12em;
+}
+
+.site-selector {
+  margin-left:20px;
+  background: var(--surface2);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:5px 12px;
+  font-size:12px; font-family:var(--sans);
+  color: var(--text2);
+  cursor:pointer;
+  display:flex; align-items:center; gap:8px;
+}
+
+.site-dot { width:6px; height:6px; border-radius:50%; background: var(--green); animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+.topbar-right { margin-left:auto; display:flex; align-items:center; gap:12px; }
+
+.top-stat {
+  font-family:var(--mono); font-size:11px;
+  display:flex; align-items:center; gap:6px;
+  color: var(--text3);
+  padding:4px 10px;
+  border:1px solid var(--border2);
+  border-radius:5px;
+}
+.top-stat span { color: var(--cyan); }
+
+.alert-btn {
+  width:32px; height:32px; border-radius:6px;
+  background:var(--surface2); border:1px solid var(--border2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; cursor:pointer; position:relative;
+}
+.alert-dot { position:absolute; top:5px; right:5px; width:6px; height:6px; border-radius:50%; background:var(--red); border:2px solid var(--bg); }
+
+/* SIDEBAR */
+.sidebar {
+  position:fixed; left:0; top:52px; bottom:0; width:52px;
+  background: var(--surface);
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column; align-items:center;
+  padding:16px 0; gap:4px; z-index:99;
+}
+
+.nav-item {
+  width:36px; height:36px; border-radius:7px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; cursor:pointer; color: var(--text3);
+  transition:all 0.15s; position:relative;
+}
+.nav-item:hover { background:var(--surface2); color:var(--text2); }
+.nav-item.active { background:var(--cyan-glow); color:var(--cyan); }
+.nav-item.active::before {
+  content:'';
+  position:absolute; left:-8px; top:50%; transform:translateY(-50%);
+  width:3px; height:20px; border-radius:0 2px 2px 0;
+  background:var(--cyan);
+}
+
+/* MAIN */
+.main { margin-left:52px; padding-top:52px; position:relative; z-index:1; }
+.content { padding:24px; display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:14px; }
+
+/* CARDS */
+.card {
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:10px; padding:18px;
+  position:relative; overflow:hidden;
+  animation: fadeUp 0.4s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(12px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.card:nth-child(2){animation-delay:.05s}
+.card:nth-child(3){animation-delay:.10s}
+.card:nth-child(4){animation-delay:.15s}
+.card:nth-child(5){animation-delay:.20s}
+
+.card::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, rgba(99,179,237,0.2), transparent);
+}
+
+.card-head {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  margin-bottom:14px;
+}
+.card-label { font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--text3); }
+.card-title { font-size:13px; font-weight:600; color:var(--text2); margin-top:2px; }
+
+.metric {
+  font-family:var(--mono); font-size:34px; font-weight:600;
+  line-height:1; margin:8px 0 4px;
+}
+.metric-sub { font-size:11px; color:var(--text3); }
+
+.badge {
+  font-size:10px; font-weight:700; padding:3px 8px;
+  border-radius:4px; font-family:var(--mono);
+}
+.badge-green { background:rgba(104,211,145,0.1); color:var(--green); border:1px solid rgba(104,211,145,0.2); }
+.badge-red { background:rgba(252,129,129,0.1); color:var(--red); border:1px solid rgba(252,129,129,0.2); }
+.badge-yellow { background:rgba(246,224,94,0.1); color:var(--yellow); border:1px solid rgba(246,224,94,0.2); }
+.badge-cyan { background:rgba(99,179,237,0.1); color:var(--cyan); border:1px solid rgba(99,179,237,0.2); }
+
+/* SPAN helpers */
+.col-span-2 { grid-column:span 2; }
+.col-span-3 { grid-column:span 3; }
+.col-full { grid-column:1 / -1; }
+
+/* SECTION LABEL ROW */
+.section-row {
+  grid-column:1/-1;
+  display:flex; align-items:center; gap:14px;
+  padding:8px 0 0;
+}
+.section-label {
+  font-size:10px; font-weight:700; letter-spacing:0.18em;
+  text-transform:uppercase; color:var(--text3); white-space:nowrap;
+}
+.section-line { flex:1; height:1px; background:var(--border2); }
+
+/* CONSENT BREAKDOWN TABLE */
+.consent-table { width:100%; border-collapse:collapse; font-size:11px; }
+.consent-table th {
+  text-align:left; padding:0 0 10px;
+  font-size:9px; font-weight:700; letter-spacing:0.14em;
+  text-transform:uppercase; color:var(--text3);
+  border-bottom:1px solid var(--border2);
+}
+.consent-table td { padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.03); color:var(--text2); vertical-align:middle; }
+.consent-table tr:last-child td { border-bottom:none; }
+
+.consent-bar-wrap { display:flex; height:5px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden; width:100px; }
+.consent-bar-fill { height:100%; border-radius:3px; }
+.mono-val { font-family:var(--mono); font-size:11px; }
+
+/* KEY LOG TABLE */
+.log-table { width:100%; border-collapse:collapse; font-size:11px; }
+.log-table th {
+  text-align:left; padding:0 8px 10px 0;
+  font-size:9px; font-weight:700; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--text3);
+  border-bottom:1px solid var(--border2);
+}
+.log-table td { padding:9px 8px 9px 0; border-bottom:1px solid rgba(255,255,255,0.03); color:var(--text2); }
+.log-table tr:last-child td { border-bottom:none; }
+.log-table tr:hover td { background:rgba(99,179,237,0.02); }
+
+.key-hash {
+  font-family:var(--mono); font-size:10px; color:var(--cyan);
+  background:rgba(99,179,237,0.06); padding:2px 6px; border-radius:3px;
+}
+
+.method-badge {
+  font-size:9px; font-family:var(--mono); font-weight:600;
+  padding:2px 6px; border-radius:3px;
+}
+.method-get { background:rgba(104,211,145,0.1); color:var(--green); }
+.method-post { background:rgba(99,179,237,0.1); color:var(--cyan); }
+.method-del { background:rgba(252,129,129,0.1); color:var(--red); }
+
+.status-dot { width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:5px; }
+.status-ok { background:var(--green); }
+.status-warn { background:var(--orange); }
+.status-err { background:var(--red); }
+
+/* USER TABLE */
+.user-table { width:100%; border-collapse:collapse; font-size:11px; }
+.user-table th {
+  text-align:left; padding:0 8px 10px 0;
+  font-size:9px; font-weight:700; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--text3);
+  border-bottom:1px solid var(--border2);
+}
+.user-table td { padding:9px 8px 9px 0; border-bottom:1px solid rgba(255,255,255,0.03); color:var(--text2); }
+.user-table tr:hover td { background:rgba(255,255,255,0.02); cursor:pointer; }
+.user-table tr:last-child td { border-bottom:none; }
+
+.user-avatar {
+  width:24px; height:24px; border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:700; margin-right:8px;
+  vertical-align:middle;
+}
+
+/* ALERT PANEL */
+.alert-panel { display:flex; flex-direction:column; gap:8px; }
+.alert-row {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:10px 12px;
+  background:var(--surface2);
+  border:1px solid var(--border2);
+  border-radius:8px; cursor:pointer;
+  transition:border-color 0.15s;
+}
+.alert-row:hover { border-color:rgba(99,179,237,0.2); }
+.alert-row.critical { border-left:2px solid var(--red); }
+.alert-row.warn { border-left:2px solid var(--orange); }
+.alert-row.info { border-left:2px solid var(--cyan); }
+.alert-icon { font-size:14px; flex-shrink:0; margin-top:1px; }
+.alert-body { flex:1; }
+.alert-title { font-size:11px; font-weight:600; color:var(--text); margin-bottom:2px; }
+.alert-desc { font-size:10px; color:var(--text3); line-height:1.5; }
+.alert-time { font-size:10px; color:var(--text3); font-family:var(--mono); flex-shrink:0; }
+
+/* CHAIN VISUAL */
+.chain-wrap { display:flex; flex-direction:column; gap:6px; }
+.chain-block {
+  display:flex; align-items:center; gap:10px;
+  padding:8px 12px;
+  background:var(--surface2);
+  border:1px solid var(--border2);
+  border-radius:6px; font-family:var(--mono); font-size:10px;
+}
+.chain-block.latest { border-color:rgba(99,179,237,0.25); background:rgba(99,179,237,0.04); }
+.chain-num { color:var(--cyan); width:40px; flex-shrink:0; }
+.chain-hash { color:var(--text3); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.chain-ts { color:var(--text3); flex-shrink:0; }
+.chain-connector { width:1px; height:10px; background:var(--border2); margin-left:20px; }
+
+/* Chart area */
+.chart-wrap { position:relative; }
+
+/* SEARCH BAR */
+.search-bar {
+  display:flex; align-items:center; gap:8px;
+  background:var(--surface2); border:1px solid var(--border2);
+  border-radius:7px; padding:7px 12px; margin-bottom:14px;
+}
+.search-bar input {
+  background:transparent; border:none; outline:none;
+  font-family:var(--sans); font-size:12px; color:var(--text);
+  width:100%;
+}
+.search-bar input::placeholder { color:var(--text3); }
+.search-icon { color:var(--text3); font-size:13px; }
+
+/* TABS */
+.tabs { display:flex; gap:2px; margin-bottom:14px; }
+.tab {
+  font-size:11px; font-weight:600; padding:6px 12px;
+  border-radius:5px; cursor:pointer; color:var(--text3);
+  transition:all 0.15s;
+}
+.tab.active { background:var(--cyan-glow); color:var(--cyan); }
+.tab:hover { color:var(--text2); }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo">
+    PERME
+    <span class="logo-badge">ADMIN</span>
+  </div>
+  <div class="site-selector">
+    <div class="site-dot"></div>
+    livere.com (라이브리 댓글)
+    ▾
+  </div>
+  <div class="topbar-right">
+    <div class="top-stat">총 등록 유저 <span>284,391</span></div>
+    <div class="top-stat">API 키 발급 오늘 <span>1,247</span></div>
+    <div class="top-stat">동의율 <span>91.3%</span></div>
+    <div class="alert-btn">🔔<div class="alert-dot"></div></div>
+    <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#63b3ed,#4299e1);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#07090f;cursor:pointer;">AD</div>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="nav-item active" title="대시보드">📊</div>
+  <div class="nav-item" title="사용자 목록">👥</div>
+  <div class="nav-item" title="API 키 로그">🔑</div>
+  <div class="nav-item" title="동의 관리">📋</div>
+  <div class="nav-item" title="블록체인">⛓</div>
+  <div class="nav-item" title="알람">🚨</div>
+  <div style="margin-top:auto;">
+    <div class="nav-item" title="설정">⚙</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+<div class="content">
+
+  <!-- ── KPI ROW ── -->
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <div class="card-label">동의 수집</div>
+        <div class="card-title">이번 달 신규 동의</div>
+      </div>
+      <div class="badge badge-green">▲ 8.2%</div>
+    </div>
+    <div class="metric" style="color:var(--green);">12,847</div>
+    <div class="metric-sub">누적 총 동의 수 284,391건</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <div class="card-label">API 키 발급</div>
+        <div class="card-title">광고사 데이터 조회</div>
+      </div>
+      <div class="badge badge-cyan">실시간</div>
+    </div>
+    <div class="metric" style="color:var(--cyan);">1,247</div>
+    <div class="metric-sub">오늘 발급 · 평균 응답 23ms</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <div class="card-label">Revoke 요청</div>
+        <div class="card-title">동의 철회 건수</div>
+      </div>
+      <div class="badge badge-yellow">이번 주</div>
+    </div>
+    <div class="metric" style="color:var(--orange);">38</div>
+    <div class="metric-sub">미처리 <span style="color:var(--red);font-family:var(--mono);">5건</span> 대기 중</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <div class="card-label">Appeal</div>
+        <div class="card-title">문제 제기 건수</div>
+      </div>
+      <div class="badge badge-red">주의</div>
+    </div>
+    <div class="metric" style="color:var(--red);">3</div>
+    <div class="metric-sub">검토 필요 · 최근 2시간 전</div>
+  </div>
+
+  <!-- ── SECTION: 동의 분석 ── -->
+  <div class="section-row">
+    <div class="section-label">동의 항목 분석</div>
+    <div class="section-line"></div>
+  </div>
+
+  <!-- CONSENT CHART -->
+  <div class="card col-span-2">
+    <div class="card-head">
+      <div>
+        <div class="card-label">월별 동의 추이</div>
+        <div class="card-title">신규 동의 수집 vs Revoke</div>
+      </div>
+      <div class="tabs" style="margin-bottom:0;">
+        <div class="tab active">월</div>
+        <div class="tab">주</div>
+        <div class="tab">일</div>
+      </div>
+    </div>
+    <canvas id="consentChart" height="130"></canvas>
+  </div>
+
+  <!-- CONSENT BREAKDOWN -->
+  <div class="card col-span-2">
+    <div class="card-head">
+      <div>
+        <div class="card-label">항목별 동의율</div>
+        <div class="card-title">개인정보 수집 동의 세부 현황</div>
+      </div>
+    </div>
+    <table class="consent-table">
+      <thead>
+        <tr>
+          <th>항목</th>
+          <th>동의율</th>
+          <th></th>
+          <th>미동의</th>
+        </tr>
+      </thead>
+      <tbody id="consentBreakdown"></tbody>
+    </table>
+  </div>
+
+  <!-- ── SECTION: API 키 로그 ── -->
+  <div class="section-row">
+    <div class="section-label">API 키 발급 로그</div>
+    <div class="section-line"></div>
+    <div class="badge badge-cyan" style="white-space:nowrap;">광고사 DMP 연동</div>
+  </div>
+
+  <!-- KEY LOG TABLE -->
+  <div class="card col-span-3">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="광고사명, 키 해시, 항목으로 검색...">
+    </div>
+    <table class="log-table">
+      <thead>
+        <tr>
+          <th>타임스탬프</th>
+          <th>광고사</th>
+          <th>요청 항목</th>
+          <th>발급 키 (해시)</th>
+          <th>메서드</th>
+          <th>상태</th>
+          <th>사용자 수</th>
+        </tr>
+      </thead>
+      <tbody id="keyLog"></tbody>
+    </table>
+  </div>
+
+  <!-- BLOCKCHAIN PANEL -->
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <div class="card-label">PDS 블록체인</div>
+        <div class="card-title">최근 블록 상태</div>
+      </div>
+      <div class="badge badge-green">정상 운영</div>
+    </div>
+    <div class="chain-wrap" id="chainBlocks"></div>
+  </div>
+
+  <!-- ── SECTION: 사용자 & 알람 ── -->
+  <div class="section-row">
+    <div class="section-label">사용자 관리</div>
+    <div class="section-line"></div>
+  </div>
+
+  <!-- USER TABLE -->
+  <div class="card col-span-2">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="이메일 또는 UID 검색...">
+    </div>
+    <table class="user-table">
+      <thead>
+        <tr>
+          <th>사용자</th>
+          <th>가입</th>
+          <th>동의 항목</th>
+          <th>Revoke</th>
+          <th>상태</th>
+        </tr>
+      </thead>
+      <tbody id="userTable"></tbody>
+    </table>
+  </div>
+
+  <!-- ALERT PANEL -->
+  <div class="card col-span-2">
+    <div class="card-head">
+      <div>
+        <div class="card-label">시스템 알람</div>
+        <div class="card-title">처리 필요 이슈</div>
+      </div>
+    </div>
+    <div class="alert-panel" id="alertPanel"></div>
+  </div>
+
+</div>
+</main>
+
+<script>
+// CONSENT CHART
+(function(){
+  const ctx = document.getElementById('consentChart').getContext('2d');
+  new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels:['8월','9월','10월','11월','12월','1월'],
+      datasets:[
+        {
+          label:'신규 동의',
+          data:[8200,9400,11200,10800,13100,12847],
+          backgroundColor:'rgba(99,179,237,0.3)',
+          borderColor:'#63b3ed',
+          borderWidth:1.5,
+          borderRadius:3,
+        },
+        {
+          label:'Revoke',
+          data:[120,180,210,190,290,380],
+          backgroundColor:'rgba(252,129,129,0.3)',
+          borderColor:'#fc8181',
+          borderWidth:1.5,
+          borderRadius:3,
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{ labels:{ color:'#718096', font:{size:11}, boxWidth:10, padding:12 }},
+        tooltip:{ backgroundColor:'#0d1117', borderColor:'rgba(255,255,255,0.06)', borderWidth:1, titleColor:'#e2e8f0', bodyColor:'#718096' }
+      },
+      scales:{
+        x:{ grid:{ color:'rgba(255,255,255,0.03)' }, ticks:{ color:'#4a5568', font:{size:10} }},
+        y:{ grid:{ color:'rgba(255,255,255,0.03)' }, ticks:{ color:'#4a5568', font:{size:10} }}
+      }
+    }
+  });
+})();
+
+// CONSENT BREAKDOWN
+(function(){
+  const items = [
+    { name:'기본 서비스 이용', rate:98.1, color:'#68d391' },
+    { name:'인구통계 정보 (광고)', rate:84.3, color:'#63b3ed' },
+    { name:'행동 패턴 분석', rate:71.2, color:'#63b3ed' },
+    { name:'제3자 DMP 제공', rate:62.8, color:'#f6ad55' },
+    { name:'마케팅 수신', rate:55.4, color:'#fc8181' },
+  ];
+  const tbody = document.getElementById('consentBreakdown');
+  items.forEach(i => {
+    tbody.innerHTML += `
+      <tr>
+        <td style="color:var(--text)">${i.name}</td>
+        <td><div class="consent-bar-wrap"><div class="consent-bar-fill" style="width:${i.rate}%;background:${i.color};"></div></div></td>
+        <td class="mono-val" style="color:${i.color};padding-left:10px;">${i.rate}%</td>
+        <td class="mono-val" style="color:var(--text3);">${(100-i.rate).toFixed(1)}%</td>
+      </tr>
+    `;
+  });
+})();
+
+// KEY LOG
+(function(){
+  const logs = [
+    { ts:'14:32:11', company:'카카오 DMP', item:'연령대·지역', hash:'a3f9b2c1', method:'GET', status:'ok', users:'12,841' },
+    { ts:'14:28:44', company:'구글 GAM', item:'관심사 카테고리', hash:'d7e1a4b8', method:'GET', status:'ok', users:'8,203' },
+    { ts:'14:15:09', company:'네이버 GFA', item:'성별·연령', hash:'f2c9e3d5', method:'GET', status:'ok', users:'23,118' },
+    { ts:'13:52:37', company:'카카오 DMP', item:'행동 패턴', hash:'b8a1f7c4', method:'GET', status:'warn', users:'0' },
+    { ts:'13:41:22', company:'크리테오', item:'구매 의향', hash:'e5d3b9a2', method:'POST', status:'ok', users:'5,671' },
+    { ts:'12:09:58', company:'사용자 #82,441', item:'전체 동의 철회', hash:'—', method:'DEL', status:'ok', users:'1' },
+  ];
+  const tbody = document.getElementById('keyLog');
+  logs.forEach(l => {
+    const methodClass = l.method==='GET'?'method-get':l.method==='POST'?'method-post':'method-del';
+    const statusDot = l.status==='ok'?'status-ok':l.status==='warn'?'status-warn':'status-err';
+    tbody.innerHTML += `
+      <tr>
+        <td class="mono-val" style="color:var(--text3);">${l.ts}</td>
+        <td style="color:var(--text);">${l.company}</td>
+        <td style="color:var(--text2);">${l.item}</td>
+        <td>${l.hash!=='—'?`<span class="key-hash">${l.hash}</span>`:'<span style="color:var(--text3);">—</span>'}</td>
+        <td><span class="method-badge ${methodClass}">${l.method}</span></td>
+        <td><span class="status-dot ${statusDot}"></span>${l.status==='ok'?'성공':l.status==='warn'?'경고':'오류'}</td>
+        <td class="mono-val">${l.users}</td>
+      </tr>
+    `;
+  });
+})();
+
+// BLOCKCHAIN
+(function(){
+  const blocks = [
+    { num:'#48,291', hash:'0x3a9f...c8b2', ts:'방금', latest:true },
+    { num:'#48,290', hash:'0x7d2e...a1f4', ts:'1분 전', latest:false },
+    { num:'#48,289', hash:'0xb5c1...9e3d', ts:'3분 전', latest:false },
+    { num:'#48,288', hash:'0xf0a8...2c7b', ts:'5분 전', latest:false },
+  ];
+  const wrap = document.getElementById('chainBlocks');
+  blocks.forEach((b, i) => {
+    if(i > 0) wrap.innerHTML += `<div class="chain-connector"></div>`;
+    wrap.innerHTML += `
+      <div class="chain-block ${b.latest?'latest':''}">
+        <span class="chain-num">${b.num}</span>
+        <span class="chain-hash">${b.hash}</span>
+        <span class="chain-ts">${b.ts}</span>
+      </div>
+    `;
+  });
+})();
+
+// USER TABLE
+(function(){
+  const users = [
+    { name:'김*희', id:'uid_8821', joined:'2024.03', consents:5, revoke:0, color:'#63b3ed', init:'K' },
+    { name:'이*준', id:'uid_4432', joined:'2024.07', consents:3, revoke:1, color:'#68d391', init:'L' },
+    { name:'박*연', id:'uid_9910', joined:'2023.11', consents:5, revoke:0, color:'#f6ad55', init:'P' },
+    { name:'최*원', id:'uid_2208', joined:'2025.01', consents:2, revoke:2, color:'#fc8181', init:'C' },
+    { name:'정*민', id:'uid_6674', joined:'2024.09', consents:4, revoke:0, color:'#b794f4', init:'J' },
+  ];
+  const tbody = document.getElementById('userTable');
+  users.forEach(u => {
+    tbody.innerHTML += `
+      <tr>
+        <td>
+          <span class="user-avatar" style="background:${u.color}22;color:${u.color};">${u.init}</span>
+          <span>${u.name}</span>
+          <span style="font-size:10px;color:var(--text3);margin-left:4px;font-family:var(--mono);">${u.id}</span>
+        </td>
+        <td class="mono-val" style="color:var(--text3);">${u.joined}</td>
+        <td><span class="mono-val" style="color:var(--cyan);">${u.consents}항목</span></td>
+        <td><span class="mono-val" style="color:${u.revoke>0?'var(--red)':'var(--text3)'};">${u.revoke}건</span></td>
+        <td><span class="badge ${u.revoke>1?'badge-red':u.revoke>0?'badge-yellow':'badge-green'}">${u.revoke>1?'검토필요':u.revoke>0?'주의':'정상'}</span></td>
+      </tr>
+    `;
+  });
+})();
+
+// ALERTS
+(function(){
+  const alerts = [
+    { cls:'critical', icon:'🚨', title:'Appeal 미처리 3건 — 72시간 초과 임박', desc:'개인정보보호법상 30일 내 처리 의무. 2건은 D-2 이내.', time:'2시간 전' },
+    { cls:'warn', icon:'⚠️', title:'카카오 DMP 키 발급 실패 — 동의 항목 불일치', desc:"'행동 패턴' 항목 미동의 사용자 포함 요청. 자동 차단됨.", time:'46분 전' },
+    { cls:'info', icon:'🔑', title:'신규 광고사 API 연동 요청 — 크리테오 코리아', desc:'연동 검토 및 약관 서명 필요. 담당자 이메일 발송됨.', time:'어제' },
+  ];
+  const panel = document.getElementById('alertPanel');
+  alerts.forEach(a => {
+    panel.innerHTML += `
+      <div class="alert-row ${a.cls}">
+        <div class="alert-icon">${a.icon}</div>
+        <div class="alert-body">
+          <div class="alert-title">${a.title}</div>
+          <div class="alert-desc">${a.desc}</div>
+        </div>
+        <div class="alert-time">${a.time}</div>
+      </div>
+    `;
+  });
+})();
+
+// Tab interaction
+document.querySelectorAll('.tabs .tab').forEach(tab => {
+  tab.addEventListener('click', function(){
+    this.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', function(){
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
