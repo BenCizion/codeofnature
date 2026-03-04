@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PERME Control Room</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { background-color: #0f172a; color: #f8fafc; font-family: 'Pretendard', sans-serif; }
+    .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    const App = () => {
+      const [balance, setBalance] = useState(7553);
+      const [pendingRequests, setPendingRequests] = useState([
+        { id: 1, company: 'A광고대행사 DMP', data: '연령, 성별, 관심사', reward: 50 },
+        { id: 2, company: 'B쇼핑몰', data: '최근 소비 내역, 위치 정보', reward: 120 }
+      ]);
+      const [activeStreams, setActiveStreams] = useState([
+        { id: 99, company: 'C금융 플랫폼', data: '신용 점수 대역', key: '0x3A2F...88C1', revoked: false }
+      ]);
+
+      const generateKey = () => '0x' + Math.random().toString(16).substr(2, 8).toUpperCase() + '...' + Math.random().toString(16).substr(2, 4).toUpperCase();
+
+      const handleApprove = (req) => {
+        setBalance(prev => prev + req.reward);
+        setPendingRequests(prev => prev.filter(p => p.id !== req.id));
+        setActiveStreams(prev => [{ id: req.id, company: req.company, data: req.data, key: generateKey(), revoked: false }, ...prev]);
+      };
+
+      const handleReject = (id) => {
+        setPendingRequests(prev => prev.filter(p => p.id !== id));
+      };
+
+      const handleRevoke = (id) => {
+        setActiveStreams(prev => prev.map(stream => stream.id === id ? { ...stream, revoked: true } : stream));
+      };
+
+      return (
+        <div className="min-h-screen p-8 max-w-6xl mx-auto">
+          {/* Header */}
+          <header className="flex justify-between items-center mb-10 glass-panel p-6 rounded-2xl">
+            <div>
+              <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">PERME Control Room</h1>
+              <p className="text-gray-400 mt-2">김퍼미 | 서울, 대한민국 | DID: did:perme:8f9a2b5c...</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-gray-400">보유 자산 (Token Balance)</p>
+              <p className="text-4xl font-mono text-purple-300 font-bold">{balance.toLocaleString()} <span className="text-xl">PME</span></p>
+            </div>
+          </header>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Pending Requests */}
+            <section className="glass-panel p-6 rounded-2xl">
+              <h2 className="text-xl font-semibold mb-4 text-purple-200">데이터 접근 요청 대기열</h2>
+              {pendingRequests.length === 0 ? (
+                <p className="text-gray-500">새로운 요청이 없습니다.</p>
+              ) : (
+                <div className="space-y-4">
+                  {pendingRequests.map(req => (
+                    <div key={req.id} className="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                      <h3 className="text-lg font-bold">{req.company}</h3>
+                      <p className="text-sm text-gray-400 mt-1">요청 항목: {req.data}</p>
+                      <div className="flex justify-between items-center mt-4">
+                        <span className="text-green-400 font-bold">보상: +{req.reward} PME</span>
+                        <div className="space-x-2">
+                          <button onClick={() => handleApprove(req)} className="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg text-sm font-semibold transition">승인 (Approve)</button>
+                          <button onClick={() => handleReject(req.id)} className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm font-semibold transition">거절 (Reject)</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* Active Streams */}
+            <section className="glass-panel p-6 rounded-2xl">
+              <h2 className="text-xl font-semibold mb-4 text-blue-200">활성화된 데이터 스트림 및 다이내믹 키</h2>
+              <div className="space-y-4">
+                {activeStreams.map(stream => (
+                  <div key={stream.id} className={`p-4 rounded-xl border ${stream.revoked ? 'bg-slate-900 border-red-900/30 opacity-50' : 'bg-slate-800 border-slate-700'}`}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className={`text-lg font-bold ${stream.revoked ? 'text-gray-500 line-through' : ''}`}>{stream.company}</h3>
+                        <p className="text-sm text-gray-400">제공 중: {stream.data}</p>
+                        <p className="text-xs font-mono text-blue-400 mt-2 bg-blue-900/20 inline-block px-2 py-1 rounded">Session Key: {stream.key}</p>
+                      </div>
+                      <button 
+                        onClick={() => handleRevoke(stream.id)} 
+                        disabled={stream.revoked}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${stream.revoked ? 'bg-slate-800 text-red-500 border border-red-500/50' : 'bg-red-600 hover:bg-red-500 text-white transition'}`}
+                      >
+                        {stream.revoked ? '차단됨 (Revoked)' : '권한 차단 (Revoke)'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
