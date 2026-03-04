@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PERME B2B Control Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { background-color: #020617; color: #f8fafc; font-family: 'Pretendard', sans-serif; }
+    .glass-panel { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+    .gradient-text { background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const App = () => {
+      const [budget, setBudget] = useState(50000);
+      const [reward, setReward] = useState(50);
+      const [targetSegment, setTargetSegment] = useState("20-30대 여성 (Women 20-30)");
+      const [checkedData, setCheckedData] = useState({ age: true, interest: true, purchase: false });
+      
+      const [activeStreams, setActiveStreams] = useState([
+        { id: 1, did: 'did:perme:8f9a...3c21', data: '연령, 관심사', key: '0x1A2B...99C2', status: '수집 중' },
+        { id: 2, did: 'did:perme:2b4d...8a11', data: '연령, 관심사', key: '0x9F8E...22A1', status: '수집 중' }
+      ]);
+      const [toastMsg, setToastMsg] = useState('');
+
+      // 랜덤 DID 및 해시 키 생성 함수
+      const generateDID = () => 'did:perme:' + Math.random().toString(16).substr(2, 4) + '...' + Math.random().toString(16).substr(2, 4);
+      const generateKey = () => '0x' + Math.random().toString(16).substr(2, 8).toUpperCase() + '...' + Math.random().toString(16).substr(2, 4).toUpperCase();
+
+      const handleRequestData = (e) => {
+        e.preventDefault();
+        
+        // 데이터 요청 시 예치금 500 PME 차감 (데모용 시나리오)
+        const deposit = 500;
+        if (budget < deposit) {
+          showToast('예산이 부족합니다.');
+          return;
+        }
+
+        setBudget(prev => prev - deposit);
+        showToast(`[${targetSegment}] 타겟 유저들에게 데이터 요청이 발송되었습니다. (예치금 -500 PME)`);
+
+        // 1.5초 후 유저가 승인하여 새로운 스트림이 연결되는 시뮬레이션
+        setTimeout(() => {
+          const selectedItems = [];
+          if(checkedData.age) selectedItems.push('연령/성별');
+          if(checkedData.interest) selectedItems.push('관심사');
+          if(checkedData.purchase) selectedItems.push('최근 소비');
+
+          const newStream = {
+            id: Date.now(),
+            did: generateDID(),
+            data: selectedItems.join(', '),
+            key: generateKey(),
+            status: '수집 중 (New)'
+          };
+          setActiveStreams(prev => [newStream, ...prev]);
+        }, 1500);
+      };
+
+      const showToast = (msg) => {
+        setToastMsg(msg);
+        setTimeout(() => setToastMsg(''), 4000);
+      };
+
+      return (
+        <div className="min-h-screen p-8 max-w-6xl mx-auto relative">
+          {/* Toast Notification */}
+          {toastMsg && (
+            <div className="fixed top-8 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-full shadow-lg border border-blue-400 z-50 animate-bounce">
+              {toastMsg}
+            </div>
+          )}
+
+          {/* Header */}
+          <header className="flex flex-col md:flex-row justify-between items-center mb-10 glass-panel p-6 rounded-2xl border-b-4 border-b-blue-500/50">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 gradient-text">PERME B2B Data Control Center</h1>
+              <p className="text-gray-400 mt-2 text-lg">A광고대행사 DMP | 연결된 캠페인: 3건</p>
+            </div>
+            <div className="mt-4 md:mt-0 text-right bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+              <p className="text-sm text-gray-400 mb-1">잔여 예산 (Total Budget)</p>
+              <p className="text-4xl font-mono text-emerald-400 font-bold">{budget.toLocaleString()} <span className="text-xl">PME</span></p>
+            </div>
+          </header>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Form Section */}
+            <section className="glass-panel p-6 rounded-2xl lg:col-span-1 h-fit">
+              <h2 className="text-xl font-semibold mb-6 text-blue-300">신규 타겟 데이터 요청 (PDS)</h2>
+              <form onSubmit={handleRequestData} className="space-y-6">
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">타겟 세그먼트 (Target Segment)</label>
+                  <select 
+                    value={targetSegment} 
+                    onChange={(e) => setTargetSegment(e.target.value)}
+                    className="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="20-30대 여성 (Women 20-30)">20-30대 여성 (Women 20-30)</option>
+                    <option value="20-30대 남성 (Men 20-30)">20-30대 남성 (Men 20-30)</option>
+                    <option value="40-50대 고소득층 (High Income 40-50)">40-50대 고소득층 (High Income 40-50)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">필요 데이터 항목 (Required Data)</label>
+                  <div className="space-y-2 bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                    <label className="flex items-center space-x-3 cursor-pointer">
+                      <input type="checkbox" checked={checkedData.age} onChange={() => setCheckedData({...checkedData, age: !checkedData.age})} className="w-4 h-4 text-blue-500 rounded focus:ring-blue-500" />
+                      <span>연령 / 성별 기본 정보</span>
+                    </label>
+                    <label className="flex items-center space-x-3 cursor-pointer">
+                      <input type="checkbox" checked={checkedData.interest} onChange={() => setCheckedData({...checkedData, interest: !checkedData.interest})} className="w-4 h-4 text-blue-500 rounded focus:ring-blue-500" />
+                      <span>소셜 관심사 이력</span>
+                    </label>
+                    <label className="flex items-center space-x-3 cursor-pointer">
+                      <input type="checkbox" checked={checkedData.purchase} onChange={() => setCheckedData({...checkedData, purchase: !checkedData.purchase})} className="w-4 h-4 text-blue-500 rounded focus:ring-blue-500" />
+                      <span>최근 3개월 소비 내역 (프리미엄)</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">1인당 지급 보상 (PME)</label>
+                  <input 
+                    type="number" 
+                    value={reward} 
+                    onChange={(e) => setReward(e.target.value)}
+                    className="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 font-mono"
+                  />
+                  <p className="text-xs text-gray-500 mt-2">* 보상이 높을수록 유저의 승인율이 급격히 상승합니다.</p>
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1"
+                >
+                  PDS로 타겟 데이터 요청 전송
+                </button>
+              </form>
+            </section>
+
+            {/* Live Streams Section */}
+            <section className="glass-panel p-6 rounded-2xl lg:col-span-2">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold text-emerald-300 flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                  실시간 수집 데이터 스트림 & 다이내믹 키
+                </h2>
+                <span className="text-sm bg-slate-800 text-slate-300 px-3 py-1 rounded-full border border-slate-600">
+                  활성 스트림: {activeStreams.length}건
+                </span>
+              </div>
+              
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-700 text-gray-400 text-sm">
+                      <th className="py-3 px-4 font-medium">유저 DID (마스킹)</th>
+                      <th className="py-3 px-4 font-medium">수집 항목</th>
+                      <th className="py-3 px-4 font-medium">실시간 다이내믹 세션 키</th>
+                      <th className="py-3 px-4 font-medium text-center">상태</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {activeStreams.map(stream => (
+                      <tr key={stream.id} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition">
+                        <td className="py-4 px-4 font-mono text-sm text-slate-300">{stream.did}</td>
+                        <td className="py-4 px-4 text-sm">{stream.data}</td>
+                        <td className="py-4 px-4 font-mono text-xs text-blue-400 bg-blue-900/10 rounded">{stream.key}</td>
+                        <td className="py-4 px-4 text-center">
+                          <span className={`inline-block px-2 py-1 rounded text-xs font-bold ${stream.status.includes('New') ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50' : 'bg-blue-500/20 text-blue-400'}`}>
+                            {stream.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {activeStreams.length === 0 && (
+                  <div className="text-center py-10 text-gray-500">
+                    현재 활성화된 데이터 스트림이 없습니다.<br/>새로운 타겟 데이터를 요청해 보세요.
+                  </div>
+                )}
+              </div>
+            </section>
+          </div>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
