@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PERME — 내 개인정보 관리</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f7fa;
+  --white: #ffffff;
+  --surface: #eef1f6;
+  --border: #e2e8f0;
+  --border2: #d1d9e6;
+  --ink: #1a202c;
+  --ink2: #4a5568;
+  --ink3: #a0aec0;
+  --blue: #3b82f6;
+  --blue-light: #eff6ff;
+  --blue-mid: #dbeafe;
+  --green: #059669;
+  --green-light: #ecfdf5;
+  --red: #dc2626;
+  --red-light: #fef2f2;
+  --orange: #d97706;
+  --orange-light: #fffbeb;
+  --purple: #7c3aed;
+  --purple-light: #f5f3ff;
+  --sans: 'Plus Jakarta Sans', sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--sans); background:var(--bg); color:var(--ink); min-height:100vh; }
+
+/* TOPBAR */
+.topbar {
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  height:56px;
+  display:flex; align-items:center; padding:0 24px; gap:16px;
+  position:sticky; top:0; z-index:100;
+  box-shadow:0 1px 4px rgba(0,0,0,0.04);
+}
+
+.logo {
+  font-family:var(--mono); font-size:16px; font-weight:600;
+  color:var(--blue); display:flex; align-items:center; gap:8px;
+}
+
+.logo-site {
+  font-size:11px; color:var(--ink3);
+  background:var(--surface); padding:3px 8px; border-radius:4px;
+  font-family:var(--sans);
+}
+
+.topbar-right { margin-left:auto; display:flex; align-items:center; gap:10px; }
+
+.user-chip {
+  display:flex; align-items:center; gap:8px;
+  background:var(--surface); padding:5px 12px 5px 5px;
+  border-radius:20px; border:1px solid var(--border);
+  font-size:12px; font-weight:500; color:var(--ink2); cursor:pointer;
+}
+.user-chip-avatar {
+  width:24px; height:24px; border-radius:50%;
+  background:linear-gradient(135deg,#3b82f6,#7c3aed);
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; color:white;
+}
+
+/* LAYOUT */
+.layout { display:grid; grid-template-columns:260px 1fr; min-height:calc(100vh - 56px); }
+
+/* LEFT NAV */
+.leftnav {
+  background:var(--white);
+  border-right:1px solid var(--border);
+  padding:24px 16px;
+  display:flex; flex-direction:column; gap:4px;
+}
+
+.nav-section-label {
+  font-size:10px; font-weight:700; letter-spacing:0.14em;
+  text-transform:uppercase; color:var(--ink3);
+  padding:12px 12px 6px;
+}
+
+.nav-link {
+  display:flex; align-items:center; gap:10px;
+  padding:9px 12px; border-radius:8px;
+  font-size:13px; font-weight:500; color:var(--ink2);
+  cursor:pointer; transition:all 0.15s;
+}
+.nav-link:hover { background:var(--surface); color:var(--ink); }
+.nav-link.active { background:var(--blue-light); color:var(--blue); font-weight:600; }
+.nav-link .nav-icon { font-size:15px; width:20px; text-align:center; }
+.nav-badge {
+  margin-left:auto; font-size:10px; font-weight:700;
+  padding:1px 6px; border-radius:10px;
+  background:var(--red-light); color:var(--red);
+}
+
+.privacy-score-box {
+  margin-top:auto;
+  background:linear-gradient(135deg, #eff6ff, #f5f3ff);
+  border:1px solid #c7d2fe;
+  border-radius:12px; padding:16px;
+}
+.psb-label { font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#6366f1; margin-bottom:8px; }
+.psb-score {
+  font-family:var(--mono); font-size:36px; font-weight:600;
+  color:#4f46e5; line-height:1;
+}
+.psb-grade { font-size:12px; font-weight:600; color:#6366f1; margin-top:4px; }
+.psb-desc { font-size:11px; color:#818cf8; margin-top:8px; line-height:1.5; }
+
+/* MAIN CONTENT */
+.main-content { padding:28px; display:flex; flex-direction:column; gap:20px; }
+
+/* PAGE HEADER */
+.page-header { display:flex; align-items:flex-start; justify-content:space-between; }
+.page-title { font-size:20px; font-weight:700; color:var(--ink); }
+.page-sub { font-size:13px; color:var(--ink3); margin-top:4px; }
+
+.action-btn {
+  display:flex; align-items:center; gap:7px;
+  padding:9px 16px; border-radius:8px;
+  font-size:12px; font-weight:600; cursor:pointer;
+  transition:all 0.15s;
+}
+.btn-primary { background:var(--blue); color:white; border:none; }
+.btn-primary:hover { background:#2563eb; }
+.btn-outline { background:white; color:var(--ink2); border:1px solid var(--border2); }
+.btn-outline:hover { border-color:var(--blue); color:var(--blue); }
+
+/* CARDS */
+.card {
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:12px; padding:20px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.04);
+}
+
+.card-title {
+  font-size:14px; font-weight:700; color:var(--ink);
+  display:flex; align-items:center; gap:8px;
+  margin-bottom:16px;
+}
+
+.card-title .ct-icon { font-size:16px; }
+.card-title .ct-badge {
+  margin-left:auto; font-size:10px; padding:2px 8px; border-radius:4px;
+  font-weight:700;
+}
+
+/* CONSENT TOGGLES */
+.consent-list { display:flex; flex-direction:column; gap:0; }
+
+.consent-item {
+  display:flex; align-items:flex-start; gap:16px;
+  padding:14px 0;
+  border-bottom:1px solid var(--border);
+}
+.consent-item:last-child { border-bottom:none; }
+
+.consent-icon-wrap {
+  width:38px; height:38px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; flex-shrink:0;
+}
+
+.consent-body { flex:1; }
+.consent-name { font-size:13px; font-weight:600; color:var(--ink); margin-bottom:2px; }
+.consent-desc { font-size:11px; color:var(--ink3); line-height:1.5; }
+.consent-meta { display:flex; gap:8px; margin-top:6px; flex-wrap:wrap; }
+.consent-tag {
+  font-size:10px; padding:2px 7px; border-radius:4px;
+  background:var(--surface); color:var(--ink3); font-weight:500;
+}
+
+.consent-right { display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0; }
+
+/* TOGGLE */
+.toggle {
+  width:40px; height:22px;
+  border-radius:11px; position:relative; cursor:pointer;
+  transition:background 0.2s;
+}
+.toggle.on { background:var(--blue); }
+.toggle.off { background:#cbd5e0; }
+.toggle::after {
+  content:'';
+  position:absolute; top:3px;
+  width:16px; height:16px; border-radius:50%; background:white;
+  transition:left 0.2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle.on::after { left:21px; }
+.toggle.off::after { left:3px; }
+
+.consent-date { font-size:10px; color:var(--ink3); font-family:var(--mono); }
+
+/* ACCESS LOG TABLE */
+.access-table { width:100%; border-collapse:collapse; }
+.access-table th {
+  text-align:left; padding:0 8px 10px 0;
+  font-size:10px; font-weight:700; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--ink3);
+  border-bottom:1px solid var(--border);
+}
+.access-table td { padding:11px 8px 11px 0; border-bottom:1px solid var(--bg); color:var(--ink2); font-size:12px; }
+.access-table tr:last-child td { border-bottom:none; }
+.access-table tr:hover td { background:#fafbfc; }
+
+.company-chip {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:12px; font-weight:600; color:var(--ink);
+}
+
+.data-tag {
+  display:inline-block; font-size:10px; padding:2px 7px;
+  border-radius:4px; font-weight:600; margin:1px;
+}
+
+.revoke-btn {
+  font-size:10px; font-weight:700; padding:4px 10px;
+  border-radius:5px; cursor:pointer; border:none;
+  background:var(--red-light); color:var(--red);
+  transition:all 0.15s;
+}
+.revoke-btn:hover { background:var(--red); color:white; }
+.revoke-btn:disabled { background:var(--surface); color:var(--ink3); cursor:default; }
+
+.detail-btn {
+  font-size:10px; font-weight:600; padding:4px 10px;
+  border-radius:5px; cursor:pointer;
+  background:var(--blue-light); color:var(--blue); border:none;
+  transition:all 0.15s;
+}
+.detail-btn:hover { background:var(--blue); color:white; }
+
+/* APPEAL FORM */
+.appeal-section { display:flex; flex-direction:column; gap:12px; }
+
+.appeal-item {
+  padding:14px 16px;
+  border:1px solid var(--border);
+  border-radius:10px; background:var(--white);
+}
+.appeal-item.open { border-color:#fde68a; background:#fffbeb; }
+.appeal-item.resolved { border-color:#a7f3d0; background:#ecfdf5; }
+
+.appeal-head { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.appeal-title { font-size:13px; font-weight:600; color:var(--ink); flex:1; }
+.appeal-status {
+  font-size:10px; font-weight:700; padding:2px 8px;
+  border-radius:4px;
+}
+.status-open { background:#fde68a; color:#92400e; }
+.status-resolved { background:#a7f3d0; color:#065f46; }
+.status-pending { background:#bfdbfe; color:#1e40af; }
+
+.appeal-desc { font-size:11px; color:var(--ink3); line-height:1.5; }
+.appeal-date { font-size:10px; color:var(--ink3); font-family:var(--mono); margin-top:6px; }
+
+.new-appeal-btn {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:12px;
+  border:1.5px dashed var(--border2);
+  border-radius:10px; cursor:pointer;
+  font-size:12px; font-weight:600; color:var(--ink3);
+  transition:all 0.15s;
+}
+.new-appeal-btn:hover { border-color:var(--blue); color:var(--blue); background:var(--blue-light); }
+
+/* MY DATA SUMMARY */
+.data-summary-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.data-summary-item {
+  background:var(--surface);
+  border-radius:10px; padding:14px;
+  text-align:center;
+}
+.dsi-val { font-family:var(--mono); font-size:24px; font-weight:600; color:var(--ink); }
+.dsi-label { font-size:11px; color:var(--ink3); margin-top:4px; }
+
+/* INFO BOX */
+.info-box {
+  background:var(--blue-light); border:1px solid var(--blue-mid);
+  border-radius:10px; padding:12px 16px;
+  display:flex; gap:10px; align-items:flex-start;
+  font-size:12px; color:#1e40af; line-height:1.6;
+}
+.info-box .info-icon { font-size:16px; flex-shrink:0; }
+
+/* GRID LAYOUT */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(10px); }
+  to { opacity:1; transform:translateY(0); }
+}
+.card { animation:fadeUp 0.4s ease both; }
+.card:nth-child(2){animation-delay:.05s}
+.card:nth-child(3){animation-delay:.10s}
+.card:nth-child(4){animation-delay:.15s}
+.card:nth-child(5){animation-delay:.20s}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo">
+    PERME
+    <span class="logo-site">livere.com</span>
+  </div>
+  <div class="topbar-right">
+    <button class="action-btn btn-outline">📋 개인정보 전체 내보내기</button>
+    <div class="user-chip">
+      <div class="user-chip-avatar">김</div>
+      김*희 님
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT NAV -->
+  <aside class="leftnav">
+    <div class="nav-section-label">내 개인정보</div>
+    <div class="nav-link active"><span class="nav-icon">🔐</span>동의 관리</div>
+    <div class="nav-link"><span class="nav-icon">📋</span>데이터 조회 로그</div>
+    <div class="nav-link"><span class="nav-icon">🔑</span>저장된 정보</div>
+
+    <div class="nav-section-label">권리 행사</div>
+    <div class="nav-link"><span class="nav-icon">🚫</span>동의 철회 (Revoke)</div>
+    <div class="nav-link"><span class="nav-icon">⚖️</span>문제 제기 (Appeal) <span class="nav-badge">1</span></div>
+    <div class="nav-link"><span class="nav-icon">🗑️</span>계정 삭제 요청</div>
+
+    <div class="nav-section-label">보안</div>
+    <div class="nav-link"><span class="nav-icon">🔒</span>블록체인 키 확인</div>
+    <div class="nav-link"><span class="nav-icon">📱</span>접속 기기 관리</div>
+
+    <div class="privacy-score-box">
+      <div class="psb-label">프라이버시 점수</div>
+      <div class="psb-score">74</div>
+      <div class="psb-grade">양호 — 개선 가능</div>
+      <div class="psb-desc">광고 추적 동의 2개를 철회하면 점수가 88점으로 올라가요.</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">🔐 동의 관리</div>
+        <div class="page-sub">내가 동의한 개인정보 수집·활용 항목을 확인하고 언제든지 철회할 수 있어요.</div>
+      </div>
+    </div>
+
+    <!-- INFO BOX -->
+    <div class="info-box">
+      <div class="info-icon">ℹ️</div>
+      <div>동의를 철회해도 이미 제공된 서비스는 유지돼요. 단, 일부 맞춤형 기능이 제한될 수 있어요. 철회 후 30일 이내 데이터는 안전하게 파기됩니다. <strong>블록체인에 기록된 내 동의 이력은 언제든 조회할 수 있어요.</strong></div>
+    </div>
+
+    <!-- MY DATA SUMMARY -->
+    <div class="data-summary-grid">
+      <div class="data-summary-item">
+        <div class="dsi-val" style="color:var(--blue);">5</div>
+        <div class="dsi-label">현재 동의 항목</div>
+      </div>
+      <div class="data-summary-item">
+        <div class="dsi-val" style="color:var(--orange);">38</div>
+        <div class="dsi-label">이번 달 데이터 조회 횟수</div>
+      </div>
+      <div class="data-summary-item">
+        <div class="dsi-val" style="color:var(--green);">0</div>
+        <div class="dsi-label">미처리 요청 건수</div>
+      </div>
+    </div>
+
+    <!-- CONSENT MANAGEMENT -->
+    <div class="card">
+      <div class="card-title">
+        <span class="ct-icon">📋</span>
+        동의 항목 관리
+        <span class="ct-badge" style="background:var(--blue-light);color:var(--blue);">5항목 동의 중</span>
+      </div>
+      <div class="consent-list" id="consentList"></div>
+    </div>
+
+    <div class="two-col">
+
+      <!-- ACCESS LOG -->
+      <div class="card">
+        <div class="card-title">
+          <span class="ct-icon">🔑</span>
+          데이터 조회 로그
+          <span class="ct-badge" style="background:var(--surface);color:var(--ink3);">최근 10건</span>
+        </div>
+        <table class="access-table">
+          <thead>
+            <tr>
+              <th>조회 회사</th>
+              <th>항목</th>
+              <th>일시</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="accessLog"></tbody>
+        </table>
+      </div>
+
+      <!-- APPEAL -->
+      <div class="card">
+        <div class="card-title">
+          <span class="ct-icon">⚖️</span>
+          문제 제기 (Appeal)
+          <span class="ct-badge" style="background:var(--orange-light);color:var(--orange);">진행 중 1건</span>
+        </div>
+        <div class="appeal-section" id="appealSection"></div>
+      </div>
+
+    </div>
+
+    <!-- BLOCKCHAIN KEY INFO -->
+    <div class="card">
+      <div class="card-title">
+        <span class="ct-icon">⛓</span>
+        내 PDS 블록체인 키 정보
+        <span class="ct-badge" style="background:var(--green-light);color:var(--green);">보호됨</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div style="font-size:11px;color:var(--ink3);margin-bottom:6px;">내 개인정보 저장 주소 (공개키)</div>
+          <div style="font-family:var(--mono);font-size:12px;background:var(--surface);padding:10px 12px;border-radius:8px;color:var(--blue);word-break:break-all;line-height:1.6;">
+            0x7f3a...b9c2e1d4
+          </div>
+          <div style="font-size:10px;color:var(--ink3);margin-top:6px;">이 주소로 저장된 정보는 내가 동의한 경우에만 접근 가능해요</div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--ink3);margin-bottom:6px;">마지막 키 갱신</div>
+          <div style="background:var(--surface);padding:10px 12px;border-radius:8px;">
+            <div style="font-family:var(--mono);font-size:12px;color:var(--ink);">2026.01.14 09:22:31</div>
+            <div style="font-size:11px;color:var(--ink3);margin-top:4px;">카카오 DMP 조회 시 자동 갱신됨</div>
+          </div>
+          <button class="action-btn btn-outline" style="margin-top:10px;font-size:11px;padding:7px 14px;">🔄 지금 키 갱신하기</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// CONSENT ITEMS
+(function(){
+  const items = [
+    {
+      icon:'🧑',
+      iconBg:'#eff6ff',
+      name:'기본 서비스 이용을 위한 필수 정보',
+      desc:'이름, 이메일, 가입일. 서비스 제공에 반드시 필요한 정보예요. 철회 시 계정이 비활성화돼요.',
+      tags:['필수','서비스 운영'],
+      on:true, required:true, date:'2024.03.15'
+    },
+    {
+      icon:'📍',
+      iconBg:'#f0fdf4',
+      name:'인구통계 정보 제공 (광고 활용)',
+      desc:'성별, 연령대, 지역. 광고사에 통계 목적으로 제공돼요. 개인 특정은 불가능해요.',
+      tags:['선택','광고 활용','카카오·네이버 DMP'],
+      on:true, required:false, date:'2024.03.15'
+    },
+    {
+      icon:'👁️',
+      iconBg:'#fefce8',
+      name:'행동 패턴 분석 (맞춤형 콘텐츠)',
+      desc:'댓글 작성 패턴, 좋아요, 체류 시간. 맞춤형 콘텐츠 추천에 사용돼요.',
+      tags:['선택','콘텐츠 추천'],
+      on:true, required:false, date:'2024.07.22'
+    },
+    {
+      icon:'🎯',
+      iconBg:'#fdf4ff',
+      name:'제3자 DMP 데이터 유통',
+      desc:'광고 효과 측정을 위해 외부 광고사에 익명화된 관심사 데이터가 공유돼요.',
+      tags:['선택','외부 광고사','크리테오·구글 GAM'],
+      on:true, required:false, date:'2024.07.22'
+    },
+    {
+      icon:'📧',
+      iconBg:'#fff1f2',
+      name:'마케팅 이메일 수신',
+      desc:'신규 기능 소식, 이벤트 안내를 이메일로 받아요.',
+      tags:['선택','마케팅'],
+      on:false, required:false, date:'—'
+    },
+  ];
+
+  const list = document.getElementById('consentList');
+  items.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'consent-item';
+    el.innerHTML = `
+      <div class="consent-icon-wrap" style="background:${item.iconBg};">${item.icon}</div>
+      <div class="consent-body">
+        <div class="consent-name">${item.name}${item.required?' <span style="font-size:10px;color:var(--red);">(필수)</span>':''}</div>
+        <div class="consent-desc">${item.desc}</div>
+        <div class="consent-meta">
+          ${item.tags.map(t=>`<span class="consent-tag">${t}</span>`).join('')}
+        </div>
+      </div>
+      <div class="consent-right">
+        <div class="toggle ${item.on?'on':'off'}" onclick="this.classList.toggle('on');this.classList.toggle('off');" ${item.required?'style="opacity:0.5;pointer-events:none;"':''}></div>
+        <div class="consent-date">${item.date!=='—'?`동의: ${item.date}`:'미동의'}</div>
+        ${!item.required && item.on?`<button class="revoke-btn">철회</button>`:`<button class="revoke-btn" disabled>철회</button>`}
+      </div>
+    `;
+    list.appendChild(el);
+  });
+})();
+
+// ACCESS LOG
+(function(){
+  const logs = [
+    { company:'카카오 DMP', icon:'🟡', items:['연령대','지역'], date:'오늘 14:32', color:'#92400e', bg:'#fef3c7' },
+    { company:'구글 GAM', icon:'🔵', items:['관심사'], date:'오늘 14:28', color:'#1e40af', bg:'#dbeafe' },
+    { company:'네이버 GFA', icon:'🟢', items:['성별','연령'], date:'오늘 13:41', color:'#065f46', bg:'#d1fae5' },
+    { company:'카카오 DMP', icon:'🟡', items:['행동 패턴'], date:'어제 11:15', color:'#92400e', bg:'#fef3c7' },
+    { company:'크리테오', icon:'🔴', items:['구매 의향'], date:'1월 13일', color:'#991b1b', bg:'#fee2e2' },
+  ];
+  const tbody = document.getElementById('accessLog');
+  logs.forEach(l => {
+    tbody.innerHTML += `
+      <tr>
+        <td>
+          <div class="company-chip">
+            <span style="width:22px;height:22px;border-radius:5px;background:${l.bg};display:inline-flex;align-items:center;justify-content:center;font-size:11px;">${l.icon}</span>
+            ${l.company}
+          </div>
+        </td>
+        <td>${l.items.map(i=>`<span class="data-tag" style="background:var(--surface);color:var(--ink2);">${i}</span>`).join('')}</td>
+        <td style="font-size:10px;color:var(--ink3);font-family:var(--mono);white-space:nowrap;">${l.date}</td>
+        <td><button class="detail-btn">상세</button></td>
+      </tr>
+    `;
+  });
+})();
+
+// APPEAL
+(function(){
+  const appeals = [
+    {
+      cls:'open',
+      status:'status-open',
+      statusLabel:'검토 중',
+      title:'카카오 DMP — "행동 패턴" 데이터 조회 목적 불명확',
+      desc: '2024년 12월 행동 패턴 데이터가 "광고 타겟팅" 외 목적으로 활용된 것으로 보입니다. 동의한 범위를 벗어난 사용이 의심됩니다.',
+      date:'신청일 2026.01.10 · 처리 기한 2026.02.09'
+    },
+    {
+      cls:'resolved',
+      status:'status-resolved',
+      statusLabel:'처리 완료',
+      title:'네이버 GFA — 동의 철회 후 데이터 미삭제 확인 요청',
+      desc:'2024년 11월 동의 철회 후 30일 이내 삭제 확인서를 요청했습니다. 정상 처리 및 삭제 완료 확인됨.',
+      date:'신청일 2025.12.01 · 처리 완료 2025.12.14'
+    }
+  ];
+
+  const section = document.getElementById('appealSection');
+  appeals.forEach(a => {
+    section.innerHTML += `
+      <div class="appeal-item ${a.cls}">
+        <div class="appeal-head">
+          <div class="appeal-title">${a.title}</div>
+          <span class="appeal-status ${a.status}">${a.statusLabel}</span>
+        </div>
+        <div class="appeal-desc">${a.desc}</div>
+        <div class="appeal-date">${a.date}</div>
+      </div>
+    `;
+  });
+
+  section.innerHTML += `
+    <div class="new-appeal-btn">➕ 새 문제 제기하기</div>
+  `;
+})();
+
+// Nav interactions
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', function(){
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
