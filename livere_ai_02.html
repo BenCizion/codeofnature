@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>livere.ai — 분석 결과</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #080c14;
+    --surface: #0e1520;
+    --surface2: #131d2d;
+    --surface3: #1a2538;
+    --border: rgba(0,210,255,0.1);
+    --border2: rgba(255,255,255,0.06);
+    --cyan: #00d2ff;
+    --cyan-dim: rgba(0,210,255,0.1);
+    --blue: #1a6fff;
+    --text: #e8f0fe;
+    --text-dim: #7a8ba8;
+    --text-muted: #3d5068;
+    --gold: #f5c842;
+    --green: #00f5a0;
+    --red: #ff4d6d;
+    --orange: #ff9640;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,210,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,210,255,0.02) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none; z-index: 0;
+  }
+
+  /* TOPBAR */
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(8,12,20,0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 56px;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: #fff;
+    margin-right: 24px;
+    white-space: nowrap;
+  }
+  .logo span { color: var(--cyan); }
+
+  .url-pill {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 500px;
+  }
+
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+  }
+
+  .btn-sm {
+    padding: 7px 14px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text-dim);
+    transition: all 0.2s;
+  }
+  .btn-sm:hover { border-color: var(--cyan); color: var(--cyan); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    color: #000;
+    font-weight: 700;
+    border: none;
+  }
+  .btn-primary:hover { opacity: 0.9; color: #000; }
+
+  /* MAIN LAYOUT */
+  .layout {
+    position: relative; z-index: 1;
+    display: grid;
+    grid-template-columns: 260px 1fr 280px;
+    grid-template-rows: auto;
+    gap: 0;
+    height: calc(100vh - 56px);
+  }
+
+  /* LEFT SIDEBAR */
+  .sidebar {
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 20px 16px;
+    background: var(--surface);
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    padding: 0 4px;
+  }
+
+  /* TOPIC CHAIN */
+  .topic-chain {
+    margin-bottom: 24px;
+  }
+
+  .topic-node {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    margin-bottom: 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .topic-node:hover { background: var(--cyan-dim); }
+  .topic-node.active { background: var(--cyan-dim); border: 1px solid rgba(0,210,255,0.2); }
+
+  .topic-node::before {
+    content: '';
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--cyan);
+    opacity: 0.6;
+    flex-shrink: 0;
+  }
+  .topic-node.active::before { opacity: 1; box-shadow: 0 0 6px var(--cyan); }
+
+  .topic-text {
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .topic-count {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .topic-connector {
+    width: 1px; height: 8px;
+    background: linear-gradient(to bottom, var(--cyan), transparent);
+    margin: 0 auto 0 15px;
+    opacity: 0.3;
+  }
+
+  /* PERSONA */
+  .persona-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+
+  .persona-name {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .persona-tag {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .tag-me { background: rgba(0,210,255,0.15); color: var(--cyan); }
+  .tag-group { background: rgba(245,200,66,0.15); color: var(--gold); }
+
+  .persona-attrs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 8px;
+  }
+
+  .attr {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.04);
+    color: var(--text-dim);
+    border: 1px solid var(--border2);
+  }
+
+  /* CENTER CONTENT */
+  .center {
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* TOPIC HEADER */
+  .topic-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+  }
+
+  .topic-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .topic-tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 3px;
+    background: var(--cyan-dim);
+    color: var(--cyan);
+    border: 1px solid rgba(0,210,255,0.2);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 400;
+  }
+
+  .topic-meta {
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .meta-item { display: flex; align-items: center; gap: 6px; }
+
+  /* ANALYSIS CARDS ROW */
+  .cards-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: rgba(0,210,255,0.25); }
+
+  .card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .card.positive::after { background: linear-gradient(90deg, var(--green), transparent); }
+  .card.negative::after { background: linear-gradient(90deg, var(--red), transparent); }
+  .card.neutral::after { background: linear-gradient(90deg, var(--gold), transparent); }
+
+  .card-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .card-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .card.positive .card-value { color: var(--green); }
+  .card.negative .card-value { color: var(--red); }
+  .card.neutral .card-value { color: var(--gold); }
+
+  .card-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* CHARTS SECTION */
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+  }
+
+  .chart-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+
+  .chart-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* TOPIC CLOUD */
+  .topic-cloud {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+  }
+
+  .cloud-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .cloud-tag {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 12px;
+  }
+
+  .cloud-tag:hover { opacity: 0.8; transform: scale(1.05); }
+  .cloud-tag.s1 { font-size: 16px; border-color: rgba(0,210,255,0.4); color: var(--cyan); background: rgba(0,210,255,0.08); }
+  .cloud-tag.s2 { font-size: 14px; border-color: rgba(245,200,66,0.4); color: var(--gold); background: rgba(245,200,66,0.06); }
+  .cloud-tag.s3 { font-size: 12px; border-color: rgba(255,255,255,0.12); color: var(--text-dim); background: transparent; }
+  .cloud-tag.s4 { font-size: 11px; border-color: rgba(255,255,255,0.07); color: var(--text-muted); }
+
+  /* TIMELINE */
+  .timeline-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+  }
+
+  .timeline-items {
+    position: relative;
+    padding-left: 20px;
+    margin-top: 14px;
+  }
+
+  .timeline-items::before {
+    content: '';
+    position: absolute;
+    left: 6px; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--cyan), transparent);
+    opacity: 0.3;
+  }
+
+  .timeline-item {
+    position: relative;
+    padding: 0 0 18px 16px;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -14px; top: 5px;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    border: 1px solid var(--cyan);
+    background: var(--bg);
+  }
+
+  .timeline-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--cyan);
+    margin-bottom: 4px;
+  }
+
+  .timeline-text {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .timeline-badge {
+    display: inline-block;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .badge-future { background: rgba(0,210,255,0.15); color: var(--cyan); }
+  .badge-past { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+
+  /* RIGHT PANEL — ACTIONS */
+  .right-panel {
+    border-left: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 20px 16px;
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* ACTION BUTTONS */
+  .action-btn {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 7px;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+    text-align: left;
+    margin-bottom: 8px;
+  }
+
+  .action-btn:hover { border-color: var(--cyan); background: var(--cyan-dim); }
+
+  .action-icon {
+    font-size: 16px;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.04);
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .action-text { flex: 1; }
+  .action-title { font-weight: 500; font-size: 12px; }
+  .action-sub { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+  /* TOP COMMENTS */
+  .comment-item {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+
+  .comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .comment-author {
+    font-size: 11px;
+    color: var(--cyan);
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .comment-likes {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .comment-body {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .comment-sentiment {
+    display: inline-block;
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 2px;
+    margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .sent-pos { background: rgba(0,245,160,0.12); color: var(--green); }
+  .sent-neg { background: rgba(255,77,109,0.12); color: var(--red); }
+  .sent-neu { background: rgba(255,150,64,0.1); color: var(--orange); }
+
+  /* SHARE URL */
+  .share-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+
+  .share-url {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    word-break: break-all;
+    margin: 10px 0;
+    padding: 8px 10px;
+    background: rgba(0,210,255,0.05);
+    border-radius: 4px;
+    border: 1px solid rgba(0,210,255,0.1);
+  }
+
+  .copy-btn {
+    width: 100%;
+    padding: 9px;
+    background: rgba(0,210,255,0.1);
+    border: 1px solid rgba(0,210,255,0.2);
+    border-radius: 5px;
+    color: var(--cyan);
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { background: rgba(0,210,255,0.2); }
+
+  /* LOADING PULSE */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card, .chart-card, .topic-cloud, .timeline-card {
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">livere<span>.ai</span></div>
+  <div class="url-pill">🔗 https://n.news.naver.com/article/056/0011824391 · 조선일보 · 2026.03.06</div>
+  <div class="topbar-actions">
+    <button class="btn-sm">↗ 공유</button>
+    <button class="btn-sm">⬇ 내보내기</button>
+    <button class="btn-primary btn-sm">+ 새 분석</button>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="sidebar">
+    <div class="section-label">토픽 체인</div>
+    <div class="topic-chain">
+      <div class="topic-node active">
+        <span class="topic-text">이재명</span>
+        <span class="topic-count">34K</span>
+      </div>
+      <div class="topic-connector"></div>
+      <div class="topic-node">
+        <span class="topic-text">이란</span>
+        <span class="topic-count">12K</span>
+      </div>
+      <div class="topic-connector"></div>
+      <div class="topic-node">
+        <span class="topic-text">대한민국</span>
+        <span class="topic-count">28K</span>
+      </div>
+      <div class="topic-connector"></div>
+      <div class="topic-node">
+        <span class="topic-text">전쟁대응</span>
+        <span class="topic-count">8.4K</span>
+      </div>
+      <div class="topic-connector"></div>
+      <div class="topic-node">
+        <span class="topic-text">국군투입</span>
+        <span class="topic-count">6.1K</span>
+      </div>
+    </div>
+
+    <div class="section-label">페르소나</div>
+    <div class="persona-card">
+      <div class="persona-name">
+        나의 페르소나
+        <span class="persona-tag tag-me">ME</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">뉴스 소비 집중형 · 정치 관심 고</div>
+      <div class="persona-attrs">
+        <span class="attr">30-40대</span>
+        <span class="attr">수도권</span>
+        <span class="attr">직장인</span>
+        <span class="attr">고관여</span>
+      </div>
+    </div>
+
+    <div class="persona-card">
+      <div class="persona-name">
+        관련 집단
+        <span class="persona-tag tag-group">GROUP</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">안보·외교 민감 반응 집단</div>
+      <div class="persona-attrs">
+        <span class="attr">50대+</span>
+        <span class="attr">남성 62%</span>
+        <span class="attr">보수 성향</span>
+        <span class="attr">SNS 활성</span>
+      </div>
+    </div>
+
+    <div class="persona-card">
+      <div class="persona-name">
+        관련 집단 2
+        <span class="persona-tag tag-group">GROUP</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">MZ 정치 무관심층</div>
+      <div class="persona-attrs">
+        <span class="attr">20-30대</span>
+        <span class="attr">관심 저</span>
+        <span class="attr">댓글 소극</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTER -->
+  <div class="center">
+
+    <!-- Topic Header -->
+    <div class="topic-header">
+      <div class="topic-title">
+        이재명·이란·대한민국·전쟁대응·국군투입
+        <span class="topic-tag">POLITICS</span>
+        <span class="topic-tag" style="color:var(--red);border-color:rgba(255,77,109,0.3);background:rgba(255,77,109,0.08);">HIGH TENSION</span>
+      </div>
+      <div class="topic-meta">
+        <span class="meta-item">📊 댓글 48,214개 수집</span>
+        <span class="meta-item">⏱ 2026.03.06 14:32 기준</span>
+        <span class="meta-item">🔄 실시간 업데이트 중</span>
+      </div>
+    </div>
+
+    <!-- Sentiment Cards -->
+    <div class="cards-row">
+      <div class="card positive">
+        <div class="card-label">긍정 여론</div>
+        <div class="card-value">31%</div>
+        <div class="card-sub">전일 대비 ▲ 3.2%p</div>
+      </div>
+      <div class="card negative">
+        <div class="card-label">부정 여론</div>
+        <div class="card-value">52%</div>
+        <div class="card-sub">전일 대비 ▼ 1.8%p</div>
+      </div>
+      <div class="card neutral">
+        <div class="card-label">중립 / 정보탐색</div>
+        <div class="card-value">17%</div>
+        <div class="card-sub">2,440개 유보 댓글</div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">📈 여론 시계열 (72시간)</div>
+        <div class="chart-desc">공시적 · 시간별 감성 변화</div>
+        <canvas id="lineChart" height="160"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">🎯 감성 분포</div>
+        <div class="chart-desc">전체 댓글 감성 비율</div>
+        <canvas id="donutChart" height="160"></canvas>
+      </div>
+    </div>
+
+    <!-- Topic Cloud -->
+    <div class="topic-cloud">
+      <div class="chart-title">🌐 연관 토픽 클라우드</div>
+      <div class="chart-desc">공시적 · 현재 동시 언급 키워드</div>
+      <div class="cloud-tags">
+        <span class="cloud-tag s1">국군 파병</span>
+        <span class="cloud-tag s1">한미동맹</span>
+        <span class="cloud-tag s2">중동 분쟁</span>
+        <span class="cloud-tag s2">대통령 권한</span>
+        <span class="cloud-tag s2">호르무즈</span>
+        <span class="cloud-tag s3">유가 상승</span>
+        <span class="cloud-tag s3">여론조사</span>
+        <span class="cloud-tag s3">야당 반응</span>
+        <span class="cloud-tag s3">국방부</span>
+        <span class="cloud-tag s4">헌법 논란</span>
+        <span class="cloud-tag s4">해외 반응</span>
+        <span class="cloud-tag s4">에너지 안보</span>
+        <span class="cloud-tag s4">방산 수혜</span>
+        <span class="cloud-tag s4">청와대</span>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="timeline-card">
+      <div class="chart-title">🕰️ 통시적 분석</div>
+      <div class="chart-desc">이 토픽의 과거 · 현재 · 미래 맥락</div>
+      <div class="timeline-items">
+        <div class="timeline-item">
+          <div class="timeline-date">2023.11 — 과거</div>
+          <div class="timeline-text">한국의 호르무즈 해협 파병 논의가 처음 수면 위로 올라온 시기. 유사한 국군 파병 논의가 국회에서 2:1 반대로 부결된 전례 있음.</div>
+          <span class="timeline-badge badge-past">CONTEXT</span>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">2026.03.06 — 현재</div>
+          <div class="timeline-text">이란-이스라엘 확전 우려 속 대통령 이재명의 국군 파병 검토 발언. 여야 정면충돌, SNS 여론 폭발적 반응 진행 중.</div>
+          <span class="timeline-badge badge-past">NOW</span>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">2026 Q2 — 예측</div>
+          <div class="timeline-text">AI 예측: 이란 사태 장기화 시 파병 여론 역전 가능성 38%. 현재 추세 유지 시 국회 표결 없이 행정명령 처리 시도 예상됨.</div>
+          <span class="timeline-badge badge-future">AI FORECAST</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+
+    <div>
+      <div class="section-label">나의 참여</div>
+      <button class="action-btn">
+        <div class="action-icon">✅</div>
+        <div class="action-text">
+          <div class="action-title">팩트체크 하기</div>
+          <div class="action-sub">오류 수정 · 출처 첨부</div>
+        </div>
+      </button>
+      <button class="action-btn">
+        <div class="action-icon">💬</div>
+        <div class="action-text">
+          <div class="action-title">의견 남기기</div>
+          <div class="action-sub">댓글 · 투표 · 이모티콘</div>
+        </div>
+      </button>
+      <button class="action-btn">
+        <div class="action-icon">🎨</div>
+        <div class="action-text">
+          <div class="action-title">미디어 생성</div>
+          <div class="action-sub">그래프 · 이미지 · 카드뉴스</div>
+        </div>
+      </button>
+      <button class="action-btn">
+        <div class="action-icon">💰</div>
+        <div class="action-text">
+          <div class="action-title">관련 자산 보기</div>
+          <div class="action-sub">방산주 · 에너지 ETF</div>
+        </div>
+      </button>
+    </div>
+
+    <div>
+      <div class="section-label">주요 댓글 TOP 5</div>
+      <div class="comment-item">
+        <div class="comment-header">
+          <span class="comment-author">user_a****</span>
+          <span class="comment-likes">👍 4,821</span>
+        </div>
+        <div class="comment-body">국군은 용병이 아닙니다. 헌법 절차 없이 파병은 위헌입니다.</div>
+        <span class="comment-sentiment sent-neg">부정</span>
+      </div>
+      <div class="comment-item">
+        <div class="comment-header">
+          <span class="comment-author">news_r****</span>
+          <span class="comment-likes">👍 3,204</span>
+        </div>
+        <div class="comment-body">한미동맹 강화 차원에서 검토는 가능하지만 국민적 합의가 먼저.</div>
+        <span class="comment-sentiment sent-neu">중립</span>
+      </div>
+      <div class="comment-item">
+        <div class="comment-header">
+          <span class="comment-author">k_poli****</span>
+          <span class="comment-likes">👍 2,187</span>
+        </div>
+        <div class="comment-body">에너지 안보 위협 심각. 호르무즈 봉쇄시 한국 경제 직격탄.</div>
+        <span class="comment-sentiment sent-neg">부정</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">공유하기</div>
+      <div class="share-box">
+        <div style="font-size:12px;color:var(--text-dim);">이 분석 결과 고유 링크</div>
+        <div class="share-url">livere.ai/2983103</div>
+        <button class="copy-btn" onclick="this.textContent='✓ 복사됨'">🔗 링크 복사</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// LINE CHART
+const lCtx = document.getElementById('lineChart').getContext('2d');
+new Chart(lCtx, {
+  type: 'line',
+  data: {
+    labels: ['72h','60h','48h','36h','24h','12h','6h','지금'],
+    datasets: [
+      {
+        label: '긍정',
+        data: [28,30,29,27,28,30,31,31],
+        borderColor: '#00f5a0',
+        backgroundColor: 'rgba(0,245,160,0.05)',
+        tension: 0.4, fill: true, pointRadius: 3
+      },
+      {
+        label: '부정',
+        data: [48,50,54,56,55,53,52,52],
+        borderColor: '#ff4d6d',
+        backgroundColor: 'rgba(255,77,109,0.05)',
+        tension: 0.4, fill: true, pointRadius: 3
+      },
+      {
+        label: '중립',
+        data: [24,20,17,17,17,17,17,17],
+        borderColor: '#f5c842',
+        backgroundColor: 'rgba(245,200,66,0.03)',
+        tension: 0.4, fill: true, pointRadius: 3
+      }
+    ]
+  },
+  options: {
+    plugins: {
+      legend: { labels: { color: '#7a8ba8', font: { size: 10, family: 'JetBrains Mono' }, boxWidth: 10, padding: 12 } }
+    },
+    scales: {
+      x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#3d5068', font: { size: 9 } } },
+      y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#3d5068', font: { size: 9 } }, min: 0, max: 70 }
+    }
+  }
+});
+
+// DONUT CHART
+const dCtx = document.getElementById('donutChart').getContext('2d');
+new Chart(dCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['부정 52%', '긍정 31%', '중립 17%'],
+    datasets: [{
+      data: [52, 31, 17],
+      backgroundColor: ['rgba(255,77,109,0.8)', 'rgba(0,245,160,0.8)', 'rgba(245,200,66,0.8)'],
+      borderColor: ['#ff4d6d','#00f5a0','#f5c842'],
+      borderWidth: 1,
+      hoverOffset: 6
+    }]
+  },
+  options: {
+    cutout: '68%',
+    plugins: {
+      legend: { position: 'bottom', labels: { color: '#7a8ba8', font: { size: 10, family: 'JetBrains Mono' }, boxWidth: 10, padding: 12 } }
+    }
+  }
+});
+</script>
+</body>
+</html>
