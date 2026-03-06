@@ -7,920 +7,475 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  :root {
-    --bg: #080c14;
-    --surface: #0e1520;
-    --surface2: #131d2d;
-    --surface3: #1a2538;
-    --border: rgba(0,210,255,0.1);
-    --border2: rgba(255,255,255,0.06);
-    --cyan: #00d2ff;
-    --cyan-dim: rgba(0,210,255,0.1);
-    --blue: #1a6fff;
-    --text: #e8f0fe;
-    --text-dim: #7a8ba8;
-    --text-muted: #3d5068;
-    --gold: #f5c842;
-    --green: #00f5a0;
-    --red: #ff4d6d;
-    --orange: #ff9640;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Noto Sans KR', sans-serif;
-    min-height: 100vh;
-  }
-
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image:
-      linear-gradient(rgba(0,210,255,0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,210,255,0.02) 1px, transparent 1px);
-    background-size: 48px 48px;
-    pointer-events: none; z-index: 0;
-  }
-
-  /* TOPBAR */
-  .topbar {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(8,12,20,0.95);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    display: flex;
-    align-items: center;
-    gap: 0;
-    height: 56px;
-  }
-
-  .logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 18px;
-    color: #fff;
-    margin-right: 24px;
-    white-space: nowrap;
-  }
-  .logo span { color: var(--cyan); }
-
-  .url-pill {
-    flex: 1;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 8px 14px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--text-dim);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 500px;
-  }
-
-  .topbar-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-left: auto;
-  }
-
-  .btn-sm {
-    padding: 7px 14px;
-    border-radius: 5px;
-    font-size: 12px;
-    font-family: 'Noto Sans KR', sans-serif;
-    cursor: pointer;
-    border: 1px solid var(--border2);
-    background: var(--surface2);
-    color: var(--text-dim);
-    transition: all 0.2s;
-  }
-  .btn-sm:hover { border-color: var(--cyan); color: var(--cyan); }
-
-  .btn-primary {
-    background: linear-gradient(135deg, var(--cyan), var(--blue));
-    color: #000;
-    font-weight: 700;
-    border: none;
-  }
-  .btn-primary:hover { opacity: 0.9; color: #000; }
-
-  /* MAIN LAYOUT */
-  .layout {
-    position: relative; z-index: 1;
-    display: grid;
-    grid-template-columns: 260px 1fr 280px;
-    grid-template-rows: auto;
-    gap: 0;
-    height: calc(100vh - 56px);
-  }
-
-  /* LEFT SIDEBAR */
-  .sidebar {
-    border-right: 1px solid var(--border);
-    overflow-y: auto;
-    padding: 20px 16px;
-    background: var(--surface);
-  }
-
-  .section-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 12px;
-    padding: 0 4px;
-  }
-
-  /* TOPIC CHAIN */
-  .topic-chain {
-    margin-bottom: 24px;
-  }
-
-  .topic-node {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 12px;
-    margin-bottom: 4px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-  }
-  .topic-node:hover { background: var(--cyan-dim); }
-  .topic-node.active { background: var(--cyan-dim); border: 1px solid rgba(0,210,255,0.2); }
-
-  .topic-node::before {
-    content: '';
-    width: 3px; height: 3px;
-    border-radius: 50%;
-    background: var(--cyan);
-    opacity: 0.6;
-    flex-shrink: 0;
-  }
-  .topic-node.active::before { opacity: 1; box-shadow: 0 0 6px var(--cyan); }
-
-  .topic-text {
-    font-size: 13px;
-    color: var(--text);
-    font-weight: 500;
-  }
-
-  .topic-count {
-    margin-left: auto;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: var(--text-muted);
-  }
-
-  .topic-connector {
-    width: 1px; height: 8px;
-    background: linear-gradient(to bottom, var(--cyan), transparent);
-    margin: 0 auto 0 15px;
-    opacity: 0.3;
-  }
-
-  /* PERSONA */
-  .persona-card {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px;
-    margin-bottom: 10px;
-  }
-
-  .persona-name {
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .persona-tag {
-    font-size: 10px;
-    padding: 2px 7px;
-    border-radius: 20px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .tag-me { background: rgba(0,210,255,0.15); color: var(--cyan); }
-  .tag-group { background: rgba(245,200,66,0.15); color: var(--gold); }
-
-  .persona-attrs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-top: 8px;
-  }
-
-  .attr {
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 3px;
-    background: rgba(255,255,255,0.04);
-    color: var(--text-dim);
-    border: 1px solid var(--border2);
-  }
-
-  /* CENTER CONTENT */
-  .center {
-    overflow-y: auto;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  /* TOPIC HEADER */
-  .topic-header {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 20px 24px;
-  }
-
-  .topic-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .topic-tag {
-    font-size: 11px;
-    padding: 3px 10px;
-    border-radius: 3px;
-    background: var(--cyan-dim);
-    color: var(--cyan);
-    border: 1px solid rgba(0,210,255,0.2);
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 400;
-  }
-
-  .topic-meta {
-    font-size: 12px;
-    color: var(--text-dim);
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .meta-item { display: flex; align-items: center; gap: 6px; }
-
-  /* ANALYSIS CARDS ROW */
-  .cards-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 14px;
-  }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.2s;
-  }
-  .card:hover { border-color: rgba(0,210,255,0.25); }
-
-  .card::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 2px;
-  }
-
-  .card.positive::after { background: linear-gradient(90deg, var(--green), transparent); }
-  .card.negative::after { background: linear-gradient(90deg, var(--red), transparent); }
-  .card.neutral::after { background: linear-gradient(90deg, var(--gold), transparent); }
-
-  .card-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-  }
-
-  .card-value {
-    font-family: 'Syne', sans-serif;
-    font-size: 36px;
-    font-weight: 800;
-    line-height: 1;
-    margin-bottom: 6px;
-  }
-
-  .card.positive .card-value { color: var(--green); }
-  .card.negative .card-value { color: var(--red); }
-  .card.neutral .card-value { color: var(--gold); }
-
-  .card-sub {
-    font-size: 11px;
-    color: var(--text-muted);
-  }
-
-  /* CHARTS SECTION */
-  .charts-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
-
-  .chart-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px;
-  }
-
-  .chart-title {
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 4px;
-    color: var(--text);
-  }
-
-  .chart-desc {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-bottom: 16px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  /* TOPIC CLOUD */
-  .topic-cloud {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px;
-  }
-
-  .cloud-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-  }
-
-  .cloud-tag {
-    padding: 6px 14px;
-    border-radius: 20px;
-    border: 1px solid;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 12px;
-  }
-
-  .cloud-tag:hover { opacity: 0.8; transform: scale(1.05); }
-  .cloud-tag.s1 { font-size: 16px; border-color: rgba(0,210,255,0.4); color: var(--cyan); background: rgba(0,210,255,0.08); }
-  .cloud-tag.s2 { font-size: 14px; border-color: rgba(245,200,66,0.4); color: var(--gold); background: rgba(245,200,66,0.06); }
-  .cloud-tag.s3 { font-size: 12px; border-color: rgba(255,255,255,0.12); color: var(--text-dim); background: transparent; }
-  .cloud-tag.s4 { font-size: 11px; border-color: rgba(255,255,255,0.07); color: var(--text-muted); }
-
-  /* TIMELINE */
-  .timeline-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px;
-  }
-
-  .timeline-items {
-    position: relative;
-    padding-left: 20px;
-    margin-top: 14px;
-  }
-
-  .timeline-items::before {
-    content: '';
-    position: absolute;
-    left: 6px; top: 0; bottom: 0;
-    width: 1px;
-    background: linear-gradient(to bottom, var(--cyan), transparent);
-    opacity: 0.3;
-  }
-
-  .timeline-item {
-    position: relative;
-    padding: 0 0 18px 16px;
-  }
-
-  .timeline-item::before {
-    content: '';
-    position: absolute;
-    left: -14px; top: 5px;
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    border: 1px solid var(--cyan);
-    background: var(--bg);
-  }
-
-  .timeline-date {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: var(--cyan);
-    margin-bottom: 4px;
-  }
-
-  .timeline-text {
-    font-size: 12px;
-    color: var(--text-dim);
-    line-height: 1.6;
-  }
-
-  .timeline-badge {
-    display: inline-block;
-    font-size: 9px;
-    padding: 2px 6px;
-    border-radius: 2px;
-    margin-top: 4px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .badge-future { background: rgba(0,210,255,0.15); color: var(--cyan); }
-  .badge-past { background: rgba(255,255,255,0.05); color: var(--text-muted); }
-
-  /* RIGHT PANEL — ACTIONS */
-  .right-panel {
-    border-left: 1px solid var(--border);
-    overflow-y: auto;
-    padding: 20px 16px;
-    background: var(--surface);
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  /* ACTION BUTTONS */
-  .action-btn {
-    width: 100%;
-    padding: 12px 14px;
-    border-radius: 7px;
-    border: 1px solid var(--border2);
-    background: var(--surface2);
-    color: var(--text);
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.2s;
-    text-align: left;
-    margin-bottom: 8px;
-  }
-
-  .action-btn:hover { border-color: var(--cyan); background: var(--cyan-dim); }
-
-  .action-icon {
-    font-size: 16px;
-    width: 28px; height: 28px;
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(255,255,255,0.04);
-    border-radius: 6px;
-    flex-shrink: 0;
-  }
-
-  .action-text { flex: 1; }
-  .action-title { font-weight: 500; font-size: 12px; }
-  .action-sub { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
-
-  /* TOP COMMENTS */
-  .comment-item {
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 8px;
-  }
-
-  .comment-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-  }
-
-  .comment-author {
-    font-size: 11px;
-    color: var(--cyan);
-    font-weight: 600;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .comment-likes {
-    font-size: 10px;
-    color: var(--text-muted);
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .comment-body {
-    font-size: 12px;
-    color: var(--text-dim);
-    line-height: 1.6;
-  }
-
-  .comment-sentiment {
-    display: inline-block;
-    font-size: 9px;
-    padding: 2px 7px;
-    border-radius: 2px;
-    margin-top: 6px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .sent-pos { background: rgba(0,245,160,0.12); color: var(--green); }
-  .sent-neg { background: rgba(255,77,109,0.12); color: var(--red); }
-  .sent-neu { background: rgba(255,150,64,0.1); color: var(--orange); }
-
-  /* SHARE URL */
-  .share-box {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px;
-  }
-
-  .share-url {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--cyan);
-    word-break: break-all;
-    margin: 10px 0;
-    padding: 8px 10px;
-    background: rgba(0,210,255,0.05);
-    border-radius: 4px;
-    border: 1px solid rgba(0,210,255,0.1);
-  }
-
-  .copy-btn {
-    width: 100%;
-    padding: 9px;
-    background: rgba(0,210,255,0.1);
-    border: 1px solid rgba(0,210,255,0.2);
-    border-radius: 5px;
-    color: var(--cyan);
-    font-size: 12px;
-    cursor: pointer;
-    font-family: 'Noto Sans KR', sans-serif;
-    transition: all 0.2s;
-  }
-  .copy-btn:hover { background: rgba(0,210,255,0.2); }
-
-  /* LOADING PULSE */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .card, .chart-card, .topic-cloud, .timeline-card {
-    animation: fadeUp 0.5s ease forwards;
-  }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+:root {
+  --bg:#080c14; --sf:#0e1520; --sf2:#131d2d;
+  --bd:rgba(0,210,255,.1); --bd2:rgba(255,255,255,.06);
+  --cy:#00d2ff; --cy-d:rgba(0,210,255,.1); --bl:#1a6fff;
+  --tx:#e8f0fe; --td:#7a8ba8; --tm:#3d5068;
+  --go:#f5c842; --gr:#00f5a0; --re:#ff4d6d; --or:#ff9640; --pu:#a855f7;
+  --sb:232px; --rp:260px; --tb:52px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--tx);font-family:'Noto Sans KR',sans-serif;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,210,255,.02)1px,transparent 1px),linear-gradient(90deg,rgba(0,210,255,.02)1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0;}
+
+/* ── TOPBAR ── */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--tb);background:rgba(8,12,20,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;padding:0 14px;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:#fff;white-space:nowrap;flex-shrink:0;text-decoration:none;}
+.logo span{color:var(--cy);}
+.url-pill{flex:1;min-width:0;background:var(--sf2);border:1px solid var(--bd);border-radius:5px;padding:5px 11px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--td);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.top-acts{display:flex;gap:7px;flex-shrink:0;}
+.btn{padding:6px 11px;border-radius:4px;font-size:11px;cursor:pointer;border:1px solid var(--bd2);background:var(--sf2);color:var(--td);transition:all .2s;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;}
+.btn:hover{border-color:var(--cy);color:var(--cy);}
+.btn-p{background:linear-gradient(135deg,var(--cy),var(--bl));color:#000!important;font-weight:700;border:none;}
+.btn-p:hover{opacity:.9;}
+.mob-tog{display:none;background:none;border:none;color:var(--cy);font-size:20px;cursor:pointer;padding:2px 4px;flex-shrink:0;line-height:1;}
+
+/* ── SHELL ── */
+.shell{position:fixed;top:var(--tb);left:0;right:0;bottom:0;display:flex;z-index:1;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sb);flex-shrink:0;border-right:1px solid var(--bd);overflow-y:auto;background:var(--sf);padding:14px 11px;display:flex;flex-direction:column;gap:16px;transition:transform .25s ease;}
+.sec-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--tm);margin-bottom:8px;}
+.tchain{display:flex;flex-direction:column;gap:1px;}
+.tnode{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:6px;cursor:pointer;border:1px solid transparent;transition:all .18s;}
+.tnode:hover{background:var(--cy-d);}
+.tnode.active{background:var(--cy-d);border-color:rgba(0,210,255,.3);}
+.ndot{width:7px;height:7px;border-radius:50%;flex-shrink:0;border:1px solid var(--tm);transition:all .2s;}
+.tnode.active .ndot{background:var(--cy);border-color:var(--cy);box-shadow:0 0 8px var(--cy);}
+.ntx{font-size:12px;color:var(--tx);flex:1;font-weight:500;}
+.ncnt{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--tm);background:rgba(255,255,255,.04);padding:2px 5px;border-radius:3px;}
+.tconn{width:1px;height:8px;background:linear-gradient(to bottom,var(--cy),transparent);margin:0 auto 0 13px;opacity:.22;}
+.pcard{background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:11px 12px;margin-bottom:8px;}
+.pname{font-size:12px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.ptag{font-size:9px;padding:2px 6px;border-radius:20px;font-family:'JetBrains Mono',monospace;}
+.pt-me{background:rgba(0,210,255,.15);color:var(--cy);}
+.pt-g{background:rgba(245,200,66,.15);color:var(--go);}
+.pdesc{font-size:11px;color:var(--td);line-height:1.6;margin-bottom:5px;}
+.patts{display:flex;flex-wrap:wrap;gap:4px;}
+.att{font-size:9px;padding:2px 6px;border-radius:3px;background:rgba(255,255,255,.04);color:var(--td);border:1px solid var(--bd2);}
+
+/* ── CENTER ── */
+.center{flex:1;min-width:0;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;}
+
+/* topic header */
+.thead{background:var(--sf);border:1px solid var(--bd);border-radius:9px;padding:14px 18px;}
+.ttitle{font-family:'Syne',sans-serif;font-size:clamp(13px,1.6vw,18px);font-weight:700;margin-bottom:7px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;line-height:1.4;}
+.ttag{font-size:10px;padding:2px 7px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-weight:400;white-space:nowrap;}
+.tt-bl{background:var(--cy-d);color:var(--cy);border:1px solid rgba(0,210,255,.2);}
+.tt-re{background:rgba(255,77,109,.08);color:var(--re);border:1px solid rgba(255,77,109,.25);}
+.tt-go{background:rgba(245,200,66,.08);color:var(--go);border:1px solid rgba(245,200,66,.25);}
+.tt-gr{background:rgba(0,245,160,.08);color:var(--gr);border:1px solid rgba(0,245,160,.25);}
+.tt-pu{background:rgba(168,85,247,.08);color:var(--pu);border:1px solid rgba(168,85,247,.25);}
+.tmeta{font-size:10px;color:var(--td);display:flex;gap:14px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;}
+
+/* stat cards */
+.crow{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:13px 14px;position:relative;overflow:hidden;}
+.card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;}
+.c-pos::after{background:linear-gradient(90deg,var(--gr),transparent);}
+.c-neg::after{background:linear-gradient(90deg,var(--re),transparent);}
+.c-neu::after{background:linear-gradient(90deg,var(--go),transparent);}
+.clbl{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--tm);margin-bottom:7px;}
+.cval{font-family:'Syne',sans-serif;font-size:clamp(20px,2.8vw,34px);font-weight:800;line-height:1;margin-bottom:3px;}
+.c-pos .cval{color:var(--gr);}
+.c-neg .cval{color:var(--re);}
+.c-neu .cval{color:var(--go);}
+.csub{font-size:10px;color:var(--tm);}
+
+/* charts row — KEY responsive fix */
+.chrow{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.chcard{background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:13px 14px;min-width:0;overflow:hidden;}
+.chtitle{font-size:12px;font-weight:600;margin-bottom:2px;}
+.chdesc{font-size:10px;color:var(--tm);margin-bottom:10px;font-family:'JetBrains Mono',monospace;}
+/* Chart.js canvas responsive wrapper */
+.ch-wrap{position:relative;width:100%;min-height:0;}
+
+/* cloud */
+.ccloud{background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:13px 14px;}
+.ctags{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;}
+.ctg{padding:4px 11px;border-radius:20px;border:1px solid;cursor:pointer;transition:all .18s;}
+.ctg:hover{opacity:.75;transform:scale(1.04);}
+.s1{font-size:15px;border-color:rgba(0,210,255,.4);color:var(--cy);background:rgba(0,210,255,.08);}
+.s2{font-size:13px;border-color:rgba(245,200,66,.35);color:var(--go);background:rgba(245,200,66,.06);}
+.s3{font-size:11px;border-color:rgba(255,255,255,.12);color:var(--td);}
+.s4{font-size:10px;border-color:rgba(255,255,255,.07);color:var(--tm);}
+
+/* timeline */
+.tlcard{background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:13px 14px;}
+.tlwrap{position:relative;padding-left:17px;margin-top:11px;}
+.tlwrap::before{content:'';position:absolute;left:5px;top:6px;bottom:6px;width:1px;background:linear-gradient(to bottom,var(--cy),transparent);opacity:.3;}
+.tli{position:relative;padding:0 0 14px 13px;}
+.tli::before{content:'';position:absolute;left:-12px;top:5px;width:7px;height:7px;border-radius:50%;border:1px solid var(--cy);background:var(--bg);}
+.tldate{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cy);margin-bottom:3px;}
+.tltext{font-size:11px;color:var(--td);line-height:1.7;}
+.tlbadge{display:inline-block;font-size:8px;padding:2px 5px;border-radius:2px;margin-top:3px;font-family:'JetBrains Mono',monospace;}
+.b-f{background:rgba(0,210,255,.15);color:var(--cy);}
+.b-p{background:rgba(255,255,255,.05);color:var(--tm);}
+.b-n{background:rgba(0,245,160,.12);color:var(--gr);}
+
+/* ── RIGHT PANEL ── */
+.rpanel{width:var(--rp);flex-shrink:0;border-left:1px solid var(--bd);overflow-y:auto;background:var(--sf);padding:14px 11px;display:flex;flex-direction:column;gap:16px;}
+.abtn{width:100%;padding:9px 11px;border-radius:6px;border:1px solid var(--bd2);background:var(--sf2);color:var(--tx);font-family:'Noto Sans KR',sans-serif;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .18s;text-align:left;margin-bottom:6px;}
+.abtn:hover{border-color:var(--cy);background:var(--cy-d);}
+.aico{font-size:14px;width:25px;height:25px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);border-radius:5px;flex-shrink:0;}
+.atitle{font-weight:500;font-size:12px;}
+.asub{font-size:10px;color:var(--tm);margin-top:1px;}
+.citem{background:var(--sf2);border:1px solid var(--bd2);border-radius:7px;padding:9px 11px;margin-bottom:6px;}
+.chead{display:flex;justify-content:space-between;margin-bottom:4px;}
+.cauth{font-size:10px;color:var(--cy);font-weight:600;font-family:'JetBrains Mono',monospace;}
+.clikes{font-size:10px;color:var(--tm);font-family:'JetBrains Mono',monospace;}
+.cbody{font-size:11px;color:var(--td);line-height:1.6;}
+.csent{display:inline-block;font-size:9px;padding:2px 5px;border-radius:2px;margin-top:4px;font-family:'JetBrains Mono',monospace;}
+.sn{background:rgba(255,77,109,.12);color:var(--re);}
+.sp{background:rgba(0,245,160,.12);color:var(--gr);}
+.su{background:rgba(255,150,64,.1);color:var(--or);}
+.sharebox{background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:11px;}
+.shareurl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cy);word-break:break-all;margin:7px 0;padding:5px 7px;background:rgba(0,210,255,.05);border-radius:3px;border:1px solid rgba(0,210,255,.1);}
+.copybtn{width:100%;padding:7px;background:rgba(0,210,255,.08);border:1px solid rgba(0,210,255,.2);border-radius:4px;color:var(--cy);font-size:11px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+.copybtn:hover{background:rgba(0,210,255,.2);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1120px){:root{--rp:220px;--sb:200px;}}
+@media(max-width:900px){.rpanel{display:none;}:root{--sb:190px;}}
+@media(max-width:700px){
+  .sidebar{position:absolute;top:0;bottom:0;left:0;z-index:100;transform:translateX(-100%);box-shadow:4px 0 20px rgba(0,0,0,.5);}
+  .sidebar.open{transform:translateX(0);}
+  .mob-tog{display:block;}
+  .url-pill{display:none;}
+  .crow{grid-template-columns:1fr 1fr;}
+  .chrow{grid-template-columns:1fr;}
+}
+@media(max-width:440px){.crow{grid-template-columns:1fr;}}
+
+/* scrollbar */
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px;}
+
+/* fade in */
+@keyframes fi{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.fi{animation:fi .3s ease forwards;}
 </style>
 </head>
 <body>
 
 <!-- TOPBAR -->
 <div class="topbar">
-  <div class="logo">livere<span>.ai</span></div>
+  <button class="mob-tog" id="mobTog" onclick="toggleSb()" aria-label="메뉴">☰</button>
+  <a href="https://bencizion.github.io/codeofnature/livere_ai_01.html" class="logo">livere<span>.ai</span></a>
   <div class="url-pill">🔗 https://n.news.naver.com/article/056/0011824391 · 조선일보 · 2026.03.06</div>
-  <div class="topbar-actions">
-    <button class="btn-sm">↗ 공유</button>
-    <button class="btn-sm">⬇ 내보내기</button>
-    <button class="btn-primary btn-sm">+ 새 분석</button>
+  <div class="top-acts">
+    <button class="btn">↗ 공유</button>
+    <button class="btn">⬇ 내보내기</button>
+    <a href="https://bencizion.github.io/codeofnature/livere_ai_01.html" class="btn btn-p" style="text-decoration:none;">+ 새 분석</a>
   </div>
 </div>
 
-<div class="layout">
+<div class="shell">
 
-  <!-- LEFT SIDEBAR -->
-  <div class="sidebar">
-    <div class="section-label">토픽 체인</div>
-    <div class="topic-chain">
-      <div class="topic-node active">
-        <span class="topic-text">이재명</span>
-        <span class="topic-count">34K</span>
-      </div>
-      <div class="topic-connector"></div>
-      <div class="topic-node">
-        <span class="topic-text">이란</span>
-        <span class="topic-count">12K</span>
-      </div>
-      <div class="topic-connector"></div>
-      <div class="topic-node">
-        <span class="topic-text">대한민국</span>
-        <span class="topic-count">28K</span>
-      </div>
-      <div class="topic-connector"></div>
-      <div class="topic-node">
-        <span class="topic-text">전쟁대응</span>
-        <span class="topic-count">8.4K</span>
-      </div>
-      <div class="topic-connector"></div>
-      <div class="topic-node">
-        <span class="topic-text">국군투입</span>
-        <span class="topic-count">6.1K</span>
-      </div>
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sb">
+    <div>
+      <div class="sec-lbl">토픽 체인</div>
+      <div class="tchain" id="chain"></div>
     </div>
-
-    <div class="section-label">페르소나</div>
-    <div class="persona-card">
-      <div class="persona-name">
-        나의 페르소나
-        <span class="persona-tag tag-me">ME</span>
+    <div>
+      <div class="sec-lbl">페르소나</div>
+      <div class="pcard">
+        <div class="pname">나의 페르소나 <span class="ptag pt-me">ME</span></div>
+        <div class="pdesc">뉴스 소비 집중형 · 정치 관심 고</div>
+        <div class="patts"><span class="att">30-40대</span><span class="att">수도권</span><span class="att">직장인</span><span class="att">고관여</span></div>
       </div>
-      <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">뉴스 소비 집중형 · 정치 관심 고</div>
-      <div class="persona-attrs">
-        <span class="attr">30-40대</span>
-        <span class="attr">수도권</span>
-        <span class="attr">직장인</span>
-        <span class="attr">고관여</span>
-      </div>
-    </div>
-
-    <div class="persona-card">
-      <div class="persona-name">
-        관련 집단
-        <span class="persona-tag tag-group">GROUP</span>
-      </div>
-      <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">안보·외교 민감 반응 집단</div>
-      <div class="persona-attrs">
-        <span class="attr">50대+</span>
-        <span class="attr">남성 62%</span>
-        <span class="attr">보수 성향</span>
-        <span class="attr">SNS 활성</span>
-      </div>
-    </div>
-
-    <div class="persona-card">
-      <div class="persona-name">
-        관련 집단 2
-        <span class="persona-tag tag-group">GROUP</span>
-      </div>
-      <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">MZ 정치 무관심층</div>
-      <div class="persona-attrs">
-        <span class="attr">20-30대</span>
-        <span class="attr">관심 저</span>
-        <span class="attr">댓글 소극</span>
-      </div>
+      <div class="pcard" id="grpCard"></div>
     </div>
   </div>
 
   <!-- CENTER -->
-  <div class="center">
-
-    <!-- Topic Header -->
-    <div class="topic-header">
-      <div class="topic-title">
-        이재명·이란·대한민국·전쟁대응·국군투입
-        <span class="topic-tag">POLITICS</span>
-        <span class="topic-tag" style="color:var(--red);border-color:rgba(255,77,109,0.3);background:rgba(255,77,109,0.08);">HIGH TENSION</span>
-      </div>
-      <div class="topic-meta">
-        <span class="meta-item">📊 댓글 48,214개 수집</span>
-        <span class="meta-item">⏱ 2026.03.06 14:32 기준</span>
-        <span class="meta-item">🔄 실시간 업데이트 중</span>
-      </div>
-    </div>
-
-    <!-- Sentiment Cards -->
-    <div class="cards-row">
-      <div class="card positive">
-        <div class="card-label">긍정 여론</div>
-        <div class="card-value">31%</div>
-        <div class="card-sub">전일 대비 ▲ 3.2%p</div>
-      </div>
-      <div class="card negative">
-        <div class="card-label">부정 여론</div>
-        <div class="card-value">52%</div>
-        <div class="card-sub">전일 대비 ▼ 1.8%p</div>
-      </div>
-      <div class="card neutral">
-        <div class="card-label">중립 / 정보탐색</div>
-        <div class="card-value">17%</div>
-        <div class="card-sub">2,440개 유보 댓글</div>
-      </div>
-    </div>
-
-    <!-- Charts -->
-    <div class="charts-row">
-      <div class="chart-card">
-        <div class="chart-title">📈 여론 시계열 (72시간)</div>
-        <div class="chart-desc">공시적 · 시간별 감성 변화</div>
-        <canvas id="lineChart" height="160"></canvas>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">🎯 감성 분포</div>
-        <div class="chart-desc">전체 댓글 감성 비율</div>
-        <canvas id="donutChart" height="160"></canvas>
-      </div>
-    </div>
-
-    <!-- Topic Cloud -->
-    <div class="topic-cloud">
-      <div class="chart-title">🌐 연관 토픽 클라우드</div>
-      <div class="chart-desc">공시적 · 현재 동시 언급 키워드</div>
-      <div class="cloud-tags">
-        <span class="cloud-tag s1">국군 파병</span>
-        <span class="cloud-tag s1">한미동맹</span>
-        <span class="cloud-tag s2">중동 분쟁</span>
-        <span class="cloud-tag s2">대통령 권한</span>
-        <span class="cloud-tag s2">호르무즈</span>
-        <span class="cloud-tag s3">유가 상승</span>
-        <span class="cloud-tag s3">여론조사</span>
-        <span class="cloud-tag s3">야당 반응</span>
-        <span class="cloud-tag s3">국방부</span>
-        <span class="cloud-tag s4">헌법 논란</span>
-        <span class="cloud-tag s4">해외 반응</span>
-        <span class="cloud-tag s4">에너지 안보</span>
-        <span class="cloud-tag s4">방산 수혜</span>
-        <span class="cloud-tag s4">청와대</span>
-      </div>
-    </div>
-
-    <!-- Timeline -->
-    <div class="timeline-card">
-      <div class="chart-title">🕰️ 통시적 분석</div>
-      <div class="chart-desc">이 토픽의 과거 · 현재 · 미래 맥락</div>
-      <div class="timeline-items">
-        <div class="timeline-item">
-          <div class="timeline-date">2023.11 — 과거</div>
-          <div class="timeline-text">한국의 호르무즈 해협 파병 논의가 처음 수면 위로 올라온 시기. 유사한 국군 파병 논의가 국회에서 2:1 반대로 부결된 전례 있음.</div>
-          <span class="timeline-badge badge-past">CONTEXT</span>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-date">2026.03.06 — 현재</div>
-          <div class="timeline-text">이란-이스라엘 확전 우려 속 대통령 이재명의 국군 파병 검토 발언. 여야 정면충돌, SNS 여론 폭발적 반응 진행 중.</div>
-          <span class="timeline-badge badge-past">NOW</span>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-date">2026 Q2 — 예측</div>
-          <div class="timeline-text">AI 예측: 이란 사태 장기화 시 파병 여론 역전 가능성 38%. 현재 추세 유지 시 국회 표결 없이 행정명령 처리 시도 예상됨.</div>
-          <span class="timeline-badge badge-future">AI FORECAST</span>
-        </div>
-      </div>
-    </div>
-
-  </div>
+  <div class="center" id="center"></div>
 
   <!-- RIGHT PANEL -->
-  <div class="right-panel">
-
+  <div class="rpanel">
     <div>
-      <div class="section-label">나의 참여</div>
-      <button class="action-btn">
-        <div class="action-icon">✅</div>
-        <div class="action-text">
-          <div class="action-title">팩트체크 하기</div>
-          <div class="action-sub">오류 수정 · 출처 첨부</div>
-        </div>
-      </button>
-      <button class="action-btn">
-        <div class="action-icon">💬</div>
-        <div class="action-text">
-          <div class="action-title">의견 남기기</div>
-          <div class="action-sub">댓글 · 투표 · 이모티콘</div>
-        </div>
-      </button>
-      <button class="action-btn">
-        <div class="action-icon">🎨</div>
-        <div class="action-text">
-          <div class="action-title">미디어 생성</div>
-          <div class="action-sub">그래프 · 이미지 · 카드뉴스</div>
-        </div>
-      </button>
-      <button class="action-btn">
-        <div class="action-icon">💰</div>
-        <div class="action-text">
-          <div class="action-title">관련 자산 보기</div>
-          <div class="action-sub">방산주 · 에너지 ETF</div>
-        </div>
-      </button>
+      <div class="sec-lbl">나의 참여</div>
+      <button class="abtn"><div class="aico">✅</div><div><div class="atitle">팩트체크 하기</div><div class="asub">오류 수정 · 출처 첨부</div></div></button>
+      <button class="abtn"><div class="aico">💬</div><div><div class="atitle">의견 남기기</div><div class="asub">댓글 · 투표 · 이모티콘</div></div></button>
+      <button class="abtn"><div class="aico">🎨</div><div><div class="atitle">미디어 생성</div><div class="asub">그래프 · 이미지 · 카드뉴스</div></div></button>
+      <button class="abtn"><div class="aico">💰</div><div><div class="atitle">관련 자산 보기</div><div class="asub" id="assetSub">-</div></div></button>
     </div>
-
     <div>
-      <div class="section-label">주요 댓글 TOP 5</div>
-      <div class="comment-item">
-        <div class="comment-header">
-          <span class="comment-author">user_a****</span>
-          <span class="comment-likes">👍 4,821</span>
-        </div>
-        <div class="comment-body">국군은 용병이 아닙니다. 헌법 절차 없이 파병은 위헌입니다.</div>
-        <span class="comment-sentiment sent-neg">부정</span>
-      </div>
-      <div class="comment-item">
-        <div class="comment-header">
-          <span class="comment-author">news_r****</span>
-          <span class="comment-likes">👍 3,204</span>
-        </div>
-        <div class="comment-body">한미동맹 강화 차원에서 검토는 가능하지만 국민적 합의가 먼저.</div>
-        <span class="comment-sentiment sent-neu">중립</span>
-      </div>
-      <div class="comment-item">
-        <div class="comment-header">
-          <span class="comment-author">k_poli****</span>
-          <span class="comment-likes">👍 2,187</span>
-        </div>
-        <div class="comment-body">에너지 안보 위협 심각. 호르무즈 봉쇄시 한국 경제 직격탄.</div>
-        <span class="comment-sentiment sent-neg">부정</span>
+      <div class="sec-lbl">주요 댓글 TOP</div>
+      <div id="cmtList"></div>
+    </div>
+    <div>
+      <div class="sec-lbl">공유하기</div>
+      <div class="sharebox">
+        <div style="font-size:11px;color:var(--td);">이 분석 결과 고유 링크</div>
+        <div class="shareurl" id="shareUrl">-</div>
+        <button class="copybtn" onclick="this.textContent='✓ 복사됨'">🔗 링크 복사</button>
       </div>
     </div>
-
-    <div>
-      <div class="section-label">공유하기</div>
-      <div class="share-box">
-        <div style="font-size:12px;color:var(--text-dim);">이 분석 결과 고유 링크</div>
-        <div class="share-url">livere.ai/2983103</div>
-        <button class="copy-btn" onclick="this.textContent='✓ 복사됨'">🔗 링크 복사</button>
-      </div>
-    </div>
-
   </div>
-</div>
+
+</div><!-- /shell -->
 
 <script>
-// LINE CHART
-const lCtx = document.getElementById('lineChart').getContext('2d');
-new Chart(lCtx, {
-  type: 'line',
-  data: {
-    labels: ['72h','60h','48h','36h','24h','12h','6h','지금'],
-    datasets: [
-      {
-        label: '긍정',
-        data: [28,30,29,27,28,30,31,31],
-        borderColor: '#00f5a0',
-        backgroundColor: 'rgba(0,245,160,0.05)',
-        tension: 0.4, fill: true, pointRadius: 3
-      },
-      {
-        label: '부정',
-        data: [48,50,54,56,55,53,52,52],
-        borderColor: '#ff4d6d',
-        backgroundColor: 'rgba(255,77,109,0.05)',
-        tension: 0.4, fill: true, pointRadius: 3
-      },
-      {
-        label: '중립',
-        data: [24,20,17,17,17,17,17,17],
-        borderColor: '#f5c842',
-        backgroundColor: 'rgba(245,200,66,0.03)',
-        tension: 0.4, fill: true, pointRadius: 3
-      }
-    ]
-  },
-  options: {
-    plugins: {
-      legend: { labels: { color: '#7a8ba8', font: { size: 10, family: 'JetBrains Mono' }, boxWidth: 10, padding: 12 } }
-    },
-    scales: {
-      x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#3d5068', font: { size: 9 } } },
-      y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#3d5068', font: { size: 9 } }, min: 0, max: 70 }
-    }
-  }
-});
+/* ══════════════════════════
+   TOPIC DATA
+══════════════════════════ */
+const DATA = [
+  { id:'jeong', label:'이재명', count:'34K',
+    title:'이재명 · 이란 · 전쟁대응 · 국군투입',
+    tags:[{t:'POLITICS',c:'tt-bl'},{t:'HIGH TENSION',c:'tt-re'}],
+    meta:'댓글 48,214개 · 2026.03.06 14:32 · 실시간 업데이트 중',
+    pos:31, neg:52, neu:17, posD:'+3.2%p', negD:'-1.8%p',
+    line:{ lb:['72h','60h','48h','36h','24h','12h','6h','지금'], p:[28,30,29,27,28,30,31,31], n:[48,50,54,56,55,53,52,52], u:[24,20,17,17,17,17,17,17] },
+    cloud:[{t:'국군 파병',s:'s1'},{t:'한미동맹',s:'s1'},{t:'중동 분쟁',s:'s2'},{t:'대통령 권한',s:'s2'},{t:'호르무즈',s:'s2'},{t:'유가 상승',s:'s3'},{t:'야당 반응',s:'s3'},{t:'국방부',s:'s3'},{t:'헌법 논란',s:'s4'},{t:'방산 수혜',s:'s4'},{t:'에너지 안보',s:'s4'}],
+    tl:[{d:'2023.11 — 과거',x:'호르무즈 해협 파병 논의 최초 수면 위. 국회에서 2:1 반대로 부결된 전례 있음.',b:'b-p',l:'CONTEXT'},{d:'2026.03.06 — 현재',x:'이란·이스라엘 확전 우려 속 파병 검토 공식화. 여야 정면충돌, SNS 여론 폭발적 반응.',b:'b-n',l:'NOW'},{d:'2026 Q2 — 예측',x:'AI 예측: 이란 사태 장기화 시 파병 여론 역전 가능성 38%. 행정명령 강행 시도 예상.',b:'b-f',l:'AI FORECAST'}],
+    cmts:[{a:'user_a****',l:'4,821',b:'국군은 용병이 아닙니다. 헌법 절차 없이 파병은 위헌입니다.',s:'sn',sl:'부정'},{a:'news_r****',l:'3,204',b:'한미동맹 강화 차원 검토는 가능, 하지만 국민적 합의가 먼저.',s:'su',sl:'중립'},{a:'k_pol****',l:'2,187',b:'에너지 안보 위협 심각. 호르무즈 봉쇄 시 한국 경제 직격탄.',s:'sn',sl:'부정'}],
+    grp:{n:'안보·외교 민감 집단',d:'중동 이슈 반응도 높음',a:['50대+','남성 62%','보수 성향','SNS 활성']},
+    asset:'방산주 · 에너지 ETF', share:'livere.ai/2983103' },
 
-// DONUT CHART
-const dCtx = document.getElementById('donutChart').getContext('2d');
-new Chart(dCtx, {
-  type: 'doughnut',
-  data: {
-    labels: ['부정 52%', '긍정 31%', '중립 17%'],
-    datasets: [{
-      data: [52, 31, 17],
-      backgroundColor: ['rgba(255,77,109,0.8)', 'rgba(0,245,160,0.8)', 'rgba(245,200,66,0.8)'],
-      borderColor: ['#ff4d6d','#00f5a0','#f5c842'],
-      borderWidth: 1,
-      hoverOffset: 6
-    }]
-  },
-  options: {
-    cutout: '68%',
-    plugins: {
-      legend: { position: 'bottom', labels: { color: '#7a8ba8', font: { size: 10, family: 'JetBrains Mono' }, boxWidth: 10, padding: 12 } }
+  { id:'iran', label:'이란', count:'12K',
+    title:'이란 · 이스라엘 · 중동전쟁 · 확전 시나리오',
+    tags:[{t:'GLOBAL',c:'tt-bl'},{t:'WAR RISK',c:'tt-re'}],
+    meta:'댓글 21,480개 · 2026.03.06 14:32 · 실시간 업데이트 중',
+    pos:14, neg:68, neu:18, posD:'-2.1%p', negD:'+4.5%p',
+    line:{ lb:['72h','60h','48h','36h','24h','12h','6h','지금'], p:[22,18,16,14,14,14,14,14], n:[55,60,62,66,67,68,68,68], u:[23,22,22,20,19,18,18,18] },
+    cloud:[{t:'호르무즈 봉쇄',s:'s1'},{t:'이스라엘 공습',s:'s1'},{t:'원유 급등',s:'s2'},{t:'미군 개입',s:'s2'},{t:'핵협정',s:'s2'},{t:'사우디 중재',s:'s3'},{t:'UN 안보리',s:'s3'},{t:'파병 논란',s:'s3'},{t:'헤즈볼라',s:'s4'},{t:'드론 전쟁',s:'s4'},{t:'WTI 가격',s:'s4'}],
+    tl:[{d:'2025.10 — 과거',x:'이란·이스라엘 1차 교전. 국제유가 배럴당 $110 돌파. 한국 에너지 의존도 심화.',b:'b-p',l:'CONTEXT'},{d:'2026.03 — 현재',x:'이란 핵시설 2차 공습. 호르무즈 부분 봉쇄 위협. 국제 긴장 최고조.',b:'b-n',l:'NOW'},{d:'2026 Q3 — 예측',x:'AI 예측: 봉쇄 현실화 시 국내 에너지 비용 23% 상승. 한국 외교 중립 유지 난이도↑.',b:'b-f',l:'AI FORECAST'}],
+    cmts:[{a:'geo_watch**',l:'5,102',b:'호르무즈가 막히면 한국 원유 70%가 중단됩니다. 이건 경제 전쟁입니다.',s:'sn',sl:'부정'},{a:'mid_east**',l:'2,840',b:'이란도 이스라엘도 편 들기 어렵다. 한국은 실용 외교가 답.',s:'su',sl:'중립'},{a:'oil_trdr**',l:'1,933',b:'WTI 배럴당 $130 간다. 에너지 ETF 지금 들어가야 할 타이밍.',s:'su',sl:'중립'}],
+    grp:{n:'에너지·금융 관심 집단',d:'경제·투자 관점 접근',a:['40-50대','투자자','경제 뉴스 구독','고소득']},
+    asset:'원유 ETF · 에너지 관련주', share:'livere.ai/2983201' },
+
+  { id:'korea', label:'대한민국', count:'28K',
+    title:'대한민국 · 외교 정책 · 국익 · 국제 위상',
+    tags:[{t:'DIPLOMACY',c:'tt-bl'},{t:'MODERATE',c:'tt-go'}],
+    meta:'댓글 39,712개 · 2026.03.06 14:32 · 실시간 업데이트 중',
+    pos:44, neg:33, neu:23, posD:'+1.2%p', negD:'-0.5%p',
+    line:{ lb:['72h','60h','48h','36h','24h','12h','6h','지금'], p:[38,40,41,42,43,44,44,44], n:[38,36,35,34,34,33,33,33], u:[24,24,24,24,23,23,23,23] },
+    cloud:[{t:'자주 외교',s:'s1'},{t:'국익 우선',s:'s1'},{t:'한미동맹',s:'s2'},{t:'외교 중립',s:'s2'},{t:'국격',s:'s2'},{t:'국방 예산',s:'s3'},{t:'외교부',s:'s3'},{t:'주권 수호',s:'s3'},{t:'G20',s:'s4'},{t:'소프트파워',s:'s4'},{t:'평화 외교',s:'s4'}],
+    tl:[{d:'2024 — 과거',x:'한국 G20 의장국 수임. 자주 외교 노선 강화. 방산 수출 역대 최대 기록.',b:'b-p',l:'CONTEXT'},{d:'2026.03 — 현재',x:'중동 위기 속 외교적 입장 선택 압박. 국민 여론 분열. 국익 논쟁 가열.',b:'b-n',l:'NOW'},{d:'2026 하반기 — 예측',x:'AI 예측: 외교 선택이 수출 경쟁력에 미치는 영향 — 중립 유지 시 +7% 유리.',b:'b-f',l:'AI FORECAST'}],
+    cmts:[{a:'diplo_kr**',l:'3,402',b:'대한민국의 국격에 맞는 자주 외교가 필요합니다. 미국 눈치만 보는 시대는 끝났어요.',s:'sp',sl:'긍정'},{a:'realist_**',l:'2,788',b:'국익 관점에서 냉정하게 봐야 합니다. 감정 외교는 결국 손해입니다.',s:'su',sl:'중립'},{a:'peace_kr**',l:'1,541',b:'한국은 분단국가입니다. 평화 외교가 최선이에요.',s:'sp',sl:'긍정'}],
+    grp:{n:'외교·안보 관심 집단',d:'국제 이슈 분석적 접근',a:['30-50대','남성 55%','대졸 이상','시사 관심']},
+    asset:'방산 ETF · KRW/USD', share:'livere.ai/2983302' },
+
+  { id:'war', label:'전쟁대응', count:'8.4K',
+    title:'전쟁대응 · 군사 전략 · 안보 태세 · 국방력',
+    tags:[{t:'SECURITY',c:'tt-pu'},{t:'URGENT',c:'tt-re'}],
+    meta:'댓글 14,330개 · 2026.03.06 14:32 · 실시간 업데이트 중',
+    pos:22, neg:61, neu:17, posD:'-4.1%p', negD:'+6.8%p',
+    line:{ lb:['72h','60h','48h','36h','24h','12h','6h','지금'], p:[35,30,28,24,22,22,22,22], n:[42,47,52,57,59,61,61,61], u:[23,23,20,19,19,17,17,17] },
+    cloud:[{t:'자위권',s:'s1'},{t:'군 대비태세',s:'s1'},{t:'국방부 발표',s:'s2'},{t:'병력 증원',s:'s2'},{t:'전시 작전',s:'s2'},{t:'예비군 소집',s:'s3'},{t:'사이버전',s:'s3'},{t:'미사일 방어',s:'s3'},{t:'징집 논란',s:'s4'},{t:'THAAD',s:'s4'},{t:'전략 자산',s:'s4'}],
+    tl:[{d:'2025 — 과거',x:'국방부, 중동 파병 시나리오 대비 매뉴얼 내부 검토. 비공개 군사 훈련 실시.',b:'b-p',l:'CONTEXT'},{d:'2026.03 — 현재',x:'전쟁대응 논의 공론화. 군 대비태세 강화 지시. 예비군 소집 가능성 검토 중.',b:'b-n',l:'NOW'},{d:'2026 Q2 — 예측',x:'AI 예측: 파병 결정 시 국내 반전 시위 가능성 72%. 사회 갈등 지수 단기 급등 예상.',b:'b-f',l:'AI FORECAST'}],
+    cmts:[{a:'mil_watch**',l:'4,230',b:'우리 군의 전력으로 중동 파병은 무리입니다. 국내 방위가 먼저예요.',s:'sn',sl:'부정'},{a:'sec_anal**',l:'2,910',b:'현대전은 사이버·드론전입니다. 병력 파병보다 기술 지원이 현실적.',s:'su',sl:'중립'},{a:'vet_kr___**',l:'1,820',b:'군인으로서 명령이 떨어지면 따르지만, 국민이 지지해 주길 바랍니다.',s:'sn',sl:'부정'}],
+    grp:{n:'안보·군사 관심 집단',d:'강경 대응 선호 경향',a:['40대+','남성 74%','보수·중도','군 관련 경험']},
+    asset:'방산주 · 군사기술 ETF', share:'livere.ai/2983404' },
+
+  { id:'army', label:'국군투입', count:'6.1K',
+    title:'국군투입 · 파병 찬반 · 헌법 논란 · 국회 동의',
+    tags:[{t:'CONSTITUTION',c:'tt-go'},{t:'CONTROVERSY',c:'tt-re'}],
+    meta:'댓글 11,840개 · 2026.03.06 14:32 · 실시간 업데이트 중',
+    pos:19, neg:64, neu:17, posD:'-1.0%p', negD:'+2.2%p',
+    line:{ lb:['72h','60h','48h','36h','24h','12h','6h','지금'], p:[30,25,22,20,19,19,19,19], n:[44,50,56,60,62,63,64,64], u:[26,25,22,20,19,18,17,17] },
+    cloud:[{t:'헌법 60조',s:'s1'},{t:'국회 동의',s:'s1'},{t:'파병 찬반',s:'s2'},{t:'행정명령',s:'s2'},{t:'야당 반발',s:'s2'},{t:'위헌 소지',s:'s3'},{t:'이라크 파병',s:'s3'},{t:'과거 선례',s:'s3'},{t:'아프간 철군',s:'s4'},{t:'PKO',s:'s4'},{t:'유엔 결의',s:'s4'}],
+    tl:[{d:'2004 — 과거',x:'이라크 파병 당시 헌법 60조 국회 동의 절차 통과. 자이툰 부대 3,600명 파견.',b:'b-p',l:'CONTEXT'},{d:'2026.03 — 현재',x:'야당 "국회 동의 없는 파병은 위헌" 강력 반발. 헌법재판소 위헌 청구 예고.',b:'b-n',l:'NOW'},{d:'2026 Q1 말 — 예측',x:'AI 예측: 국회 표결 시 여당 과반 확보 불투명. 행정명령 강행 시 헌재 판단 주목.',b:'b-f',l:'AI FORECAST'}],
+    cmts:[{a:'const_law**',l:'6,030',b:'헌법 60조 명백히 국회 동의 필요합니다. 행정명령 강행은 명백한 위헌이에요.',s:'sn',sl:'부정'},{a:'hist_kr***',l:'3,120',b:'이라크 파병 때도 결국 국회 동의 받았습니다. 선례를 따르세요.',s:'su',sl:'중립'},{a:'pro_defs**',l:'1,244',b:'동맹 의무 이행은 장기적으로 국익입니다. 단기 여론에 흔들리면 안 됩니다.',s:'sp',sl:'긍정'}],
+    grp:{n:'법·헌정 관심 집단',d:'절차적 정당성 중시',a:['30-50대','법학·정치 전공','진보·중도','고학력']},
+    asset:'법률 리스크 ETF · 코스피', share:'livere.ai/2983505' },
+];
+
+/* ══════════════════════════
+   STATE
+══════════════════════════ */
+let active = DATA[0].id;
+let lineChart = null, donutChart = null;
+
+/* ══════════════════════════
+   RENDER CHAIN
+══════════════════════════ */
+function renderChain() {
+  const el = document.getElementById('chain');
+  el.innerHTML = '';
+  DATA.forEach((d, i) => {
+    const n = document.createElement('div');
+    n.className = 'tnode' + (d.id === active ? ' active' : '');
+    n.innerHTML = `<div class="ndot"></div><span class="ntx">${d.label}</span><span class="ncnt">${d.count}</span>`;
+    n.onclick = () => select(d.id);
+    el.appendChild(n);
+    if (i < DATA.length - 1) {
+      const c = document.createElement('div');
+      c.className = 'tconn';
+      el.appendChild(c);
     }
+  });
+}
+
+/* ══════════════════════════
+   SELECT
+══════════════════════════ */
+function select(id) {
+  active = id;
+  renderChain();
+  renderCenter();
+  renderRight();
+  // close mobile sidebar on select
+  if (window.innerWidth <= 700) {
+    document.getElementById('sb').classList.remove('open');
   }
-});
+}
+
+/* ══════════════════════════
+   RENDER RIGHT PANEL
+══════════════════════════ */
+function renderRight() {
+  const d = DATA.find(x => x.id === active);
+  // group persona
+  document.getElementById('grpCard').innerHTML = `
+    <div class="pname">관련 집단 <span class="ptag pt-g">GROUP</span></div>
+    <div class="pdesc">${d.grp.n} · ${d.grp.d}</div>
+    <div class="patts">${d.grp.a.map(a=>`<span class="att">${a}</span>`).join('')}</div>`;
+  // comments
+  document.getElementById('cmtList').innerHTML = d.cmts.map(c => `
+    <div class="citem fi">
+      <div class="chead"><span class="cauth">${c.a}</span><span class="clikes">👍 ${c.l}</span></div>
+      <div class="cbody">${c.b}</div>
+      <span class="csent ${c.s}">${c.sl}</span>
+    </div>`).join('');
+  document.getElementById('assetSub').textContent = d.asset;
+  document.getElementById('shareUrl').textContent = d.share;
+}
+
+/* ══════════════════════════
+   RENDER CENTER
+══════════════════════════ */
+function renderCenter() {
+  const d = DATA.find(x => x.id === active);
+
+  // destroy charts FIRST
+  if (lineChart) { lineChart.destroy(); lineChart = null; }
+  if (donutChart) { donutChart.destroy(); donutChart = null; }
+
+  const posArrow = d.posD.startsWith('+') ? `▲ ${d.posD.slice(1)}` : `▼ ${d.posD.slice(1)}`;
+  const negArrow = d.negD.startsWith('+') ? `▲ ${d.negD.slice(1)}` : `▼ ${d.negD.slice(1)}`;
+
+  document.getElementById('center').innerHTML = `
+    <div class="thead fi">
+      <div class="ttitle">${d.title} ${d.tags.map(t=>`<span class="ttag ${t.c}">${t.t}</span>`).join('')}</div>
+      <div class="tmeta"><span>📊 ${d.meta}</span></div>
+    </div>
+
+    <div class="crow fi">
+      <div class="card c-pos"><div class="clbl">긍정 여론</div><div class="cval">${d.pos}%</div><div class="csub">전일 대비 ${posArrow}</div></div>
+      <div class="card c-neg"><div class="clbl">부정 여론</div><div class="cval">${d.neg}%</div><div class="csub">전일 대비 ${negArrow}</div></div>
+      <div class="card c-neu"><div class="clbl">중립 / 정보탐색</div><div class="cval">${d.neu}%</div><div class="csub">유보 댓글 포함</div></div>
+    </div>
+
+    <div class="chrow fi">
+      <div class="chcard">
+        <div class="chtitle">📈 여론 시계열 (72시간)</div>
+        <div class="chdesc">시간별 감성 변화 추이</div>
+        <div class="ch-wrap"><canvas id="lineC"></canvas></div>
+      </div>
+      <div class="chcard">
+        <div class="chtitle">🎯 감성 분포</div>
+        <div class="chdesc">전체 댓글 감성 비율</div>
+        <div class="ch-wrap"><canvas id="donutC"></canvas></div>
+      </div>
+    </div>
+
+    <div class="ccloud fi">
+      <div class="chtitle">🌐 연관 토픽 클라우드</div>
+      <div class="chdesc">현재 동시 언급 키워드</div>
+      <div class="ctags">${d.cloud.map(c=>`<span class="ctg ${c.s}">${c.t}</span>`).join('')}</div>
+    </div>
+
+    <div class="tlcard fi">
+      <div class="chtitle">🕰️ 통시적 분석</div>
+      <div class="chdesc">이 토픽의 과거 · 현재 · 미래 맥락</div>
+      <div class="tlwrap">
+        ${d.tl.map(t=>`
+          <div class="tli">
+            <div class="tldate">${t.d}</div>
+            <div class="tltext">${t.x}</div>
+            <span class="tlbadge ${t.b}">${t.l}</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  // init charts after DOM paint
+  requestAnimationFrame(() => initCharts(d));
+}
+
+/* ══════════════════════════
+   INIT CHARTS — responsive
+══════════════════════════ */
+function initCharts(d) {
+  const lc = document.getElementById('lineC');
+  const dc = document.getElementById('donutC');
+  if (!lc || !dc) return;
+
+  const gridColor = 'rgba(255,255,255,.04)';
+  const tickColor = '#3d5068';
+  const fontMono = { family:'JetBrains Mono' };
+
+  lineChart = new Chart(lc, {
+    type:'line',
+    data:{
+      labels: d.line.lb,
+      datasets:[
+        { label:'긍정', data:d.line.p, borderColor:'#00f5a0', backgroundColor:'rgba(0,245,160,.06)', tension:.4, fill:true, pointRadius:2, borderWidth:2 },
+        { label:'부정', data:d.line.n, borderColor:'#ff4d6d', backgroundColor:'rgba(255,77,109,.06)', tension:.4, fill:true, pointRadius:2, borderWidth:2 },
+        { label:'중립', data:d.line.u, borderColor:'#f5c842', backgroundColor:'rgba(245,200,66,.03)', tension:.4, fill:true, pointRadius:2, borderWidth:2 },
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:true,
+      animation:{ duration:450, easing:'easeInOutQuart' },
+      plugins:{ legend:{ labels:{ color:'#7a8ba8', font:{ size:9, ...fontMono }, boxWidth:8, padding:10 } } },
+      scales:{
+        x:{ grid:{ color:gridColor }, ticks:{ color:tickColor, font:{ size:8 } } },
+        y:{ grid:{ color:gridColor }, ticks:{ color:tickColor, font:{ size:8 } }, min:0, max:80 }
+      }
+    }
+  });
+
+  donutChart = new Chart(dc, {
+    type:'doughnut',
+    data:{
+      labels:[`부정 ${d.neg}%`,`긍정 ${d.pos}%`,`중립 ${d.neu}%`],
+      datasets:[{
+        data:[d.neg, d.pos, d.neu],
+        backgroundColor:['rgba(255,77,109,.8)','rgba(0,245,160,.8)','rgba(245,200,66,.8)'],
+        borderColor:['#ff4d6d','#00f5a0','#f5c842'],
+        borderWidth:1, hoverOffset:5
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:true,
+      animation:{ duration:450 },
+      cutout:'66%',
+      plugins:{ legend:{ position:'bottom', labels:{ color:'#7a8ba8', font:{ size:9, ...fontMono }, boxWidth:8, padding:10 } } }
+    }
+  });
+}
+
+/* ══════════════════════════
+   MOBILE SIDEBAR
+══════════════════════════ */
+function toggleSb() {
+  document.getElementById('sb').classList.toggle('open');
+}
+
+/* ══════════════════════════
+   INIT
+══════════════════════════ */
+renderChain();
+renderCenter();
+renderRight();
 </script>
 </body>
 </html>
