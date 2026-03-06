@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>라이브리 댓글 위젯 — Shortcut 버튼 예시</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f2f4f8;
+    --white: #ffffff;
+    --border: #e2e6ef;
+    --text: #1a202c;
+    --text-dim: #718096;
+    --text-muted: #a0aec0;
+    --cyan: #00b8d4;
+    --cyan-light: #e3f8fc;
+    --blue: #2563eb;
+    --green: #10b981;
+    --red: #ef4444;
+    --surface: #f7f9fc;
+    --ai-bg: #0e1520;
+    --ai-cyan: #00d2ff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Noto Sans KR', sans-serif;
+    padding: 40px 20px 80px;
+    color: var(--text);
+  }
+
+  /* ARTICLE MOCK */
+  .article-mock {
+    max-width: 720px;
+    margin: 0 auto 40px;
+    background: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  .article-img {
+    width: 100%;
+    height: 220px;
+    background: linear-gradient(135deg, #1a3a5c 0%, #0d2035 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: rgba(255,255,255,0.3);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+  }
+
+  .article-body {
+    padding: 28px 32px 24px;
+  }
+
+  .article-tag {
+    font-size: 11px;
+    color: var(--blue);
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .article-title {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    letter-spacing: -0.3px;
+  }
+
+  .article-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+  }
+
+  .article-text {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.9;
+    font-weight: 300;
+  }
+
+  /* ────────────────────────────────────
+     LIVERE WIDGET CONTAINER
+  ──────────────────────────────────── */
+  .livere-widget {
+    max-width: 720px;
+    margin: 0 auto;
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  /* ── WIDGET HEADER ── */
+  .widget-header {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .widget-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+  .widget-logo span { color: var(--cyan); }
+
+  .comment-count {
+    font-size: 13px;
+    color: var(--text-dim);
+    flex: 1;
+  }
+  .comment-count strong { color: var(--text); }
+
+  /* ════════════════════════════════════
+     🔥 SHORTCUT BUTTON — 핵심 요소
+  ════════════════════════════════════ */
+  .ai-shortcut-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--ai-bg);
+    color: var(--ai-cyan);
+    border: 1px solid rgba(0,210,255,0.25);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .ai-shortcut-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,210,255,0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .ai-shortcut-btn:hover {
+    border-color: var(--ai-cyan);
+    box-shadow: 0 0 16px rgba(0,210,255,0.2), 0 0 0 1px rgba(0,210,255,0.15);
+    transform: translateY(-1px);
+  }
+  .ai-shortcut-btn:hover::before { opacity: 1; }
+
+  .ai-btn-icon {
+    font-size: 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ai-btn-text {
+    position: relative;
+    z-index: 1;
+    letter-spacing: 0.1px;
+  }
+
+  .ai-btn-badge {
+    background: rgba(0,210,255,0.15);
+    color: var(--ai-cyan);
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.5px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* AI pulse animation on icon */
+  .ai-pulse {
+    display: inline-block;
+    animation: ai-glow 2s ease-in-out infinite;
+  }
+  @keyframes ai-glow {
+    0%, 100% { filter: drop-shadow(0 0 0 rgba(0,210,255,0)); }
+    50% { filter: drop-shadow(0 0 4px rgba(0,210,255,0.8)); }
+  }
+
+  /* ── TOOLTIP ── */
+  .btn-tooltip-wrapper {
+    position: relative;
+  }
+
+  .tooltip {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: var(--ai-bg);
+    border: 1px solid rgba(0,210,255,0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    width: 240px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.7;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+    transform: translateY(-4px);
+    z-index: 100;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  .tooltip::before {
+    content: '';
+    position: absolute;
+    bottom: 100%; right: 14px;
+    border: 6px solid transparent;
+    border-bottom-color: rgba(0,210,255,0.2);
+  }
+
+  .btn-tooltip-wrapper:hover .tooltip {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .tooltip-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ai-cyan);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  .tooltip-feature {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+    color: rgba(255,255,255,0.5);
+    font-size: 10px;
+  }
+
+  /* ── WIDGET BODY ── */
+  .widget-body {
+    padding: 20px;
+  }
+
+  /* Comment Input */
+  .comment-input-area {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .avatar.me { background: linear-gradient(135deg, var(--cyan), var(--blue)); }
+
+  .input-box {
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    resize: none;
+    height: 44px;
+    transition: border-color 0.2s, height 0.2s;
+    background: var(--surface);
+    outline: none;
+  }
+  .input-box:focus {
+    border-color: var(--cyan);
+    height: 80px;
+    box-shadow: 0 0 0 3px rgba(0,185,212,0.08);
+  }
+
+  /* Comments List */
+  .comments-list { display: flex; flex-direction: column; gap: 16px; }
+
+  .comment {
+    display: flex;
+    gap: 12px;
+  }
+
+  .comment-main { flex: 1; }
+
+  .comment-author-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+  }
+
+  .c-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .c-time { font-size: 11px; color: var(--text-muted); }
+
+  .c-body {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  .c-actions {
+    display: flex;
+    gap: 14px;
+    margin-top: 7px;
+  }
+
+  .c-btn {
+    font-size: 11px;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.15s;
+    padding: 0;
+  }
+  .c-btn:hover { color: var(--text-dim); }
+  .c-btn.liked { color: var(--blue); }
+
+  .avatar.a1 { background: #6366f1; }
+  .avatar.a2 { background: #f59e0b; }
+  .avatar.a3 { background: #10b981; }
+  .avatar.a4 { background: #ef4444; }
+
+  /* WIDGET FOOTER */
+  .widget-footer {
+    border-top: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-text {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .footer-logo span { color: var(--cyan); }
+
+  /* ── CALLOUT: 버튼 설명 ── */
+  .callout {
+    max-width: 720px;
+    margin: 24px auto 0;
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: 10px;
+    padding: 18px 20px;
+    font-size: 13px;
+    color: #78350f;
+    line-height: 1.8;
+  }
+
+  .callout strong { color: #92400e; }
+
+  /* ANNOTATION ARROW */
+  .annotation {
+    max-width: 720px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .arrow-line {
+    position: absolute;
+    right: 80px;
+    top: -10px;
+    font-size: 28px;
+    color: var(--cyan);
+    line-height: 1;
+    animation: bounce 1.5s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  /* LABEL BANNER */
+  .demo-label {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="demo-label">── 라이브리 댓글 위젯 · Shortcut Button 삽입 예시 ──</div>
+
+<!-- MOCK ARTICLE -->
+<div class="article-mock">
+  <div class="article-img">[ 기사 대표 이미지 ]</div>
+  <div class="article-body">
+    <div class="article-tag">정치 · 외교</div>
+    <h1 class="article-title">이재명 대통령, 이란 사태 관련 국군 파병 검토 공식화</h1>
+    <div class="article-meta">조선일보 · 2026.03.06 · 12:41 · 기자 홍길동</div>
+    <p class="article-text">
+      이재명 대통령이 6일 오전 안보 관계장관 회의에서 이란·이스라엘 분쟁 확전에 대비한 국군 파병 가능성을 검토하겠다고 밝혔다. 정부는 호르무즈 해협의 에너지 안보 위협을 주된 이유로 제시했으며, 야당은 헌법 절차 위반 우려를 제기하며 강하게 반발하고 있다…
+    </p>
+  </div>
+</div>
+
+<!-- ANNOTATION -->
+<div class="annotation">
+  <div class="arrow-line">↑</div>
+</div>
+
+<!-- LIVERE COMMENT WIDGET -->
+<div class="livere-widget">
+
+  <!-- HEADER with Shortcut Button -->
+  <div class="widget-header">
+    <div class="widget-logo">livere<span>.ai</span></div>
+    <div class="comment-count">댓글 <strong>1,284</strong>개</div>
+
+    <!-- ★★★ SHORTCUT BUTTON ★★★ -->
+    <div class="btn-tooltip-wrapper">
+      <a href="livere_result.html" class="ai-shortcut-btn" target="_blank">
+        <span class="ai-btn-icon"><span class="ai-pulse">⚡</span></span>
+        <span class="ai-btn-text">AI 여론 분석</span>
+        <span class="ai-btn-badge">NEW</span>
+      </a>
+      <div class="tooltip">
+        <div class="tooltip-title">LIVERE.AI 소셜 인텔리전스</div>
+        이 기사의 댓글·SNS·유튜브 여론을 AI가 즉시 분석합니다.
+        <div class="tooltip-feature">✦ 감성 분포 · 여론 시계열</div>
+        <div class="tooltip-feature">✦ 연관 토픽 · 페르소나 분석</div>
+        <div class="tooltip-feature">✦ 팩트체크 · 미래 예측</div>
+      </div>
+    </div>
+    <!-- ★★★ END SHORTCUT BUTTON ★★★ -->
+
+  </div>
+
+  <!-- BODY -->
+  <div class="widget-body">
+
+    <!-- Input -->
+    <div class="comment-input-area">
+      <div class="avatar me">나</div>
+      <textarea class="input-box" placeholder="의견을 남겨주세요…" onclick="this.style.height='80px'"></textarea>
+    </div>
+
+    <!-- Comments -->
+    <div class="comments-list">
+
+      <div class="comment">
+        <div class="avatar a1">김</div>
+        <div class="comment-main">
+          <div class="comment-author-row">
+            <span class="c-name">김민수</span>
+            <span class="c-time">3분 전</span>
+          </div>
+          <div class="c-body">국군은 용병이 아닙니다. 헌법 절차 없이 파병 결정은 민주주의 훼손입니다. 국회 동의부터 받으세요.</div>
+          <div class="c-actions">
+            <button class="c-btn liked">👍 4,821</button>
+            <button class="c-btn">👎 238</button>
+            <button class="c-btn">↩ 답글</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="comment">
+        <div class="avatar a2">박</div>
+        <div class="comment-main">
+          <div class="comment-author-row">
+            <span class="c-name">박지영</span>
+            <span class="c-time">11분 전</span>
+          </div>
+          <div class="c-body">호르무즈 해협 봉쇄 시 우리나라 원유 수입의 70%가 막힙니다. 에너지 안보 관점에서 파병은 불가피할 수도 있어요.</div>
+          <div class="c-actions">
+            <button class="c-btn">👍 2,104</button>
+            <button class="c-btn">👎 891</button>
+            <button class="c-btn">↩ 답글</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="comment">
+        <div class="avatar a3">이</div>
+        <div class="comment-main">
+          <div class="comment-author-row">
+            <span class="c-name">이준호</span>
+            <span class="c-time">25분 전</span>
+          </div>
+          <div class="c-body">찬반을 떠나서 이렇게 중요한 결정을 이렇게 갑자기 발표하는 방식 자체가 문제라고 생각합니다.</div>
+          <div class="c-actions">
+            <button class="c-btn">👍 3,204</button>
+            <button class="c-btn">👎 124</button>
+            <button class="c-btn">↩ 답글</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="comment">
+        <div class="avatar a4">최</div>
+        <div class="comment-main">
+          <div class="comment-author-row">
+            <span class="c-name">최서연</span>
+            <span class="c-time">42분 전</span>
+          </div>
+          <div class="c-body">한미동맹 차원에서 미국 요청이 있었다면 어느 정도 이해. 하지만 국민에게 충분한 설명이 필요합니다.</div>
+          <div class="c-actions">
+            <button class="c-btn">👍 1,587</button>
+            <button class="c-btn">👎 342</button>
+            <button class="c-btn">↩ 답글</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="widget-footer">
+    <span class="footer-text">댓글 정책 · 신고하기</span>
+    <span class="footer-logo">powered by livere<span>.ai</span></span>
+  </div>
+
+</div>
+
+<!-- CALLOUT EXPLANATION -->
+<div class="callout">
+  <strong>⚡ 숏컷 버튼 (AI 여론 분석)</strong> — 기존 댓글 위젯 헤더 우측에 추가되는 버튼입니다.<br>
+  클릭 시 <strong>livere.ai</strong>로 이동, 현재 페이지 URL을 자동으로 넘겨 즉시 분석 결과를 보여줍니다.<br>
+  호버 시 <strong>툴팁</strong>으로 3가지 핵심 기능 미리보기를 제공합니다.<br>
+  → YouTube의 <strong>"Ask" 버튼</strong>과 동일한 UX 패턴 · 위젯 설치 매체 전체에 자동 노출됩니다.
+</div>
+
+</body>
+</html>
