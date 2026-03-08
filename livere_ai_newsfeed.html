@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>저장·스크랩 — 키워드 묶음 & 뉴스피드 추천</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080b12;--s1:#0c1020;--s2:#111628;--s3:#161d32;
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
+  --saved:#a78bfa;--rec:#38bdf8;--hot:#f59e0b;--green:#34d399;
+  --t1:#f0f3ff;--t2:#7b8db0;--t3:#313d5a;
+  --display:'Unbounded',sans-serif;--sans:'Noto Sans KR',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--t1);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 10% 30%,rgba(167,139,250,.04) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 90% 60%,rgba(56,189,248,.04) 0%,transparent 60%);
+  pointer-events:none;z-index:0}
+
+/* topbar */
+.topbar{height:52px;background:rgba(8,11,18,.95);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 24px;gap:16px;
+  position:sticky;top:0;z-index:100}
+.brand{font-family:var(--display);font-size:13px;font-weight:700;
+  color:var(--t1);letter-spacing:.02em}
+.brand em{color:var(--rec);font-style:normal}
+.page-title{font-size:12px;color:var(--t3)}
+.topbar-right{margin-left:auto;display:flex;gap:10px;align-items:center}
+.notif-pill{display:flex;align-items:center;gap:6px;
+  background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);
+  border-radius:16px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--saved)}
+
+/* layout */
+.layout{display:grid;grid-template-columns:360px 1fr;
+  min-height:calc(100vh - 52px);position:relative;z-index:1}
+
+/* LEFT: saved bundles */
+.left{background:var(--s1);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden}
+.left-head{padding:20px 20px 14px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px}
+.lh-title{font-family:var(--display);font-size:13px;font-weight:700;
+  color:var(--t1);flex:1}
+.add-btn{background:var(--saved);color:#080b12;border:none;
+  border-radius:6px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer}
+
+.bundle-list{flex:1;overflow-y:auto;padding:14px}
+.bundle-list::-webkit-scrollbar{width:3px}
+.bundle-list::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+
+.bundle-card{background:var(--s2);border:1px solid var(--border);
+  border-radius:12px;padding:14px 16px;margin-bottom:10px;
+  cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.bundle-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--bc-color,var(--saved)),transparent);
+  opacity:0;transition:opacity .2s}
+.bundle-card.active{border-color:var(--bc-color,rgba(167,139,250,.4));
+  background:var(--s3)}
+.bundle-card.active::before{opacity:1}
+.bundle-card:hover{border-color:var(--border2)}
+
+.bc-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bc-icon{font-size:20px;width:36px;height:36px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bc-name{font-size:13px;font-weight:700;color:var(--t1);flex:1}
+.bc-count{font-size:10px;color:var(--t3);font-family:var(--display)}
+.bc-menu{color:var(--t3);cursor:pointer;font-size:16px}
+
+.kw-chain{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.kw-tag{font-size:10px;padding:3px 9px;border-radius:12px;
+  font-weight:700;background:rgba(255,255,255,.06);color:var(--t2);
+  display:flex;align-items:center;gap:4px}
+.kw-tag .kw-arrow{color:var(--t3);font-size:9px}
+.kw-tag.root{background:rgba(167,139,250,.12);color:var(--saved)}
+.kw-tag.sub{background:rgba(56,189,248,.1);color:var(--rec)}
+.kw-tag.leaf{background:rgba(52,211,153,.1);color:var(--green)}
+
+.bc-meta{display:flex;gap:12px;font-size:10px;color:var(--t3);
+  padding-top:8px;border-top:1px solid var(--border)}
+.bc-meta-item{display:flex;align-items:center;gap:4px}
+.bc-save-btn{margin-left:auto;background:transparent;border:1px solid var(--border2);
+  color:var(--t2);font-size:10px;font-weight:700;padding:3px 10px;
+  border-radius:5px;cursor:pointer;transition:all .15s}
+.bc-save-btn:hover{border-color:var(--rec);color:var(--rec)}
+.bc-save-btn.saved-state{background:rgba(167,139,250,.1);
+  border-color:var(--saved);color:var(--saved)}
+
+/* RIGHT: feed */
+.right{display:flex;flex-direction:column;overflow:hidden}
+.right-head{padding:20px 24px 14px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.rh-title{font-family:var(--display);font-size:13px;font-weight:700;flex:1}
+.why-chip{font-size:10px;background:rgba(56,189,248,.1);
+  border:1px solid rgba(56,189,248,.2);color:var(--rec);
+  border-radius:5px;padding:4px 10px;font-weight:700}
+
+.active-filters{padding:10px 24px;border-bottom:1px solid var(--border);
+  display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.filter-label{font-size:10px;color:var(--t3)}
+.filter-kw{font-size:10px;font-weight:700;padding:3px 10px;
+  border-radius:12px;background:rgba(167,139,250,.1);color:var(--saved);
+  border:1px solid rgba(167,139,250,.2);display:flex;align-items:center;gap:5px;cursor:pointer}
+.filter-kw .fk-x{color:var(--t3);font-size:10px}
+.filter-kw.rec-kw{background:rgba(56,189,248,.1);color:var(--rec);
+  border-color:rgba(56,189,248,.2)}
+
+.feed-list{flex:1;overflow-y:auto;padding:16px 20px}
+.feed-list::-webkit-scrollbar{width:4px}
+.feed-list::-webkit-scrollbar-thumb{background:var(--s3)}
+
+/* FEED ITEM */
+.feed-item{display:flex;gap:14px;padding:14px 0;
+  border-bottom:1px solid var(--border);cursor:pointer;
+  transition:all .2s;position:relative}
+.feed-item:hover{padding-left:4px}
+.feed-item:last-child{border-bottom:none}
+
+.fi-rank{font-family:var(--display);font-size:11px;font-weight:700;
+  color:var(--t3);width:20px;flex-shrink:0;padding-top:2px;text-align:center}
+.fi-img{width:64px;height:64px;border-radius:8px;flex-shrink:0;
+  object-fit:cover;overflow:hidden;background:var(--s2);
+  display:flex;align-items:center;justify-content:center;font-size:24px}
+.fi-body{flex:1}
+.fi-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.fi-title{font-size:13px;font-weight:700;color:var(--t1);
+  line-height:1.45;margin-bottom:4px;flex:1}
+.fi-score{flex-shrink:0;text-align:right}
+.fi-score-val{font-family:var(--display);font-size:15px;font-weight:700;line-height:1}
+.fi-score-label{font-size:9px;color:var(--t3);margin-top:1px}
+
+.fi-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px}
+.fi-tag{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700}
+.fi-tag.matched{background:rgba(167,139,250,.15);color:var(--saved)}
+.fi-tag.rec{background:rgba(56,189,248,.1);color:var(--rec)}
+.fi-tag.hot{background:rgba(245,158,11,.1);color:var(--hot)}
+.fi-tag.normal{background:var(--s2);color:var(--t3)}
+
+.fi-meta{display:flex;gap:10px;font-size:10px;color:var(--t3);align-items:center}
+.fi-source{color:var(--t2);font-weight:600}
+
+.fi-why{font-size:10px;color:var(--rec);
+  background:rgba(56,189,248,.07);border-left:2px solid var(--rec);
+  padding:4px 8px;border-radius:0 5px 5px 0;margin-top:6px;
+  line-height:1.5}
+
+.fi-save-btn{position:absolute;right:0;top:50%;transform:translateY(-50%);
+  background:transparent;border:none;color:var(--t3);font-size:18px;
+  cursor:pointer;padding:6px;transition:color .15s;
+  border-radius:6px}
+.fi-save-btn:hover{color:var(--saved);background:rgba(167,139,250,.1)}
+.fi-save-btn.saved{color:var(--saved)}
+
+/* ADD MODAL (simplified inline) */
+.add-hint{text-align:center;padding:24px;color:var(--t3);font-size:12px}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.bundle-card,.feed-item{animation:fadeUp .3s ease both}
+.bundle-card:nth-child(2){animation-delay:.04s}
+.bundle-card:nth-child(3){animation-delay:.08s}
+.feed-item:nth-child(2){animation-delay:.03s}
+.feed-item:nth-child(3){animation-delay:.06s}
+.feed-item:nth-child(4){animation-delay:.09s}
+.feed-item:nth-child(5){animation-delay:.12s}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">livere<em>.ai</em></div>
+  <div class="page-title">/ 저장 키워드 & 추천 뉴스피드</div>
+  <div class="topbar-right">
+    <div class="notif-pill">🔖 저장 묶음 4개 활성</div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT: 저장된 키워드 묶음 -->
+  <aside class="left">
+    <div class="left-head">
+      <div class="lh-title">내 키워드 묶음</div>
+      <button class="add-btn">+ 새 묶음</button>
+    </div>
+    <div class="bundle-list" id="bundleList"></div>
+  </aside>
+
+  <!-- RIGHT: 추천 뉴스피드 -->
+  <main class="right">
+    <div class="right-head">
+      <div class="rh-title" id="feedTitle">추천 뉴스피드</div>
+      <div class="why-chip" id="whyChip">키워드 매칭 기반 추천</div>
+    </div>
+    <div class="active-filters" id="activeFilters"></div>
+    <div class="feed-list" id="feedList"></div>
+  </main>
+
+</div>
+
+<script>
+const BUNDLES = [
+  {
+    id:'b1', icon:'🎤', name:'K팝 걸그룹 트래킹',
+    color:'#a78bfa',
+    keywords:['걸그룹','블랙핑크','지수'],
+    rec_keywords:['제니','로제','리사','YG','컴백'],
+    saved:true, newsCount:23, lastUpdate:'방금',
+    desc:'블랙핑크 멤버별 솔로 활동 및 그룹 컴백 모니터링',
+  },
+  {
+    id:'b2', icon:'📈', name:'코스피 주도주 모니터',
+    color:'#34d399',
+    keywords:['삼성전자','반도체','HBM'],
+    rec_keywords:['SK하이닉스','엔비디아','AI칩','TSMC'],
+    saved:true, newsCount:41, lastUpdate:'3분 전',
+    desc:'AI 반도체 관련 핵심 기업 실시간 여론·뉴스 추적',
+  },
+  {
+    id:'b3', icon:'⚽', name:'손흥민 & 토트넘',
+    color:'#38bdf8',
+    keywords:['손흥민','토트넘','EPL'],
+    rec_keywords:['프리미어리그','안토니오콘테','아시안컵','국가대표'],
+    saved:true, newsCount:18, lastUpdate:'1시간 전',
+    desc:'경기 결과·부상·이적설 종합 모니터링',
+  },
+  {
+    id:'b4', icon:'🏛️', name:'국내 정치 이슈',
+    color:'#f59e0b',
+    keywords:['민주당','국민의힘','총선'],
+    rec_keywords:['비례대표','당대표','지지율'],
+    saved:false, newsCount:67, lastUpdate:'8분 전',
+    desc:'여야 주요 이슈 및 지지율 트래킹',
+  },
+];
+
+const FEEDS = {
+  b1: [
+    {title:'"제니" 솔로 컴백 D-7 — 티저 영상 조회수 500만 돌파', source:'Newsen', time:'15분 전',
+     emoji:'🎵', tags:['제니','컴백','솔로'], matchTags:['블랙핑크→제니'],
+     score:92, scoreColor:'#a78bfa',
+     why:'블랙핑크 멤버 "제니" — 저장된 묶음의 확장 키워드와 매칭',
+     saved:false},
+    {title:'지수 "꽃" MV 1억뷰 달성 — 솔로 최단 기록 경신', source:'한국경제', time:'2시간 전',
+     emoji:'🌸', tags:['지수','솔로','기록'], matchTags:['지수 직접매칭'],
+     score:88, scoreColor:'#34d399',
+     why:'"지수" 저장 키워드 직접 매칭 · 감성 스코어 +82',
+     saved:true},
+    {title:'로제, 팝 아티스트 APT. 글로벌 차트 석권 현황 분석', source:'뮤직뱅크', time:'3시간 전',
+     emoji:'🎶', tags:['로제','글로벌','APT'], matchTags:['블랙핑크→로제'],
+     score:81, scoreColor:'#a78bfa',
+     why:'"블랙핑크" 계열 확장 → "로제" 연관 컨텐츠',
+     saved:false},
+    {title:'YG엔터, 블랙핑크 월드투어 2026 공식 발표 예정', source:'연합뉴스', time:'5시간 전',
+     emoji:'🌍', tags:['YG','월드투어','블랙핑크'], matchTags:['블랙핑크 직접매칭','YG 추천'],
+     score:76, scoreColor:'#a78bfa',
+     why:'"블랙핑크" 직접 키워드 + "YG" 추천 확장 키워드',
+     saved:false},
+    {title:'"걸그룹 생존 경쟁" 2026 K팝 트렌드 전망 리포트', source:'미디어스', time:'어제',
+     emoji:'📊', tags:['걸그룹','트렌드','2026'], matchTags:['걸그룹 직접매칭'],
+     score:68, scoreColor:'#38bdf8',
+     why:'"걸그룹" 직접 키워드 매칭 · 배경 정보 콘텐츠',
+     saved:false},
+  ],
+  b2: [
+    {title:'SK하이닉스, HBM4 양산 일정 앞당겨 — 엔비디아 수주 확대', source:'한국경제', time:'30분 전',
+     emoji:'💾', tags:['SK하이닉스','HBM4','엔비디아'], matchTags:['HBM→SK하이닉스'],
+     score:94, scoreColor:'#34d399', why:'"HBM" 확장 → SK하이닉스·엔비디아 연결',saved:false},
+    {title:'삼성전자 파운드리, TSMC 격차 좁혔다 — GAA 수율 개선', source:'전자신문', time:'1시간 전',
+     emoji:'🔬', tags:['삼성전자','파운드리','TSMC'], matchTags:['삼성전자 직접매칭'],
+     score:89, scoreColor:'#34d399', why:'"삼성전자" 직접 매칭',saved:true},
+  ],
+  b3: [
+    {title:'손흥민, 챔피언스리그 결선 골 결정 — 토트넘 16강 진출 확정', source:'스포츠조선', time:'1시간 전',
+     emoji:'⚽', tags:['손흥민','토트넘','UCL'], matchTags:['손흥민 직접매칭','토트넘 직접매칭'],
+     score:96, scoreColor:'#38bdf8', why:'"손흥민"+"토트넘" 복합 매칭 · 최고 관련성',saved:true},
+  ],
+  b4: [
+    {title:'민주당 지지율 38.2% — 지난주 대비 +2.1%p 상승', source:'리얼미터', time:'1시간 전',
+     emoji:'📊', tags:['민주당','지지율'], matchTags:['민주당 직접매칭'],
+     score:88, scoreColor:'#f59e0b', why:'"민주당" 직접 매칭',saved:false},
+  ],
+};
+
+let activeBundle = BUNDLES[0];
+
+function renderBundles(){
+  const list = document.getElementById('bundleList');
+  list.innerHTML='';
+  BUNDLES.forEach(b=>{
+    const card=document.createElement('div');
+    card.className='bundle-card'+(b.id===activeBundle.id?' active':'');
+    card.style.setProperty('--bc-color',b.color);
+    card.innerHTML=`
+      <div class="bc-top">
+        <div class="bc-icon" style="background:${b.color}14">${b.icon}</div>
+        <div>
+          <div class="bc-name">${b.name}</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:1px">${b.desc.slice(0,28)}…</div>
+        </div>
+        <div class="bc-count">${b.newsCount}건</div>
+      </div>
+      <div class="kw-chain">
+        ${b.keywords.map((k,i)=>`
+          ${i>0?'<span class="kw-arrow" style="color:var(--t3)">→</span>':''}
+          <span class="kw-tag ${i===0?'root':i===1?'sub':'leaf'}">${k}</span>
+        `).join('')}
+        <span style="font-size:9px;color:var(--t3);align-self:center">+확장</span>
+        ${b.rec_keywords.slice(0,2).map(k=>`<span class="kw-tag rec">${k}</span>`).join('')}
+      </div>
+      <div class="bc-meta">
+        <div class="bc-meta-item">🕐 ${b.lastUpdate}</div>
+        <div class="bc-meta-item">📰 ${b.newsCount}건 매칭</div>
+        <button class="bc-save-btn ${b.saved?'saved-state':''}"
+          onclick="toggleSave(event,'${b.id}')">
+          ${b.saved?'🔖 저장됨':'+ 저장'}
+        </button>
+      </div>
+    `;
+    card.addEventListener('click',()=>{
+      activeBundle=b;
+      renderBundles();
+      renderFeed(b);
+    });
+    list.appendChild(card);
+  });
+}
+
+function toggleSave(e,id){
+  e.stopPropagation();
+  const b=BUNDLES.find(x=>x.id===id);
+  if(b){ b.saved=!b.saved; renderBundles(); }
+}
+
+function renderFeed(bundle){
+  const feeds = FEEDS[bundle.id] || [];
+  document.getElementById('feedTitle').textContent=`추천 뉴스피드 — ${bundle.name}`;
+  document.getElementById('whyChip').textContent=`${bundle.keywords.join('·')} 기반 추천`;
+
+  // active filters
+  const af=document.getElementById('activeFilters');
+  af.innerHTML=`<span class="filter-label">활성 키워드</span>`;
+  bundle.keywords.forEach(k=>{
+    af.innerHTML+=`<span class="filter-kw">${k} <span class="fk-x">✕</span></span>`;
+  });
+  bundle.rec_keywords.slice(0,3).forEach(k=>{
+    af.innerHTML+=`<span class="filter-kw rec-kw">↗ ${k}</span>`;
+  });
+
+  // feed items
+  const list=document.getElementById('feedList');
+  list.innerHTML='';
+  if(!feeds.length){
+    list.innerHTML=`<div class="add-hint">해당 묶음의 뉴스피드를 불러오는 중…</div>`;
+    return;
+  }
+  feeds.forEach((item,i)=>{
+    const el=document.createElement('div');
+    el.className='feed-item';
+    el.style.animationDelay=`${i*50}ms`;
+    el.innerHTML=`
+      <div class="fi-rank">${String(i+1).padStart(2,'0')}</div>
+      <div class="fi-img">${item.emoji}</div>
+      <div class="fi-body">
+        <div class="fi-top">
+          <div class="fi-title">${item.title}</div>
+          <div class="fi-score">
+            <div class="fi-score-val" style="color:${item.scoreColor}">${item.score}</div>
+            <div class="fi-score-label">관련성</div>
+          </div>
+        </div>
+        <div class="fi-tags">
+          ${item.matchTags.map(t=>`<span class="fi-tag matched">${t}</span>`).join('')}
+          ${item.tags.slice(0,2).map(t=>`<span class="fi-tag normal">${t}</span>`).join('')}
+        </div>
+        <div class="fi-meta">
+          <span class="fi-source">${item.source}</span>
+          <span>${item.time}</span>
+        </div>
+        <div class="fi-why">💡 ${item.why}</div>
+      </div>
+      <button class="fi-save-btn ${item.saved?'saved':''}"
+        onclick="toggleFeedSave(event,${i},'${bundle.id}')">
+        ${item.saved?'🔖':'🤍'}
+      </button>
+    `;
+    list.appendChild(el);
+  });
+}
+
+function toggleFeedSave(e,idx,bundleId){
+  e.stopPropagation();
+  const feeds=FEEDS[bundleId];
+  if(feeds&&feeds[idx]){
+    feeds[idx].saved=!feeds[idx].saved;
+    renderFeed(activeBundle);
+  }
+}
+
+renderBundles();
+renderFeed(activeBundle);
+</script>
+</body>
+</html>
