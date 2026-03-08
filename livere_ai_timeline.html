@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>모멘텀 & 변곡점 — 여론 예측 스코어링</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#08090f; --s1:#0f1119; --s2:#151821; --s3:#1c2030;
+  --border:rgba(255,255,255,0.06); --border2:rgba(255,255,255,0.11);
+  --up:#4ade80; --down:#f43f5e; --neutral:#60a5fa; --pred:#f59e0b;
+  --t1:#eef2ff; --t2:#7b89a8; --t3:#353f5a;
+  --serif:'Archivo',sans-serif; --sans:'Noto Sans KR',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--t1);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 80% 40% at 50% 0%,rgba(74,222,128,0.03) 0%,transparent 60%);
+  pointer-events:none;z-index:0}
+
+/* topbar */
+.topbar{height:52px;background:rgba(8,9,15,.95);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 28px;gap:16px;
+  position:sticky;top:0;z-index:100}
+.brand{font-family:var(--serif);font-size:15px;font-weight:900;
+  letter-spacing:.04em;color:var(--t1)}
+.brand em{color:var(--up);font-style:normal}
+.subject-chip{background:var(--s2);border:1px solid var(--border2);
+  border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;color:var(--t1)}
+.topbar-right{margin-left:auto;display:flex;gap:12px;align-items:center}
+.current-score-pill{display:flex;align-items:center;gap:8px;
+  background:var(--s2);border:1px solid var(--border2);
+  border-radius:20px;padding:6px 16px}
+.csp-label{font-size:10px;color:var(--t2);letter-spacing:.1em;text-transform:uppercase}
+.csp-val{font-family:var(--serif);font-size:22px;font-weight:900}
+
+/* page */
+.page{padding:28px;position:relative;z-index:1}
+
+/* HERO: score timeline */
+.hero{background:var(--s1);border:1px solid var(--border);
+  border-radius:16px;padding:24px;margin-bottom:20px}
+.hero-head{display:flex;align-items:flex-end;justify-content:space-between;
+  margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.hero-title{font-family:var(--serif);font-size:20px;font-weight:900}
+.hero-sub{font-size:11px;color:var(--t3);margin-top:3px}
+
+/* score timeline nodes */
+.timeline-wrap{position:relative;overflow-x:auto}
+.timeline-chart{min-width:700px}
+
+/* delta cards row */
+.delta-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:20px}
+.delta-card{background:var(--s2);border:1px solid var(--border);
+  border-radius:10px;padding:14px 16px;position:relative;overflow:hidden}
+.delta-card.future{border-color:rgba(245,158,11,.25);
+  background:rgba(245,158,11,.05)}
+.delta-card.future::before{content:'예측';position:absolute;top:8px;right:8px;
+  font-size:9px;font-weight:700;letter-spacing:.1em;
+  background:rgba(245,158,11,.15);color:var(--pred);
+  padding:2px 6px;border-radius:3px}
+.dc-time{font-size:10px;color:var(--t3);margin-bottom:6px;font-family:var(--serif)}
+.dc-score{font-family:var(--serif);font-size:28px;font-weight:900;line-height:1}
+.dc-delta{display:flex;align-items:center;gap:4px;
+  font-size:12px;font-weight:700;margin-top:4px}
+.dc-vel{font-size:10px;color:var(--t3);margin-top:3px}
+.dc-desc{font-size:10px;color:var(--t2);margin-top:6px;line-height:1.5;
+  border-top:1px solid var(--border);padding-top:6px}
+
+/* MOMENTUM MATH */
+.math-section{display:grid;grid-template-columns:1fr 380px;gap:16px;margin-bottom:20px}
+.math-card{background:var(--s1);border:1px solid var(--border);
+  border-radius:14px;padding:22px}
+.math-title{font-family:var(--serif);font-size:14px;font-weight:700;
+  color:var(--t2);letter-spacing:.06em;text-transform:uppercase;
+  margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.math-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* derivative viz */
+.deriv-wrap{display:flex;flex-direction:column;gap:10px}
+.deriv-row{display:flex;align-items:center;gap:12px}
+.dr-time{font-size:10px;color:var(--t3);width:60px;flex-shrink:0;font-family:var(--serif)}
+.dr-val{font-family:var(--serif);font-size:20px;font-weight:900;width:44px;flex-shrink:0}
+.dr-arrow{font-size:16px;flex-shrink:0}
+.dr-delta{font-size:13px;font-weight:700;width:44px;flex-shrink:0}
+.dr-vel{font-size:11px;color:var(--t3);width:80px;flex-shrink:0}
+.dr-bar-wrap{flex:1;height:6px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
+.dr-bar{height:100%;border-radius:3px;transition:width 1s ease}
+.dr-pred{background:rgba(245,158,11,.08);border:1px dashed rgba(245,158,11,.3);
+  border-radius:6px;padding:8px 12px}
+
+/* formula */
+.formula-box{background:rgba(0,0,0,.4);border-radius:8px;padding:14px 16px;
+  font-family:'Courier New',monospace;font-size:12px;line-height:2;
+  color:var(--pred)}
+.f-var{color:var(--neutral)}
+.f-op{color:var(--t3)}
+.f-note{font-size:10px;color:var(--t3);font-family:var(--sans)}
+.f-result{color:var(--up);font-size:14px;font-weight:700}
+
+/* inflection markers */
+.inflections{background:var(--s1);border:1px solid var(--border);
+  border-radius:14px;padding:22px}
+.inf-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.inf-item{display:flex;gap:14px;padding:12px 14px;
+  background:var(--s2);border:1px solid var(--border);border-radius:10px;
+  align-items:flex-start;transition:border-color .15s;cursor:pointer}
+.inf-item:hover{border-color:var(--border2)}
+.inf-item.positive{border-left:3px solid var(--up)}
+.inf-item.negative{border-left:3px solid var(--down)}
+.inf-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.inf-body{flex:1}
+.inf-date{font-size:10px;color:var(--t3);font-family:var(--serif);margin-bottom:2px}
+.inf-event{font-size:12px;font-weight:700;color:var(--t1);margin-bottom:3px}
+.inf-desc{font-size:11px;color:var(--t2);line-height:1.5}
+.inf-delta{font-family:var(--serif);font-size:22px;font-weight:900;flex-shrink:0;align-self:center}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.hero,.math-card,.inflections{animation:fadeUp .4s ease both}
+.math-card:nth-child(2){animation-delay:.06s}
+.inflections{animation-delay:.12s}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">livere<em>.ai</em></div>
+  <div class="subject-chip">이재명 대통령 지지도</div>
+  <div class="topbar-right">
+    <div class="current-score-pill">
+      <div class="csp-label">현재 스코어</div>
+      <div class="csp-val" style="color:var(--up)">42.1</div>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+
+  <!-- HERO: 스코어 타임라인 차트 -->
+  <div class="hero">
+    <div class="hero-head">
+      <div>
+        <div class="hero-title">지지도 스코어 타임라인</div>
+        <div class="hero-sub">대과거→과거→현재→예측 · 체크포인트 기반 모멘텀 분석</div>
+      </div>
+      <div style="display:flex;gap:12px;font-size:11px;align-items:center">
+        <div style="display:flex;align-items:center;gap:5px">
+          <div style="width:24px;height:2px;background:var(--neutral)"></div>
+          <span style="color:var(--t2)">실측값</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px">
+          <div style="width:24px;height:2px;background:var(--pred);border-top:2px dashed var(--pred)"></div>
+          <span style="color:var(--t2)">예측값</span>
+        </div>
+      </div>
+    </div>
+    <div class="timeline-wrap">
+      <canvas id="timelineChart" height="200" class="timeline-chart"></canvas>
+    </div>
+  </div>
+
+  <!-- DELTA CARDS -->
+  <div class="delta-row" id="deltaRow"></div>
+
+  <!-- MATH + FORMULA -->
+  <div class="math-section" style="margin-top:20px">
+    <div class="math-card">
+      <div class="math-title">모멘텀 수치 계산</div>
+      <div class="deriv-wrap" id="derivWrap"></div>
+    </div>
+
+    <div class="math-card">
+      <div class="math-title">예측 공식</div>
+      <div class="formula-box">
+<span class="f-var">Δ₁</span> <span class="f-op">=</span> S₂ - S₁ <span class="f-note">= 40 - 35 = +5.0</span>
+<span class="f-var">Δ₂</span> <span class="f-op">=</span> S₃ - S₂ <span class="f-note">= 42 - 40 = +2.0</span>
+<span class="f-var">Δ₃</span> <span class="f-op">=</span> Δ₂ + (Δ₂ - Δ₁) × α
+   <span class="f-note">= 2.0 + (2.0 - 5.0) × 0.5 = +0.5</span>
+<span class="f-op">────────────────────────────</span>
+<span class="f-var">S₄(예측)</span> <span class="f-op">=</span> S₃ + Δ₃
+<span class="f-result">       = 42.0 + 0.5 = <strong>42.5</strong></span>
+<span class="f-op">────────────────────────────</span>
+<span class="f-note">α = 감쇠 계수 (기본값 0.5)</span>
+<span class="f-note">α↓ 외부 이벤트 없을수록 감쇠 강화</span>
+<span class="f-note">신뢰 구간: ±1.8 (95% CI)</span>
+      </div>
+      <div class="dr-pred" style="margin-top:12px">
+        <div style="font-size:11px;color:var(--pred);font-weight:700;margin-bottom:4px">
+          📐 2차 미분 해석
+        </div>
+        <div style="font-size:11px;color:var(--t2);line-height:1.7">
+          Δ₂ &lt; Δ₁ → <strong style="color:var(--pred)">상승 모멘텀 감소</strong><br>
+          2차 도함수 = -3.0 (오목, 상승세 둔화)<br>
+          현재 곡선은 <strong style="color:var(--pred)">수렴 중</strong>. 변곡 이벤트 없으면<br>
+          43~44 수준에서 정체 예상.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INFLECTION POINTS -->
+  <div class="inflections" style="margin-top:4px">
+    <div class="math-title">주요 변곡점 이벤트</div>
+    <div class="inf-list" id="infList"></div>
+  </div>
+
+</main>
+
+<script>
+// DATA
+const CHECKPOINTS = [
+  {label:'대대과거\n2025 Q3', score:31.2, pred:false, note:'취임 초기 허니문'},
+  {label:'대과거\n2025 Q4',   score:35.0, pred:false, note:'경제법안 통과'},
+  {label:'과거\n2026 Q1',     score:40.0, pred:false, note:'외교 성과'},
+  {label:'현재\n2026 Q2',     score:42.0, pred:false, note:'현재 실측'},
+  {label:'예측\n2026 Q3',     score:42.5, pred:true,  note:'모멘텀 감쇠'},
+];
+
+// Timeline chart
+(function(){
+  const ctx = document.getElementById('timelineChart').getContext('2d');
+  const realIdx = CHECKPOINTS.filter(c=>!c.pred).length - 1;
+
+  const realData = CHECKPOINTS.map((c,i) => i<=realIdx ? c.score : null);
+  const predData = CHECKPOINTS.map((c,i) => {
+    if(i===realIdx) return c.score;
+    if(i>realIdx) return c.score;
+    return null;
+  });
+
+  new Chart(ctx, {
+    type:'line',
+    data:{
+      labels: CHECKPOINTS.map(c=>c.label.replace('\n',' ')),
+      datasets:[
+        {
+          label:'실측 스코어',
+          data: realData,
+          borderColor:'#60a5fa', borderWidth:3,
+          pointBackgroundColor:'#60a5fa', pointRadius:6, pointHoverRadius:9,
+          fill:true,
+          backgroundColor: ctx2=>{
+            const g=ctx2.chart.ctx.createLinearGradient(0,0,0,200);
+            g.addColorStop(0,'rgba(96,165,250,0.15)');g.addColorStop(1,'rgba(96,165,250,0)');
+            return g;
+          },
+          tension:0.4,
+        },
+        {
+          label:'예측 스코어',
+          data: predData,
+          borderColor:'#f59e0b', borderWidth:2.5,
+          borderDash:[6,4],
+          pointBackgroundColor: predData.map((v,i)=>i>realIdx?'#f59e0b':'transparent'),
+          pointBorderColor: predData.map((v,i)=>i>realIdx?'#f59e0b':'transparent'),
+          pointRadius:6,
+          fill:false,
+          tension:0.4,
+        }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:true,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#151821', borderColor:'rgba(255,255,255,.1)', borderWidth:1,
+          titleColor:'#eef2ff', bodyColor:'#7b89a8',
+          callbacks:{
+            afterLabel: ctx2 => {
+              const cp = CHECKPOINTS[ctx2.dataIndex];
+              return cp ? '  ' + cp.note : '';
+            }
+          }
+        },
+        annotation: {annotations:{}}
+      },
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#353f5a',font:{size:10}}},
+        y:{
+          min:25, max:50,
+          grid:{color:'rgba(255,255,255,.04)'},
+          ticks:{color:'#353f5a',font:{size:10},callback:v=>v+'점'}
+        }
+      }
+    }
+  });
+})();
+
+// Delta cards
+(function(){
+  const deltas = [
+    {time:'2025 Q3',score:31.2,delta:null,vel:null,desc:'집권 초기, 기대감과 불안감 혼재',future:false},
+    {time:'2025 Q4',score:35.0,delta:+3.8,vel:'1차 상승',desc:'경제법안 국회 통과 → 긍정 급등',future:false},
+    {time:'2026 Q1',score:40.0,delta:+5.0,vel:'가속 상승',desc:'미국 정상회담 성과',future:false},
+    {time:'2026 Q2',score:42.0,delta:+2.0,vel:'감속 상승',desc:'현재 실측값 (모멘텀 둔화)',future:false},
+    {time:'2026 Q3',score:42.5,delta:+0.5,vel:'수렴 예측',desc:'외부 이벤트 없을 시 정체 예상',future:true},
+  ];
+
+  const row = document.getElementById('deltaRow');
+  deltas.forEach(d => {
+    const sign = d.delta>0?'+':'';
+    const color = d.future ? '#f59e0b' : d.delta>0 ? '#4ade80' : d.delta<0 ? '#f43f5e' : '#60a5fa';
+    row.innerHTML += `
+      <div class="delta-card ${d.future?'future':''}">
+        <div class="dc-time">${d.time}</div>
+        <div class="dc-score" style="color:${color}">${d.score}</div>
+        ${d.delta!==null?`
+          <div class="dc-delta" style="color:${color}">
+            ${d.delta>0?'↑':'↓'} ${sign}${d.delta}
+          </div>
+          <div class="dc-vel" style="color:${color}88">${d.vel}</div>
+        `:`<div class="dc-vel" style="margin-top:4px">기준점</div>`}
+        <div class="dc-desc">${d.desc}</div>
+      </div>
+    `;
+  });
+})();
+
+// Deriv wrap
+(function(){
+  const rows = [
+    {time:'Δ₁ (Q3→Q4)',val:35,delta:'+3.8',velDesc:'1차 도함수',color:'#4ade80',barW:40},
+    {time:'Δ₂ (Q4→Q1)',val:40,delta:'+5.0',velDesc:'1차 도함수 (최대)',color:'#4ade80',barW:60},
+    {time:'Δ₃ (Q1→Q2)',val:42,delta:'+2.0',velDesc:'감속 구간',color:'#fbbf24',barW:30},
+    {time:'Δ₄ 예측',   val:null,delta:'+0.5',velDesc:'2차 미분 적용',color:'#f59e0b',barW:10,pred:true},
+  ];
+  const wrap = document.getElementById('derivWrap');
+  rows.forEach((r,i) => {
+    const el = document.createElement('div');
+    el.className = 'deriv-row';
+    el.innerHTML = `
+      <div class="dr-time">${r.time}</div>
+      ${r.val!==null?`<div class="dr-val" style="color:${r.color}">${r.val}</div>`
+        :`<div class="dr-val" style="color:var(--t3)">—</div>`}
+      <div class="dr-arrow">${r.pred?'⋯':'→'}</div>
+      <div class="dr-delta" style="color:${r.color}">${r.delta}</div>
+      <div class="dr-vel" style="color:${r.color}88">${r.velDesc}</div>
+      <div class="dr-bar-wrap">
+        <div class="dr-bar" style="width:${r.barW}%;background:${r.color}${r.pred?'80':''}"></div>
+      </div>
+    `;
+    if(r.pred) el.style.opacity='0.7';
+    wrap.appendChild(el);
+  });
+})();
+
+// Inflection list
+(function(){
+  const events = [
+    {type:'positive',icon:'📈',date:'2026-01-15',event:'미국 국빈 방문 성공',
+     desc:'한미 공동성명 및 경제협력 MOU 체결. SNS 긍정 반응 42시간 내 +380% 급등.',delta:'+6.8'},
+    {type:'negative',icon:'📉',date:'2026-02-28',event:'경제부총리 발언 논란',
+     desc:'물가 관련 부적절 발언이 커뮤니티에서 확산. 3일간 부정 여론 +29%p 증가.',delta:'-3.1'},
+    {type:'positive',icon:'📈',date:'2026-03-01',event:'삼일절 기념사 호평',
+     desc:'"미래 지향적" 키워드 20~40대 긍정 반응. 하루 만에 회복 곡선 시작.',delta:'+2.4'},
+    {type:'negative',icon:'⚠️',date:'2026-03-05',event:'당내 계파 갈등 보도',
+     desc:'주요 언론 3사 동시 보도. 중도층 이탈 조짐. 스코어 상승세 둔화.',delta:'-1.3'},
+  ];
+  const list = document.getElementById('infList');
+  events.forEach(e => {
+    const color = e.type==='positive'?'#4ade80':'#f43f5e';
+    list.innerHTML += `
+      <div class="inf-item ${e.type}">
+        <div class="inf-icon">${e.icon}</div>
+        <div class="inf-body">
+          <div class="inf-date">${e.date}</div>
+          <div class="inf-event">${e.event}</div>
+          <div class="inf-desc">${e.desc}</div>
+        </div>
+        <div class="inf-delta" style="color:${color}">${e.delta}</div>
+      </div>
+    `;
+  });
+})();
+</script>
+</body>
+</html>
