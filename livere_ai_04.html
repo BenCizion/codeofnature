@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>라이브리 여론분석 — 데모그래픽 인사이트</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600;9..144,700&family=IBM+Plex+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:       #0b0e18;
+  --panel:    #10141f;
+  --panel2:   #161b2e;
+  --panel3:   #1c2340;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.12);
+
+  /* vote colors */
+  --v1: #3b82f6;   /* 찬성 */
+  --v2: #f43f5e;   /* 반대 */
+  --v3: #a3a3a3;   /* 중립 */
+  --v4: #f59e0b;   /* 유보 */
+
+  /* text */
+  --t1: #f0f2ff;
+  --t2: #8b98b8;
+  --t3: #4a5473;
+
+  /* accent */
+  --gold: #e9c46a;
+  --cyan: #38bdf8;
+
+  --serif: 'Fraunces', Georgia, serif;
+  --sans:  'IBM Plex Sans KR', sans-serif;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--t1);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* mesh bg */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background:
+    radial-gradient(ellipse 70% 40% at 15% 10%, rgba(59,130,246,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 85% 80%, rgba(244,63,94,0.04) 0%, transparent 60%);
+  pointer-events:none; z-index:0;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  position: sticky; top:0; z-index:100;
+  background: rgba(11,14,24,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  height: 54px;
+  display: flex; align-items: center; gap: 20px;
+}
+
+.brand {
+  font-family: var(--serif);
+  font-size: 17px; font-weight: 600;
+  color: var(--t1);
+  letter-spacing: 0.01em;
+}
+.brand em { color: var(--cyan); font-style:normal; }
+
+.subject-tag {
+  background: var(--panel2);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 4px 14px;
+  font-size: 13px; font-weight: 600;
+  color: var(--t1);
+}
+
+.topbar-right { margin-left: auto; display:flex; align-items:center; gap:14px; }
+
+.live-pill {
+  display:flex; align-items:center; gap:6px;
+  font-size:10px; font-weight:700; letter-spacing:0.1em;
+  color: #f43f5e;
+  background: rgba(244,63,94,0.1);
+  border: 1px solid rgba(244,63,94,0.2);
+  padding: 4px 10px; border-radius:4px;
+}
+.live-dot { width:5px; height:5px; border-radius:50%; background:#f43f5e; animation:pulse 1.2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+.date-tag { font-size:11px; color:var(--t3); font-weight:400; }
+
+/* tabs */
+.tab-bar {
+  display:flex; gap:0;
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  background: var(--panel);
+  position: sticky; top:54px; z-index:99;
+}
+.tab {
+  padding: 12px 20px;
+  font-size:12px; font-weight:600;
+  color: var(--t3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+.tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+.tab:hover { color: var(--t2); }
+
+/* ── LAYOUT ── */
+.page { padding: 28px; position:relative; z-index:1; }
+
+.section-head {
+  display:flex; align-items:baseline; gap:12px;
+  margin-bottom: 20px;
+}
+.section-title {
+  font-family: var(--serif);
+  font-size: 22px; font-weight: 600;
+  color: var(--t1);
+}
+.section-sub {
+  font-size: 12px; color: var(--t3);
+}
+
+/* ── VOTE LEGEND ── */
+.vote-legend {
+  display:flex; gap:20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display:flex; align-items:center; gap:7px;
+  font-size:12px; font-weight:600; color:var(--t2);
+}
+.legend-dot {
+  width:10px; height:10px; border-radius:3px;
+}
+.legend-pct {
+  font-family: var(--serif);
+  font-size:16px; font-weight:700;
+}
+
+/* ── GRID SECTION ── */
+.demo-grid-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+@media (max-width:900px) { .demo-grid-wrap { grid-template-columns:1fr; } }
+
+.demo-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 22px;
+  position:relative; overflow:hidden;
+  animation: fadeUp 0.5s ease both;
+}
+.demo-card::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:1px;
+  background: linear-gradient(90deg, transparent, rgba(56,189,248,0.2), transparent);
+}
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+.demo-card:nth-child(2) { animation-delay:.06s }
+.demo-card:nth-child(3) { animation-delay:.12s }
+.demo-card:nth-child(4) { animation-delay:.18s }
+
+.demo-card-title {
+  font-size:11px; font-weight:700; letter-spacing:0.14em;
+  text-transform:uppercase; color:var(--t3);
+  margin-bottom: 14px;
+  display:flex; align-items:center; gap:8px;
+}
+.demo-card-title::after {
+  content:''; flex:1; height:1px; background:var(--border);
+}
+
+/* ── DOT GRID ── */
+.dot-grid-section { margin-bottom: 12px; }
+.dot-row {
+  display:flex; align-items:center; gap:10px;
+  margin-bottom: 8px;
+}
+.dot-row-label {
+  font-size:11px; color:var(--t2); font-weight:500;
+  width: 52px; flex-shrink:0; text-align:right;
+}
+.dot-row-grid {
+  display:flex; gap:3px; flex-wrap:wrap;
+  flex:1;
+}
+.dot {
+  width:13px; height:13px; border-radius:3px;
+  transition: transform 0.15s, box-shadow 0.15s;
+  cursor:default;
+  opacity:0;
+  animation: dotAppear 0.3s ease forwards;
+}
+.dot:hover {
+  transform: scale(1.25);
+  box-shadow: 0 0 8px currentColor;
+  z-index:1;
+}
+
+@keyframes dotAppear {
+  from { opacity:0; transform:scale(0.4); }
+  to   { opacity:1; transform:scale(1); }
+}
+
+.dot-row-bar {
+  display:flex; gap:2px; height:5px;
+  background:rgba(255,255,255,0.04); border-radius:3px;
+  overflow:hidden; margin-top:3px; width:100%;
+}
+.dot-row-seg { height:100%; transition:width 0.8s ease; }
+
+/* summary bar under grid */
+.grid-summary {
+  display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;
+}
+.grid-sum-item {
+  flex:1; min-width:80px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius:8px; padding:8px 12px;
+  text-align:center;
+}
+.gsv { font-family:var(--serif); font-size:20px; font-weight:700; }
+.gsl { font-size:9px; color:var(--t3); margin-top:2px; letter-spacing:0.08em; text-transform:uppercase; }
+
+/* ── OCCUPATION GRID ── */
+.occ-grid {
+  display:grid; grid-template-columns: repeat(5, 1fr); gap:6px;
+}
+.occ-cell {
+  border-radius:8px; padding:10px 8px; text-align:center;
+  border:1px solid rgba(255,255,255,0.05);
+  cursor:default;
+  transition:transform 0.15s, border-color 0.15s;
+  position:relative; overflow:hidden;
+}
+.occ-cell:hover { transform:scale(1.04); border-color:rgba(255,255,255,0.18); }
+.occ-cell-name { font-size:10px; color:var(--t2); font-weight:600; margin-bottom:6px; }
+.occ-cell-pct { font-family:var(--serif); font-size:19px; font-weight:700; line-height:1; }
+.occ-cell-sub { font-size:9px; color:var(--t3); margin-top:3px; }
+.occ-bar-wrap { height:3px; background:rgba(255,255,255,0.06); border-radius:2px; margin-top:6px; overflow:hidden; }
+.occ-bar { height:100%; border-radius:2px; transition:width 1s ease; }
+
+/* ── AGE × OPINION MATRIX ── */
+.matrix-wrap {
+  overflow-x: auto;
+}
+.matrix-table {
+  width:100%; border-collapse:separate; border-spacing:4px;
+  font-size:11px;
+}
+.matrix-table th {
+  font-size:9px; font-weight:700; letter-spacing:0.1em;
+  text-transform:uppercase; color:var(--t3);
+  padding:4px 8px;
+}
+.matrix-cell {
+  border-radius:6px; padding:10px 8px;
+  text-align:center; position:relative;
+  cursor:default; transition:transform 0.15s;
+}
+.matrix-cell:hover { transform:scale(1.06); z-index:1; }
+.matrix-cell .mc-pct {
+  font-family:var(--serif); font-size:16px; font-weight:700; line-height:1;
+}
+.matrix-cell .mc-n { font-size:9px; color:rgba(255,255,255,0.5); margin-top:2px; }
+
+/* ═══════════════════════════════════
+   SECTION 2: OPINION REASONS
+═══════════════════════════════════ */
+.opinion-layout {
+  display:grid;
+  grid-template-columns: 300px 1fr;
+  gap:20px;
+  align-items:start;
+}
+@media(max-width:800px){ .opinion-layout{grid-template-columns:1fr;} }
+
+/* donut panel */
+.donut-panel {
+  background: var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px; padding:24px;
+  position:sticky; top:100px;
+  animation: fadeUp 0.4s ease;
+}
+
+.donut-wrap { position:relative; width:200px; height:200px; margin:0 auto 20px; }
+.donut-center {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  pointer-events:none;
+}
+.donut-big { font-family:var(--serif); font-size:38px; font-weight:700; line-height:1; }
+.donut-label { font-size:10px; color:var(--t3); margin-top:3px; letter-spacing:0.08em; text-transform:uppercase; }
+
+.opinion-list { display:flex; flex-direction:column; gap:8px; }
+.opinion-item {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px;
+  border-radius:9px;
+  border:2px solid transparent;
+  cursor:pointer; transition:all 0.2s;
+}
+.opinion-item.selected { border-color:rgba(255,255,255,0.2); background:var(--panel2); }
+.opinion-item:hover { background:var(--panel2); }
+.oi-color { width:10px; height:10px; border-radius:3px; flex-shrink:0; }
+.oi-label { font-size:12px; font-weight:600; color:var(--t1); flex:1; }
+.oi-pct { font-family:var(--serif); font-size:16px; font-weight:700; }
+.oi-bar { height:3px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden; margin-top:4px; }
+.oi-barfill { height:100%; border-radius:2px; transition:width 0.8s ease; }
+
+/* reason cards */
+.reason-panel { display:flex; flex-direction:column; gap:14px; }
+
+.reason-header {
+  display:flex; align-items:center; gap:12px;
+  padding:16px 20px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  animation: fadeUp 0.3s ease;
+}
+.rh-color { width:14px; height:14px; border-radius:4px; flex-shrink:0; }
+.rh-title { font-family:var(--serif); font-size:18px; font-weight:600; flex:1; }
+.rh-pct { font-family:var(--serif); font-size:28px; font-weight:700; }
+.rh-count { font-size:11px; color:var(--t3); margin-top:1px; }
+
+.reason-card {
+  background: var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:18px 20px;
+  animation: fadeUp 0.4s ease both;
+  position:relative; overflow:hidden;
+}
+.reason-card::before {
+  content:'';
+  position:absolute; left:0; top:0; bottom:0; width:3px;
+}
+
+.rc-top { display:flex; align-items:flex-start; gap:14px; margin-bottom:12px; }
+.rc-rank {
+  font-family:var(--serif); font-size:26px; font-weight:700;
+  color:var(--t3); flex-shrink:0; line-height:1; margin-top:2px;
+}
+.rc-body { flex:1; }
+.rc-reason { font-size:14px; font-weight:600; color:var(--t1); margin-bottom:4px; line-height:1.4; }
+.rc-desc { font-size:12px; color:var(--t2); line-height:1.7; }
+
+.rc-weight-bar {
+  height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden;
+  margin-bottom:12px;
+}
+.rc-weight-fill { height:100%; border-radius:3px; transition:width 1s ease; }
+
+/* sub-demographics inside reason card */
+.rc-demographics { display:flex; flex-direction:column; gap:6px; }
+.rcd-row { display:flex; align-items:center; gap:10px; font-size:11px; }
+.rcd-label { color:var(--t3); width:70px; flex-shrink:0; }
+.rcd-segments { display:flex; flex:1; gap:2px; height:16px; border-radius:4px; overflow:hidden; }
+.rcd-seg {
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; font-weight:700; color:rgba(255,255,255,0.8);
+  transition:flex 0.8s ease;
+  white-space:nowrap; overflow:hidden;
+}
+.rcd-pct { color:var(--t3); width:36px; text-align:right; font-family:monospace; }
+
+/* quote block */
+.rc-quotes { display:flex; flex-direction:column; gap:6px; margin-top:12px; }
+.rc-quote {
+  background:var(--panel2);
+  border-radius:7px; padding:9px 13px;
+  font-size:11px; color:var(--t2); line-height:1.6;
+  border-left:2px solid;
+  position:relative;
+}
+.rc-quote::before { content:'"'; font-family:var(--serif); font-size:20px; position:absolute; top:4px; left:8px; opacity:0.3; }
+.rc-quote-text { padding-left:14px; }
+.rc-quote-meta { font-size:10px; color:var(--t3); margin-top:4px; padding-left:14px; }
+
+/* divider */
+.section-divider {
+  height:1px; background:var(--border);
+  margin: 36px 0;
+}
+
+/* tooltip */
+.tooltip {
+  position:fixed; z-index:9999;
+  background:var(--panel3); border:1px solid var(--border2);
+  border-radius:8px; padding:8px 12px;
+  font-size:11px; color:var(--t1);
+  pointer-events:none; opacity:0;
+  transition:opacity 0.15s;
+  white-space:nowrap;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.tooltip.visible { opacity:1; }
+</style>
+</head>
+<body>
+
+<!-- TOOLTIP -->
+<div class="tooltip" id="tooltip"></div>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="brand"><em>livere</em>.ai</div>
+  <div class="subject-tag">🗳️ 제22대 대선 여론 분석</div>
+  <div class="topbar-right">
+    <div class="live-pill"><div class="live-dot"></div>실시간</div>
+    <div class="date-tag">2026.03.08 기준 · 표본 38,412명</div>
+  </div>
+</header>
+
+<!-- TAB BAR -->
+<nav class="tab-bar">
+  <div class="tab active">📊 데모그래픽 투표 분석</div>
+  <div class="tab">💬 여론 이유 분석</div>
+  <div class="tab">📈 시계열 추이</div>
+  <div class="tab">🗺️ 지역별 분포</div>
+</nav>
+
+<main class="page">
+
+  <!-- ════════════════════════════
+       SECTION 1: 데모그래픽 격자
+  ════════════════════════════ -->
+  <div class="section-head">
+    <div class="section-title">데모그래픽별 투표 성향</div>
+    <div class="section-sub">각 셀 = 응답자 1명 · 색상 = 지지 후보</div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="vote-legend" id="voteLegend"></div>
+
+  <div class="demo-grid-wrap">
+
+    <!-- 성별 × 연령 도트 그리드 -->
+    <div class="demo-card">
+      <div class="demo-card-title">성별 × 연령대</div>
+      <div class="dot-grid-section" id="genderAgeGrid"></div>
+      <div class="grid-summary" id="genderAgeSummary"></div>
+    </div>
+
+    <!-- 직업별 격자 -->
+    <div class="demo-card">
+      <div class="demo-card-title">직업군별 지지 분포</div>
+      <div class="occ-grid" id="occGrid"></div>
+    </div>
+
+    <!-- 연령 × 후보 매트릭스 -->
+    <div class="demo-card" style="grid-column:1/-1;">
+      <div class="demo-card-title">연령대 × 후보 매트릭스 (% 응답)</div>
+      <div class="matrix-wrap">
+        <table class="matrix-table" id="ageMatrix"></table>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ════════════════════════════
+       SECTION 2: 여론 이유 분석
+  ════════════════════════════ -->
+  <div class="section-head">
+    <div class="section-title">여론 이유 심층 분석</div>
+    <div class="section-sub">각 의견을 선택하면 세부 이유와 인구통계 분포를 확인할 수 있습니다</div>
+  </div>
+
+  <div class="opinion-layout">
+
+    <!-- 도넛 + 의견 목록 -->
+    <div class="donut-panel">
+      <div class="donut-wrap">
+        <canvas id="donutChart" width="200" height="200"></canvas>
+        <div class="donut-center">
+          <div class="donut-big" id="donutBig" style="color:var(--v1);">47%</div>
+          <div class="donut-label">찬성</div>
+        </div>
+      </div>
+      <div class="opinion-list" id="opinionList"></div>
+    </div>
+
+    <!-- 이유 카드들 -->
+    <div class="reason-panel" id="reasonPanel"></div>
+
+  </div>
+
+</main>
+
+<script>
+// ══════════════════════════════════
+// DATA
+// ══════════════════════════════════
+const CANDIDATES = [
+  { id:'v1', name:'A후보', color:'#3b82f6', pct:47 },
+  { id:'v2', name:'B후보', color:'#f43f5e', pct:33 },
+  { id:'v3', name:'C후보', color:'#a3a3a3', pct:13 },
+  { id:'v4', name:'유보',  color:'#f59e0b', pct:7  },
+];
+
+const GENDER_AGE_DATA = [
+  { label:'남·20대', dots:40, dist:[52,28,12,8] },
+  { label:'남·30대', dots:40, dist:[44,36,14,6] },
+  { label:'남·40대', dots:40, dist:[38,42,13,7] },
+  { label:'남·50대', dots:40, dist:[36,46,11,7] },
+  { label:'남·60+',  dots:40, dist:[31,52,10,7] },
+  { label:'여·20대', dots:40, dist:[61,19,14,6] },
+  { label:'여·30대', dots:40, dist:[55,27,12,6] },
+  { label:'여·40대', dots:40, dist:[49,33,11,7] },
+  { label:'여·50대', dots:40, dist:[42,40,11,7] },
+  { label:'여·60+',  dots:40, dist:[38,44,11,7] },
+];
+
+const OCCUPATIONS = [
+  { name:'대학생',   pct:62, lead:'v1', n:'4,211' },
+  { name:'직장인',   pct:45, lead:'v1', n:'12,882' },
+  { name:'자영업',   pct:41, lead:'v2', n:'5,330' },
+  { name:'전문직',   pct:50, lead:'v1', n:'3,941' },
+  { name:'주부',     pct:43, lead:'v2', n:'6,102' },
+  { name:'무직',     pct:38, lead:'v3', n:'2,214' },
+  { name:'공무원',   pct:39, lead:'v2', n:'2,087' },
+  { name:'농어업',   pct:29, lead:'v2', n:'1,182' },
+  { name:'은퇴',     pct:33, lead:'v2', n:'3,441' },
+  { name:'기타',     pct:44, lead:'v3', n:'1,022' },
+];
+
+const AGE_MATRIX = {
+  ages: ['18-29','30-39','40-49','50-59','60+'],
+  candidates: CANDIDATES,
+  data: [
+    [57, 24, 13, 6],
+    [49, 31, 13, 7],
+    [43, 37, 12, 8],
+    [38, 43, 12, 7],
+    [34, 48, 11, 7],
+  ]
+};
+
+const OPINIONS = [
+  {
+    id:'o1', label:'찬성', pct:47, color:'#3b82f6',
+    reasons:[
+      {
+        rank:1, reason:'경제 정책 신뢰성', weight:82,
+        desc:'일자리 창출과 중소기업 지원 공약이 실현 가능하다고 평가. 특히 MZ 세대에서 "실질적 경기 회복"을 기대하는 응답이 높게 나타남.',
+        demo:{
+          gender:[{label:'남성', pct:44, color:'#60a5fa'},{label:'여성', pct:56, color:'#f472b6'}],
+          age:[{label:'20대', pct:31},{label:'30대', pct:27},{label:'40대', pct:22},{label:'50+', pct:20}],
+        },
+        quotes:[
+          {text:'중소기업 살리겠다는 공약이 구체적이에요. 숫자가 나와서 믿음이 가요.', meta:'30대·직장인·서울'},
+          {text:'경제 성장률 목표치와 이행 방법이 가장 현실적이라고 생각해요.', meta:'40대·자영업·부산'},
+        ]
+      },
+      {
+        rank:2, reason:'외교·안보 노선', weight:61,
+        desc:'실용외교와 한미동맹 강화 입장이 안정감을 준다는 평가. 특히 50대 이상에서 강한 지지 요인으로 작용.',
+        demo:{
+          gender:[{label:'남성', pct:58, color:'#60a5fa'},{label:'여성', pct:42, color:'#f472b6'}],
+          age:[{label:'20대', pct:15},{label:'30대', pct:20},{label:'40대', pct:28},{label:'50+', pct:37}],
+        },
+        quotes:[
+          {text:'흔들리지 않는 외교 원칙이 있는 것 같아서 지지해요.', meta:'55세·공무원·대전'},
+        ]
+      },
+      {
+        rank:3, reason:'인물 도덕성·청렴도', weight:49,
+        desc:'"상대적으로 깨끗하다"는 인식이 지지로 연결. 부패 스캔들이 없다는 점이 특히 중도층에서 강한 선택 이유로 작용.',
+        demo:{
+          gender:[{label:'남성', pct:47, color:'#60a5fa'},{label:'여성', pct:53, color:'#f472b6'}],
+          age:[{label:'20대', pct:28},{label:'30대', pct:25},{label:'40대', pct:24},{label:'50+', pct:23}],
+        },
+        quotes:[
+          {text:'딱히 열렬히 지지는 아니지만 그나마 제일 믿을 수 있어서요.', meta:'38세·회사원·인천'},
+          {text:'부패 이미지가 없다는 게 저한테는 중요해요.', meta:'26세·대학원생·대구'},
+        ]
+      },
+    ]
+  },
+  {
+    id:'o2', label:'반대', pct:33, color:'#f43f5e',
+    reasons:[
+      {
+        rank:1, reason:'복지·의료 공약 미흡', weight:74,
+        desc:'건강보험 확대, 노인·장애인 복지 예산 부족 우려. 특히 여성·주부 응답자에서 복지 정책 불만이 주요 반대 이유로 집계됨.',
+        demo:{
+          gender:[{label:'남성', pct:38, color:'#60a5fa'},{label:'여성', pct:62, color:'#f472b6'}],
+          age:[{label:'20대', pct:18},{label:'30대', pct:22},{label:'40대', pct:26},{label:'50+', pct:34}],
+        },
+        quotes:[
+          {text:'복지 예산을 오히려 줄이겠다고 하는데 어떻게 지지해요.', meta:'49세·주부·광주'},
+          {text:'노인 돌봄 예산 계획이 너무 현실과 동떨어져 있어요.', meta:'52세·사회복지사·수원'},
+        ]
+      },
+      {
+        rank:2, reason:'과거 발언·이력 불신', weight:58,
+        desc:'과거 특정 발언 및 정책 결정에 대한 누적된 불신. 20-30대에서 SNS 발언 이력이 강한 반대 동기로 작용.',
+        demo:{
+          gender:[{label:'남성', pct:52, color:'#60a5fa'},{label:'여성', pct:48, color:'#f472b6'}],
+          age:[{label:'20대', pct:35},{label:'30대', pct:30},{label:'40대', pct:21},{label:'50+', pct:14}],
+        },
+        quotes:[
+          {text:'몇 년 전 발언들이 아직도 기억에 남아요. 사람은 안 바뀌더라고요.', meta:'29세·프리랜서·서울'},
+        ]
+      },
+    ]
+  },
+  {
+    id:'o3', label:'중립', pct:13, color:'#a3a3a3',
+    reasons:[
+      {
+        rank:1, reason:'정보 부족·무관심', weight:68,
+        desc:'충분한 정보를 접하지 못했거나 정치 자체에 관심이 낮은 응답자. 18-25세 신규 유권자층에서 높게 나타남.',
+        demo:{
+          gender:[{label:'남성', pct:51, color:'#60a5fa'},{label:'여성', pct:49, color:'#f472b6'}],
+          age:[{label:'20대', pct:44},{label:'30대', pct:28},{label:'40대', pct:16},{label:'50+', pct:12}],
+        },
+        quotes:[
+          {text:'솔직히 후보들에 대해 잘 모르겠어요. 뉴스도 잘 안 보고요.', meta:'22세·대학생·전주'},
+        ]
+      },
+      {
+        rank:2, reason:'마땅한 후보 없음', weight:52,
+        desc:'"차악을 선택하는 느낌"이라는 응답 다수. 특히 30-40대 고학력층에서 "이상적인 후보가 없다"는 의견이 중립 유지의 주된 이유.',
+        demo:{
+          gender:[{label:'남성', pct:49, color:'#60a5fa'},{label:'여성', pct:51, color:'#f472b6'}],
+          age:[{label:'20대', pct:22},{label:'30대', pct:31},{label:'40대', pct:29},{label:'50+', pct:18}],
+        },
+        quotes:[
+          {text:'누구도 제대로 된 후보가 없어요. 그냥 가장 덜 싫은 사람 뽑아야죠.', meta:'37세·IT개발자·판교'},
+          {text:'다들 공약은 화려한데 실현 가능성이 의문이에요.', meta:'41세·교사·수원'},
+        ]
+      },
+    ]
+  },
+  {
+    id:'o4', label:'유보', pct:7, color:'#f59e0b',
+    reasons:[
+      {
+        rank:1, reason:'TV토론 결과 대기', weight:77,
+        desc:'공식 토론회 전 최종 결정을 유보하는 신중한 유권자. 고학력·전문직에서 두드러지게 나타나는 패턴.',
+        demo:{
+          gender:[{label:'남성', pct:55, color:'#60a5fa'},{label:'여성', pct:45, color:'#f472b6'}],
+          age:[{label:'20대', pct:20},{label:'30대', pct:28},{label:'40대', pct:30},{label:'50+', pct:22}],
+        },
+        quotes:[
+          {text:'토론 한 번은 봐야죠. 아직 결정 안 했어요.', meta:'44세·의사·서울'},
+        ]
+      },
+    ]
+  },
+];
+
+// ══════════════════════════════════
+// LEGEND
+// ══════════════════════════════════
+(function buildLegend(){
+  const el = document.getElementById('voteLegend');
+  CANDIDATES.forEach(c => {
+    el.innerHTML += `
+      <div class="legend-item">
+        <div class="legend-dot" style="background:${c.color}"></div>
+        <span class="legend-pct" style="color:${c.color}">${c.pct}%</span>
+        <span>${c.name}</span>
+      </div>
+    `;
+  });
+})();
+
+// ══════════════════════════════════
+// GENDER × AGE DOT GRID
+// ══════════════════════════════════
+(function buildDotGrid(){
+  const container = document.getElementById('genderAgeGrid');
+  const tt = document.getElementById('tooltip');
+  let delay = 0;
+
+  GENDER_AGE_DATA.forEach((row, ri) => {
+    const rowEl = document.createElement('div');
+    rowEl.className = 'dot-row';
+
+    const labelEl = document.createElement('div');
+    labelEl.className = 'dot-row-label';
+    labelEl.textContent = row.label;
+    rowEl.appendChild(labelEl);
+
+    const gridEl = document.createElement('div');
+    gridEl.className = 'dot-row-grid';
+
+    // build dots based on dist percentages
+    const dots = [];
+    row.dist.forEach((pct, ci) => {
+      const count = Math.round(row.dots * pct / 100);
+      for(let i=0;i<count;i++) dots.push(ci);
+    });
+    // shuffle
+    for(let i=dots.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [dots[i],dots[j]]=[dots[j],dots[i]];
+    }
+
+    dots.forEach((ci, di) => {
+      const d = document.createElement('div');
+      d.className = 'dot';
+      d.style.background = CANDIDATES[ci].color;
+      d.style.animationDelay = `${delay + di*8}ms`;
+      d.addEventListener('mousemove', (e) => {
+        tt.innerHTML = `<strong style="color:${CANDIDATES[ci].color}">${CANDIDATES[ci].name}</strong> · ${row.label}`;
+        tt.style.left = (e.clientX+12)+'px';
+        tt.style.top  = (e.clientY-28)+'px';
+        tt.classList.add('visible');
+      });
+      d.addEventListener('mouseleave', () => tt.classList.remove('visible'));
+      gridEl.appendChild(d);
+    });
+
+    rowEl.appendChild(gridEl);
+    container.appendChild(rowEl);
+    delay += 60;
+  });
+
+  // summary
+  const sumEl = document.getElementById('genderAgeSummary');
+  CANDIDATES.forEach(c => {
+    sumEl.innerHTML += `
+      <div class="grid-sum-item">
+        <div class="gsv" style="color:${c.color}">${c.pct}%</div>
+        <div class="gsl">${c.name}</div>
+      </div>
+    `;
+  });
+})();
+
+// ══════════════════════════════════
+// OCCUPATION GRID
+// ══════════════════════════════════
+(function buildOccGrid(){
+  const container = document.getElementById('occGrid');
+  const tt = document.getElementById('tooltip');
+
+  OCCUPATIONS.forEach((occ, i) => {
+    const leadCandidate = CANDIDATES.find(c => c.id === occ.lead);
+    const cell = document.createElement('div');
+    cell.className = 'occ-cell';
+    cell.style.background = `${leadCandidate.color}14`;
+    cell.style.animationDelay = `${i*40}ms`;
+
+    cell.innerHTML = `
+      <div class="occ-cell-name">${occ.name}</div>
+      <div class="occ-cell-pct" style="color:${leadCandidate.color}">${occ.pct}%</div>
+      <div class="occ-cell-sub" style="color:${leadCandidate.color}99">${leadCandidate.name} 지지</div>
+      <div class="occ-bar-wrap"><div class="occ-bar" style="width:${occ.pct}%;background:${leadCandidate.color}"></div></div>
+    `;
+
+    cell.addEventListener('mousemove', e => {
+      tt.innerHTML = `${occ.name} · 표본 ${occ.n}명 · <strong style="color:${leadCandidate.color}">${leadCandidate.name} ${occ.pct}%</strong>`;
+      tt.style.left=(e.clientX+12)+'px';
+      tt.style.top=(e.clientY-28)+'px';
+      tt.classList.add('visible');
+    });
+    cell.addEventListener('mouseleave', () => tt.classList.remove('visible'));
+    container.appendChild(cell);
+  });
+})();
+
+// ══════════════════════════════════
+// AGE × MATRIX
+// ══════════════════════════════════
+(function buildMatrix(){
+  const table = document.getElementById('ageMatrix');
+  const tt = document.getElementById('tooltip');
+
+  // header
+  let headerHTML = '<thead><tr><th style="text-align:left;padding:4px 12px;">연령대 ↓ / 후보 →</th>';
+  AGE_MATRIX.candidates.forEach(c => {
+    headerHTML += `<th style="color:${c.color};text-align:center;">${c.name}</th>`;
+  });
+  headerHTML += '</tr></thead>';
+  table.innerHTML = headerHTML;
+
+  const tbody = document.createElement('tbody');
+  AGE_MATRIX.ages.forEach((age, ri) => {
+    const tr = document.createElement('tr');
+    const labelTd = document.createElement('td');
+    labelTd.style.cssText = 'padding:4px 12px;font-size:11px;font-weight:600;color:var(--t2);';
+    labelTd.textContent = age;
+    tr.appendChild(labelTd);
+
+    AGE_MATRIX.data[ri].forEach((val, ci) => {
+      const c = AGE_MATRIX.candidates[ci];
+      const intensity = val / 70;
+      const cell = document.createElement('td');
+      cell.className = 'matrix-cell';
+      // color intensity based on value
+      const alpha = Math.max(0.08, intensity * 0.7);
+      cell.style.background = `${c.color}${Math.round(alpha*255).toString(16).padStart(2,'0')}`;
+      cell.innerHTML = `
+        <div class="mc-pct" style="color:${c.color}">${val}%</div>
+        <div class="mc-n">n≈${Math.round(38412 * 0.2 * val/100).toLocaleString()}</div>
+      `;
+      cell.addEventListener('mousemove', e => {
+        tt.innerHTML = `${age} · ${c.name} <strong style="color:${c.color}">${val}%</strong>`;
+        tt.style.left=(e.clientX+12)+'px'; tt.style.top=(e.clientY-28)+'px';
+        tt.classList.add('visible');
+      });
+      cell.addEventListener('mouseleave', ()=>tt.classList.remove('visible'));
+      tr.appendChild(cell);
+    });
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+})();
+
+// ══════════════════════════════════
+// DONUT CHART
+// ══════════════════════════════════
+let donutChart;
+(function buildDonut(){
+  const ctx = document.getElementById('donutChart').getContext('2d');
+  donutChart = new Chart(ctx, {
+    type:'doughnut',
+    data:{
+      labels: OPINIONS.map(o=>o.label),
+      datasets:[{
+        data: OPINIONS.map(o=>o.pct),
+        backgroundColor: OPINIONS.map(o=>o.color+'cc'),
+        borderColor: OPINIONS.map(o=>o.color),
+        borderWidth:2,
+        hoverOffset:8,
+      }]
+    },
+    options:{
+      cutout:'72%',
+      plugins:{ legend:{display:false}, tooltip:{
+        backgroundColor:'#161b2e',
+        borderColor:'rgba(255,255,255,0.1)', borderWidth:1,
+        titleColor:'#f0f2ff', bodyColor:'#8b98b8',
+        callbacks:{ label: ctx=>`  ${ctx.label}: ${ctx.parsed}%` }
+      }},
+      animation:{ animateRotate:true, duration:800 },
+    }
+  });
+})();
+
+// ══════════════════════════════════
+// OPINION LIST & REASON CARDS
+// ══════════════════════════════════
+let selectedOpinion = OPINIONS[0];
+
+function buildOpinionList(){
+  const list = document.getElementById('opinionList');
+  list.innerHTML = '';
+  OPINIONS.forEach(op => {
+    const item = document.createElement('div');
+    item.className = 'opinion-item' + (op.id===selectedOpinion.id?' selected':'');
+    item.innerHTML = `
+      <div class="oi-color" style="background:${op.color}"></div>
+      <div style="flex:1">
+        <div class="oi-label">${op.label}</div>
+        <div class="oi-bar"><div class="oi-barfill" style="width:${op.pct}%;background:${op.color}"></div></div>
+      </div>
+      <div class="oi-pct" style="color:${op.color}">${op.pct}%</div>
+    `;
+    item.addEventListener('click', ()=>{
+      selectedOpinion = op;
+      buildOpinionList();
+      buildReasonCards();
+      // update donut center
+      document.getElementById('donutBig').textContent = op.pct+'%';
+      document.getElementById('donutBig').style.color = op.color;
+    });
+    list.appendChild(item);
+  });
+}
+
+function buildReasonCards(){
+  const panel = document.getElementById('reasonPanel');
+  panel.innerHTML = '';
+  const op = selectedOpinion;
+
+  // header
+  const header = document.createElement('div');
+  header.className = 'reason-header';
+  header.innerHTML = `
+    <div class="rh-color" style="background:${op.color}"></div>
+    <div style="flex:1">
+      <div class="rh-title">"${op.label}" 의견을 가진 이유</div>
+    </div>
+    <div>
+      <div class="rh-pct" style="color:${op.color}">${op.pct}%</div>
+      <div class="rh-count">전체 응답자의 ${op.pct}% · 약 ${Math.round(38412*op.pct/100).toLocaleString()}명</div>
+    </div>
+  `;
+  panel.appendChild(header);
+
+  op.reasons.forEach((r, idx) => {
+    const card = document.createElement('div');
+    card.className = 'reason-card';
+    card.style.animationDelay = `${idx*80}ms`;
+    card.querySelector
+    card.style.setProperty('--card-color', op.color);
+
+    // left border color
+    const before = document.createElement('style');
+    const uid = `rc${Date.now()}${idx}`;
+    card.id = uid;
+    document.head.appendChild(Object.assign(document.createElement('style'), {
+      textContent: `#${uid}::before { background:${op.color}; }`
+    }));
+
+    // build demographics rows
+    let demoHTML = '';
+
+    // gender
+    const genderSegs = r.demo.gender.map(g =>
+      `<div class="rcd-seg" style="flex:${g.pct};background:${g.color};">${g.pct>=20?g.pct+'%':''}</div>`
+    ).join('');
+
+    // age
+    const colors = ['#818cf8','#34d399','#fbbf24','#f87171'];
+    const ageSegs = r.demo.age.map((a,i) =>
+      `<div class="rcd-seg" style="flex:${a.pct};background:${colors[i]};">${a.pct>=15?a.pct+'%':''}</div>`
+    ).join('');
+
+    demoHTML = `
+      <div class="rc-demographics">
+        <div class="rcd-row">
+          <div class="rcd-label">성별</div>
+          <div class="rcd-segments">${genderSegs}</div>
+          <div class="rcd-pct">${r.demo.gender[0].pct}:${r.demo.gender[1].pct}</div>
+        </div>
+        <div class="rcd-row">
+          <div class="rcd-label">연령대</div>
+          <div class="rcd-segments">${ageSegs}</div>
+          <div class="rcd-pct">${r.demo.age.map(a=>a.pct+'%').join('/')}</div>
+        </div>
+      </div>
+    `;
+
+    // quotes
+    const quotesHTML = r.quotes.map(q => `
+      <div class="rc-quote" style="border-left-color:${op.color}40;">
+        <div class="rc-quote-text">${q.text}</div>
+        <div class="rc-quote-meta">${q.meta}</div>
+      </div>
+    `).join('');
+
+    card.innerHTML = `
+      <div class="rc-top">
+        <div class="rc-rank" style="color:${op.color}40">${String(r.rank).padStart(2,'0')}</div>
+        <div class="rc-body">
+          <div class="rc-reason">${r.reason}</div>
+          <div class="rc-desc">${r.desc}</div>
+        </div>
+        <div style="flex-shrink:0;text-align:right;">
+          <div style="font-family:var(--serif);font-size:22px;font-weight:700;color:${op.color};">${r.weight}%</div>
+          <div style="font-size:9px;color:var(--t3);margin-top:2px;">해당 그룹 내<br>동의 비율</div>
+        </div>
+      </div>
+      <div class="rc-weight-bar">
+        <div class="rc-weight-fill" style="width:${r.weight}%;background:linear-gradient(90deg,${op.color}80,${op.color});"></div>
+      </div>
+      ${demoHTML}
+      ${quotesHTML ? `<div class="rc-quotes">${quotesHTML}</div>` : ''}
+    `;
+
+    panel.appendChild(card);
+  });
+}
+
+// init
+buildOpinionList();
+buildReasonCards();
+
+// tab click
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', function(){
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
