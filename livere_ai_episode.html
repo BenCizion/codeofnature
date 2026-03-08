@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>뉴스 × 스코어 연결 — 체크포인트 분석</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0a0c14;--s1:#0f1220;--s2:#141828;--s3:#1a2035;
+  --border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.12);
+  --up:#34d399;--down:#fb7185;--neutral:#94a3b8;
+  --critical-up:rgba(52,211,153,.12);--critical-down:rgba(251,113,133,.12);
+  --t1:#e8ecf8;--t2:#7a8aaa;--t3:#323d5a;
+  --serif:'DM Serif Display',serif;--sans:'Noto Sans KR',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--t1);min-height:100vh}
+
+/* topbar */
+.topbar{height:52px;background:rgba(10,12,20,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 28px;gap:16px;
+  position:sticky;top:0;z-index:100}
+.brand{font-family:var(--serif);font-size:17px;color:var(--t1)}
+.brand em{color:var(--up);font-style:normal}
+.subject{background:var(--s2);border:1px solid var(--border2);
+  border-radius:6px;padding:4px 14px;font-size:13px;font-weight:600}
+.topbar-right{margin-left:auto;display:flex;gap:10px;align-items:center}
+.tab{padding:6px 14px;font-size:11px;font-weight:700;
+  border-radius:6px;cursor:pointer;color:var(--t2);transition:all .15s}
+.tab.active{background:rgba(52,211,153,.1);color:var(--up);
+  border:1px solid rgba(52,211,153,.2)}
+
+/* layout */
+.page{display:grid;grid-template-columns:1fr 360px;min-height:calc(100vh - 52px);
+  position:relative;z-index:1}
+
+/* CHART PANEL */
+.chart-panel{padding:28px;border-right:1px solid var(--border)}
+.cp-head{display:flex;align-items:flex-end;justify-content:space-between;
+  margin-bottom:16px}
+.cp-title{font-family:var(--serif);font-size:22px}
+.cp-sub{font-size:11px;color:var(--t3);margin-top:4px}
+.cp-hint{font-size:11px;color:var(--t2);
+  background:var(--s2);border:1px solid var(--border);
+  border-radius:6px;padding:5px 12px}
+
+/* chart wrap + overlay */
+.chart-container{position:relative;width:100%}
+.chart-overlay{position:absolute;inset:0;pointer-events:none}
+
+/* checkpoint popup */
+.cp-popup{position:absolute;z-index:10;
+  background:var(--s3);border:1px solid var(--border2);
+  border-radius:10px;padding:12px 14px;
+  min-width:200px;max-width:240px;
+  box-shadow:0 12px 40px rgba(0,0,0,.6);
+  font-size:11px;pointer-events:none;
+  transition:opacity .2s;opacity:0}
+.cp-popup.visible{opacity:1}
+.cpp-date{font-size:10px;color:var(--t2);font-family:var(--serif);margin-bottom:4px}
+.cpp-event{font-size:13px;font-weight:700;margin-bottom:4px;line-height:1.4}
+.cpp-delta{font-family:var(--serif);font-size:20px;font-weight:700}
+.cpp-desc{font-size:10px;color:var(--t2);margin-top:6px;line-height:1.5;
+  border-top:1px solid var(--border);padding-top:6px}
+
+/* band legend */
+.band-legend{display:flex;gap:16px;margin-top:12px;font-size:10px;color:var(--t2);flex-wrap:wrap}
+.bl-item{display:flex;align-items:center;gap:5px}
+.bl-dot{width:10px;height:4px;border-radius:2px}
+
+/* NEWS PANEL */
+.news-panel{display:flex;flex-direction:column;background:var(--s1);overflow:hidden}
+.np-head{padding:20px 20px 14px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px}
+.np-title{font-family:var(--serif);font-size:16px;flex:1}
+.selected-date{font-size:11px;color:var(--t2);
+  background:var(--s2);border:1px solid var(--border);
+  border-radius:5px;padding:3px 9px;font-family:var(--serif)}
+
+.news-list{flex:1;overflow-y:auto;padding:16px}
+.news-list::-webkit-scrollbar{width:4px}
+.news-list::-webkit-scrollbar-track{background:transparent}
+.news-list::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+
+.news-item{padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.news-item:last-child{border-bottom:none}
+.ni-top{display:flex;gap:10px;align-items:flex-start;margin-bottom:6px}
+.ni-impact{width:36px;height:36px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:16px}
+.ni-body{flex:1}
+.ni-title{font-size:12px;font-weight:700;color:var(--t1);
+  line-height:1.4;margin-bottom:2px}
+.ni-source{font-size:10px;color:var(--t3)}
+.ni-delta-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.ni-delta{font-family:var(--serif);font-size:18px;font-weight:700}
+
+.ni-bar-wrap{height:4px;background:rgba(255,255,255,.04);border-radius:2px;overflow:hidden;margin-top:6px}
+.ni-bar{height:100%;border-radius:2px}
+.ni-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.ni-tag{font-size:9px;padding:2px 7px;border-radius:3px;font-weight:700;
+  background:var(--s3);color:var(--t2)}
+
+/* critical event badge */
+.critical-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+  font-size:9px;font-weight:800;letter-spacing:.1em;
+  padding:3px 8px;border-radius:4px;white-space:nowrap;z-index:5;
+  box-shadow:0 2px 8px rgba(0,0,0,.5)}
+
+/* score change annotation */
+.anno-wrap{margin-top:16px;padding:0 0 8px}
+.anno-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;
+  padding:10px 12px;background:var(--s2);border-radius:8px;
+  border:1px solid var(--border);cursor:pointer;transition:border-color .15s}
+.anno-item:hover{border-color:var(--border2)}
+.anno-item.spike-up{border-left:3px solid var(--up)}
+.anno-item.spike-down{border-left:3px solid var(--down)}
+.anno-date{font-size:10px;color:var(--t3);font-family:var(--serif);width:76px;flex-shrink:0}
+.anno-event{font-size:11px;font-weight:600;color:var(--t1);flex:1;line-height:1.3}
+.anno-delta{font-family:var(--serif);font-size:16px;font-weight:700;flex-shrink:0}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.news-item{animation:fadeUp .3s ease both}
+.news-item:nth-child(2){animation-delay:.04s}
+.news-item:nth-child(3){animation-delay:.08s}
+.news-item:nth-child(4){animation-delay:.12s}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">livere<em>.ai</em></div>
+  <div class="subject">전현무 감성 스코어</div>
+  <div class="topbar-right">
+    <div class="tab active">스코어+뉴스</div>
+    <div class="tab">뉴스 목록</div>
+    <div class="tab">비교 분석</div>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- CHART PANEL -->
+  <section class="chart-panel">
+    <div class="cp-head">
+      <div>
+        <div class="cp-title">시간별 감성 스코어 타임라인</div>
+        <div class="cp-sub">변화량 임계점(±10)에서 뉴스·사건 자동 연결 · 체크포인트 클릭 시 상세 표시</div>
+      </div>
+      <div class="cp-hint">📍 빨간/초록 마커 = 크리티컬 변화점</div>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="scoreChart" height="280"></canvas>
+    </div>
+
+    <div class="band-legend">
+      <div class="bl-item"><div class="bl-dot" style="background:rgba(52,211,153,.3)"></div>긍정 급등 구간</div>
+      <div class="bl-item"><div class="bl-dot" style="background:rgba(251,113,133,.3)"></div>부정 급락 구간</div>
+      <div class="bl-item"><div class="bl-dot" style="width:20px;border-top:2px dashed var(--neutral)"></div>중립 범위</div>
+    </div>
+
+    <!-- ANNOTATION TIMELINE -->
+    <div class="anno-wrap" style="margin-top:20px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.14em;
+        text-transform:uppercase;color:var(--t3);margin-bottom:10px;
+        display:flex;align-items:center;gap:8px">
+        크리티컬 변화 타임라인
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>
+      <div id="annoList"></div>
+    </div>
+  </section>
+
+  <!-- NEWS PANEL -->
+  <aside class="news-panel">
+    <div class="np-head">
+      <div class="np-title">연결된 뉴스·이벤트</div>
+      <div class="selected-date" id="selectedDate">2026-02-20</div>
+    </div>
+    <div class="news-list" id="newsList"></div>
+  </aside>
+
+</div>
+
+<script>
+// ── DATA ──
+const SCORE_DATA = {
+  labels: [
+    '1/15','1/22','1/29',
+    '2/5','2/12','2/20','2/27',
+    '3/5','3/12'
+  ],
+  scores: [58, 62, 60, 55, 61, 38, 44, 50, 53],
+};
+
+// Critical events keyed to label index
+const EVENTS = {
+  5: {  // 2/20 — 대폭락
+    date: '2026-02-20',
+    type: 'down',
+    delta: -23,
+    event: '"주사 이모" 논란 폭발',
+    news: [
+      {
+        title:'"주사 이모" 의혹 최초 보도 — 전현무 측 "사실무근" 강력 부인',
+        source:'TV조선·연합뉴스', impact:'⚡', delta:-14.2,
+        tags:['단독','파장'],bar:92,color:'#fb7185'
+      },
+      {
+        title:'온라인 커뮤니티 "전현무 하차" 청원 4만 돌파',
+        source:'온라인 커뮤니티 종합', impact:'🔥', delta:-6.8,
+        tags:['커뮤니티','청원'],bar:60,color:'#fb7185'
+      },
+      {
+        title:'소속사 긴급 공식 입장 발표 — 해명 시도',
+        source:'공식 SNS', impact:'📢', delta:-2.1,
+        tags:['공식입장','대응'],bar:22,color:'#94a3b8'
+      },
+    ]
+  },
+  6: {  // 2/27 — 부분 회복
+    date: '2026-02-27',
+    type: 'up',
+    delta: +6,
+    event: '전현무 직접 사과·해명 영상',
+    news: [
+      {
+        title:'전현무, 유튜브 직접 해명 영상 게재 — 댓글 긍정 반응 62%',
+        source:'YouTube·커뮤니티', impact:'💬', delta:+4.8,
+        tags:['해명','회복세'],bar:55,color:'#34d399'
+      },
+      {
+        title:'"오해였다" 주장에 팬덤 결집 — 지지 해시태그 트렌딩',
+        source:'X(트위터)', impact:'💙', delta:+1.2,
+        tags:['팬덤','트렌드'],bar:20,color:'#34d399'
+      },
+    ]
+  },
+  3: {  // 2/5 — 소폭 하락
+    date: '2026-02-05',
+    type: 'down',
+    delta: -7,
+    event: '광고 모델 논란 (과도한 CF)',
+    news: [
+      {
+        title:'"CF 남용" 비판 온라인 확산 — "예능보다 광고가 더 많다"',
+        source:'DC인사이드·더쿠', impact:'😤', delta:-5.3,
+        tags:['광고','비판'],bar:65,color:'#fb7185'
+      },
+      {
+        title:'해당 브랜드 제품 불매 언급 급증 (24시간 +310%)',
+        source:'트위터·커뮤니티', impact:'📊', delta:-1.7,
+        tags:['불매','연계'],bar:25,color:'#fb7185'
+      },
+    ]
+  }
+};
+
+let selectedIdx = 5;
+
+// Chart
+const ctx = document.getElementById('scoreChart').getContext('2d');
+const chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: SCORE_DATA.labels,
+    datasets: [{
+      data: SCORE_DATA.scores,
+      borderColor: (ctx2) => {
+        const idx = ctx2.p1DataIndex;
+        const delta = SCORE_DATA.scores[idx+1] - SCORE_DATA.scores[idx];
+        if(Math.abs(delta) >= 10) return delta > 0 ? '#34d399' : '#fb7185';
+        return '#60a5fa';
+      },
+      segment: {
+        borderColor: ctx2 => {
+          const idx = ctx2.p1DataIndex;
+          if(idx === undefined) return '#60a5fa';
+          const delta = SCORE_DATA.scores[idx+1] - SCORE_DATA.scores[idx];
+          if(Math.abs(delta) >= 10) return delta > 0 ? '#34d399' : '#fb7185';
+          return '#60a5fa';
+        },
+        borderWidth: ctx2 => {
+          const idx = ctx2.p1DataIndex;
+          if(idx === undefined) return 2;
+          const delta = Math.abs(SCORE_DATA.scores[idx+1] - SCORE_DATA.scores[idx]);
+          return delta >= 10 ? 3.5 : 2;
+        }
+      },
+      borderWidth: 2.5,
+      tension: 0.4,
+      fill: true,
+      backgroundColor: ctx2 => {
+        const g = ctx2.chart.ctx.createLinearGradient(0,0,0,280);
+        g.addColorStop(0,'rgba(96,165,250,0.12)');
+        g.addColorStop(1,'rgba(96,165,250,0)');
+        return g;
+      },
+      pointRadius: SCORE_DATA.scores.map((_,i) => EVENTS[i] ? 10 : 4),
+      pointBackgroundColor: SCORE_DATA.scores.map((_,i) => {
+        if(!EVENTS[i]) return '#60a5fa';
+        return EVENTS[i].type === 'up' ? '#34d399' : '#fb7185';
+      }),
+      pointBorderColor: SCORE_DATA.scores.map((_,i) => {
+        if(!EVENTS[i]) return '#60a5fa';
+        return EVENTS[i].type === 'up' ? '#34d399' : '#fb7185';
+      }),
+      pointBorderWidth: 2,
+      pointHoverRadius: 13,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#141828',
+        borderColor: 'rgba(255,255,255,.1)', borderWidth:1,
+        titleColor: '#e8ecf8', bodyColor: '#7a8aaa',
+        callbacks: {
+          title: ctx2 => SCORE_DATA.labels[ctx2[0].dataIndex],
+          label: ctx2 => {
+            const idx = ctx2.dataIndex;
+            const score = ctx2.parsed.y;
+            let str = `  스코어: ${score}`;
+            if(EVENTS[idx]) str += `  ⚡ ${EVENTS[idx].event}`;
+            return str;
+          }
+        }
+      }
+    },
+    scales: {
+      x: { grid:{color:'rgba(255,255,255,.04)'}, ticks:{color:'#323d5a',font:{size:10}} },
+      y: {
+        min: 25, max: 75,
+        grid:{color:'rgba(255,255,255,.04)'},
+        ticks:{color:'#323d5a',font:{size:10}, callback:v=>v+'점'}
+      }
+    },
+    onClick: (e, els) => {
+      if(els.length > 0) {
+        const idx = els[0].index;
+        if(EVENTS[idx]) {
+          selectedIdx = idx;
+          renderNews(idx);
+          renderAnno(idx);
+        }
+      }
+    }
+  }
+});
+
+// Annotation list
+function renderAnno(activeIdx) {
+  const list = document.getElementById('annoList');
+  list.innerHTML = '';
+  Object.entries(EVENTS).forEach(([idx,ev]) => {
+    const i = parseInt(idx);
+    const isActive = i === activeIdx;
+    const color = ev.type==='up' ? '#34d399' : '#fb7185';
+    const el = document.createElement('div');
+    el.className = `anno-item spike-${ev.type}`;
+    if(isActive) el.style.borderColor = color;
+    if(isActive) el.style.background = ev.type==='up' ? 'rgba(52,211,153,0.06)' : 'rgba(251,113,133,0.06)';
+    el.innerHTML = `
+      <div class="anno-date">${ev.date}</div>
+      <div class="anno-event">${ev.event}</div>
+      <div class="anno-delta" style="color:${color}">${ev.delta>0?'+':''}${ev.delta}</div>
+    `;
+    el.addEventListener('click', ()=>{ selectedIdx=i; renderNews(i); renderAnno(i); });
+    list.appendChild(el);
+  });
+}
+
+// News list
+function renderNews(idx) {
+  const ev = EVENTS[idx];
+  if(!ev) return;
+  document.getElementById('selectedDate').textContent = ev.date;
+  const list = document.getElementById('newsList');
+  list.innerHTML = '';
+
+  // Critical event header
+  const headerColor = ev.type==='up' ? '#34d399' : '#fb7185';
+  const headerBg = ev.type==='up' ? 'rgba(52,211,153,0.08)' : 'rgba(251,113,133,0.08)';
+  const headerEl = document.createElement('div');
+  headerEl.style.cssText = `background:${headerBg};border:1px solid ${headerColor}40;
+    border-radius:10px;padding:12px 14px;margin-bottom:14px;`;
+  headerEl.innerHTML = `
+    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;
+      text-transform:uppercase;color:${headerColor};margin-bottom:4px">⚡ 크리티컬 이벤트</div>
+    <div style="font-size:13px;font-weight:700;color:var(--t1);line-height:1.4">${ev.event}</div>
+    <div style="font-family:'DM Serif Display',serif;font-size:26px;font-weight:700;
+      color:${headerColor};margin-top:4px">${ev.delta>0?'+':''}${ev.delta}점</div>
+    <div style="font-size:10px;color:var(--t2);margin-top:4px">
+      ${ev.type==='down'?'단기 급락 → 해당 기간 부정 키워드 집중 분석':'단기 급등 → 긍정 전환 드라이버 분석'}
+    </div>
+  `;
+  list.appendChild(headerEl);
+
+  ev.news.forEach((n,i) => {
+    const item = document.createElement('div');
+    item.className = 'news-item';
+    item.style.animationDelay = `${i*60}ms`;
+    item.innerHTML = `
+      <div class="ni-top">
+        <div class="ni-impact" style="background:${n.color}18">${n.impact}</div>
+        <div class="ni-body">
+          <div class="ni-title">${n.title}</div>
+          <div class="ni-source">${n.source}</div>
+        </div>
+        <div class="ni-delta-wrap">
+          <div class="ni-delta" style="color:${n.color}">${n.delta>0?'+':''}${n.delta}</div>
+        </div>
+      </div>
+      <div class="ni-bar-wrap">
+        <div class="ni-bar" style="width:${n.bar}%;background:${n.color}"></div>
+      </div>
+      <div class="ni-tags">${n.tags.map(t=>`<span class="ni-tag">${t}</span>`).join('')}</div>
+    `;
+    list.appendChild(item);
+  });
+}
+
+renderAnno(5);
+renderNews(5);
+
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',function(){
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
