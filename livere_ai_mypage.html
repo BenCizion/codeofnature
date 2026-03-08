@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>페르소나맵 — 내 프로필</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0c0f1a; --s1:#121627; --s2:#181e30; --s3:#1f2740;
+  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.13);
+  --cyan:#22d3ee; --violet:#a78bfa; --green:#4ade80; --amber:#fbbf24;
+  --red:#f87171; --pink:#f472b6;
+  --t1:#f0f4ff; --t2:#8899bb; --t3:#3d4f72;
+  --on:#22d3ee; --off:#1f2740;
+  --sans:'Noto Sans KR',sans-serif; --display:'Syne',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--t1);min-height:100vh}
+
+/* mesh */
+body::before{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 60% 50% at 20% 20%,rgba(34,211,238,0.04) 0%,transparent 60%),
+  radial-gradient(ellipse 50% 40% at 80% 70%,rgba(167,139,250,0.04) 0%,transparent 60%);
+  pointer-events:none;z-index:0}
+
+/* topbar */
+.topbar{position:sticky;top:0;z-index:100;height:52px;
+  background:rgba(12,15,26,0.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 24px;gap:16px}
+.brand{font-family:var(--display);font-size:16px;font-weight:700;color:var(--cyan)}
+.page-label{font-size:12px;color:var(--t3);margin-left:8px}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.influence-pill{display:flex;align-items:center;gap:7px;
+  background:var(--s2);border:1px solid var(--border2);
+  border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600}
+.inf-label{color:var(--t2)}
+.inf-val{color:var(--amber);font-family:var(--display);font-size:14px}
+.save-btn{background:var(--cyan);color:#0c0f1a;border:none;
+  padding:7px 16px;border-radius:7px;font-size:12px;font-weight:700;
+  cursor:pointer;transition:all .2s}
+.save-btn:hover{background:#06b6d4}
+
+/* layout */
+.layout{display:grid;grid-template-columns:320px 1fr;gap:0;
+  min-height:calc(100vh - 52px);position:relative;z-index:1}
+
+/* LEFT: avatar panel */
+.left-panel{background:var(--s1);border-right:1px solid var(--border);
+  padding:28px 24px;display:flex;flex-direction:column;gap:20px;
+  position:sticky;top:52px;height:calc(100vh - 52px);overflow-y:auto}
+
+.avatar-wrap{display:flex;flex-direction:column;align-items:center;gap:0}
+.avatar-svg-wrap{position:relative;width:140px;height:140px;margin-bottom:16px}
+.avatar-ring{position:absolute;inset:-6px;border-radius:50%;
+  border:2px solid var(--border2);
+  background:conic-gradient(var(--cyan) 0% 72%, var(--s3) 72% 100%)}
+.avatar-ring-inner{position:absolute;inset:2px;border-radius:50%;background:var(--bg)}
+.avatar-icon{position:absolute;inset:8px;border-radius:50%;
+  background:linear-gradient(135deg,var(--s2),var(--s3));
+  display:flex;align-items:center;justify-content:center;font-size:52px}
+.avatar-completeness{font-size:11px;color:var(--t2);text-align:center;margin-top:4px}
+.avatar-completeness strong{color:var(--cyan);font-family:var(--display);font-size:18px}
+
+.profile-name{font-family:var(--display);font-size:20px;font-weight:700;
+  text-align:center;margin-top:8px}
+.profile-sub{font-size:11px;color:var(--t3);text-align:center;margin-top:3px}
+
+.weight-box{background:var(--s2);border:1px solid var(--border);
+  border-radius:10px;padding:14px 16px;width:100%}
+.wb-title{font-size:10px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--t3);margin-bottom:10px}
+.weight-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.wr-label{font-size:11px;color:var(--t2);width:70px;flex-shrink:0}
+.wr-bar{flex:1;height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
+.wr-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.wr-val{font-size:11px;font-family:var(--display);font-weight:700;
+  width:32px;text-align:right;flex-shrink:0}
+.weight-note{font-size:10px;color:var(--t3);margin-top:6px;line-height:1.6}
+
+.correction-box{background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.2);
+  border-radius:10px;padding:12px 14px}
+.cb-label{font-size:10px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--cyan);margin-bottom:6px}
+.cb-val{font-family:var(--display);font-size:26px;font-weight:800;color:var(--cyan)}
+.cb-desc{font-size:10px;color:var(--t2);margin-top:4px;line-height:1.6}
+
+/* RIGHT: attribute grids */
+.right-panel{padding:28px;display:flex;flex-direction:column;gap:24px}
+
+.section-title{font-family:var(--display);font-size:14px;font-weight:700;
+  letter-spacing:.06em;color:var(--t2);text-transform:uppercase;
+  display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* NODE GRID — persona attributes */
+.node-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.node-card{background:var(--s1);border:1px solid var(--border);
+  border-radius:12px;padding:16px 14px;
+  transition:all .2s;cursor:pointer;position:relative;overflow:hidden}
+.node-card.lit{border-color:rgba(34,211,238,.3);
+  background:linear-gradient(135deg,rgba(34,211,238,.05),var(--s1))}
+.node-card.lit::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+.node-card.dim{opacity:.4}
+.node-card:hover{border-color:var(--border2)}
+
+.nc-icon{font-size:22px;margin-bottom:8px}
+.nc-label{font-size:10px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--t3);margin-bottom:6px}
+.nc-value{font-family:var(--display);font-size:15px;font-weight:700;
+  color:var(--t1);line-height:1.3}
+.nc-value.empty{color:var(--t3);font-size:12px;font-weight:400}
+.nc-lit-dot{position:absolute;top:10px;right:10px;
+  width:7px;height:7px;border-radius:50%}
+.nc-lit-dot.on{background:var(--cyan);box-shadow:0 0 6px var(--cyan)}
+.nc-lit-dot.off{background:var(--t3)}
+
+/* SPEECH METER */
+.speech-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.speech-card{flex:1;min-width:200px;background:var(--s1);
+  border:1px solid var(--border);border-radius:12px;padding:16px}
+.sm-head{display:flex;justify-content:space-between;margin-bottom:12px}
+.sm-title{font-size:11px;font-weight:700;color:var(--t2)}
+.sm-val{font-family:var(--display);font-size:24px;font-weight:800;color:var(--violet)}
+.sm-desc{font-size:10px;color:var(--t3);margin-top:4px;line-height:1.5}
+
+/* volume viz */
+.vol-wrap{display:flex;gap:3px;align-items:flex-end;height:40px}
+.vol-bar{width:8px;border-radius:2px;background:var(--violet);
+  opacity:.7;transition:height .8s ease}
+
+/* INFLUENCE SPIDER */
+.influence-row{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:center}
+.spider-wrap{position:relative;width:180px;height:180px}
+.spider-wrap svg{width:100%;height:100%}
+.spider-labels{position:absolute;inset:0;pointer-events:none}
+
+.inf-attrs{display:flex;flex-direction:column;gap:8px}
+.ia-row{display:flex;align-items:center;gap:10px}
+.ia-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ia-name{font-size:11px;color:var(--t2);flex:1}
+.ia-bar{flex:2;height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden}
+.ia-fill{height:100%;border-radius:2px}
+.ia-val{font-size:11px;font-family:var(--display);font-weight:700;width:28px;text-align:right}
+
+/* CORRECTION FORMULA */
+.formula-box{background:var(--s2);border:1px solid var(--border);
+  border-radius:12px;padding:18px 20px}
+.formula{font-family:'Courier New',monospace;font-size:13px;
+  color:var(--amber);line-height:2;background:rgba(0,0,0,.3);
+  border-radius:8px;padding:12px 16px;margin-top:10px}
+.formula .var{color:var(--cyan)}
+.formula .op{color:var(--t3)}
+.formula .note{font-size:10px;color:var(--t3);font-family:var(--sans)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.node-card,.speech-card,.formula-box{animation:fadeUp .4s ease both}
+.node-card:nth-child(2){animation-delay:.04s}.node-card:nth-child(3){animation-delay:.08s}
+.node-card:nth-child(4){animation-delay:.12s}.node-card:nth-child(5){animation-delay:.16s}
+.node-card:nth-child(6){animation-delay:.20s}.node-card:nth-child(7){animation-delay:.24s}
+.node-card:nth-child(8){animation-delay:.28s}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">livere.ai</div>
+  <div class="page-label">/ 내 페르소나 프로필</div>
+  <div class="topbar-right">
+    <div class="influence-pill">
+      <span class="inf-label">여론 보정 가중치</span>
+      <span class="inf-val">×1.72</span>
+    </div>
+    <button class="save-btn">저장</button>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT: Avatar + Weight -->
+  <aside class="left-panel">
+    <div class="avatar-wrap">
+      <div class="avatar-svg-wrap">
+        <div class="avatar-ring"></div>
+        <div class="avatar-ring-inner"></div>
+        <div class="avatar-icon">🧑</div>
+      </div>
+      <div class="avatar-completeness">프로필 완성도 <strong>72%</strong></div>
+      <div class="profile-name">김민준</div>
+      <div class="profile-sub">등록 2024.03 · 총 발언 1,847건</div>
+    </div>
+
+    <div class="weight-box">
+      <div class="wb-title">여론 보정 가중치 산출</div>
+      <div class="weight-row">
+        <div class="wr-label">발언량 보정</div>
+        <div class="wr-bar"><div class="wr-fill" style="width:85%;background:var(--cyan)"></div></div>
+        <div class="wr-val" style="color:var(--cyan)">×1.3</div>
+      </div>
+      <div class="weight-row">
+        <div class="wr-label">신뢰도</div>
+        <div class="wr-bar"><div class="wr-fill" style="width:72%;background:var(--violet)"></div></div>
+        <div class="wr-val" style="color:var(--violet)">×1.2</div>
+      </div>
+      <div class="weight-row">
+        <div class="wr-label">주변 영향도</div>
+        <div class="wr-bar"><div class="wr-fill" style="width:65%;background:var(--amber)"></div></div>
+        <div class="wr-val" style="color:var(--amber)">×1.1</div>
+      </div>
+      <div class="weight-row">
+        <div class="wr-label">성향 확신도</div>
+        <div class="wr-bar"><div class="wr-fill" style="width:55%;background:var(--green)"></div></div>
+        <div class="wr-val" style="color:var(--green)">×1.0</div>
+      </div>
+      <div class="weight-note">
+        💡 채워진 항목만 보정에 반영됩니다. 미입력 항목은 기본값(×1.0) 적용.
+      </div>
+    </div>
+
+    <div class="correction-box">
+      <div class="cb-label">최종 보정 가중치</div>
+      <div class="cb-val">×1.72</div>
+      <div class="cb-desc">
+        이 사용자의 발언 1건은 여론 집계 시<br>
+        <strong style="color:var(--cyan)">평균 1.72표</strong>로 반영됩니다.<br>
+        (1일 발언 ≥10건인 날은 자동 감쇠 적용)
+      </div>
+    </div>
+  </aside>
+
+  <!-- RIGHT: Attributes -->
+  <main class="right-panel">
+
+    <!-- 기본 정보 노드 그리드 -->
+    <div>
+      <div class="section-title">기본 프로필 노드 <span style="font-size:10px;color:var(--t3);text-transform:none;letter-spacing:0">불이 켜진 항목만 여론 보정에 사용됩니다</span></div>
+      <div class="node-grid" id="nodeGrid"></div>
+    </div>
+
+    <!-- 발언 크기 시각화 -->
+    <div>
+      <div class="section-title">발언 크기 · 활동 패턴</div>
+      <div class="speech-row">
+        <div class="speech-card">
+          <div class="sm-head">
+            <div class="sm-title">월평균 발언 수</div>
+            <div class="sm-val">247건</div>
+          </div>
+          <div style="display:flex;gap:3px;align-items:flex-end;height:50px" id="volBars"></div>
+          <div class="sm-desc" style="margin-top:8px">최근 6개월 기준 · 상위 <strong style="color:var(--violet)">8%</strong> 발언자</div>
+        </div>
+        <div class="speech-card">
+          <div class="sm-head">
+            <div class="sm-title">발언 영향도 (공감·재공유)</div>
+            <div class="sm-val" style="color:var(--amber)">3.4배</div>
+          </div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-top:4px">
+            내 발언 1건당 평균 <strong style="color:var(--amber)">3.4건</strong>의 반응 유발.<br>
+            "다수가 침묵해도, 이 사용자의 발언은<br>여론 형성에 더 큰 영향을 줍니다."
+          </div>
+        </div>
+        <div class="speech-card">
+          <div class="sm-head">
+            <div class="sm-title">발언 감쇠 적용</div>
+            <div class="sm-val" style="color:var(--red)">-12건</div>
+          </div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-top:4px">
+            하루 10건 초과 발언 <strong style="color:var(--red)">감쇠 처리</strong>.<br>
+            특정일 폭발적 발언이 여론을<br>왜곡하지 않도록 자동 조정됩니다.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 주변 영향도 -->
+    <div>
+      <div class="section-title">주변 영향도 분포</div>
+      <div class="influence-row">
+        <div class="spider-wrap">
+          <svg viewBox="0 0 180 180" id="spiderSvg"></svg>
+        </div>
+        <div class="inf-attrs" id="infAttrs"></div>
+      </div>
+    </div>
+
+    <!-- 보정 공식 -->
+    <div class="formula-box">
+      <div class="section-title" style="margin-bottom:8px">보정 공식 (Correction Formula)</div>
+      <div class="formula">
+<span class="var">보정_점수</span> <span class="op">=</span> Σ( <span class="var">발언_감성값[i]</span> <span class="op">×</span> <span class="var">W_volume</span> <span class="op">×</span> <span class="var">W_trust</span> <span class="op">×</span> <span class="var">W_influence</span> )
+<br>
+<span class="var">W_volume</span> <span class="op">=</span> log(1 + <span class="var">발언수</span>) <span class="op">/</span> log(1 + <span class="var">평균발언수</span>)  <span class="note">← 발언량 정규화</span>
+<br>
+<span class="var">W_trust</span> <span class="op">=</span> <span class="var">신뢰도_점수</span> <span class="op">/</span> 100  <span class="note">← 0.0 ~ 1.5 범위 클리핑</span>
+<br>
+<span class="var">W_influence</span> <span class="op">=</span> 1 + ( <span class="var">공감수</span> <span class="op">+</span> <span class="var">재공유수</span> ) <span class="op">/</span> <span class="var">총발언수</span>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const NODES = [
+  {icon:'💼', label:'직업', value:'IT 개발자', lit:true, color:'#22d3ee'},
+  {icon:'💰', label:'소득 수준', value:'중상 (상위 25%)', lit:true, color:'#4ade80'},
+  {icon:'🧭', label:'정치 성향', value:'중도 진보', lit:true, color:'#a78bfa'},
+  {icon:'🌍', label:'거주 지역', value:'서울 강남구', lit:true, color:'#fbbf24'},
+  {icon:'🎓', label:'학력', value:'대학원 졸', lit:true, color:'#22d3ee'},
+  {icon:'👨‍👩‍👧', label:'가족 형태', value:'미입력', lit:false, color:'#3d4f72'},
+  {icon:'📱', label:'미디어 소비', value:'유튜브·트위터 중심', lit:true, color:'#f472b6'},
+  {icon:'🗳️', label:'투표 이력', value:'미입력', lit:false, color:'#3d4f72'},
+];
+
+const grid = document.getElementById('nodeGrid');
+NODES.forEach(n => {
+  const card = document.createElement('div');
+  card.className = 'node-card ' + (n.lit ? 'lit' : 'dim');
+  card.innerHTML = `
+    <div class="nc-lit-dot ${n.lit?'on':'off'}"></div>
+    <div class="nc-icon">${n.icon}</div>
+    <div class="nc-label">${n.label}</div>
+    <div class="nc-value ${n.lit?'':'empty'}">${n.value}</div>
+  `;
+  grid.appendChild(card);
+});
+
+// vol bars
+const volData = [180,220,190,260,310,247];
+const volWrap = document.getElementById('volBars');
+const maxV = Math.max(...volData);
+volData.forEach(v => {
+  const bar = document.createElement('div');
+  bar.className = 'vol-bar';
+  const h = Math.round((v/maxV)*44)+4;
+  bar.style.height = h+'px';
+  bar.style.flex = '1';
+  bar.style.opacity = v===247?'1':'0.5';
+  volWrap.appendChild(bar);
+});
+
+// spider
+(function(){
+  const svg = document.getElementById('spiderSvg');
+  const cx=90, cy=90, r=70;
+  const attrs = ['팔로워\n영향','댓글\n반응','공유\n확산','오프라인\n연결','미디어\n노출'];
+  const vals =  [0.82, 0.65, 0.74, 0.40, 0.55];
+  const n = attrs.length;
+  const angle = i => (Math.PI*2/n)*i - Math.PI/2;
+
+  // bg lines
+  [0.25,0.5,0.75,1].forEach(frac => {
+    const pts = Array.from({length:n},(_,i)=>{
+      const a=angle(i); return `${cx+Math.cos(a)*r*frac},${cy+Math.sin(a)*r*frac}`;
+    }).join(' ');
+    const poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    poly.setAttribute('points',pts);
+    poly.setAttribute('fill','none');
+    poly.setAttribute('stroke','rgba(255,255,255,0.06)');
+    poly.setAttribute('stroke-width','1');
+    svg.appendChild(poly);
+  });
+
+  // axes
+  for(let i=0;i<n;i++){
+    const a=angle(i);
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',cx); line.setAttribute('y1',cy);
+    line.setAttribute('x2',cx+Math.cos(a)*r); line.setAttribute('y2',cy+Math.sin(a)*r);
+    line.setAttribute('stroke','rgba(255,255,255,0.06)'); line.setAttribute('stroke-width','1');
+    svg.appendChild(line);
+  }
+
+  // data polygon
+  const dpts = vals.map((v,i)=>{
+    const a=angle(i); return `${cx+Math.cos(a)*r*v},${cy+Math.sin(a)*r*v}`;
+  }).join(' ');
+  const dpoly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+  dpoly.setAttribute('points',dpts);
+  dpoly.setAttribute('fill','rgba(167,139,250,0.2)');
+  dpoly.setAttribute('stroke','#a78bfa'); dpoly.setAttribute('stroke-width','2');
+  svg.appendChild(dpoly);
+
+  // dots
+  vals.forEach((v,i)=>{
+    const a=angle(i);
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',cx+Math.cos(a)*r*v); c.setAttribute('cy',cy+Math.sin(a)*r*v);
+    c.setAttribute('r','4'); c.setAttribute('fill','#a78bfa');
+    svg.appendChild(c);
+  });
+})();
+
+// inf attrs
+const INF_ATTRS = [
+  {name:'팔로워 영향',val:82,color:'#22d3ee'},
+  {name:'댓글 반응',  val:65,color:'#a78bfa'},
+  {name:'공유 확산',  val:74,color:'#4ade80'},
+  {name:'오프라인',   val:40,color:'#fbbf24'},
+  {name:'미디어 노출',val:55,color:'#f472b6'},
+];
+const infEl = document.getElementById('infAttrs');
+INF_ATTRS.forEach(a => {
+  infEl.innerHTML += `
+    <div class="ia-row">
+      <div class="ia-dot" style="background:${a.color}"></div>
+      <div class="ia-name">${a.name}</div>
+      <div class="ia-bar"><div class="ia-fill" style="width:${a.val}%;background:${a.color}"></div></div>
+      <div class="ia-val" style="color:${a.color}">${a.val}</div>
+    </div>
+  `;
+});
+</script>
+</body>
+</html>
