@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>여론분석 — livere.ai</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:     #080b14;
+  --s1:     #0d1120;
+  --s2:     #121828;
+  --s3:     #182038;
+  --s4:     #1e2844;
+
+  --cyan:   #22d3ee;
+  --violet: #a78bfa;
+  --green:  #4ade80;
+  --amber:  #fbbf24;
+  --pink:   #f472b6;
+  --red:    #f87171;
+  --blue:   #60a5fa;
+
+  --up:     #4ade80;
+  --down:   #f87171;
+
+  --t1: #f0f4ff;
+  --t2: #8899bb;
+  --t3: #3d4f72;
+
+  --border:  rgba(255,255,255,.07);
+  --border2: rgba(255,255,255,.13);
+
+  --sans:    'Noto Sans KR', sans-serif;
+  --display: 'Syne', sans-serif;
+  --mono:    'JetBrains Mono', monospace;
+}
+* { margin:0; padding:0; box-sizing:border-box }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--t1);
+  min-height: 100vh;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 15%, rgba(34,211,238,.05) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 80% 70%, rgba(167,139,250,.05) 0%, transparent 60%);
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  position: sticky; top: 0; z-index: 200;
+  height: 54px;
+  background: rgba(8,11,20,.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 28px; gap: 0;
+}
+.brand { font-family:var(--display); font-size:15px; font-weight:800; color:var(--cyan); margin-right:28px; letter-spacing:.04em }
+.nav-links { display:flex; gap:4px }
+.nav-link { font-size:12px; font-weight:600; color:var(--t3); padding:6px 14px; border-radius:7px; cursor:pointer; transition:all .15s; text-decoration:none }
+.nav-link:hover { color:var(--t2); background:rgba(255,255,255,.04) }
+.nav-link.active { color:var(--t1); background:rgba(255,255,255,.07) }
+.topbar-right { margin-left:auto; display:flex; align-items:center; gap:10px }
+.ask-count {
+  display:flex; align-items:center; gap:7px;
+  background:rgba(167,139,250,.1); border:1px solid rgba(167,139,250,.25);
+  border-radius:20px; padding:5px 14px;
+  font-size:11px; font-weight:700; color:var(--violet);
+}
+.persona-btn {
+  background:var(--s2); border:1px solid var(--border2);
+  color:var(--t2); padding:7px 14px;
+  border-radius:8px; font-size:12px; font-weight:600;
+  cursor:pointer; transition:all .15s;
+  display:flex; align-items:center; gap:6px;
+}
+.persona-btn:hover { border-color:var(--cyan); color:var(--cyan) }
+
+/* ── URL INPUT BAR ── */
+.url-bar-wrap {
+  position: relative; z-index: 1;
+  padding: 20px 28px 0;
+  max-width: 1280px; margin: 0 auto;
+}
+.url-bar {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  border-radius: 14px; padding: 14px 16px;
+  transition: border-color .2s;
+}
+.url-bar:focus-within { border-color: rgba(34,211,238,.45) }
+.url-icon { font-size:18px; flex-shrink:0 }
+.url-input {
+  flex: 1; background: transparent; border: none; outline: none;
+  font-family: var(--mono); font-size: 13px; color: var(--t1);
+  caret-color: var(--cyan);
+}
+.url-input::placeholder { color: var(--t3) }
+.analyze-btn {
+  background: var(--cyan); color: #080b14;
+  border: none; border-radius: 9px;
+  padding: 9px 22px; font-size: 13px; font-weight: 800;
+  cursor: pointer; transition: all .2s; white-space: nowrap;
+  font-family: var(--display);
+}
+.analyze-btn:hover { background: #06b6d4; transform: translateY(-1px) }
+
+/* 현재 분석 대상 칩 */
+.subject-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 28px 0; max-width: 1280px; margin: 0 auto;
+  flex-wrap: wrap;
+}
+.subject-chip {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--s2); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 6px 14px; font-size: 12px;
+}
+.sc-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 6px var(--green); animation: pulse 2s infinite }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+.sc-label { color:var(--t2) }
+.sc-val   { font-weight:700; color:var(--t1) }
+.sc-time  { font-size:10px; color:var(--t3); font-family:var(--mono) }
+.agenda-chip {
+  display: flex; align-items: center; gap: 5px;
+  font-size:11px; font-weight:700; color:var(--violet);
+  background:rgba(167,139,250,.1); border:1px solid rgba(167,139,250,.2);
+  border-radius:8px; padding:5px 12px; cursor:pointer;
+}
+.agenda-chip:hover { background:rgba(167,139,250,.15) }
+
+/* ── MAIN LAYOUT ── */
+.page { position:relative; z-index:1; padding:16px 28px 40px; max-width:1280px; margin:0 auto }
+
+/* 3-col hero */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr 320px;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+/* ── SCORE GAUGE ── */
+.score-card {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 16px; padding: 22px 18px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  position: relative; overflow: hidden;
+}
+.score-card::before {
+  content: ''; position:absolute; top:0; left:0; right:0; height:3px;
+  background: linear-gradient(90deg, var(--up), var(--cyan));
+}
+.score-label { font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--t3) }
+.score-gauge-wrap { position:relative; width:120px; height:68px; overflow:hidden }
+.score-num {
+  font-family: var(--display); font-size:38px; font-weight:800; line-height:1;
+  color: var(--up);
+  text-align: center;
+}
+.score-sub  { font-size:11px; color:var(--t2); text-align:center }
+.score-delta {
+  display:flex; align-items:center; gap:5px;
+  font-size:12px; font-weight:700;
+  background:rgba(74,222,128,.1); border:1px solid rgba(74,222,128,.2);
+  border-radius:8px; padding:4px 12px; color:var(--up);
+}
+.momentum-row {
+  width:100%;
+  background: var(--s2); border-radius:10px; padding:10px 14px;
+}
+.mr-label { font-size:10px; color:var(--t3); margin-bottom:4px }
+.mr-val   { font-family:var(--display); font-size:20px; font-weight:800; color:var(--amber) }
+.mr-desc  { font-size:10px; color:var(--t2); margin-top:2px; line-height:1.5 }
+
+/* ── TIMELINE CHART ── */
+.timeline-card {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px 22px;
+}
+.tc-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:8px }
+.tc-title { font-family:var(--display); font-size:15px; font-weight:700 }
+.tc-sub   { font-size:11px; color:var(--t3); margin-top:2px }
+.tc-legend { display:flex; gap:14px; font-size:10px; color:var(--t2) }
+.tl-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:4px }
+
+/* ── PERSONA DIST ── */
+.persona-card {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px 20px;
+}
+.pc-tabs { display:flex; gap:4px; margin-bottom:14px }
+.pc-tab {
+  font-size:11px; font-weight:700; padding:5px 12px;
+  border-radius:6px; cursor:pointer; transition:all .15s;
+  color:var(--t3); background:transparent;
+}
+.pc-tab.active { background:rgba(34,211,238,.1); color:var(--cyan) }
+
+/* dot grid */
+.dot-grid-wrap { overflow:hidden; border-radius:8px }
+.dot-row { display:flex; align-items:center; gap:8px; margin-bottom:7px }
+.dot-label { font-size:10px; color:var(--t3); width:52px; flex-shrink:0; text-align:right }
+.dot-cells { display:flex; gap:3px; flex-wrap:wrap }
+.dot {
+  width:9px; height:9px; border-radius:50%;
+  transition: transform .2s;
+  cursor:pointer;
+}
+.dot:hover { transform:scale(1.4) }
+
+/* ── 2-col mid ── */
+.mid-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px }
+
+/* stance donut */
+.stance-card {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px;
+}
+.stance-row { display:flex; gap:16px; align-items:center; margin-top:10px }
+.donut-wrap { position:relative; width:110px; height:110px; flex-shrink:0 }
+.donut-center {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.dc-val   { font-family:var(--display); font-size:20px; font-weight:800; color:var(--up) }
+.dc-label { font-size:9px; color:var(--t3) }
+.stance-legend { flex:1; display:flex; flex-direction:column; gap:8px }
+.sl-item { display:flex; align-items:center; gap:8px; cursor:pointer }
+.sl-dot  { width:8px; height:8px; border-radius:50%; flex-shrink:0 }
+.sl-name { font-size:11px; color:var(--t2); flex:1 }
+.sl-bar-wrap { flex:2; height:4px; background:rgba(255,255,255,.05); border-radius:2px; overflow:hidden }
+.sl-bar  { height:100%; border-radius:2px; transition:width 1.2s ease }
+.sl-pct  { font-family:var(--mono); font-size:11px; font-weight:600; width:32px; text-align:right }
+
+/* reasons card */
+.reasons-card {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px;
+}
+.reason-list { display:flex; flex-direction:column; gap:8px; margin-top:10px }
+.reason-item {
+  background:var(--s2); border:1px solid var(--border);
+  border-radius:10px; padding:12px 14px;
+  cursor:pointer; transition:all .2s;
+}
+.reason-item:hover { border-color:var(--border2) }
+.reason-item.active { border-color:rgba(34,211,238,.3); background:rgba(34,211,238,.04) }
+.ri-top { display:flex; align-items:flex-start; gap:10px; margin-bottom:6px }
+.ri-icon { font-size:16px; flex-shrink:0; margin-top:1px }
+.ri-text { font-size:12px; font-weight:700; color:var(--t1); flex:1; line-height:1.4 }
+.ri-pct  { font-family:var(--display); font-size:16px; font-weight:700; flex-shrink:0 }
+.ri-bar-wrap { height:3px; background:rgba(255,255,255,.05); border-radius:2px; overflow:hidden }
+.ri-bar  { height:100%; border-radius:2px; transition:width 1.4s ease }
+.ri-quote {
+  font-size:10px; color:var(--t2); margin-top:8px; line-height:1.6;
+  border-left:2px solid rgba(34,211,238,.3); padding-left:8px; display:none;
+}
+.reason-item.active .ri-quote { display:block }
+
+/* ── NEWS SCORE ── */
+.news-score-card {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px 22px;
+  margin-bottom: 16px;
+}
+.ns-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:8px }
+.ns-title { font-family:var(--display); font-size:15px; font-weight:700 }
+.ns-hint  { font-size:11px; color:var(--t3); background:var(--s2); border:1px solid var(--border); border-radius:6px; padding:4px 10px }
+.ns-layout { display:grid; grid-template-columns:1fr 300px; gap:16px }
+.ns-chart-wrap { position:relative }
+
+.cp-list { display:flex; flex-direction:column; gap:8px }
+.cp-item {
+  background:var(--s2); border:1px solid var(--border);
+  border-radius:10px; padding:12px 14px;
+  cursor:pointer; transition:all .15s;
+  display:flex; gap:12px; align-items:flex-start;
+}
+.cp-item:hover { border-color:var(--border2) }
+.cp-item.up   { border-left:3px solid var(--up) }
+.cp-item.down { border-left:3px solid var(--down) }
+.cp-item.active { background:var(--s3) }
+.cp-icon  { font-size:16px; flex-shrink:0 }
+.cp-body  { flex:1 }
+.cp-date  { font-size:10px; color:var(--t3); font-family:var(--mono); margin-bottom:2px }
+.cp-event { font-size:11px; font-weight:700; color:var(--t1); line-height:1.4 }
+.cp-desc  { font-size:10px; color:var(--t2); margin-top:3px; line-height:1.5 }
+.cp-delta { font-family:var(--display); font-size:18px; font-weight:800; flex-shrink:0; align-self:center }
+
+/* ── ASK PANEL ── */
+.ask-panel {
+  background: linear-gradient(135deg, rgba(34,211,238,.06), rgba(167,139,250,.06));
+  border: 1px solid rgba(34,211,238,.2);
+  border-radius: 16px; padding: 22px 24px;
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+}
+.ap-icon { font-size:32px; flex-shrink:0 }
+.ap-body { flex:1 }
+.ap-title { font-family:var(--display); font-size:16px; font-weight:700; margin-bottom:4px }
+.ap-sub   { font-size:12px; color:var(--t2); line-height:1.5 }
+.ask-btns { display:flex; gap:8px; flex-wrap:wrap }
+.ask-btn {
+  border-radius:9px; padding:8px 16px;
+  font-size:12px; font-weight:700; cursor:pointer; transition:all .2s;
+  display:flex; align-items:center; gap:7px; white-space:nowrap;
+}
+.ask-btn-free {
+  background:var(--s2); border:1px solid var(--border2); color:var(--t1);
+}
+.ask-btn-free:hover { border-color:var(--cyan); color:var(--cyan) }
+.ask-btn-token {
+  background:rgba(167,139,250,.12); border:1px solid rgba(167,139,250,.3); color:var(--violet);
+}
+.ask-btn-token:hover { background:rgba(167,139,250,.2) }
+.ask-btn-primary {
+  background:var(--cyan); border:none; color:#080b14;
+}
+.ask-btn-primary:hover { background:#06b6d4 }
+.token-badge {
+  font-size:9px; background:rgba(167,139,250,.2); border-radius:4px; padding:1px 5px; color:var(--violet);
+}
+
+/* ── SECTION HEADS ── */
+.section-head {
+  font-family:var(--display); font-size:12px; font-weight:700;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--t3);
+  display:flex; align-items:center; gap:10px; margin-bottom:12px;
+}
+.section-head::after { content:''; flex:1; height:1px; background:var(--border) }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.hero-grid      { animation:fadeUp .5s ease both }
+.mid-grid       { animation:fadeUp .5s ease both; animation-delay:.08s }
+.news-score-card{ animation:fadeUp .5s ease both; animation-delay:.16s }
+.ask-panel      { animation:fadeUp .5s ease both; animation-delay:.24s }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="brand">livere.ai</div>
+  <nav class="nav-links">
+    <a class="nav-link active" href="#">여론 분석</a>
+    <a class="nav-link" href="#">아젠다</a>
+    <a class="nav-link" href="persona_page.html">내 페르소나</a>
+    <a class="nav-link" href="#">피드</a>
+  </nav>
+  <div class="topbar-right">
+    <div class="ask-count">🪙 토큰 잔액 <strong style="font-family:var(--display);font-size:15px;color:var(--amber)">48</strong></div>
+    <button class="persona-btn" onclick="location.href='persona_page.html'">🧑 내 프로필</button>
+  </div>
+</header>
+
+<!-- URL BAR -->
+<div class="url-bar-wrap">
+  <div class="url-bar">
+    <span class="url-icon">🔗</span>
+    <input class="url-input" id="urlInput"
+      value="https://n.news.naver.com/article/001/0015234567"
+      placeholder="분석할 URL을 붙여넣으세요 (뉴스·영상·게시글)">
+    <button class="analyze-btn" onclick="simulate()">⚡ 분석하기</button>
+  </div>
+</div>
+
+<!-- SUBJECT ROW -->
+<div class="subject-row">
+  <div class="subject-chip">
+    <span class="sc-dot"></span>
+    <span class="sc-label">분석 대상</span>
+    <span class="sc-val">이재명 대통령 지지율</span>
+    <span class="sc-time">업데이트 2분 전</span>
+  </div>
+  <span class="agenda-chip" onclick="">
+    🗂 아젠다 · 이재명-대통령-2026년-대한민국 →
+  </span>
+  <span style="font-size:11px;color:var(--t3);margin-left:auto">댓글 수집 12,847건 · 라이브리 스트림 연동</span>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- ── HERO 3-COL ── -->
+  <div class="hero-grid">
+
+    <!-- 스코어 -->
+    <div class="score-card">
+      <div class="score-label">현재 감성 스코어</div>
+      <div style="position:relative;width:130px;height:80px;overflow:hidden;margin:-8px 0">
+        <canvas id="gaugeCanvas" width="130" height="130" style="position:absolute;top:0;left:0"></canvas>
+      </div>
+      <div class="score-num" id="scoreNum">42.1</div>
+      <div class="score-sub">긍정 우세 · 상승 중</div>
+      <div class="score-delta">↑ +2.1 <span style="font-size:10px;color:var(--t3);font-weight:400">직전 대비</span></div>
+      <div class="momentum-row">
+        <div class="mr-label">모멘텀 예측</div>
+        <div class="mr-val">42.5 <span style="font-size:12px;color:var(--t3)">→ 예측</span></div>
+        <div class="mr-desc">상승세 둔화 · 수렴 구간<br>신뢰 구간 ±1.8 (95% CI)</div>
+      </div>
+    </div>
+
+    <!-- 타임라인 -->
+    <div class="timeline-card">
+      <div class="tc-head">
+        <div>
+          <div class="tc-title">시간별 감성 스코어 타임라인</div>
+          <div class="tc-sub">크리티컬 변화점 클릭 시 원인 뉴스 표시</div>
+        </div>
+        <div class="tc-legend">
+          <span><span class="tl-dot" style="background:#60a5fa"></span>실측</span>
+          <span><span class="tl-dot" style="background:#fbbf24;opacity:.7"></span>예측</span>
+          <span><span class="tl-dot" style="background:#f87171"></span>크리티컬↓</span>
+          <span><span class="tl-dot" style="background:#4ade80"></span>크리티컬↑</span>
+        </div>
+      </div>
+      <canvas id="timelineChart" height="190"></canvas>
+    </div>
+
+    <!-- 페르소나 분포 -->
+    <div class="persona-card">
+      <div class="section-head" style="margin-bottom:8px">페르소나 반응 분포</div>
+      <div class="pc-tabs" id="pcTabs">
+        <div class="pc-tab active" data-tab="gender">성별×연령</div>
+        <div class="pc-tab" data-tab="job">직업군</div>
+      </div>
+      <div id="dotGridWrap"></div>
+    </div>
+  </div>
+
+  <!-- ── MID 2-COL ── -->
+  <div class="mid-grid">
+
+    <!-- 스탠스 도넛 -->
+    <div class="stance-card">
+      <div class="section-head">여론 스탠스</div>
+      <div class="stance-row">
+        <div class="donut-wrap">
+          <canvas id="donutChart" width="110" height="110"></canvas>
+          <div class="donut-center">
+            <div class="dc-val">58%</div>
+            <div class="dc-label">긍정</div>
+          </div>
+        </div>
+        <div class="stance-legend" id="stanceLegend"></div>
+      </div>
+    </div>
+
+    <!-- 여론 이유 -->
+    <div class="reasons-card">
+      <div class="section-head">찬성 의견 주요 이유</div>
+      <div class="reason-list" id="reasonList"></div>
+    </div>
+  </div>
+
+  <!-- ── 뉴스 × 스코어 ── -->
+  <div class="news-score-card">
+    <div class="ns-head">
+      <div>
+        <div class="ns-title">뉴스 × 스코어 연결</div>
+      </div>
+      <div class="ns-hint">📍 크리티컬 변화점 클릭 → 원인 뉴스 확인</div>
+    </div>
+    <div class="ns-layout">
+      <div class="ns-chart-wrap">
+        <canvas id="nsChart" height="200"></canvas>
+      </div>
+      <div>
+        <div class="section-head" style="margin-bottom:10px">변화점 이벤트</div>
+        <div class="cp-list" id="cpList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ASK PANEL ── -->
+  <div class="ask-panel">
+    <div class="ap-icon">🤖</div>
+    <div class="ap-body">
+      <div class="ap-title">ASK 인텔리전스 — 더 깊이 파고들기</div>
+      <div class="ap-sub">기본 분석 무료 · 심층 분석은 토큰 소모 (잔액: 48 토큰)</div>
+    </div>
+    <div class="ask-btns">
+      <button class="ask-btn ask-btn-free">📊 기본 요약 <span style="font-size:10px;color:var(--green)">무료</span></button>
+      <button class="ask-btn ask-btn-token">🧑 페르소나 분석 <span class="token-badge">2토큰</span></button>
+      <button class="ask-btn ask-btn-token">📈 모멘텀 예측 <span class="token-badge">3토큰</span></button>
+      <button class="ask-btn ask-btn-primary">📄 PDF 리포트 생성 <span class="token-badge" style="background:rgba(0,0,0,.2);color:#080b14">20토큰</span></button>
+    </div>
+  </div>
+
+</div><!-- /.page -->
+
+<script>
+// ── GAUGE ──
+(function(){
+  const c = document.getElementById('gaugeCanvas');
+  const ctx = c.getContext('2d');
+  const cx=65, cy=65, r=55, score=42.1;
+  const startA = Math.PI, endA = Math.PI*2;
+  // bg arc
+  ctx.beginPath(); ctx.arc(cx,cy,r,startA,endA);
+  ctx.strokeStyle='rgba(255,255,255,.07)'; ctx.lineWidth=12; ctx.lineCap='round'; ctx.stroke();
+  // value arc
+  const pct = (score+100)/200;
+  const valEnd = startA + (endA-startA)*pct;
+  const grad = ctx.createLinearGradient(10,cy,120,cy);
+  grad.addColorStop(0,'#f87171'); grad.addColorStop(.5,'#fbbf24'); grad.addColorStop(1,'#4ade80');
+  ctx.beginPath(); ctx.arc(cx,cy,r,startA,valEnd);
+  ctx.strokeStyle=grad; ctx.lineWidth=12; ctx.lineCap='round'; ctx.stroke();
+})();
+
+// ── TIMELINE ──
+const tlLabels = ['1/15','1/22','1/29','2/5','2/12','2/20','2/27','3/5','3/12'];
+const tlScores = [58,62,60,55,61,38,44,50,53];
+const realEnd  = 7;
+const predData = tlScores.map((v,i)=>i>=realEnd?v:null);
+(function(){
+  const ctx = document.getElementById('timelineChart').getContext('2d');
+  new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:tlLabels,
+      datasets:[
+        {
+          label:'실측',
+          data:tlScores.map((v,i)=>i<=realEnd?v:null),
+          borderColor:'#60a5fa', borderWidth:2.5, tension:.4, fill:true,
+          backgroundColor:ctx2=>{
+            const g=ctx2.chart.ctx.createLinearGradient(0,0,0,190);
+            g.addColorStop(0,'rgba(96,165,250,.15)');g.addColorStop(1,'rgba(96,165,250,0)');return g;},
+          pointRadius:tlScores.map((_,i)=>[3,5].includes(i)?10:4),
+          pointBackgroundColor:tlScores.map((_,i)=>{
+            if(i===5)return'#f87171';if(i===1)return'#4ade80';return'#60a5fa';
+          }),
+          segment:{
+            borderColor:ctx2=>{
+              const i=ctx2.p1DataIndex;
+              const d=tlScores[i+1]-tlScores[i];
+              if(Math.abs(d)>=10)return d>0?'#4ade80':'#f87171';return'#60a5fa';
+            },
+            borderWidth:ctx2=>{
+              const i=ctx2.p1DataIndex;
+              return Math.abs(tlScores[i+1]-tlScores[i])>=10?3.5:2;
+            }
+          }
+        },
+        {
+          label:'예측',
+          data:predData,
+          borderColor:'#fbbf24',borderWidth:2.5,borderDash:[6,4],tension:.4,fill:false,
+          pointRadius:predData.map((v,i)=>v!==null&&i>realEnd?7:0),
+          pointBackgroundColor:'#fbbf24',
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{ legend:{display:false},
+        tooltip:{backgroundColor:'#121828',borderColor:'rgba(255,255,255,.1)',borderWidth:1,
+          titleColor:'#f0f4ff',bodyColor:'#8899bb'} },
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#3d4f72',font:{size:10}}},
+        y:{min:25,max:75,grid:{color:'rgba(255,255,255,.04)'},
+          ticks:{color:'#3d4f72',font:{size:10},callback:v=>v+'점'}}
+      }
+    }
+  });
+})();
+
+// ── DOT GRID ──
+const genderAgeData = {
+  rows:[
+    {label:'20대 남',  dots:10, forPct:.7},
+    {label:'30대 남',  dots:14, forPct:.65},
+    {label:'40대 남',  dots:12, forPct:.55},
+    {label:'50대+ 남', dots:8,  forPct:.45},
+    {label:'20대 여',  dots:11, forPct:.75},
+    {label:'30대 여',  dots:13, forPct:.68},
+    {label:'40대 여',  dots:10, forPct:.58},
+    {label:'50대+ 여', dots:7,  forPct:.42},
+  ]
+};
+function renderDotGrid(){
+  const wrap = document.getElementById('dotGridWrap');
+  wrap.innerHTML='';
+  genderAgeData.rows.forEach(row=>{
+    const div=document.createElement('div');
+    div.className='dot-row';
+    div.innerHTML=`<span class="dot-label">${row.label}</span><div class="dot-cells" id="dc_${row.label.replace(/\s/,'')}"></div>`;
+    wrap.appendChild(div);
+    const cells=div.querySelector('.dot-cells');
+    for(let i=0;i<row.dots;i++){
+      const d=document.createElement('div');
+      d.className='dot';
+      const isFor=i/row.dots < row.forPct;
+      d.style.background=isFor?'#4ade80':'#f87171';
+      d.style.opacity=isFor?.9:.7;
+      d.title=isFor?'찬성':'반대';
+      cells.appendChild(d);
+    }
+  });
+}
+renderDotGrid();
+
+document.querySelectorAll('.pc-tab').forEach(tab=>{
+  tab.addEventListener('click',function(){
+    document.querySelectorAll('.pc-tab').forEach(t=>t.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// ── DONUT ──
+(function(){
+  const ctx=document.getElementById('donutChart').getContext('2d');
+  new Chart(ctx,{
+    type:'doughnut',
+    data:{
+      labels:['찬성','반대','중립','유보'],
+      datasets:[{data:[58,22,13,7],
+        backgroundColor:['#4ade80','#f87171','#60a5fa','#fbbf24'],
+        borderColor:'transparent',borderWidth:0,hoverOffset:6}]
+    },
+    options:{
+      cutout:'68%',responsive:false,
+      plugins:{legend:{display:false},tooltip:{
+        backgroundColor:'#121828',borderColor:'rgba(255,255,255,.1)',borderWidth:1,
+        titleColor:'#f0f4ff',bodyColor:'#8899bb'}}
+    }
+  });
+})();
+
+// ── STANCE LEGEND ──
+const stances=[
+  {name:'찬성',pct:58,color:'#4ade80'},
+  {name:'반대',pct:22,color:'#f87171'},
+  {name:'중립',pct:13,color:'#60a5fa'},
+  {name:'유보',pct:7, color:'#fbbf24'},
+];
+const sl=document.getElementById('stanceLegend');
+stances.forEach(s=>{
+  sl.innerHTML+=`
+    <div class="sl-item">
+      <div class="sl-dot" style="background:${s.color}"></div>
+      <div class="sl-name">${s.name}</div>
+      <div class="sl-bar-wrap"><div class="sl-bar" style="width:0%;background:${s.color}" data-w="${s.pct}"></div></div>
+      <div class="sl-pct" style="color:${s.color}">${s.pct}%</div>
+    </div>`;
+});
+setTimeout(()=>{ document.querySelectorAll('.sl-bar').forEach(b=>b.style.width=b.dataset.w+'%') },300);
+
+// ── REASONS ──
+const reasons=[
+  {icon:'💼',text:'경제 정책 성과에 대한 긍정 평가',pct:67,color:'#4ade80',
+   quote:'"물가 잡히는 거 느껴져요. 마트 가도 좀 나아진 것 같고" — 40대 자영업자'},
+  {icon:'🌍',text:'외교 성과 및 국격 상승 인식',pct:52,color:'#22d3ee',
+   quote:'"미국 국빈 방문이 인상 깊었어요. 오랜만에 뿌듯했달까요" — 30대 직장인'},
+  {icon:'🏛️',text:'복지 공약 이행에 대한 기대감',pct:38,color:'#a78bfa',
+   quote:'"일단 말한 건 지키려는 것 같아서 지켜보는 중" — 20대 대학생'},
+];
+const rl=document.getElementById('reasonList');
+reasons.forEach((r,i)=>{
+  const item=document.createElement('div');
+  item.className='reason-item'+(i===0?' active':'');
+  item.innerHTML=`
+    <div class="ri-top">
+      <span class="ri-icon">${r.icon}</span>
+      <span class="ri-text">${r.text}</span>
+      <span class="ri-pct" style="color:${r.color}">${r.pct}%</span>
+    </div>
+    <div class="ri-bar-wrap"><div class="ri-bar" style="width:0%;background:${r.color}" data-w="${r.pct}"></div></div>
+    <div class="ri-quote">${r.quote}</div>`;
+  item.addEventListener('click',()=>{
+    document.querySelectorAll('.reason-item').forEach(x=>x.classList.remove('active'));
+    item.classList.add('active');
+  });
+  rl.appendChild(item);
+});
+setTimeout(()=>{ document.querySelectorAll('.ri-bar').forEach(b=>b.style.width=b.dataset.w+'%') },400);
+
+// ── NEWS SCORE CHART ──
+(function(){
+  const ctx=document.getElementById('nsChart').getContext('2d');
+  new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:tlLabels,
+      datasets:[{
+        data:tlScores,
+        borderColor:'#60a5fa',borderWidth:2.5,tension:.4,fill:true,
+        backgroundColor:ctx2=>{
+          const g=ctx2.chart.ctx.createLinearGradient(0,0,0,200);
+          g.addColorStop(0,'rgba(96,165,250,.12)');g.addColorStop(1,'rgba(96,165,250,0)');return g;},
+        pointRadius:tlScores.map((_,i)=>i===5||i===1?11:4),
+        pointBackgroundColor:tlScores.map((_,i)=>{
+          if(i===5)return'#f87171';if(i===1)return'#4ade80';return'#60a5fa';
+        }),
+        segment:{
+          borderColor:ctx2=>{
+            const i=ctx2.p1DataIndex;
+            const d=tlScores[i+1]-tlScores[i];
+            if(Math.abs(d)>=10)return d>0?'#4ade80':'#f87171';return'#60a5fa';
+          }
+        }
+      }]
+    },
+    options:{
+      responsive:true,
+      onClick:(e,els)=>{
+        if(!els.length)return;
+        const idx=els[0].index;
+        document.querySelectorAll('.cp-item').forEach((x,i)=>{
+          x.classList.toggle('active',i===idx);
+        });
+      },
+      plugins:{legend:{display:false},
+        tooltip:{backgroundColor:'#121828',borderColor:'rgba(255,255,255,.1)',borderWidth:1,
+          titleColor:'#f0f4ff',bodyColor:'#8899bb'}},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#3d4f72',font:{size:10}}},
+        y:{min:25,max:75,grid:{color:'rgba(255,255,255,.04)'},
+          ticks:{color:'#3d4f72',font:{size:10},callback:v=>v+'점'}}
+      }
+    }
+  });
+})();
+
+// ── CP LIST ──
+const cpEvents=[
+  {type:'up',  icon:'📈',date:'2026-01-22',event:'미국 국빈 방문 성공',
+   desc:'한미 공동성명 체결. SNS 긍정 42시간 내 +380%.',delta:'+4.0'},
+  {type:'down',icon:'📉',date:'2026-02-20',event:'경제부총리 발언 논란',
+   desc:'"주사 이모" 관련 부적절 발언 커뮤니티 확산.',delta:'-23.0'},
+  {type:'up',  icon:'📈',date:'2026-02-27',event:'직접 사과 영상 게재',
+   desc:'유튜브 해명 영상. 댓글 긍정 62%로 반등.',delta:'+6.0'},
+];
+const cl=document.getElementById('cpList');
+cpEvents.forEach(cp=>{
+  const color=cp.type==='up'?'#4ade80':'#f87171';
+  cl.innerHTML+=`
+    <div class="cp-item ${cp.type}">
+      <div class="cp-icon">${cp.icon}</div>
+      <div class="cp-body">
+        <div class="cp-date">${cp.date}</div>
+        <div class="cp-event">${cp.event}</div>
+        <div class="cp-desc">${cp.desc}</div>
+      </div>
+      <div class="cp-delta" style="color:${color}">${cp.delta}</div>
+    </div>`;
+});
+
+// URL input demo
+function simulate(){
+  const url=document.getElementById('urlInput').value;
+  if(url) {
+    document.querySelector('.sc-val').textContent='분석 중…';
+    setTimeout(()=>document.querySelector('.sc-val').textContent='이재명 대통령 지지율',1200);
+  }
+}
+</script>
+</body>
+</html>
