@@ -325,7 +325,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:14px
   .agenda-section{margin-top:20px}
 }
 @media(max-width:600px){
-  .topbar{padding:0 14px;gap:8px;height:52px}
+  .topbar{padding:0 14px;gap:8px;height:52px}.search-bar{top:52px}
   .logo-text{font-size:15px}
   .logo-mark{width:36px;height:30px;font-size:11px}
   .score-row{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
@@ -364,6 +364,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:14px
 .frame-card{animation:fadeUp .5s ease .25s both}
 .bottom-grid{animation:fadeUp .5s ease .35s both}
 .agenda-section{animation:fadeUp .5s ease .45s both}
+.search-bar{animation:none}
 
 /* issue card links */
 .ic-links{display:flex;flex-direction:column;gap:4px;margin-top:9px;padding-top:9px;border-top:1px solid rgba(0,0,0,.07)}
@@ -401,26 +402,19 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:14px
   font-family:serif;font-style:italic;line-height:1;
 }
 .sp-info:hover{background:var(--indigo);border-color:var(--indigo);color:#fff}
-.sp-info-tip{
-  position:absolute;top:32px;right:0;
-  width:220px;
+.sp-info-tip{display:none}
+#globalTooltip{
+  position:fixed;z-index:9999;
+  width:230px;
   background:#111827;color:#F9FAFB;
   font-size:12px;font-weight:400;line-height:1.65;
-  padding:11px 14px;border-radius:10px;
-  box-shadow:0 8px 24px rgba(0,0,0,.2);
+  padding:12px 14px;border-radius:10px;
+  box-shadow:0 8px 24px rgba(0,0,0,.25);
   pointer-events:none;
-  opacity:0;transform:translateY(-4px);
-  transition:opacity .18s,transform .18s;
-  z-index:500;
-  white-space:normal;
-  font-family:var(--sans);
+  opacity:0;transition:opacity .18s;
+  white-space:normal;font-family:var(--sans);
 }
-.sp-info-tip::before{
-  content:'';position:absolute;top:-6px;right:5px;
-  border:6px solid transparent;border-bottom-color:#111827;border-top:none;
-}
-.sp-info:hover .sp-info-tip,
-.sp-info:focus .sp-info-tip{opacity:1;transform:translateY(0)}
+#globalTooltip.visible{opacity:1}
 .tour-btn{
   display:flex;align-items:center;gap:6px;
   background:var(--indigo-lt);border:1.5px solid rgba(67,56,202,.3);
@@ -677,6 +671,7 @@ body.tour-mode .bottom-grid,body.tour-mode .agenda-section,body.tour-mode .score
   </div>
 </header>
 
+<div id="globalTooltip"></div>
 <!-- SEARCH BAR -->
 <div class="search-bar" id="searchBar">
   <!-- 조회 기간 -->
@@ -1583,6 +1578,33 @@ function renderAgendas(){
   setTimeout(()=>document.querySelectorAll('.ag-bar').forEach(b=>b.style.width=b.dataset.w+'%'),300);
 }
 renderAgendas();
+
+
+// ── GLOBAL TOOLTIP ──
+(function(){
+  const tip = document.getElementById('globalTooltip');
+  document.querySelectorAll('.sp-info').forEach(el=>{
+    const text = el.querySelector('.sp-info-tip')?.textContent || el.dataset.tip || '';
+    el.addEventListener('mouseenter', e=>{
+      if(!text) return;
+      tip.textContent = text;
+      tip.classList.add('visible');
+      positionTip(e);
+    });
+    el.addEventListener('mousemove', positionTip);
+    el.addEventListener('mouseleave', ()=>tip.classList.remove('visible'));
+  });
+  function positionTip(e){
+    const W=window.innerWidth, tw=240, th=tip.offsetHeight||80;
+    let x = e.clientX - tw - 12;
+    let y = e.clientY - th/2;
+    if(x < 8) x = e.clientX + 12;
+    if(y < 8) y = 8;
+    if(y + th > window.innerHeight - 8) y = window.innerHeight - th - 8;
+    tip.style.left = x+'px';
+    tip.style.top  = y+'px';
+  }
+})();
 
 // ── TOUR SYSTEM ──
 const TOUR_STEPS=[
