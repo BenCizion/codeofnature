@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>소셜 관제 대시보드 — 서울관광재단</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  /* LiveRe Brand — Red & Gray */
+  --brand:    #E8251A;
+  --brand-dk: #C01E14;
+  --brand-lt: #FEE9E8;
+  --brand-mid:#FCDCDB;
+
+  --bg:      #F5F5F5;
+  --surface: #FFFFFF;
+  --s2:      #F2F2F2;
+  --s3:      #E8E8E8;
+  --border:  #E0E0E0;
+  --border2: #CCCCCC;
+
+  --up:      #16A34A;
+  --up-lt:   #DCFCE7;
+  --down:    #DC2626;
+  --down-lt: #FEE2E2;
+  --amber:   #D97706;
+  --amber-lt:#FEF3C7;
+  --blue:    #2563EB;
+  --blue-lt: #EFF6FF;
+
+  --t1: #1A1A1A;
+  --t2: #555555;
+  --t3: #999999;
+
+  --sans:    'Pretendard', -apple-system, sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:14px;min-height:100vh}
+
+/* ── TOPBAR ── */
+.topbar{
+  height:56px;background:var(--surface);
+  border-bottom:2px solid var(--brand);
+  display:flex;align-items:center;padding:0 24px;gap:14px;
+  position:sticky;top:0;z-index:200;
+  box-shadow:0 2px 8px rgba(232,37,26,.1);
+}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.logo-mark{
+  width:42px;height:34px;border-radius:8px;
+  background:var(--brand);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;color:#fff;
+  letter-spacing:-.02em;flex-shrink:0;
+}
+.logo-text{font-size:17px;font-weight:800;color:var(--t1);letter-spacing:.01em}
+.logo-text em{color:var(--brand);font-style:normal}
+.tb-divider{width:1px;height:22px;background:var(--border)}
+.tb-client{font-size:14px;font-weight:700;color:var(--t1)}
+.live-badge{
+  display:flex;align-items:center;gap:6px;
+  background:var(--up-lt);border:1px solid rgba(22,163,74,.3);
+  border-radius:12px;padding:4px 11px;font-size:11px;font-weight:700;color:var(--up);
+}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--up);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* 리로딩 스피너 */
+.reload-spinner{
+  width:14px;height:14px;border-radius:50%;
+  border:2px solid rgba(22,163,74,.25);
+  border-top-color:var(--up);
+  animation:spin 1.1s linear infinite;
+  flex-shrink:0;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.reload-ts{font-size:10px;color:rgba(22,163,74,.7);font-weight:600;white-space:nowrap}
+
+.last-update{font-size:11px;color:var(--t3)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.crisis-btn{
+  display:flex;align-items:center;gap:6px;
+  background:var(--brand);color:#fff;
+  border:none;border-radius:7px;padding:7px 16px;
+  font-size:13px;font-weight:700;cursor:pointer;
+  transition:background .15s;animation:crisisGlow 2s ease-in-out infinite;
+}
+.crisis-btn:hover{background:var(--brand-dk)}
+@keyframes crisisGlow{0%,100%{box-shadow:0 0 0 0 rgba(232,37,26,.4)}50%{box-shadow:0 0 0 6px rgba(232,37,26,0)}}
+.report-btn{
+  display:flex;align-items:center;gap:6px;
+  background:var(--surface);border:1px solid var(--border2);
+  color:var(--t2);border-radius:7px;padding:7px 16px;
+  font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;
+}
+.report-btn:hover{border-color:var(--brand);color:var(--brand)}
+.user-pill{
+  background:var(--s2);border:1px solid var(--border);
+  border-radius:7px;padding:7px 13px;font-size:13px;color:var(--t2);cursor:pointer;
+  display:flex;align-items:center;gap:5px;
+}
+
+.page{padding:18px 24px 40px;max-width:1440px;margin:0 auto}
+
+/* ── SCORE PILLS ── */
+.score-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.score-pill{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:14px 18px;
+  display:flex;align-items:center;gap:14px;
+  flex:1;min-width:155px;cursor:pointer;transition:all .15s;
+}
+.score-pill:hover{box-shadow:0 2px 10px rgba(0,0,0,.08);border-color:var(--border2)}
+.score-pill.active{border-color:var(--brand);box-shadow:0 0 0 3px rgba(232,37,26,.08)}
+.score-pill.crisis-pill{border-color:rgba(220,38,38,.4);background:var(--down-lt)}
+.sp-icon{font-size:20px;flex-shrink:0}
+.sp-body{flex:1;min-width:0}
+.sp-label{font-size:11px;color:var(--t3);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.sp-val{font-size:26px;font-weight:700;line-height:1;display:block;font-variant-numeric:tabular-nums;}
+.sp-delta{font-size:12px;font-weight:700;display:flex;align-items:center;gap:3px;margin-top:5px}
+/* sparkline */
+.sp-spark{display:flex;align-items:flex-end;gap:2px;height:18px;margin-top:5px}
+.sp-bar{width:6px;border-radius:2px;flex-shrink:0}
+
+.up{color:var(--up)}.down{color:var(--down)}.neutral{color:var(--t3)}
+
+/* ── MAIN GRID ── */
+.main-grid{display:grid;grid-template-columns:320px 1fr;gap:14px;margin-bottom:14px;align-items:stretch}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap}
+.card-title{font-size:15px;font-weight:700;color:var(--t1)}
+.card-sub{font-size:12px;color:var(--t3);margin-top:2px}
+
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;min-height:320px}
+.chart-canvas-container{width:100%;height:180px;position:relative;flex:1}
+.chart-canvas-container canvas{position:absolute;inset:0}
+
+.chart-filters{display:flex;gap:4px}
+.cf-btn{font-size:12px;font-weight:700;padding:6px 13px;border-radius:6px;cursor:pointer;
+  border:1px solid var(--border);background:var(--s2);color:var(--t2);transition:all .15s}
+.cf-btn.active{background:var(--brand);border-color:var(--brand);color:#fff}
+
+/* issue cards — 항상 펼쳐서 보임 */
+.issue-cards{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  margin-top:8px;padding-top:8px;border-top:1px solid var(--border);
+}
+.issue-card{
+  border-radius:9px;padding:11px 13px;
+  border:1px solid transparent;
+  animation:fadeUp .3s ease both;
+}
+.issue-card.neg-card{background:#FFF5F5;border-color:rgba(220,38,38,.2)}
+.issue-card.pos-card{background:#F0FFF4;border-color:rgba(22,163,74,.2)}
+.ic-top{display:flex;align-items:flex-start;gap:7px;margin-bottom:6px;flex-wrap:wrap}
+.ic-badge{font-size:11px;font-weight:800;padding:3px 9px;border-radius:4px;display:flex;align-items:center;gap:3px;flex-shrink:0;white-space:nowrap;}
+.ic-badge.neg{background:var(--down-lt);color:var(--down)}
+.ic-badge.pos{background:var(--up-lt);color:var(--up)}
+.ic-label{font-size:13px;font-weight:700;color:var(--t1);flex:1;min-width:80px}
+.ic-time{font-size:11px;color:var(--t3);white-space:nowrap;margin-left:auto}
+.ic-body{font-size:12px;color:var(--t2);line-height:1.65}
+.ic-body strong{color:var(--t1)}
+.ic-no-issues{grid-column:1/-1;font-size:12px;color:var(--t3);padding:8px 0;text-align:center}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── CHANNEL LIST ── */
+.ch-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;
+  display:flex;flex-direction:column;
+}
+.ch-count-label{font-size:11px;color:var(--t3);font-weight:600}
+.ch-list{display:flex;flex-direction:column;gap:5px;margin-top:8px;flex:1}
+.ch-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 11px;border-radius:8px;background:var(--s2);
+  cursor:pointer;transition:all .15s;border:1px solid transparent;
+}
+.ch-item:hover{background:#FEF5F5;border-color:rgba(232,37,26,.18)}
+.ch-item.active{background:#FEF5F5;border-color:rgba(232,37,26,.4);box-shadow:0 0 0 2px rgba(232,37,26,.08)}
+.ch-item.crisis{background:var(--down-lt);border-color:rgba(220,38,38,.22)}
+.ch-item.active.crisis{border-color:rgba(220,38,38,.55)}
+
+.ch-lang-badge{
+  width:30px;height:19px;border-radius:4px;
+  background:var(--s3);border:1px solid var(--border2);
+  font-size:10px;font-weight:800;color:var(--t2);
+  letter-spacing:.04em;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.ch-info{flex:1;min-width:0}
+.ch-name{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch-buzz-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.ch-buzz-label{font-size:11px;color:var(--t3)}
+.ch-buzz-val{font-size:11px;font-weight:600;color:var(--t2)}
+.ch-delta-badge{font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px}
+.ch-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.ch-score{font-size:18px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;min-width:36px;text-align:right}
+.ch-bar-row{width:52px;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.ch-bar{height:100%;border-radius:2px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+.ch-more{
+  text-align:center;padding:8px;font-size:12px;font-weight:600;
+  color:var(--t3);cursor:pointer;border-top:1px solid var(--border);
+  margin-top:5px;transition:color .15s;flex-shrink:0;
+}
+.ch-more:hover{color:var(--brand)}
+
+/* ── FRAME ANALYSIS ── */
+.frame-card{
+  background:var(--surface);
+  border:1px solid #C7D2FE;border-radius:12px;padding:14px 18px;
+  margin-bottom:14px;
+  box-shadow:0 0 0 3px rgba(67,56,202,.05);
+}
+.frame-layout{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:12px;
+  border:1px solid #C7D2FE;border-radius:10px;overflow:hidden;
+}
+.frame-col-head{padding:9px 16px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:#EEF2FF;color:#4338CA;border-bottom:1px solid #C7D2FE;}
+.frame-col-head.right{background:#F0FFF4;color:#15803D}
+.frame-left{border-right:1px solid #C7D2FE}
+.frame-list{display:flex;flex-direction:column}
+.frame-row{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.frame-row:last-child{border-bottom:none}
+.frame-row:hover{background:var(--s2)}
+.frame-row.active{background:#EEF2FF}
+.fr-left{flex:1}
+.fr-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:800;padding:3px 9px;border-radius:4px;margin-bottom:5px;}
+.fr-neg{background:var(--down-lt);color:var(--down)}
+.fr-pos{background:var(--up-lt);color:var(--up)}
+.fr-logic{font-size:11px;color:var(--t2);margin-bottom:3px}
+.fr-claim{font-size:13px;font-weight:700;color:var(--t1);line-height:1.4}
+.fr-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;padding-top:4px}
+.fr-pct{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;}
+.fr-count{font-size:11px;color:var(--t3);white-space:nowrap}
+
+/* counter panel */
+.counter-list{display:flex;flex-direction:column}
+.counter-row{padding:16px 18px;display:none}
+.counter-row.active{display:block}
+.cr-strategy{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;margin-bottom:7px}
+.cr-body{font-size:13px;color:var(--t1);line-height:1.7;margin-bottom:12px}
+.cr-example{font-size:12px;color:var(--t2);line-height:1.65;background:#F0FFF4;border-left:3px solid #4ADE80;padding:10px 13px;border-radius:0 7px 7px 0;font-style:italic;margin-bottom:10px;}
+.cr-tags{display:flex;gap:5px;flex-wrap:wrap}
+.cr-tag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;background:#DCFCE7;color:var(--up)}
+.cr-tag.alert-tag{background:var(--down-lt);color:var(--down)}
+.cr-tag.info-tag{background:var(--blue-lt);color:var(--blue)}
+
+/* ── BOTTOM GRID ── */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+
+/* COMMENT */
+.comment-tabs{display:flex;gap:4px;margin:10px 0 12px}
+.ctab{font-size:12px;font-weight:700;padding:6px 13px;border-radius:5px;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--t2);transition:all .15s}
+.ctab.neg-active{background:var(--down-lt);border-color:rgba(220,38,38,.3);color:var(--down)}
+.ctab.pos-active{background:var(--up-lt);border-color:rgba(22,163,74,.3);color:var(--up)}
+.comment-list{display:flex;flex-direction:column;gap:8px}
+.comment-item{padding:11px 13px;border-radius:9px;border-left:3px solid transparent;cursor:pointer;transition:all .15s;}
+.comment-item.neg{border-left-color:var(--down);background:#FFF8F8;border:1px solid rgba(220,38,38,.1);border-left:3px solid var(--down)}
+.comment-item.pos{border-left-color:var(--up);background:#F0FFF4;border:1px solid rgba(22,163,74,.1);border-left:3px solid var(--up)}
+.ci-top{display:flex;gap:8px;align-items:flex-start;margin-bottom:5px}
+.ci-ch{font-size:16px;flex-shrink:0}
+.ci-meta-top{flex:1}
+.ci-content-title{font-size:12px;font-weight:700;color:var(--blue);margin-bottom:3px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.ci-content-title a{color:var(--blue);text-decoration:none}
+.ci-content-title a:hover{text-decoration:underline}
+.ci-link-btn{font-size:10px;padding:2px 7px;border:1px solid rgba(37,99,235,.3);border-radius:3px;color:var(--blue);white-space:nowrap;text-decoration:none}
+.ci-text{font-size:13px;color:var(--t1);line-height:1.6;margin-bottom:5px}
+.ci-bottom{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ci-meta{font-size:11px;color:var(--t3);display:flex;gap:8px;flex:1}
+.ci-score{font-size:15px;font-weight:800;flex-shrink:0;font-variant-numeric:tabular-nums;}
+.ci-actions{display:flex;gap:5px;flex-shrink:0}
+.ci-btn{font-size:11px;font-weight:700;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--t2);cursor:pointer;transition:all .15s}
+.ci-btn:hover{border-color:var(--brand);color:var(--brand)}
+.ci-btn.danger:hover{border-color:var(--down);color:var(--down)}
+
+/* ALERT */
+.alert-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.alert-item{display:flex;gap:10px;align-items:flex-start;
+  padding:10px 12px;border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:all .15s}
+.alert-item.critical{background:var(--down-lt);border-color:#FCA5A5}
+.alert-item.warning{background:var(--amber-lt);border-color:#FCD34D}
+.alert-item.info{background:var(--blue-lt);border-color:#93C5FD}
+.alert-item:hover{transform:translateX(2px)}
+.ai-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.ai-body{flex:1}
+.ai-title{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:3px;line-height:1.4}
+.ai-meta{font-size:11px;color:var(--t3)}
+.ai-badge{font-size:10px;font-weight:800;letter-spacing:.06em;padding:3px 8px;border-radius:4px;flex-shrink:0;align-self:flex-start;margin-top:2px}
+.badge-crit{background:var(--down);color:#fff}
+.badge-warn{background:var(--amber);color:#fff}
+.badge-info{background:var(--blue);color:#fff}
+.alert-setting-btn{
+  width:100%;margin-top:10px;
+  background:var(--s2);border:1px dashed var(--border2);
+  color:var(--t3);font-size:11px;font-weight:700;padding:8px;
+  border-radius:7px;cursor:pointer;transition:all .15s;text-align:center;
+}
+.alert-setting-btn:hover{border-color:var(--brand);color:var(--brand)}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:none;align-items:center;justify-content:center}
+.modal-bg.show{display:flex}
+.modal{background:var(--surface);border-radius:14px;padding:24px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-title{font-family:var(--sans);font-size:16px;font-weight:700;margin-bottom:16px}
+.modal-close{float:right;cursor:pointer;color:var(--t3);font-size:18px;line-height:1}
+.modal-row{margin-bottom:12px}
+.modal-label{font-size:11px;font-weight:700;color:var(--t2);margin-bottom:4px}
+.modal-input{width:100%;border:1px solid var(--border);border-radius:7px;padding:8px 12px;font-size:12px;font-family:var(--sans);color:var(--t1)}
+.modal-input:focus{outline:none;border-color:var(--brand)}
+.modal-save{
+  width:100%;background:var(--brand);color:#fff;border:none;
+  border-radius:8px;padding:10px;font-size:13px;font-weight:700;
+  cursor:pointer;margin-top:8px;transition:background .15s;
+}
+.modal-save:hover{background:var(--brand-dk)}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <a class="logo" href="#">
+    <div class="logo-mark">LR</div>
+    <div class="logo-text">Live<em>Re</em>.ai</div>
+  </a>
+  <div class="tb-divider"></div>
+  <div class="tb-client">서울관광재단</div>
+  <div class="live-badge">
+    <div class="live-dot"></div>
+    실시간
+    <div class="reload-spinner"></div>
+    <span class="reload-ts" id="reloadTs">5s</span>
+  </div>
+  <div class="last-update" id="lastUpdate"></div>
+  <div class="topbar-right">
+    <button class="crisis-btn" onclick="scrollToAlerts()">🚨 위기 알림 2건</button>
+    <button class="report-btn" onclick="showReportModal()">📄 리포트 생성</button>
+    <div class="user-pill">👤 홍길동</div>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- SCORE PILLS -->
+  <div class="score-row" id="scorePills"></div>
+
+  <!-- MAIN GRID: 채널 좌 / 차트 우 -->
+  <div class="main-grid">
+    <!-- 채널 목록 (좌) -->
+    <div class="ch-card">
+      <div class="card-head" style="margin-bottom:0">
+        <div>
+          <div class="card-title">채널별 현황</div>
+          <div class="card-sub">클릭 시 해당 채널 지표로 전환</div>
+        </div>
+        <div class="ch-count-label">주요 채널 (8/14)</div>
+      </div>
+      <div class="ch-list" id="chList"></div>
+      <div class="ch-more" onclick="alert('전체 14개 채널 목록을 불러옵니다.')">나머지 6개 채널 보기 +</div>
+    </div>
+
+    <!-- 차트 (우) -->
+    <div class="chart-card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">전체 채널 시간별 감성 스코어</div>
+          <div class="card-sub" id="chartSubLabel">14개 채널 통합 · 실시간 · ⚡이슈 포인트 클릭 시 뉴스 확인</div>
+        </div>
+        <div class="chart-filters">
+          <button class="cf-btn active" data-range="24h">24시간</button>
+          <button class="cf-btn" data-range="7d">7일</button>
+          <button class="cf-btn" data-range="30d">30일</button>
+        </div>
+      </div>
+      <div class="chart-canvas-container">
+        <canvas id="mainChart"></canvas>
+      </div>
+      <div class="issue-cards" id="issueCards"></div>
+    </div>
+  </div>
+
+  <!-- FRAME ANALYSIS -->
+  <div class="frame-card">
+    <div class="card-head">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:4px;height:36px;background:linear-gradient(180deg,#4F46E5,#7C3AED);border-radius:2px;flex-shrink:0"></div>
+        <div>
+          <div class="card-title" style="font-size:15px;color:#3730A3">여론 프레임 분석</div>
+          <div class="card-sub" id="frameSubLabel">전체 채널 · 120가지 논리 구조 분류 · AI 자동 추론 · 좌측 프레임 클릭 시 대응 전략 표시</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <div style="font-size:10px;font-weight:800;letter-spacing:.08em;background:#EEF2FF;color:#4338CA;border:1px solid #C7D2FE;border-radius:5px;padding:3px 10px">AI 추론</div>
+      </div>
+    </div>
+    <div class="frame-layout">
+      <div class="frame-left">
+        <div class="frame-col-head">📊 여론 프레임 · 논리 구조</div>
+        <div class="frame-list" id="frameList"></div>
+      </div>
+      <div>
+        <div class="frame-col-head right">💬 선택된 프레임 — 대응 전략</div>
+        <div class="counter-list" id="counterList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM GRID -->
+  <div class="bottom-grid">
+    <div class="card">
+      <div class="card-title">크리티컬 댓글</div>
+      <div class="comment-tabs">
+        <button class="ctab neg-active" id="negTab" onclick="switchComments('neg')">▼ 부정 상위</button>
+        <button class="ctab" id="posTab" onclick="switchComments('pos')">▲ 긍정 상위</button>
+      </div>
+      <div class="comment-list" id="commentList"></div>
+    </div>
+
+    <div class="card" id="alertSection">
+      <div class="card-title">실시간 알림</div>
+      <div class="card-sub">슬랙·텔레그램 연동 · 조건 커스텀 가능</div>
+      <div class="alert-list" id="alertList"></div>
+      <button class="alert-setting-btn" onclick="showAlertModal()">⚙️ 알림 조건 설정</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- 리포트 모달 -->
+<div class="modal-bg" id="reportModal">
+  <div class="modal">
+    <div class="modal-title">📄 리포트 생성 <span class="modal-close" onclick="closeModal('reportModal')">✕</span></div>
+    <div class="modal-row">
+      <div class="modal-label">리포트 기간</div>
+      <select class="modal-input"><option>최근 24시간</option><option>최근 7일</option><option>최근 30일</option></select>
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">포함 채널</div>
+      <select class="modal-input"><option>전체 14개 채널</option><option>KR 채널만</option><option>EN 채널만</option></select>
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">포함 내용</div>
+      <select class="modal-input"><option>기본 (스코어+버즈량)</option><option>표준 (+ 크리티컬 댓글)</option><option>전체 (+ 프레임 분석)</option></select>
+    </div>
+    <button class="modal-save" onclick="alert('리포트가 생성되었습니다. 다운로드가 시작됩니다.')">PDF 리포트 생성</button>
+  </div>
+</div>
+
+<!-- 알림 설정 모달 -->
+<div class="modal-bg" id="alertModal">
+  <div class="modal">
+    <div class="modal-title">⚙️ 알림 조건 설정 <span class="modal-close" onclick="closeModal('alertModal')">✕</span></div>
+    <div class="modal-row">
+      <div class="modal-label">감성 스코어 급락 임계값</div>
+      <input class="modal-input" type="number" value="-10" placeholder="예: -10 (3시간 내 10점 이상 하락 시)">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">부정 댓글 임계값</div>
+      <input class="modal-input" type="number" value="50" placeholder="예: 50건 이상 감지 시">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">알림 채널</div>
+      <select class="modal-input"><option>슬랙(Slack)</option><option>텔레그램</option><option>이메일</option><option>슬랙 + 이메일</option></select>
+    </div>
+    <button class="modal-save" onclick="alert('알림 조건이 저장되었습니다.')">저장</button>
+  </div>
+</div>
+
+<script>
+// 리로딩 카운트다운
+(function(){
+  const INTERVAL = 30;
+  let remaining = INTERVAL;
+  const el = document.getElementById('reloadTs');
+  const lu = document.getElementById('lastUpdate');
+  setInterval(()=>{
+    remaining--;
+    if(remaining <= 0){
+      remaining = INTERVAL;
+      const now = new Date();
+      const fmt = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+      lu.textContent = `업데이트 ${fmt}`;
+    }
+    el.textContent = remaining + 's';
+  }, 1000);
+})();
+
+// ── DATA ──
+const CHART_DATA = {
+  '24h':{
+    labels:['00','02','04','06','08','10','12','14','16','18','20','22','현재'],
+    scores:[58,55,52,54,60,65,63,61,57,46,52,58,62],
+    issues:[
+      {idx:9,dir:'down',label:'Instagram 부정 급등',
+       news:'📰 연합뉴스 "서울 관광 바가지 논란" 기사 커뮤니티 확산\n⏰ 18:14 감지  |  댓글 반응 +340%  |  3시간 내 -15점 급락'},
+      {idx:5,dir:'up',  label:'YouTube 긍정 피크',
+       news:'📰 MBC "서울 봄꽃 명소 TOP10" 영상 조회 100만 돌파\n⏰ 10:32 감지  |  공유 수 +280%  |  2시간 내 +8점 상승'},
+    ]
+  },
+  '7d':{
+    labels:['3/17','3/18','3/19','3/20','3/21','3/22','3/23'],
+    scores:[61,58,64,62,55,60,63],
+    issues:[
+      {idx:4,dir:'down',label:'부정 키워드 급증',
+       news:'📰 조선일보 "외국인 관광객 치안 불안" 보도 SNS 확산\n⏰ 3/21 오전  |  Weibo 중심 확산  |  당일 -7점 하락'},
+    ]
+  },
+  '30d':{
+    labels:['2/22','3/1','3/8','3/15','3/22','3/23'],
+    scores:[55,60,58,65,60,63],
+    issues:[
+      {idx:3,dir:'up',label:'월간 스코어 최고치',
+       news:'📰 서울관광재단 봄 캠페인 론칭 + 유튜브 바이럴\n⏰ 3/15  |  전 채널 동시 긍정 급등  |  주간 +10점'},
+    ]
+  },
+};
+
+const CHANNELS=[
+  {icon:'📘',lang:'KR',name:'Facebook KR', score:68,delta:'+2', buzz:'2,341',up:true, id:'fb_kr'},
+  {icon:'📷',lang:'KR',name:'Instagram KR',score:41,delta:'-18',buzz:'3,102',up:false,id:'ig_kr',crisis:true},
+  {icon:'▶️',lang:'KR',name:'YouTube KR',  score:72,delta:'+5', buzz:'1,823',up:true, id:'yt_kr'},
+  {icon:'📘',lang:'EN',name:'Facebook EN', score:65,delta:'+1', buzz:'412',  up:true, id:'fb_en'},
+  {icon:'📷',lang:'EN',name:'Instagram EN',score:59,delta:'-3', buzz:'287',  up:false,id:'ig_en'},
+  {icon:'▶️',lang:'EN',name:'YouTube EN',  score:70,delta:'+4', buzz:'198',  up:true, id:'yt_en'},
+  {icon:'🇨🇳',lang:'CN',name:'Weibo',       score:44,delta:'-11',buzz:'89',  up:false,id:'weibo',crisis:true},
+  {icon:'🇷🇺',lang:'RU',name:'VKontakte',   score:61,delta:'+2', buzz:'67',  up:true, id:'vk'},
+];
+
+const CH_CHART={};
+CHANNELS.forEach(ch=>{
+  const base=ch.score;
+  const arr=Array.from({length:13},(_,i)=>Math.min(95,Math.max(15,base+Math.round((Math.random()-.48)*10))));
+  CH_CHART[ch.id]={labels:CHART_DATA['24h'].labels,scores:arr,issues:[]};
+});
+
+const FRAMES=[
+  {dir:'neg',logic:'경제성 논리 — 가격 대비 가치',
+   claim:'"서울 관광은 도쿄·방콕 대비 비용 효율이 낮다"',
+   pct:38,color:'var(--down)',count:'약 8,200명',
+   counter:{strategy:'사실 반박 + 비교 데이터 제시',
+    body:'도시별 실제 여행 비용을 데이터로 제시하고, 서울만의 가성비 포인트(무료 궁궐, K-푸드 가격대, 무료 Wi-Fi 등)를 구체적 수치로 반박합니다.',
+    example:'"실제 서울 3박4일 비용은 방콕과 거의 동일합니다. 여기에 K-팝 공연·한류 체험까지 포함된다면 압도적 가성비입니다."',
+    tags:['데이터 반박','비교 콘텐츠','팩트체크'],type:'pos'}},
+  {dir:'neg',logic:'공정성 논리 — 내국인 역차별',
+   claim:'"외국인 유치에만 집중, 내국인 혜택 없다"',
+   pct:27,color:'var(--down)',count:'약 5,800명',
+   counter:{strategy:'공감 선행 + 내국인 혜택 안내',
+    body:'먼저 불만을 진심으로 공감한 뒤, 실제로 운영 중인 내국인 관광 지원 프로그램을 구체적으로 안내합니다. 방어적 태도를 피하는 것이 핵심입니다.',
+    example:'"내국인 여러분의 소중한 의견 감사합니다. 서울시민 대상 XX 할인 프로그램이 운영 중입니다. ▶ [바로가기]"',
+    tags:['공감 우선','댓댓글 대응','정책 안내'],type:'warn'}},
+  {dir:'pos',logic:'경험 가치 논리 — K-컬처 시너지',
+   claim:'"K-팝·K-푸드 연계 서울 관광은 세계 최고"',
+   pct:44,color:'var(--up)',count:'약 12,400명',
+   counter:{strategy:'긍정 증폭 + UGC 공유',
+    body:'이 프레임을 지지하는 콘텐츠를 적극 생산하고 확산합니다. 실제 외국인 여행자의 긍정 후기를 공식 채널에서 리그램·공유하여 신뢰도를 높입니다.',
+    example:'"@visitseoul K-Food 투어 다녀왔는데 인생 최고 경험!" — 이런 UGC를 공식 채널에서 적극 공유하세요.',
+    tags:['긍정 증폭','UGC 활용','공유 유도'],type:'pos'}},
+  {dir:'pos',logic:'안전 논리 — 치안·청결 우수성',
+   claim:'"새벽에도 혼자 다닐 수 있는 안전한 도시"',
+   pct:31,color:'var(--up)',count:'약 6,700명',
+   counter:{strategy:'여성 솔로 여행 콘텐츠 강화',
+    body:'특히 여성 솔로 여행자 타깃 콘텐츠를 강화합니다. 실제 외국인 여성 여행자의 새벽 브이로그를 YouTube·Instagram에 정기 배포하여 안전 이미지를 자연스럽게 각인시킵니다.',
+    example:'"혼자 온 여성 여행자들의 서울 새벽 브이로그 시리즈" → 안전 이미지 + 감성 콘텐츠 동시 효과.',
+    tags:['타깃 콘텐츠','영상 시리즈','안전 브랜딩'],type:'info'}},
+];
+
+const NEG_COMMENTS=[
+  {ch:'📷',score:-82,contentTitle:'[Visit Seoul] "서울, 빛나는 도시" 공식 릴스',url:'#',channel:'Instagram KR',time:'14분 전',
+   text:'"서울 관광 홍보는 외국인용이지 내국인은 아무 혜택도 없음. 세금 낭비."'},
+  {ch:'🇨🇳',score:-76,contentTitle:'首尔春季旅游节 공식 홍보 게시글',url:'#',channel:'Weibo',time:'28분 전',
+   text:'"首尔旅游价格太贵了，比东京贵很多，不值得去。" (서울 관광 너무 비쌈, 도쿄보다 가치 없음)'},
+  {ch:'📷',score:-71,contentTitle:'2026 봄 서울 여행지 추천 15선',url:'#',channel:'Instagram KR',time:'41분 전',
+   text:'"홍보영상은 예쁜데 실제 가면 실망... 관광 인프라가 너무 후져"'},
+  {ch:'🇷🇺',score:-68,contentTitle:'Сеул весной 2026 공식 가이드',url:'#',channel:'VKontakte',time:'52분 전',
+   text:'"Неудобный транспорт, никто не говорит по-английски." (불편한 교통, 영어 못함)'},
+  {ch:'📘',score:-64,contentTitle:'서울관광재단 2026 봄 캠페인 포스트',url:'#',channel:'Facebook KR',time:'1시간 전',
+   text:'"서울시가 또 돈 쏟아붓는다고? 이 예산 어디서 나오는 거야"'},
+];
+
+const POS_COMMENTS=[
+  {ch:'▶️',score:94,contentTitle:'[서울 야경 브이로그] 외국인이 반한 한강뷰 카페 투어',url:'#',channel:'YouTube KR',time:'8분 전',
+   text:'"서울 야경 진짜 최고... 파리보다 예뻐요. 다음에 또 올게요 😍"'},
+  {ch:'📘',score:88,contentTitle:'봄꽃 축제 서울 2026 — 벚꽃 명소 완벽 가이드',url:'#',channel:'Facebook EN',time:'22분 전',
+   text:'"Just came back from Seoul cherry blossom festival. Absolutely magical! 10/10 recommend"'},
+  {ch:'📷',score:82,contentTitle:'K-푸드 투어 공식 릴스 — 대표 맛집 12선',url:'#',channel:'Instagram KR',time:'35분 전',
+   text:'"드디어 서울 왔는데 음식이 이렇게 맛있을 줄은... 다음달에 또 옴"'},
+  {ch:'▶️',score:79,contentTitle:'서울 외국인 관광객 안내 공식 영상 2026',url:'#',channel:'YouTube EN',time:'1시간 전',
+   text:'"This is the most helpful tourism video. Seoul tourism board is doing great!"'},
+  {ch:'🇷🇺',score:71,contentTitle:'Лучшие места Сеула 2026',url:'#',channel:'VKontakte',time:'1시간 30분 전',
+   text:'"Сеул — потрясающий город! Всем рекомендую посетить весной." (서울 정말 놀라운 도시!)'},
+];
+
+const ALERTS=[
+  {type:'critical',icon:'🚨',title:'Instagram KR — 부정 스코어 3시간 내 -18점 급락',meta:'18:42 자동 감지 · 임계치 -10점 초과',badge:'위기'},
+  {type:'critical',icon:'🇨🇳',title:'Weibo — "서울 물가" 부정 댓글 군집 감지 (89건)',meta:'17:30 자동 감지 · 확산 위험',badge:'위기'},
+  {type:'warning', icon:'⚠️',title:"YouTube KR — '서울 바가지' 키워드 급증 (+340%)",meta:'16:15 자동 감지 · 모니터링 강화 권고',badge:'경고'},
+  {type:'info',    icon:'✅',title:'Facebook KR — 긍정 버즈 2,341건, 주간 최고치',meta:'15:00 업데이트',badge:'정보'},
+];
+
+// ── SCORE PILLS ──
+const PILL_DATA=[
+  {label:'통합 감성 스코어',val:'62.4',dir:'+',delta:'3.2',icon:'📊',spark:[55,58,60,58,62]},
+  {label:'총 버즈량 (오늘)',val:'8,341',dir:'+',delta:'12%',icon:'💬',spark:[60,70,65,80,100]},
+  {label:'위기 채널',      val:'2개',  dir:'-',delta:'위기',icon:'🚨',spark:[10,20,30,60,100],crisis:true},
+  {label:'크리티컬 댓글',  val:'47건', dir:'+',delta:'5건 감소',icon:'⚡',spark:[80,70,60,55,47]},
+  {label:'평균 응답 시간', val:'23분', dir:'+',delta:'8분 단축',icon:'⏱',spark:[60,55,45,35,23]},
+];
+const pillWrap=document.getElementById('scorePills');
+PILL_DATA.forEach((p,i)=>{
+  const isGood=p.dir==='+';
+  const valColor=p.crisis?'#DC2626':isGood?'#16A34A':'#DC2626';
+  const sparkColor=p.crisis?'#DC2626':isGood?'#16A34A':'#DC2626';
+  const sparkHTML=p.spark.map((v,si)=>{
+    const h=Math.round(4+v/100*14);
+    const op=0.25+si/p.spark.length*0.75;
+    return `<div class="sp-bar" style="height:${h}px;background:${sparkColor};opacity:${op}"></div>`;
+  }).join('');
+  pillWrap.innerHTML+=`
+    <div class="score-pill ${i===0?'active':''} ${p.crisis?'crisis-pill':''}"
+      onclick="this.parentNode.querySelectorAll('.score-pill').forEach(x=>x.classList.remove('active'));this.classList.add('active')">
+      <div class="sp-icon">${p.icon}</div>
+      <div class="sp-body">
+        <div class="sp-label">${p.label}</div>
+        <span class="sp-val" style="color:${valColor}">${p.val}</span>
+        <div class="sp-delta" style="color:${valColor}">${isGood?'▲':'▼'} ${p.delta}</div>
+        <div class="sp-spark">${sparkHTML}</div>
+      </div>
+    </div>`;
+});
+
+// ── CHART ──
+// 채널별 이슈 데이터
+const CH_ISSUES = {
+  fb_kr:[
+    {dir:'up',  label:'봄 캠페인 긍정 피크', news:'서울 벚꽃 시즌 홍보 포스트 공유 수 3,200회 돌파', time:'10:32'},
+    {dir:'down',label:'예산 낭비 비판 급등', news:'\'세금으로 외국인 마케팅\' 댓글 군집 감지', time:'14:55'},
+  ],
+  ig_kr:[
+    {dir:'down',label:'부정 스코어 급락 -18점',news:'연합뉴스 "서울 바가지 논란" 확산 → 댓글 부정 폭발', time:'18:14'},
+    {dir:'up',  label:'릴스 바이럴 긍정 피크', news:'한강 야경 릴스 조회수 120만 돌파, 저장수 급증', time:'09:41'},
+  ],
+  yt_kr:[
+    {dir:'up',  label:'봄꽃 영상 긍정 피크',  news:'MBC "서울 봄꽃 TOP10" 영상 조회 100만 돌파', time:'10:32'},
+    {dir:'up',  label:'K-푸드 투어 바이럴',   news:'유튜버 협업 영상 공유 +580% 급등', time:'15:20'},
+  ],
+  fb_en:[
+    {dir:'up',  label:'해외 팬 긍정 반응',    news:'Cherry blossom 관련 영문 포스트 글로벌 공유 급증', time:'11:00'},
+    {dir:'down',label:'교통 불편 불만 감지',   news:'공항-시내 교통 관련 부정 댓글 집중', time:'16:30'},
+  ],
+  ig_en:[
+    {dir:'up',  label:'K-스타일 해시태그 급증',news:'#VisitSeoul #KFashion 태그 노출 +240%', time:'13:15'},
+    {dir:'down',label:'물가 불만 외국인 댓글', news:'\'too expensive compared to Tokyo\' 패턴 댓글 증가', time:'17:00'},
+  ],
+  yt_en:[
+    {dir:'up',  label:'여행 가이드 호평',      news:'외국인 대상 서울 안내 영상 좋아요 비율 94%', time:'12:00'},
+    {dir:'up',  label:'구독자 급증 이벤트',    news:'구독자 10만 달성 영상 공유 +330%', time:'08:45'},
+  ],
+  weibo:[
+    {dir:'down',label:'물가 부정 여론 군집',   news:'\'首尔太贵\' 키워드 관련 댓글 89건 군집 감지', time:'17:30'},
+    {dir:'down',label:'한한령 언급 증가',       news:'한류 관련 부정 코멘트 확산, 모니터링 강화 필요', time:'19:00'},
+  ],
+  vk:[
+    {dir:'up',  label:'러시아권 관심 급등',    news:'봄 여행 시즌 서울 관련 긍정 게시물 +180%', time:'14:00'},
+    {dir:'down',label:'영어 안내 부족 불만',   news:'\'никто не говорит по-английски\' 패턴 반복', time:'16:45'},
+  ],
+};
+
+let mainChart, activeIssue=null;
+function buildChart(rangeKey, customData){
+  const data=customData||CHART_DATA[rangeKey];
+  const scores=data.scores;
+  const issues=data.issues||[];
+  if(mainChart)mainChart.destroy();
+  const ctx=document.getElementById('mainChart').getContext('2d');
+  mainChart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:data.labels,
+      datasets:[{
+        data:scores,
+        borderWidth:2.5,tension:.4,fill:true,
+        backgroundColor:ctx2=>{
+          const g=ctx2.chart.ctx.createLinearGradient(0,0,0,130);
+          g.addColorStop(0,'rgba(232,37,26,.12)');g.addColorStop(1,'rgba(232,37,26,0)');return g;
+        },
+        segment:{
+          borderColor:ctx2=>{
+            const i=ctx2.p1DataIndex;
+            const d=scores[i]-scores[i-1];
+            if(Math.abs(d)>=8)return d>0?'#16A34A':'#DC2626';
+            return'#E8251A';
+          },
+          borderWidth:ctx2=>{
+            const i=ctx2.p1DataIndex;
+            return Math.abs(scores[i]-scores[i-1])>=8?3.5:2;
+          }
+        },
+        pointRadius:scores.map((_,i)=>issues.some(c=>c.idx===i)?12:4),
+        pointBackgroundColor:scores.map((_,i)=>{
+          const iss=issues.find(x=>x.idx===i);
+          if(iss)return iss.dir==='down'?'#DC2626':'#16A34A';
+          return'#E8251A';
+        }),
+        pointBorderColor:'#fff',pointBorderWidth:2.5,
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#1A1A1A',borderColor:'rgba(255,255,255,.1)',borderWidth:1,
+          titleColor:'#F5F5F5',bodyColor:'#999',
+          callbacks:{
+            label:ctx2=>{
+              const v=ctx2.parsed.y;
+              const prev=scores[ctx2.dataIndex-1];
+              const d=prev?(v-prev).toFixed(1):'—';
+              return ` 스코어: ${v}점  (${Number(d)>=0?'+':''}${d})`;
+            },
+            afterLabel:ctx2=>{
+              const iss=issues.find(c=>c.idx===ctx2.dataIndex);
+              return iss?[`  ⚡ ${iss.label}`]:[];
+            }
+          }
+        }
+      },
+      scales:{
+        x:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#999',font:{size:10}}},
+        y:{min:30,max:85,grid:{color:'rgba(0,0,0,.04)'},
+          ticks:{color:'#999',font:{size:10},callback:v=>v+'점'}}
+      }
+    }
+  });
+  renderIssueCards(data.issues || []);
+}
+
+function renderIssueCards(issues){
+  const wrap=document.getElementById('issueCards');
+  wrap.innerHTML='';
+  if(!issues.length){
+    wrap.innerHTML='<div class="ic-no-issues">이 기간 크리티컬 이벤트 없음</div>';
+    return;
+  }
+  issues.forEach((iss,i)=>{
+    const isNeg=iss.dir==='down';
+    const lines=iss.news?iss.news.split('\n'):[];
+    const mainNews=lines[0]||'';
+    const subNews=lines.slice(1).join(' · ');
+    const card=document.createElement('div');
+    card.className=`issue-card ${isNeg?'neg-card':'pos-card'}`;
+    card.style.animationDelay=`${i*60}ms`;
+    card.innerHTML=`
+      <div class="ic-top">
+        <span class="ic-badge ${isNeg?'neg':'pos'}">${isNeg?'▼ 부정 급등':'▲ 긍정 피크'}</span>
+        <span class="ic-label">${iss.label}</span>
+        ${iss.time?`<span class="ic-time">${iss.time}</span>`:''}
+      </div>
+      <div class="ic-body">${mainNews}</div>
+      ${subNews?`<div style="font-size:10px;color:var(--t3);margin-top:4px;line-height:1.5">${subNews}</div>`:''}
+    `;
+    wrap.appendChild(card);
+  });
+}
+buildChart('24h');
+
+document.querySelectorAll('.cf-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.cf-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    const range=this.dataset.range;
+    if(activeCh){buildChart(null,CH_CHART[activeCh]);}
+    else{
+      buildChart(range);
+      document.getElementById('chartSubLabel').textContent={
+        '24h':'14개 채널 통합 · 24시간 · ⚡이슈 포인트 클릭 시 뉴스 확인',
+        '7d':'14개 채널 통합 · 최근 7일',
+        '30d':'14개 채널 통합 · 최근 30일'
+      }[range];
+    }
+  });
+});
+
+// ── CHANNELS ──
+let activeCh=null;
+const chList=document.getElementById('chList');
+CHANNELS.forEach(ch=>{
+  const pct=Math.round((ch.score-20)/60*100);
+  const color=ch.up?'#16A34A':'#DC2626';
+  const deltaBg=ch.up?'rgba(22,163,74,.12)':'rgba(220,38,38,.12)';
+  const el=document.createElement('div');
+  el.className=`ch-item${ch.crisis?' crisis':''}`;
+  el.innerHTML=`
+    <div class="ch-lang-badge">${ch.lang}</div>
+    <div class="ch-info">
+      <div class="ch-name">${ch.name.replace(/ KR| EN| CN| RU/,'')}</div>
+      <div class="ch-buzz-row">
+        <span class="ch-buzz-label">버즈</span>
+        <span class="ch-buzz-val">${ch.buzz}건</span>
+        <span class="ch-delta-badge" style="background:${deltaBg};color:${color}">${ch.up?'▲':'▼'} ${ch.delta}</span>
+        ${ch.crisis?'<span class="ch-delta-badge" style="background:rgba(220,38,38,.1);color:#DC2626">⚠️위기</span>':''}
+      </div>
+    </div>
+    <div class="ch-right">
+      <div class="ch-score" style="color:${color}">${ch.score}</div>
+      <div class="ch-bar-row"><div class="ch-bar" style="width:${pct}%;background:${color}"></div></div>
+    </div>`;
+  el.onclick=()=>{
+    document.querySelectorAll('.ch-item').forEach(x=>x.classList.remove('active'));
+    if(activeCh===ch.id){
+      activeCh=null;
+      buildChart(document.querySelector('.cf-btn.active').dataset.range);
+      document.getElementById('chartSubLabel').textContent='14개 채널 통합 · 실시간 · ⚡이슈 포인트 클릭 시 뉴스 확인';
+      document.getElementById('frameSubLabel').textContent='전체 채널 · 120가지 논리 구조 분류 · AI 자동 추론 · 좌측 프레임 클릭 시 대응 전략 표시';
+    } else {
+      activeCh=ch.id; el.classList.add('active');
+      const chData={...CH_CHART[ch.id], issues: CH_ISSUES[ch.id]||[]};
+      buildChart(null, chData);
+      document.getElementById('chartSubLabel').textContent=`${ch.name} 단독 · 실시간`;
+      document.getElementById('frameSubLabel').textContent=`${ch.name} · 여론 프레임 분석`;
+    }
+  };
+  chList.appendChild(el);
+});
+
+// ── FRAMES ──
+let activeFrame=0;
+function renderFrames(){
+  const fl=document.getElementById('frameList');
+  const cl=document.getElementById('counterList');
+  fl.innerHTML=''; cl.innerHTML='';
+  FRAMES.forEach((f,i)=>{
+    const isActive=i===activeFrame;
+    const row=document.createElement('div');
+    row.className=`frame-row${isActive?' active':''}`;
+    row.innerHTML=`
+      <div class="fr-left">
+        <div class="fr-badge ${f.dir==='neg'?'fr-neg':'fr-pos'}">${f.dir==='neg'?'▼':'▲'} ${f.dir==='neg'?'부정':'긍정'}</div>
+        <div class="fr-logic">${f.logic}</div>
+        <div class="fr-claim">${f.claim}</div>
+      </div>
+      <div class="fr-right">
+        <div class="fr-pct" style="color:${f.color}">${f.pct}%</div>
+        <div class="fr-count">👥 ${f.count}</div>
+      </div>`;
+    row.onclick=()=>{activeFrame=i;renderFrames()};
+    fl.appendChild(row);
+
+    // counter — only show active
+    const cr=document.createElement('div');
+    cr.className=`counter-row${isActive?' active':''}`;
+    const tagMap={pos:'cr-tag',warn:'cr-tag alert-tag',info:'cr-tag info-tag'};
+    cr.innerHTML=`
+      <div class="cr-strategy" style="color:${f.color}">${f.counter.strategy}</div>
+      <div class="cr-body">${f.counter.body}</div>
+      <div class="cr-example">${f.counter.example}</div>
+      <div class="cr-tags">${f.counter.tags.map(t=>`<span class="${tagMap[f.counter.type]||'cr-tag'}">${t}</span>`).join('')}</div>`;
+    cl.appendChild(cr);
+  });
+}
+renderFrames();
+
+// ── COMMENTS ──
+function switchComments(mode){
+  const n=document.getElementById('negTab'), p=document.getElementById('posTab');
+  n.className=`ctab${mode==='neg'?' neg-active':''}`;
+  p.className=`ctab${mode==='pos'?' pos-active':''}`;
+  const list=mode==='neg'?NEG_COMMENTS:POS_COMMENTS;
+  const el=document.getElementById('commentList');
+  el.innerHTML='';
+  list.forEach(c=>{
+    const sc=c.score;
+    const color=sc<0?'var(--down)':'var(--up)';
+    el.innerHTML+=`
+      <div class="comment-item ${sc<0?'neg':'pos'}">
+        <div class="ci-top">
+          <div class="ci-ch">${c.ch}</div>
+          <div class="ci-meta-top">
+            <div class="ci-content-title">
+              📄 <a href="${c.url}" target="_blank">${c.contentTitle}</a>
+              <a href="${c.url}" target="_blank" class="ci-link-btn">↗ 원문</a>
+            </div>
+            <div class="ci-text">${c.text}</div>
+          </div>
+        </div>
+        <div class="ci-bottom">
+          <div class="ci-meta"><span>${c.channel}</span><span>${c.time}</span></div>
+          <div class="ci-score" style="color:${color}">${sc}</div>
+          <div class="ci-actions">
+            <button class="ci-btn">답글</button>
+            <button class="ci-btn danger">신고</button>
+          </div>
+        </div>
+      </div>`;
+  });
+}
+switchComments('neg');
+
+// ── ALERTS ──
+ALERTS.forEach(a=>{
+  const bc=a.type==='critical'?'badge-crit':a.type==='warning'?'badge-warn':'badge-info';
+  document.getElementById('alertList').innerHTML+=`
+    <div class="alert-item ${a.type}">
+      <div class="ai-icon">${a.icon}</div>
+      <div class="ai-body">
+        <div class="ai-title">${a.title}</div>
+        <div class="ai-meta">${a.meta}</div>
+      </div>
+      <div class="ai-badge ${bc}">${a.badge}</div>
+    </div>`;
+});
+
+// ── MODAL / SCROLL ──
+function scrollToAlerts(){
+  document.getElementById('alertSection').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function showReportModal(){ document.getElementById('reportModal').classList.add('show') }
+function showAlertModal(){ document.getElementById('alertModal').classList.add('show') }
+function closeModal(id){ document.getElementById(id).classList.remove('show') }
+document.querySelectorAll('.modal-bg').forEach(m=>{
+  m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('show') });
+});
+</script>
+</body>
+</html>
