@@ -163,17 +163,17 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:14px
 .cr-tag.info-tag{background:var(--blue-lt);color:var(--blue)}
 
 /* BOTTOM GRID */
-.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
 .comment-tabs{display:flex;gap:5px;margin:12px 0 14px}
 .ctab{font-size:12px;font-weight:700;padding:7px 15px;border-radius:8px;cursor:pointer;border:1.5px solid var(--border);background:var(--s2);color:var(--t2);transition:all .15s}
 .ctab:hover{border-color:var(--border2);background:var(--surface)}
 .ctab.neg-active{background:var(--down-lt);border-color:rgba(220,38,38,.3);color:var(--down)}
 .ctab.pos-active{background:var(--up-lt);border-color:rgba(22,163,74,.3);color:var(--up)}
-.comment-list{display:flex;flex-direction:column;gap:9px}
-.comment-item{padding:12px 14px;border-radius:10px;cursor:pointer;transition:all .2s;border:1.5px solid transparent}
+.comment-list{display:flex;flex-direction:column;gap:7px}
+.comment-item{padding:10px 12px;border-radius:9px;cursor:pointer;transition:all .2s;border:1.5px solid transparent}
 .comment-item.neg{background:linear-gradient(135deg,#FFF8F8,#fff);border-color:rgba(220,38,38,.15);border-left:3px solid var(--down)}
 .comment-item.pos{background:linear-gradient(135deg,#F0FFF4,#fff);border-color:rgba(22,163,74,.15);border-left:3px solid var(--up)}
-.comment-item:hover{transform:translateX(3px);box-shadow:var(--shadow-sm)}
+.comment-item:hover{transform:translateX(2px);box-shadow:var(--shadow-sm)}
 .ci-top{display:flex;gap:9px;align-items:flex-start;margin-bottom:6px}
 .ci-ch{font-size:17px;flex-shrink:0}
 .ci-meta-top{flex:1}
@@ -313,7 +313,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:14px
 @media(max-width:900px){
   .main-grid{grid-template-columns:1fr;gap:14px;margin-bottom:18px}
   .ch-list{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
-  .bottom-grid{grid-template-columns:1fr;gap:14px}
+  .bottom-grid{grid-template-columns:1fr !important;gap:14px}
+  .bottom-grid>div[style*="width:320px"]{width:100% !important}
   .frame-layout{grid-template-columns:1fr}
   .frame-left{border-right:none;border-bottom:1.5px solid rgba(99,102,241,.15)}
   .score-row{grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
@@ -778,23 +779,67 @@ body.tour-mode .bottom-grid,body.tour-mode .agenda-section,body.tour-mode .score
     </div>
   </div>
 
-  <!-- BOTTOM GRID -->
-  <div class="bottom-grid">
-    <div class="card">
-      <div class="card-title">크리티컬 댓글</div>
-      <div class="comment-tabs">
-        <button class="ctab neg-active" id="negTab" onclick="switchComments('neg')">▼ 부정 상위</button>
-        <button class="ctab" id="posTab" onclick="switchComments('pos')">▲ 긍정 상위</button>
+  <!-- BOTTOM GRID: 크리티컬 댓글 통합 + 실시간 알림 -->
+  <div class="bottom-grid" style="grid-template-columns:1fr auto">
+
+    <!-- 크리티컬 댓글: 부정·긍정 나란히 -->
+    <div class="card" style="padding:0;overflow:hidden">
+      <!-- 헤더 -->
+      <div style="
+        display:flex;align-items:center;justify-content:space-between;
+        padding:16px 20px 14px;border-bottom:1.5px solid var(--border);
+      ">
+        <div>
+          <div class="card-title">크리티컬 댓글</div>
+          <div class="card-sub">감성 강도 기준 자동 선별 · AI 분석</div>
+        </div>
+        <div style="display:flex;gap:8px;font-size:12px;align-items:center">
+          <span style="display:flex;align-items:center;gap:5px;font-weight:700;color:var(--down)">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--down);display:inline-block"></span>
+            부정 <span style="background:var(--down-lt);padding:1px 7px;border-radius:4px">5건</span>
+          </span>
+          <span style="color:var(--border2)">|</span>
+          <span style="display:flex;align-items:center;gap:5px;font-weight:700;color:var(--up)">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--up);display:inline-block"></span>
+            긍정 <span style="background:var(--up-lt);padding:1px 7px;border-radius:4px">5건</span>
+          </span>
+        </div>
       </div>
-      <div class="comment-list" id="commentList"></div>
+
+      <!-- 좌/우 분할 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;min-height:0">
+
+        <!-- 부정 컬럼 -->
+        <div style="border-right:1.5px solid var(--border);padding:14px 16px;background:rgba(220,38,38,.015)">
+          <div style="font-size:11px;font-weight:800;color:var(--down);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:5px">
+            <span>▼</span> 부정 상위
+          </div>
+          <div class="comment-list" id="negList"></div>
+        </div>
+
+        <!-- 긍정 컬럼 -->
+        <div style="padding:14px 16px;background:rgba(22,163,74,.015)">
+          <div style="font-size:11px;font-weight:800;color:var(--up);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:5px">
+            <span>▲</span> 긍정 상위
+          </div>
+          <div class="comment-list" id="posList"></div>
+        </div>
+
+      </div>
     </div>
 
-    <div class="card" id="alertSection">
-      <div class="card-title">실시간 알림</div>
-      <div class="card-sub">슬랙·텔레그램 연동 · 조건 커스텀 가능</div>
+    <!-- 실시간 알림 -->
+    <div class="card" id="alertSection" style="width:320px;flex-shrink:0">
+      <div class="card-head" style="margin-bottom:4px">
+        <div>
+          <div class="card-title">실시간 알림</div>
+          <div class="card-sub">슬랙·텔레그램 연동 · 조건 커스텀 가능</div>
+        </div>
+      </div>
       <div class="alert-list" id="alertList"></div>
       <button class="alert-setting-btn" onclick="showAlertModal()">⚙️ 알림 조건 설정</button>
     </div>
+
   </div>
 
   <!-- AGENDA / TOPIC VISION SECTION -->
@@ -1389,17 +1434,12 @@ function renderFrames(){
 renderFrames();
 
 // ── COMMENTS ──
-function switchComments(mode){
-  const n=document.getElementById('negTab'), p=document.getElementById('posTab');
-  n.className=`ctab${mode==='neg'?' neg-active':''}`;
-  p.className=`ctab${mode==='pos'?' pos-active':''}`;
-  const list=mode==='neg'?NEG_COMMENTS:POS_COMMENTS;
-  const el=document.getElementById('commentList');
-  el.innerHTML='';
-  list.forEach(c=>{
+function renderCommentList(listEl, items){
+  listEl.innerHTML='';
+  items.forEach(c=>{
     const sc=c.score;
     const color=sc<0?'var(--down)':'var(--up)';
-    el.innerHTML+=`
+    listEl.innerHTML+=`
       <div class="comment-item ${sc<0?'neg':'pos'}">
         <div class="ci-top">
           <div class="ci-ch">${c.ch}</div>
@@ -1422,7 +1462,8 @@ function switchComments(mode){
       </div>`;
   });
 }
-switchComments('neg');
+renderCommentList(document.getElementById('negList'), NEG_COMMENTS);
+renderCommentList(document.getElementById('posList'), POS_COMMENTS);
 
 // ── ALERTS ──
 ALERTS.forEach(a=>{
@@ -1716,14 +1757,9 @@ function endTour(){
     <div>
       <div style="font-size:11px;font-weight:700;color:#ccc;margin-bottom:4px;letter-spacing:.06em;text-transform:uppercase">장애·긴급 문의</div>
       <div style="color:#F5F5F5;font-weight:600">📞 &nbsp;<a href="tel:0233331711" style="color:#F5F5F5;text-decoration:none">02-333-1711</a> &nbsp;<span style="color:#555">|</span>&nbsp; 핫라인 24/7</div>
-      <div style="margin-top:2px">✉️ &nbsp;<a href="mailto:cs@cizion.com" style="color:var(--brand);text-decoration:none">cs@cizion.com</a></div>
+      <div style="margin-top:2px">✉️ &nbsp;<a href="/cdn-cgi/l/email-protection#9bf8e8dbf8f2e1f2f4f5b5f8f4f6" style="color:var(--brand);text-decoration:none"><span class="__cf_email__" data-cfemail="680b1b280b0112010706460b0705">[email&#160;protected]</span></a></div>
     </div>
     <div>
       <div style="font-size:11px;font-weight:700;color:#ccc;margin-bottom:4px;letter-spacing:.06em;text-transform:uppercase">서비스</div>
       <div><a href="https://www.livere.com" target="_blank" style="color:#999;text-decoration:none">LiveRe.com</a></div>
-      <div><a href="https://admin.livere.org" target="_blank" style="color:#999;text-decoration:none">Admin 대시보드</a></div>
-    </div>
-  </div>
-</footer>
-</body>
-</html>
+      <div><a href="https://admin.livere.org" target="
