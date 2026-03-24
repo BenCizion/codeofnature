@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LiveRe Newsroom — 저널리즘 인텔리전스</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600;1,700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --ink:    #0A0E1A;
+  --ink2:   #141929;
+  --ink3:   #1E2640;
+  --ink4:   #2A3454;
+  --rule:   rgba(255,255,255,.08);
+  --rule2:  rgba(255,255,255,.14);
+  --amber:  #F5A623;
+  --amber2: #FFCA6B;
+  --amber-dk:#C4841A;
+  --cyan:   #4DC8E8;
+  --green:  #3DD68C;
+  --red:    #FF5A5A;
+  --violet: #A78BFA;
+  --t1: #F0EDE8;
+  --t2: #9BA3B8;
+  --t3: #4A5270;
+  --serif:  'Playfair Display', 'Source Serif 4', serif;
+  --sans:   'Pretendard', -apple-system, sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:var(--sans);
+  background:var(--ink);
+  color:var(--t1);
+  font-size:13px;
+  display:flex;flex-direction:column;
+}
+
+/* ── MASTHEAD ── */
+.masthead{
+  flex-shrink:0;
+  background:var(--ink2);
+  border-bottom:1px solid var(--rule);
+  padding:0 28px;
+  display:flex;align-items:center;gap:0;
+  height:56px;
+}
+.mn-logo{
+  display:flex;align-items:baseline;gap:10px;
+  border-right:1px solid var(--rule);
+  padding-right:20px;margin-right:20px;
+  height:100%;
+}
+.mn-lr{
+  font-family:var(--serif);
+  font-size:13px;font-weight:600;
+  color:var(--amber);letter-spacing:.15em;text-transform:uppercase;
+}
+.mn-title{
+  font-family:var(--serif);
+  font-size:18px;font-weight:700;
+  color:var(--t1);letter-spacing:.02em;
+}
+.mn-edition{
+  font-size:10px;color:var(--t3);
+  border-left:1px solid var(--rule);
+  padding-left:14px;margin-left:4px;
+  line-height:1.5;
+}
+.mn-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.mn-pill{
+  font-size:10px;font-weight:700;letter-spacing:.08em;
+  padding:4px 12px;border-radius:3px;border:1px solid var(--rule2);color:var(--t2);
+}
+.mn-pill.live{
+  border-color:rgba(61,214,140,.3);color:var(--green);background:rgba(61,214,140,.06);
+  display:flex;align-items:center;gap:5px;
+}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:ld 2s infinite}
+@keyframes ld{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(61,214,140,.5)}50%{opacity:.5;box-shadow:0 0 0 4px rgba(61,214,140,0)}}
+
+/* ── BYLINE BAR ── */
+.byline-bar{
+  flex-shrink:0;
+  background:var(--ink2);
+  border-bottom:2px solid var(--amber);
+  padding:0 28px;
+  display:flex;align-items:center;gap:8px;
+  height:44px;
+}
+.bl-label{
+  font-family:var(--serif);font-size:12px;font-style:italic;
+  color:var(--t3);white-space:nowrap;flex-shrink:0;
+}
+.bl-input-wrap{
+  flex:1;display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--rule2);border-radius:4px;
+  padding:6px 14px;transition:all .2s;
+  max-width:700px;
+}
+.bl-input-wrap:focus-within{
+  border-color:rgba(245,166,35,.4);background:rgba(245,166,35,.04);
+  box-shadow:0 0 0 3px rgba(245,166,35,.06);
+}
+.bl-cursor{color:var(--amber);font-size:14px;flex-shrink:0;animation:blink-cur .8s step-end infinite}
+@keyframes blink-cur{0%,100%{opacity:1}50%{opacity:0}}
+.bl-input{
+  flex:1;background:transparent;border:none;outline:none;
+  font-family:var(--serif);font-size:13px;color:var(--t1);
+  font-style:italic;caret-color:var(--amber);
+}
+.bl-input::placeholder{color:var(--t3);font-style:italic}
+.bl-search{
+  background:var(--amber);border:none;color:var(--ink);
+  font-size:11px;font-weight:700;letter-spacing:.08em;
+  padding:6px 16px;border-radius:3px;cursor:pointer;
+  font-family:var(--sans);transition:all .2s;white-space:nowrap;flex-shrink:0;
+}
+.bl-search:hover{background:var(--amber2);transform:translateY(-1px)}
+
+.bl-tags{display:flex;gap:5px;margin-left:8px}
+.bl-tag{
+  font-size:10px;font-weight:700;padding:3px 10px;
+  border:1px solid var(--rule2);border-radius:2px;color:var(--t3);
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+  font-family:var(--sans);letter-spacing:.05em;
+}
+.bl-tag:hover{border-color:var(--amber);color:var(--amber)}
+.bl-tag.on{border-color:var(--amber);color:var(--amber);background:rgba(245,166,35,.08)}
+
+/* ── TOOL TABS ── */
+.tool-nav{
+  flex-shrink:0;
+  background:var(--ink2);
+  border-bottom:1px solid var(--rule);
+  padding:0 28px;
+  display:flex;align-items:stretch;gap:0;
+}
+.tool-tab{
+  display:flex;align-items:center;gap:8px;
+  padding:0 20px;height:42px;cursor:pointer;
+  border-bottom:2px solid transparent;
+  font-size:12px;font-weight:700;color:var(--t3);
+  letter-spacing:.05em;transition:all .15s;position:relative;
+  white-space:nowrap;
+}
+.tool-tab:hover{color:var(--t2)}
+.tool-tab.on{color:var(--amber);border-bottom-color:var(--amber)}
+.tool-tab .tt-icon{font-size:13px}
+.tool-badge{
+  font-size:8px;font-weight:800;padding:1px 5px;border-radius:2px;
+  background:rgba(255,90,90,.2);color:var(--red);letter-spacing:.06em;
+}
+.tool-badge.new{background:rgba(77,200,232,.15);color:var(--cyan)}
+
+/* ── MAIN ── */
+.workspace{
+  flex:1;overflow:hidden;
+  display:grid;grid-template-columns:1fr 320px;
+}
+
+/* ── LEFT: TOOL PANEL ── */
+.tool-panel{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.tp-scroll{flex:1;overflow-y:auto;padding:20px 24px}
+.tp-scroll::-webkit-scrollbar{width:4px}
+.tp-scroll::-webkit-scrollbar-thumb{background:var(--ink4)}
+
+.tool-view{display:none}
+.tool-view.on{display:block;animation:fadeUp .25s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* section label */
+.sec{
+  font-family:var(--serif);font-size:11px;font-style:italic;
+  color:var(--amber);letter-spacing:.1em;
+  display:flex;align-items:center;gap:10px;margin-bottom:14px;
+  text-transform:uppercase;
+}
+.sec::after{content:'';flex:1;height:1px;background:var(--rule)}
+
+/* ── ISSUE RADAR ── */
+.radar-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.radar-card{
+  background:var(--ink3);border:1px solid var(--rule);border-radius:6px;
+  padding:14px 16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+}
+.radar-card::before{
+  content:'';position:absolute;top:0;left:0;width:3px;height:100%;
+  background:var(--rc,var(--amber));
+}
+.radar-card:hover{background:var(--ink4);border-color:var(--rule2)}
+.radar-card.hot{border-color:rgba(255,90,90,.25)}
+.rc-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.rc-badge{
+  font-size:8px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  padding:2px 7px;border-radius:2px;flex-shrink:0;
+}
+.badge-hot{background:rgba(255,90,90,.15);color:var(--red);border:1px solid rgba(255,90,90,.25)}
+.badge-rise{background:rgba(61,214,140,.12);color:var(--green);border:1px solid rgba(61,214,140,.2)}
+.badge-fall{background:rgba(255,90,90,.1);color:var(--red)}
+.badge-watch{background:rgba(245,166,35,.1);color:var(--amber);border:1px solid rgba(245,166,35,.2)}
+.badge-new{background:rgba(77,200,232,.12);color:var(--cyan);border:1px solid rgba(77,200,232,.2)}
+.rc-topic{font-family:var(--serif);font-size:14px;font-weight:600;color:var(--t1);margin-bottom:5px;line-height:1.4}
+.rc-stat{display:flex;gap:12px;font-size:11px;color:var(--t3)}
+.rc-stat span{display:flex;align-items:center;gap:4px}
+.rc-spark{display:flex;align-items:flex-end;gap:2px;height:24px;margin-top:8px}
+.rc-bar{width:8px;border-radius:1px}
+.rc-momentum{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;font-family:var(--sans)}
+
+.radar-ticker{
+  background:var(--ink3);border:1px solid var(--rule);border-radius:6px;
+  overflow:hidden;margin-bottom:18px;
+}
+.ticker-head{
+  background:var(--amber);padding:8px 14px;
+  font-size:10px;font-weight:800;letter-spacing:.12em;color:var(--ink);
+  display:flex;align-items:center;gap:8px;
+}
+.ticker-body{padding:0}
+.ticker-row{
+  display:flex;align-items:center;gap:12px;padding:10px 14px;
+  border-bottom:1px solid var(--rule);cursor:pointer;transition:background .1s;
+}
+.ticker-row:last-child{border-bottom:none}
+.ticker-row:hover{background:var(--ink4)}
+.tr-rank{font-size:11px;font-weight:800;color:var(--t3);width:18px;flex-shrink:0;font-family:var(--serif)}
+.tr-topic{font-size:12px;color:var(--t1);flex:1}
+.tr-meta{font-size:10px;color:var(--t3);flex-shrink:0;text-align:right}
+.tr-score{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;flex-shrink:0;min-width:36px;text-align:right}
+
+/* ── ANGLE FINDER ── */
+.angle-input-area{
+  background:var(--ink3);border:1px solid var(--rule);border-radius:6px;
+  padding:16px;margin-bottom:16px;
+}
+.ai-label{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--amber);text-transform:uppercase;margin-bottom:8px}
+.ai-textarea{
+  width:100%;background:rgba(255,255,255,.04);border:1px solid var(--rule2);
+  border-radius:4px;padding:10px 13px;font-size:13px;
+  font-family:var(--serif);font-style:italic;color:var(--t1);
+  resize:none;outline:none;line-height:1.6;
+  transition:border-color .2s;
+}
+.ai-textarea:focus{border-color:rgba(245,166,35,.4)}
+.ai-textarea::placeholder{color:var(--t3)}
+.ai-actions{display:flex;gap:8px;margin-top:10px}
+.ai-btn{
+  background:var(--amber);border:none;color:var(--ink);
+  font-size:11px;font-weight:700;letter-spacing:.08em;
+  padding:7px 18px;border-radius:3px;cursor:pointer;
+  font-family:var(--sans);transition:all .2s;
+}
+.ai-btn:hover{background:var(--amber2)}
+.ai-btn.sec-btn{background:transparent;border:1px solid var(--rule2);color:var(--t2)}
+.ai-btn.sec-btn:hover{border-color:var(--amber);color:var(--amber)}
+
+.angle-results{display:flex;flex-direction:column;gap:10px}
+.angle-item{
+  background:var(--ink3);border:1px solid var(--rule);border-radius:6px;
+  padding:16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+}
+.angle-item::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--ai-c,var(--amber))}
+.angle-item:hover{background:var(--ink4);border-color:var(--rule2)}
+.angle-item.selected{border-color:rgba(245,166,35,.4);background:rgba(245,166,35,.04)}
+.ai-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}
+.ai-angle-label{
+  font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  padding:2px 8px;border-radius:2px;flex-shrink:0;
+}
+.ai-angle-num{
+  font-family:var(--serif);font-size:28px;font-weight:900;
+  color:var(--ai-c,var(--amber));opacity:.25;line-height:1;
+  position:absolute;right:16px;top:12px;
+}
+.ai-headline{
+  font-family:var(--serif);font-size:15px;font-weight:700;
+  color:var(--t1);line-height:1.4;margin-bottom:6px;
+}
+.ai-rationale{font-size:12px;color:var(--t2);line-height:1.65;margin-bottom:10px}
+.ai-evidence{
+  background:rgba(255,255,255,.04);border-left:2px solid var(--ai-c,var(--amber));
+  padding:8px 12px;border-radius:0 4px 4px 0;font-size:11px;color:var(--t2);
+  font-family:var(--serif);font-style:italic;margin-bottom:10px;
+}
+.ai-tags{display:flex;gap:5px;flex-wrap:wrap}
+.ai-tag{font-size:9px;font-weight:700;padding:2px 8px;border-radius:2px;background:var(--ink4);color:var(--t2);letter-spacing:.06em}
+.ai-strength{display:flex;align-items:center;gap:8px;margin-top:8px}
+.ai-strength-label{font-size:10px;color:var(--t3);flex-shrink:0}
+.ai-strength-bar{flex:1;height:3px;background:var(--ink4);border-radius:2px;overflow:hidden}
+.ai-strength-fill{height:100%;border-radius:2px;background:var(--ai-c,var(--amber))}
+.ai-strength-val{font-size:10px;font-weight:700;color:var(--ai-c,var(--amber));flex-shrink:0}
+
+/* ── SOURCE DETECTOR ── */
+.source-filters{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.sf{font-size:10px;font-weight:700;padding:4px 12px;border-radius:3px;cursor:pointer;letter-spacing:.06em;border:1px solid var(--rule);background:transparent;color:var(--t3);transition:all .15s;font-family:var(--sans)}
+.sf.on{background:rgba(245,166,35,.1);border-color:rgba(245,166,35,.35);color:var(--amber)}
+.sf:hover{border-color:var(--rule2);color:var(--t2)}
+.source-list{display:flex;flex-direction:column;gap:8px}
+.source-item{
+  background:var(--ink3);border:1px solid var(--rule);border-radius:6px;
+  padding:14px 16px;display:flex;gap:14px;align-items:flex-start;cursor:pointer;
+  transition:all .2s;
+}
+.source-item:hover{background:var(--ink4);border-color:var(--rule2)}
+.si-avatar{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  background:var(--ink4);
+}
+.si-body{flex:1;min-width:0}
+.si-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+.si-name{font-size:13px;font-weight:700;color:var(--t1)}
+.si-role{font-size:10px;color:var(--t3)}
+.si-cred{
+  font-size:9px;font-weight:800;letter-spacing:.08em;
+  padding:2px 7px;border-radius:2px;flex-shrink:0;
+}
+.cred-high{background:rgba(61,214,140,.12);color:var(--green);border:1px solid rgba(61,214,140,.2)}
+.cred-mid{background:rgba(245,166,35,.1);color:var(--amber)}
+.cred-watch{background:rgba(255,90,90,.1);color:var(--red)}
+.si-quote{
+  font-family:var(--serif);font-size:12px;font-style:italic;
+  color:var(--t2);line-height:1.6;margin-bottom:6px;
+}
+.si-meta{display:flex;gap:12px;font-size:10px;color:var(--t3)}
+.si-contact{
+  background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.25);
+  color:var(--amber);font-size:10px;font-weight:700;
+  padding:4px 11px;border-radius:3px;cursor:pointer;
+  font-family:var(--sans);transition:all .15s;white-space:nowrap;flex-shrink:0;align-self:center;
+}
+.si-contact:hover{background:rgba(245,166,35,.18)}
+
+/* ── FACT CHECK ── */
+.fact-input-area{background:var(--ink3);border:1px solid var(--rule);border-radius:6px;padding:16px;margin-bottom:16px}
+.fact-results{display:flex;flex-direction:column;gap:8px}
+.fact-item{
+  background:var(--ink3);border:1px solid var(--rule);border-radius:6px;padding:14px 16px;
+  position:relative;overflow:hidden;
+}
+.fact-item::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--fi-c)}
+.fi-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.fi-verdict{
+  font-size:10px;font-weight:800;letter-spacing:.1em;padding:3px 10px;
+  border-radius:2px;flex-shrink:0;white-space:nowrap;
+}
+.verd-true{background:rgba(61,214,140,.12);color:var(--green);border:1px solid rgba(61,214,140,.2)}
+.verd-false{background:rgba(255,90,90,.12);color:var(--red);border:1px solid rgba(255,90,90,.2)}
+.verd-partial{background:rgba(245,166,35,.1);color:var(--amber);border:1px solid rgba(245,166,35,.2)}
+.verd-unverified{background:rgba(155,163,184,.1);color:var(--t2);border:1px solid var(--rule)}
+.fi-claim{font-family:var(--serif);font-size:13px;font-weight:600;color:var(--t1);line-height:1.4;flex:1}
+.fi-confidence{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;flex-shrink:0;color:var(--fi-c)}
+.fi-evidence{font-size:12px;color:var(--t2);line-height:1.65;margin-bottom:8px}
+.fi-sources{display:flex;gap:6px;flex-wrap:wrap}
+.fi-src{font-size:10px;padding:2px 8px;border-radius:2px;background:var(--ink4);color:var(--t2);font-weight:600}
+.fi-opinion{
+  margin-top:8px;padding:8px 12px;background:rgba(255,255,255,.03);
+  border-radius:4px;font-size:11px;color:var(--t3);line-height:1.6;
+  border-left:2px solid var(--ink4);
+}
+
+/* ── HEADLINE TESTER ── */
+.hl-input-group{background:var(--ink3);border:1px solid var(--rule);border-radius:6px;padding:16px;margin-bottom:14px}
+.hl-variants{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.hl-row{display:flex;align-items:center;gap:8px}
+.hl-num{
+  font-family:var(--serif);font-size:11px;font-style:italic;
+  color:var(--amber);width:16px;flex-shrink:0;
+}
+.hl-field{
+  flex:1;background:rgba(255,255,255,.04);border:1px solid var(--rule2);
+  border-radius:4px;padding:8px 12px;font-size:13px;
+  font-family:var(--serif);font-style:italic;color:var(--t1);outline:none;
+  transition:border-color .2s;
+}
+.hl-field:focus{border-color:rgba(245,166,35,.4)}
+.hl-field::placeholder{color:var(--t3)}
+
+.hl-results{display:flex;flex-direction:column;gap:10px}
+.hl-result{
+  background:var(--ink3);border:1px solid var(--rule);border-radius:6px;
+  padding:16px;position:relative;overflow:hidden;transition:all .2s;
+}
+.hl-result.winner{border-color:rgba(245,166,35,.4);background:rgba(245,166,35,.04)}
+.hl-result.winner::before{content:'✦ BEST';position:absolute;top:10px;right:12px;font-size:9px;font-weight:800;letter-spacing:.1em;color:var(--amber);font-family:var(--sans)}
+.hlr-text{font-family:var(--serif);font-size:16px;font-weight:700;color:var(--t1);line-height:1.4;margin-bottom:12px}
+.hlr-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.hlm{background:var(--ink4);border-radius:4px;padding:8px;text-align:center}
+.hlm-val{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1;margin-bottom:2px}
+.hlm-label{font-size:9px;color:var(--t3);letter-spacing:.06em;text-transform:uppercase}
+.hlr-bar-wrap{height:4px;background:var(--ink4);border-radius:2px;overflow:hidden;margin-bottom:8px}
+.hlr-bar{height:100%;border-radius:2px;background:var(--amber);transition:width 1s ease}
+.hlr-reason{font-size:11px;color:var(--t2);line-height:1.6}
+
+/* ── RIGHT: CONTEXT PANEL ── */
+.context-panel{
+  background:var(--ink2);
+  border-left:1px solid var(--rule);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.cp-head{
+  padding:14px 16px;border-bottom:1px solid var(--rule);flex-shrink:0;
+  font-family:var(--serif);font-size:11px;font-style:italic;
+  color:var(--amber);letter-spacing:.08em;text-transform:uppercase;
+}
+.cp-scroll{flex:1;overflow-y:auto;padding:14px 16px}
+.cp-scroll::-webkit-scrollbar{width:3px}
+.cp-scroll::-webkit-scrollbar-thumb{background:var(--ink4)}
+
+.context-block{margin-bottom:18px}
+.cb-title{
+  font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--t3);margin-bottom:8px;display:flex;align-items:center;gap:6px;
+}
+.cb-title::after{content:'';flex:1;height:1px;background:var(--rule)}
+
+/* pulse chart */
+.pulse-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.pulse-label{font-size:11px;color:var(--t2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pulse-bar-wrap{width:80px;height:4px;background:var(--ink4);border-radius:2px;overflow:hidden;flex-shrink:0}
+.pulse-bar{height:100%;border-radius:2px}
+.pulse-val{font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;flex-shrink:0;min-width:36px;text-align:right}
+
+/* opinion donut */
+.opinion-donut{display:flex;align-items:center;gap:14px}
+.donut-wrap{position:relative;width:72px;height:72px;flex-shrink:0}
+.donut-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.donut-val{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--t1);line-height:1}
+.donut-label{font-size:9px;color:var(--t3)}
+.donut-legend{flex:1;display:flex;flex-direction:column;gap:4px}
+.dl-row{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--t2)}
+.dl-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* related articles */
+.related-article{
+  padding:10px 0;border-bottom:1px solid var(--rule);cursor:pointer;transition:all .15s;
+}
+.related-article:last-child{border-bottom:none}
+.related-article:hover .ra-title{color:var(--amber)}
+.ra-outlet{font-size:9px;font-weight:700;letter-spacing:.08em;color:var(--amber);text-transform:uppercase;margin-bottom:3px}
+.ra-title{font-family:var(--serif);font-size:12px;color:var(--t2);line-height:1.45;transition:color .15s}
+.ra-meta{font-size:10px;color:var(--t3);margin-top:3px}
+
+/* breaking ticker */
+.breaking-bar{
+  flex-shrink:0;background:var(--amber);
+  padding:6px 16px;display:flex;align-items:center;gap:10px;
+}
+.bb-label{font-size:9px;font-weight:800;letter-spacing:.15em;color:var(--ink);flex-shrink:0}
+.bb-text{font-size:11px;font-weight:600;color:var(--ink);overflow:hidden;white-space:nowrap;
+  flex:1;position:relative;}
+.bb-scroll{display:inline-block;animation:ticker 25s linear infinite;white-space:nowrap;padding-left:100%}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="mn-logo">
+    <span class="mn-lr">LiveRe</span>
+    <span class="mn-title">Newsroom</span>
+  </div>
+  <div class="mn-edition">
+    저널리즘 인텔리전스 플랫폼<br>
+    <span id="mastDate" style="font-size:9px"></span>
+  </div>
+  <div class="mn-right">
+    <div class="mn-pill live"><div class="live-dot"></div>실시간 여론 LIVE</div>
+    <div class="mn-pill" style="cursor:pointer" onclick="alert('기자 프로필 설정')">✍️ 김기자 기자</div>
+    <div class="mn-pill" style="cursor:pointer;border-color:rgba(245,166,35,.25);color:var(--amber)">한국일보 사회부</div>
+  </div>
+</header>
+
+<!-- BYLINE BAR -->
+<div class="byline-bar">
+  <span class="bl-label">취재 중인 기사 주제 :</span>
+  <div class="bl-input-wrap">
+    <span class="bl-cursor">›</span>
+    <input class="bl-input" id="mainInput"
+      placeholder="예: 궤도 겸직 논란, 부동산 대출 규제, 의대 증원 갈등…"
+      onkeydown="if(event.key==='Enter')analyzeAll()">
+    <button class="bl-search" onclick="analyzeAll()">분석 시작 ENTER</button>
+  </div>
+  <div class="bl-tags">
+    <div class="bl-tag on" onclick="setQuery(this,'궤도 겸직 논란')">궤도 겸직</div>
+    <div class="bl-tag" onclick="setQuery(this,'의대 증원 갈등')">의대 증원</div>
+    <div class="bl-tag" onclick="setQuery(this,'부동산 대출 규제')">부동산 규제</div>
+    <div class="bl-tag" onclick="setQuery(this,'AI 일자리 위협')">AI 일자리</div>
+  </div>
+</div>
+
+<!-- TOOL NAV -->
+<div class="tool-nav">
+  <div class="tool-tab on" onclick="switchTool('radar',this)"><span class="tt-icon">📡</span> 이슈 레이더 <span class="tool-badge">HOT</span></div>
+  <div class="tool-tab" onclick="switchTool('angle',this)"><span class="tt-icon">🔭</span> 앵글 파인더</div>
+  <div class="tool-tab" onclick="switchTool('source',this)"><span class="tt-icon">🎤</span> 소스 디텍터</div>
+  <div class="tool-tab" onclick="switchTool('fact',this)"><span class="tt-icon">✔</span> 팩트체크 어시스턴트 <span class="tool-badge new">AI</span></div>
+  <div class="tool-tab" onclick="switchTool('headline',this)"><span class="tt-icon">📰</span> 헤드라인 테스터</div>
+</div>
+
+<!-- WORKSPACE -->
+<div class="workspace">
+
+  <!-- LEFT: TOOL AREA -->
+  <div class="tool-panel">
+    <!-- BREAKING BAR -->
+    <div class="breaking-bar">
+      <div class="bb-label">속보</div>
+      <div class="bb-text">
+        <span class="bb-scroll">
+          ▸ 궤도, 겸직금지 위반 징계 후 한국과학창의재단 전격 퇴사 확인 &nbsp;&nbsp;▸ 안될과학 채널 긍정 여론 64% 유지 — 팬덤 결속 강화 &nbsp;&nbsp;▸ 의대 증원 여론 지지 58% vs 반대 31% — 변곡점 감지 &nbsp;&nbsp;▸ AI 일자리 위협 관련 커뮤니티 버즈 주간 +180% 급등 &nbsp;&nbsp;▸ 부동산 DSR 규제 완화 관련 댓글 감성 스코어 -22점 급락 &nbsp;&nbsp;▸ 궤도, 겸직금지 위반 징계 후 한국과학창의재단 전격 퇴사 확인 &nbsp;&nbsp;▸ 안될과학 채널 긍정 여론 64% 유지 — 팬덤 결속 강화
+        </span>
+      </div>
+    </div>
+
+    <div class="tp-scroll">
+
+      <!-- ① 이슈 레이더 -->
+      <div class="tool-view on" id="view-radar">
+        <div class="sec">이슈 레이더 — 지금 이 순간 여론의 온도</div>
+        <div class="radar-grid" id="radarGrid"></div>
+        <div class="sec">실시간 이슈 순위</div>
+        <div class="radar-ticker" id="radarTicker"></div>
+        <div class="sec">채널별 버즈 분포</div>
+        <div style="background:var(--ink3);border:1px solid var(--rule);border-radius:6px;padding:16px">
+          <canvas id="radarChart" height="140"></canvas>
+        </div>
+      </div>
+
+      <!-- ② 앵글 파인더 -->
+      <div class="tool-view" id="view-angle">
+        <div class="sec">앵글 파인더 — 같은 이슈, 다른 시각</div>
+        <div class="angle-input-area">
+          <div class="ai-label">기사 주제 또는 취재 키워드 입력</div>
+          <textarea class="ai-textarea" id="angleInput" rows="2"
+            placeholder="예: 궤도 겸직 논란 — 과학 유튜버의 공직 겸업 문제"></textarea>
+          <div class="ai-actions">
+            <button class="ai-btn" onclick="runAngle()">앵글 분석 실행</button>
+            <button class="ai-btn sec-btn" onclick="document.getElementById('angleInput').value=document.getElementById('mainInput').value">현재 주제 불러오기</button>
+          </div>
+        </div>
+        <div class="angle-results" id="angleResults"></div>
+      </div>
+
+      <!-- ③ 소스 디텍터 -->
+      <div class="tool-view" id="view-source">
+        <div class="sec">소스 디텍터 — 신뢰할 취재원 발굴</div>
+        <div class="source-filters">
+          <button class="sf on" onclick="filterSrc('all',this)">전체</button>
+          <button class="sf" onclick="filterSrc('expert',this)">전문가</button>
+          <button class="sf" onclick="filterSrc('insider',this)">당사자</button>
+          <button class="sf" onclick="filterSrc('critic',this)">비평가</button>
+          <button class="sf" onclick="filterSrc('public',this)">일반여론</button>
+        </div>
+        <div class="source-list" id="sourceList"></div>
+      </div>
+
+      <!-- ④ 팩트체크 -->
+      <div class="tool-view" id="view-fact">
+        <div class="sec">팩트체크 어시스턴트 — 주장과 여론 교차 검증</div>
+        <div class="fact-input-area">
+          <div class="ai-label">검증할 주장 또는 기사 문단 입력</div>
+          <textarea class="ai-textarea" id="factInput" rows="3"
+            placeholder="예: &quot;궤도는 2015년부터 겸직 수입을 올렸으며 공직자 행동강령을 명백히 위반했다&quot;"></textarea>
+          <div class="ai-actions">
+            <button class="ai-btn" onclick="runFact()">팩트체크 실행</button>
+            <button class="ai-btn sec-btn">초안 전체 검증</button>
+          </div>
+        </div>
+        <div class="fact-results" id="factResults"></div>
+      </div>
+
+      <!-- ⑤ 헤드라인 테스터 -->
+      <div class="tool-view" id="view-headline">
+        <div class="sec">헤드라인 테스터 — 독자 반응 사전 예측</div>
+        <div class="hl-input-group">
+          <div class="ai-label">헤드라인 시안 입력 (최대 3개)</div>
+          <div class="hl-variants">
+            <div class="hl-row"><span class="hl-num">A</span><input class="hl-field" id="hl1" placeholder="예: 과학 유튜버 궤도, 겸직 금지 어기고 퇴사..."></div>
+            <div class="hl-row"><span class="hl-num">B</span><input class="hl-field" id="hl2" placeholder="예: '과학 대중화 선구자' 궤도, 규정 위반으로 창의재단 떠났다"></div>
+            <div class="hl-row"><span class="hl-num">C</span><input class="hl-field" id="hl3" placeholder="예: 96만 구독자 유튜버 궤도, 공공기관 겸직 논란 전말"></div>
+          </div>
+          <button class="ai-btn" onclick="runHeadline()">독자 반응 예측</button>
+        </div>
+        <div class="hl-results" id="hlResults"></div>
+      </div>
+
+    </div><!-- /tp-scroll -->
+  </div><!-- /tool-panel -->
+
+  <!-- RIGHT: CONTEXT PANEL -->
+  <div class="context-panel">
+    <div class="cp-head">여론 맥락 — Context Panel</div>
+    <div class="cp-scroll">
+
+      <div class="context-block">
+        <div class="cb-title">채널별 감성 온도</div>
+        <div id="pulseRows"></div>
+      </div>
+
+      <div class="context-block">
+        <div class="cb-title">여론 분포</div>
+        <div class="opinion-donut">
+          <div class="donut-wrap">
+            <canvas id="donutChart" width="72" height="72"></canvas>
+            <div class="donut-center">
+              <div class="donut-val">58</div>
+              <div class="donut-label">점</div>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <div class="dl-row"><div class="dl-dot" style="background:#3DD68C"></div>긍정 64%</div>
+            <div class="dl-row"><div class="dl-dot" style="background:#FF5A5A"></div>부정 22%</div>
+            <div class="dl-row"><div class="dl-dot" style="background:#4A5270"></div>중립 14%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="context-block">
+        <div class="cb-title">연관 보도</div>
+        <div id="relatedArticles"></div>
+      </div>
+
+      <div class="context-block">
+        <div class="cb-title">핵심 키워드</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap" id="keywordCloud"></div>
+      </div>
+
+      <div class="context-block">
+        <div class="cb-title">편집부 메모</div>
+        <textarea style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--rule);border-radius:4px;padding:9px 12px;font-size:11px;color:var(--t2);resize:none;outline:none;font-family:var(--serif);font-style:italic;line-height:1.6"
+          rows="4" placeholder="취재 메모, 앵글 아이디어, 추가 취재 필요 사항…"></textarea>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /workspace -->
+
+<script>
+// ── INIT ──
+document.getElementById('mastDate').textContent =
+  new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'})+
+  ' ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+
+// ── TOOL SWITCH ──
+function switchTool(id, el){
+  document.querySelectorAll('.tool-tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tool-view').forEach(v=>v.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('view-'+id).classList.add('on');
+}
+
+function setQuery(btn, text){
+  document.querySelectorAll('.bl-tag').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('mainInput').value = text;
+  analyzeAll();
+}
+
+function analyzeAll(){
+  const q = document.getElementById('mainInput').value;
+  if(!q) return;
+  document.getElementById('angleInput').value = q;
+  updateContext(q);
+}
+
+// ── DATA ──
+const ISSUE_DATA = {
+  '궤도 겸직': {
+    cards:[
+      {topic:'겸직금지 위반 징계 퇴사',badge:'HOT',cls:'badge-hot',color:'#FF5A5A',momentum:-52,spark:[80,75,65,50,42],buzzes:'975건',vel:'▼-21pt',rc:'var(--red)'},
+      {topic:'과학 대중화 팬덤 지지',badge:'RISE',cls:'badge-rise',color:'#3DD68C',momentum:+74,spark:[55,60,65,68,74],buzzes:'3,240건',vel:'▲+8pt',rc:'var(--green)'},
+      {topic:'공공기관 겸직 규정 논란',badge:'WATCH',cls:'badge-watch',color:'#F5A623',momentum:+18,spark:[20,30,35,40,43],buzzes:'620건',vel:'→+3pt',rc:'var(--amber)'},
+      {topic:'해수부 협력 제작자 선정',badge:'NEW',cls:'badge-new',color:'#4DC8E8',momentum:+62,spark:[10,20,40,55,62],buzzes:'280건',vel:'▲ 신규',rc:'var(--cyan)'},
+    ],
+    pulse:[
+      {label:'YouTube_댓글',val:71,color:'#3DD68C'},
+      {label:'Naver_뉴스',val:38,color:'#FF5A5A'},
+      {label:'Naver_카페',val:68,color:'#F5A623'},
+      {label:'Naver_웹문서',val:32,color:'#FF5A5A'},
+      {label:'Naver_지식iN',val:61,color:'#4DC8E8'},
+    ],
+    donut:[64,22,14],
+    donutVal:'58',
+    keywords:['겸직금지','징계','퇴사','과학유튜버','안될과학','공직자','창의재단','팬덤'],
+    related:[
+      {outlet:'한겨레',title:"겸직금지 어긴 '궤도' 징계 후 퇴사…공직자 유튜버 기준 논란",date:'2시간 전'},
+      {outlet:'조선일보',title:"'96만 유튜버' 과학창의재단 직원이었다…규정 위반 전말",date:'4시간 전'},
+      {outlet:'연합뉴스',title:"해수부, 안될과학·리뷰엉이 등 협력 제작자 4팀 선정",date:'6시간 전'},
+    ],
+    ticker:[
+      {topic:'겸직금지 위반 논란',score:-52,vel:'▼',ch:'웹문서'},
+      {topic:'팬덤 응원 여론',score:74,vel:'▲',ch:'YouTube'},
+      {topic:'해수부 협력 선정',score:62,vel:'▲',ch:'뉴스'},
+      {topic:'공직자 부업 기준',score:18,vel:'→',ch:'카페'},
+      {topic:'창의재단 징계 절차',score:-38,vel:'▼',ch:'뉴스'},
+    ],
+  },
+  '의대 증원': {
+    cards:[
+      {topic:'의대 증원 정책 지지 여론',badge:'RISE',cls:'badge-rise',color:'#3DD68C',momentum:+58,spark:[40,45,50,54,58],buzzes:'12,400건',vel:'▲+6pt',rc:'var(--green)'},
+      {topic:'의료계 집단 반발',badge:'HOT',cls:'badge-hot',color:'#FF5A5A',momentum:-41,spark:[60,55,48,44,41],buzzes:'8,200건',vel:'▼-4pt',rc:'var(--red)'},
+      {topic:'의대생 수업 거부',badge:'WATCH',cls:'badge-watch',color:'#F5A623',momentum:-28,spark:[15,20,25,28,30],buzzes:'3,100건',vel:'▼-3pt',rc:'var(--amber)'},
+      {topic:'필수의료 붕괴 우려',badge:'NEW',cls:'badge-new',color:'#4DC8E8',momentum:+22,spark:[5,10,15,19,22],buzzes:'1,800건',vel:'▲ 신규',rc:'var(--cyan)'},
+    ],
+    pulse:[
+      {label:'YouTube_댓글',val:62,color:'#F5A623'},
+      {label:'Naver_뉴스',val:58,color:'#3DD68C'},
+      {label:'Naver_카페',val:55,color:'#F5A623'},
+      {label:'Naver_웹문서',val:52,color:'#F5A623'},
+      {label:'Naver_지식iN',val:48,color:'#FF5A5A'},
+    ],
+    donut:[52,31,17],
+    donutVal:'62',
+    keywords:['의대증원','의료개혁','수업거부','필수의료','전공의','의료파업'],
+    related:[
+      {outlet:'중앙일보',title:"의대 증원 2000명 확정…의료계 '총파업' 경고",date:'1시간 전'},
+      {outlet:'KBS',title:"시민 58% '의대 증원 지지'…의료진 반발 어떻게 볼 것인가",date:'3시간 전'},
+    ],
+    ticker:[
+      {topic:'의대 증원 지지',score:58,vel:'▲',ch:'뉴스'},
+      {topic:'의료계 집단 반발',score:-41,vel:'▼',ch:'커뮤니티'},
+      {topic:'필수의료 위기론',score:-28,vel:'▼',ch:'카페'},
+    ],
+  },
+};
+
+function getDataForQuery(q){
+  if(q.includes('궤도')||q.includes('안될')) return ISSUE_DATA['궤도 겸직'];
+  if(q.includes('의대')) return ISSUE_DATA['의대 증원'];
+  return ISSUE_DATA['궤도 겸직'];
+}
+
+// ── RADAR ──
+function renderRadar(data){
+  const grid = document.getElementById('radarGrid');
+  grid.innerHTML = '';
+  data.cards.forEach(c=>{
+    const sparkH = c.spark.map((v,i)=>{
+      const h=4+v/100*20;
+      const op=0.3+i/c.spark.length*0.7;
+      return `<div class="rc-bar" style="height:${h}px;background:${c.color};opacity:${op}"></div>`;
+    }).join('');
+    const pos=c.momentum>0;
+    grid.innerHTML+=`
+      <div class="radar-card${c.badge==='HOT'?' hot':''}" style="--rc:${c.rc}" onclick="document.getElementById('mainInput').value='${c.topic}';analyzeAll()">
+        <div class="rc-head">
+          <div>
+            <div class="rc-topic">${c.topic}</div>
+            <div class="rc-stat">
+              <span>💬 ${c.buzzes}</span>
+              <span style="color:${pos?'#3DD68C':'#FF5A5A'}">${c.vel}</span>
+            </div>
+          </div>
+          <div>
+            <span class="rc-badge ${c.cls}">${c.badge}</span>
+            <div class="rc-momentum" style="color:${c.color};text-align:right;margin-top:4px">
+              ${pos?'+':''}${c.momentum}
+            </div>
+          </div>
+        </div>
+        <div class="rc-spark">${sparkH}</div>
+      </div>`;
+  });
+
+  const ticker=document.getElementById('radarTicker');
+  ticker.innerHTML=`<div class="ticker-head">📡 실시간 이슈 온도 — <span style="font-style:italic;font-weight:400">클릭하면 해당 이슈 분석으로 이동합니다</span></div>`;
+  data.ticker.forEach((t,i)=>{
+    const pos=t.score>0;
+    ticker.innerHTML+=`<div class="ticker-row" onclick="document.getElementById('mainInput').value='${t.topic}'">
+      <span class="tr-rank">${i+1}</span>
+      <span class="tr-topic">${t.topic}</span>
+      <span class="tr-meta">[${t.ch}]</span>
+      <span class="tr-score" style="color:${pos?'#3DD68C':'#FF5A5A'}">${t.vel} ${Math.abs(t.score)}</span>
+    </div>`;
+  });
+
+  // bar chart
+  if(window._radarChart) window._radarChart.destroy();
+  const ctx=document.getElementById('radarChart').getContext('2d');
+  window._radarChart=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:data.pulse.map(p=>p.label),
+      datasets:[{data:data.pulse.map(p=>p.val),
+        backgroundColor:data.pulse.map(p=>p.color+'44'),
+        borderColor:data.pulse.map(p=>p.color),
+        borderWidth:1.5,borderRadius:3}]
+    },
+    options:{responsive:true,plugins:{legend:{display:false},tooltip:{backgroundColor:'#141929',titleColor:'#F0EDE8',bodyColor:'#9BA3B8'}},
+      scales:{x:{ticks:{color:'#9BA3B8',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},y:{min:0,max:100,ticks:{color:'#9BA3B8',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}}}}
+  });
+}
+
+// ── ANGLE FINDER ──
+const ANGLES_DB = {
+  '궤도': [
+    {num:'Ⅰ',label:'비판적 앵글',color:'#FF5A5A',strength:72,
+     headline:'"공직자의 유튜브 수익 — 어디까지 허용될 수 있나"',
+     rationale:'겸직 논란을 개인 일탈이 아닌 공공기관 겸직 규정의 제도적 허점으로 접근합니다. 독자들은 73%가 "규정 강화 필요"에 동의.',
+     evidence:'"2015년부터 지난해까지 공직자 신분으로 유튜브·강연 수익을 올린 것으로 감사원 보고서 확인"',
+     tags:['제도적 관점','규정 허점','공직자 기준']},
+    {num:'Ⅱ',label:'균형 앵글',color:'#F5A623',strength:88,
+     headline:'"96만 구독자가 주목한 과학 유튜버, 규정과 공익 사이에서"',
+     rationale:'도덕적 비판과 과학 대중화의 공익적 가치를 함께 다룹니다. 팬덤 64% 지지 + 비판 45%라는 여론 갈등 구조가 기사 서사로 효과적.',
+     evidence:'"여론 조사: 겸직 위반 비판 45% vs 과학 대중화 공익 우선 39% vs 기타 16%"',
+     tags:['양면 조명','공익 vs 규정','여론 균형']},
+    {num:'Ⅲ',label:'구조적 앵글',color:'#4DC8E8',strength:65,
+     headline:'"정부 산하기관 직원이 유튜버? K-콘텐츠 시대의 공직 딜레마"',
+     rationale:'궤도 개인 사건을 K-콘텐츠 산업 성장과 공직 겸직 규정 충돌이라는 구조적 문제로 확장합니다. 정책 담당자 취재 필요.',
+     evidence:'"안될과학 구독자 136만 — 이 중 공공기관 협력 콘텐츠 비율 약 34%"',
+     tags:['구조적 접근','정책 이슈','K-콘텐츠']},
+  ],
+  '의대': [
+    {num:'Ⅰ',label:'시민 관점',color:'#3DD68C',strength:82,
+     headline:'"시민 58%는 왜 의대 증원을 지지하는가"',
+     rationale:'반대 목소리가 크지만 시민 여론은 증원 지지가 우세합니다. 왜 그런지 시민 목소리를 중심으로 서술하는 앵글.',
+     evidence:'"Naver 뉴스 댓글 감성: 찬성 58% vs 반대 31% vs 중립 11%"',
+     tags:['시민 목소리','여론 우위','의료 접근성']},
+    {num:'Ⅱ',label:'의료계 앵글',color:'#FF5A5A',strength:75,
+     headline:'"의사들이 두려워하는 것 — 수요 공급 아닌 의료 붕괴"',
+     rationale:'단순한 반대가 아닌 의료계 내부의 구체적 우려를 심층 취재합니다.',
+     evidence:'"필수의료 기피 현상 관련 댓글 군집 분석: 수입 감소보다 과부하 우려 2.3배 많음"',
+     tags:['심층 취재','의료계 내부','구조적 원인']},
+  ],
+  'default': [
+    {num:'Ⅰ',label:'데이터 앵글',color:'#F5A623',strength:79,
+     headline:'"여론이 말하는 진짜 쟁점은 무엇인가"',
+     rationale:'해당 이슈에 대한 댓글·반응 데이터에서 가장 많이 언급되는 논리 구조를 중심으로 접근합니다.',
+     evidence:'"수집된 여론 데이터 기반 주요 프레임 분석 결과"',
+     tags:['데이터 저널리즘','프레임 분석']},
+    {num:'Ⅱ',label:'비교 앵글',color:'#4DC8E8',strength:71,
+     headline:'"과거 유사 사례와 비교하면 보이는 것들"',
+     rationale:'현재 이슈를 과거 유사 사례와 비교해 맥락을 부여합니다.',
+     evidence:'"과거 유사 여론 패턴 비교 분석"',
+     tags:['역사적 맥락','비교 분석']},
+  ],
+};
+
+function getAngles(q){
+  if(q.includes('궤도')||q.includes('안될')) return ANGLES_DB['궤도'];
+  if(q.includes('의대')) return ANGLES_DB['의대'];
+  return ANGLES_DB['default'];
+}
+
+function runAngle(){
+  const q=document.getElementById('angleInput').value||document.getElementById('mainInput').value;
+  const angles=getAngles(q);
+  const results=document.getElementById('angleResults');
+  results.innerHTML='';
+  angles.forEach((a,i)=>{
+    const el=document.createElement('div');
+    el.className='angle-item'+(i===1?' selected':'');
+    el.style.setProperty('--ai-c',a.color);
+    el.innerHTML=`
+      <div class="ai-angle-num">${a.num}</div>
+      <div class="ai-top">
+        <div>
+          <span class="ai-angle-label" style="background:${a.color}18;color:${a.color};border:1px solid ${a.color}30">${a.label}</span>
+        </div>
+      </div>
+      <div class="ai-headline">${a.headline}</div>
+      <div class="ai-rationale">${a.rationale}</div>
+      <div class="ai-evidence">${a.evidence}</div>
+      <div class="ai-tags">${a.tags.map(t=>`<span class="ai-tag">${t}</span>`).join('')}</div>
+      <div class="ai-strength">
+        <span class="ai-strength-label">앵글 강도</span>
+        <div class="ai-strength-bar"><div class="ai-strength-fill" style="width:${a.strength}%"></div></div>
+        <span class="ai-strength-val">${a.strength}%</span>
+      </div>`;
+    el.onclick=()=>{document.querySelectorAll('.angle-item').forEach(x=>x.classList.remove('selected'));el.classList.add('selected')};
+    results.appendChild(el);
+  });
+}
+
+// ── SOURCE DETECTOR ──
+const SOURCES = {
+  '궤도': [
+    {avatar:'👨‍🔬',name:'이정모',role:'전 국립과천과학관장',cred:'high',type:'expert',
+     quote:'"공직자가 겸직 규정을 어긴 건 명백한 잘못이지만, 과학 대중화에 기여한 가치까지 지워선 안 됩니다. 규정 정비가 필요합니다."',
+     ch:'Naver_카페 언급',buzzes:'34건',time:'2시간 전'},
+    {avatar:'⚖️',name:'공공기관 윤리 전문가 (익명)',role:'행정학 박사',cred:'high',type:'expert',
+     quote:'"공직자 행동강령 제14조는 겸직을 원칙적 금지로 규정합니다. 이를 어긴 건 징계 사유가 명확합니다."',
+     ch:'Naver_웹문서',buzzes:'18건',time:'3시간 전'},
+    {avatar:'📢',name:'안될과학 팬클럽 (ID: 과학덕후123)',role:'YouTube 구독자 (12만 댓글)',cred:'mid',type:'insider',
+     quote:'"겸직이 잘못된 건 맞지만, 궤도가 없었으면 저 과학 안 좋아했을 거예요. 처벌보다 제도 개선이 먼저가 아닌가요?"',
+     ch:'YouTube_댓글',buzzes:'892건',time:'4시간 전'},
+    {avatar:'🗞️',name:'미디어 평론가 김민식',role:'콘텐츠 연구소',cred:'mid',type:'critic',
+     quote:'"K-콘텐츠 시대에 공공기관이 창의 인력을 가두는 구조 자체가 문제입니다. 이번이 제도 정비의 기회."',
+     ch:'Naver_웹문서',buzzes:'24건',time:'5시간 전'},
+    {avatar:'😤',name:'비판 여론 (다수 댓글)',role:'일반 시청자',cred:'watch',type:'public',
+     quote:'"공무원이면 공무원답게 살아야죠. 돈 더 벌고 싶으면 공직 떠나야지. 이게 왜 동정받아야 해요?"',
+     ch:'Naver_뉴스',buzzes:'1,240건',time:'6시간 전'},
+  ],
+};
+
+let srcFilter='all';
+function filterSrc(f,btn){
+  srcFilter=f;
+  document.querySelectorAll('.source-filters .sf').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderSources();
+}
+function renderSources(){
+  const q=document.getElementById('mainInput').value;
+  let list = SOURCES['궤도'] || [];
+  if(srcFilter!=='all') list=list.filter(s=>s.type===srcFilter);
+  const el=document.getElementById('sourceList');
+  el.innerHTML='';
+  if(!list.length){el.innerHTML='<div style="font-size:12px;color:var(--t3);text-align:center;padding:20px">해당 유형 취재원 없음</div>';return;}
+  list.forEach(s=>{
+    el.innerHTML+=`
+      <div class="source-item">
+        <div class="si-avatar">${s.avatar}</div>
+        <div class="si-body">
+          <div class="si-top">
+            <span class="si-name">${s.name}</span>
+            <span class="si-role">${s.role}</span>
+            <span class="si-cred ${s.cred==='high'?'cred-high':s.cred==='mid'?'cred-mid':'cred-watch'}">${s.cred==='high'?'★ 신뢰':s.cred==='mid'?'◎ 참고':'⚠ 확인 필요'}</span>
+          </div>
+          <div class="si-quote">"${s.quote}"</div>
+          <div class="si-meta"><span>${s.ch}</span><span>💬 ${s.buzzes}</span><span>${s.time}</span></div>
+        </div>
+        <button class="si-contact">취재 요청</button>
+      </div>`;
+  });
+}
+
+// ── FACT CHECK ──
+const FACTS_DB = [
+  {claim:'"궤도는 2015년부터 겸직 수입을 올렸으며 공직자 행동강령을 명백히 위반했다"',
+   verdict:'PARTIAL',cls:'verd-partial',color:'#F5A623',confidence:'72%',
+   evidence:'감사원 보고서는 2015년부터 지난해 12월까지 겸직 활동을 확인했습니다. "공직자 행동강령 위반"은 사실이나, "명백히"라는 표현은 주관적 판단이 포함됩니다.',
+   sources:['감사원 보고서(2026)','공직자 행동강령 제14조'],
+   opinion:'독자 여론의 45%는 "규정 위반"에 동의, 39%는 "과학 대중화 가치"를 더 중시하는 상반된 반응을 보이고 있습니다.'},
+  {claim:'"안될과학은 현재 137만 구독자를 보유하고 있다"',
+   verdict:'TRUE',cls:'verd-true',color:'#3DD68C',confidence:'94%',
+   evidence:'네이버 뉴스 3/11 기사 "리뷰엉이(181만), 안될과학(137만) 등 구독자 100만 명이 넘는 유튜브 영상 제작 3팀"으로 확인됩니다.',
+   sources:['Naver 뉴스 2026.03.11','해수부 보도자료'],
+   opinion:'구독자 수는 팬덤 여론에서 긍정 지지의 주요 근거로 자주 인용됩니다.'},
+  {claim:'"궤도가 출연한 넷플릭스 데블스플랜도 겸직 수입에 포함됐다"',
+   verdict:'UNVERIFIED',cls:'verd-unverified',color:'#9BA3B8',confidence:'41%',
+   evidence:'데블스플랜 출연 사실은 확인되나, 해당 출연이 감사원의 겸직 수입 산정에 포함됐는지는 보고서 원문에서 구체적으로 명시되지 않습니다. 추가 취재 필요.',
+   sources:['Naver 웹문서 2026.03','감사원 보고서(부분)'],
+   opinion:'이 주장은 댓글에서 22회 반복 언급되나 출처가 불분명합니다.'},
+];
+
+function runFact(){
+  const results=document.getElementById('factResults');
+  results.innerHTML='';
+  FACTS_DB.forEach(f=>{
+    results.innerHTML+=`
+      <div class="fact-item" style="--fi-c:${f.color}">
+        <div class="fi-top">
+          <div class="fi-claim">${f.claim}</div>
+          <div>
+            <span class="fi-verdict ${f.cls}">${f.verdict==='TRUE'?'✓ 사실':f.verdict==='PARTIAL'?'△ 부분 사실':f.verdict==='FALSE'?'✗ 허위':'? 미확인'}</span>
+            <div class="fi-confidence" style="color:${f.color};text-align:right;margin-top:4px">${f.confidence}</div>
+          </div>
+        </div>
+        <div class="fi-evidence">${f.evidence}</div>
+        <div class="fi-sources">${f.sources.map(s=>`<span class="fi-src">${s}</span>`).join('')}</div>
+        <div class="fi-opinion">💬 여론 반응: ${f.opinion}</div>
+      </div>`;
+  });
+}
+
+// ── HEADLINE TESTER ──
+function runHeadline(){
+  const h1=document.getElementById('hl1').value;
+  const h2=document.getElementById('hl2').value;
+  const h3=document.getElementById('hl3').value;
+  const headlines=[h1,h2,h3].filter(Boolean);
+  if(!headlines.length){alert('헤드라인을 입력해주세요.');return;}
+
+  const scores=[
+    {ctr:68,sent:72,share:84,anger:18,reason:'핵심 사실(퇴사·겸직 금지)을 명확히 전달. 뉴스 가치가 높고 클릭 유도력 우수. 단, 감성 호소 없어 공유율은 중간.'},
+    {ctr:82,sent:65,share:91,anger:12,reason:'과학 대중화 맥락을 포함한 균형 앵글. 독자 공유율 최고. "규정"+"선구자" 대비 구조가 호기심 자극. 소셜 확산에 최적.'},
+    {ctr:74,sent:58,share:78,anger:22,reason:'숫자(96만)로 관심 유도 효과적. "전말"이라는 키워드가 심층 기사 기대감 형성. 단, 길이가 다소 길어 모바일 최적화 필요.'},
+  ];
+
+  const results=document.getElementById('hlResults');
+  results.innerHTML='';
+  const maxCtr=Math.max(...scores.map(s=>s.ctr));
+  headlines.forEach((h,i)=>{
+    const s=scores[i]||scores[0];
+    const isWinner=s.ctr===maxCtr;
+    const bar=Math.round(s.ctr/100*100);
+    results.innerHTML+=`
+      <div class="hl-result${isWinner?' winner':''}">
+        <div style="font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--amber);margin-bottom:6px">${['A','B','C'][i]}</div>
+        <div class="hlr-text">${h}</div>
+        <div class="hlr-metrics">
+          <div class="hlm"><div class="hlm-val" style="color:${isWinner?'#F5A623':'#4DC8E8'}">${s.ctr}%</div><div class="hlm-label">예상 CTR</div></div>
+          <div class="hlm"><div class="hlm-val" style="color:#3DD68C">${s.sent}</div><div class="hlm-label">감성 점수</div></div>
+          <div class="hlm"><div class="hlm-val" style="color:#A78BFA">${s.share}%</div><div class="hlm-label">공유 의향</div></div>
+          <div class="hlm"><div class="hlm-val" style="color:#FF5A5A">${s.anger}%</div><div class="hlm-label">반감 비율</div></div>
+        </div>
+        <div class="hlr-bar-wrap"><div class="hlr-bar" style="width:0%" data-w="${bar}%"></div></div>
+        <div class="hlr-reason">${s.reason}</div>
+      </div>`;
+  });
+  setTimeout(()=>document.querySelectorAll('.hlr-bar').forEach(b=>b.style.width=b.dataset.w),100);
+}
+
+// ── CONTEXT PANEL ──
+function updateContext(q){
+  const data=getDataForQuery(q);
+  // pulse
+  const pr=document.getElementById('pulseRows');
+  pr.innerHTML=data.pulse.map(p=>`
+    <div class="pulse-row">
+      <span class="pulse-label">${p.label}</span>
+      <div class="pulse-bar-wrap"><div class="pulse-bar" style="width:${p.val}%;background:${p.color}"></div></div>
+      <span class="pulse-val" style="color:${p.color}">${p.val}</span>
+    </div>`).join('');
+
+  // donut
+  if(window._donut) window._donut.destroy();
+  const ctx=document.getElementById('donutChart').getContext('2d');
+  window._donut=new Chart(ctx,{
+    type:'doughnut',
+    data:{datasets:[{data:data.donut,backgroundColor:['#3DD68C','#FF5A5A','#2A3454'],borderWidth:0,hoverOffset:2}]},
+    options:{responsive:false,cutout:'70%',plugins:{legend:{display:false},tooltip:{enabled:false}}}
+  });
+  document.querySelector('.donut-val').textContent=data.donutVal;
+
+  // keywords
+  const kc=document.getElementById('keywordCloud');
+  kc.innerHTML=data.keywords.map((k,i)=>{
+    const cols=['#F5A623','#4DC8E8','#3DD68C','#FF5A5A','#A78BFA'];
+    const c=cols[i%cols.length];
+    return `<span style="font-size:${10+Math.random()*4}px;font-weight:700;color:${c};opacity:${0.6+Math.random()*.4};cursor:pointer;padding:2px 4px;transition:opacity .15s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='${0.6+Math.random()*.4}'">${k}</span>`;
+  }).join('');
+
+  // related
+  const ra=document.getElementById('relatedArticles');
+  ra.innerHTML=data.related.map(r=>`
+    <div class="related-article">
+      <div class="ra-outlet">${r.outlet}</div>
+      <div class="ra-title">${r.title}</div>
+      <div class="ra-meta">${r.date}</div>
+    </div>`).join('');
+
+  // also update radar
+  renderRadar(data);
+  // also update angle
+  runAngle();
+  renderSources();
+}
+
+// ── INIT ──
+updateContext('궤도 겸직 논란');
+document.getElementById('mainInput').value='궤도 겸직 논란';
+runFact();
+// prefill headline
+document.getElementById('hl1').value='과학 유튜버 궤도, 겸직 금지 어기고 퇴사...';
+document.getElementById('hl2').value="'과학 대중화 선구자' 궤도, 규정 위반으로 창의재단 떠났다";
+document.getElementById('hl3').value='96만 구독자 유튜버 궤도, 공공기관 겸직 논란 전말';
+</script>
+</body>
+</html>
