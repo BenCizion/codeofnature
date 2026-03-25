@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>뉴스룸 — AI-Native Newsroom Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Playfair+Display:wght@700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0a0a0b;
+  --paper: #f5f3ef;
+  --paper-warm: #ede9e1;
+  --accent: #c23616;
+  --accent-soft: #e8d5cf;
+  --blue: #1a5276;
+  --blue-soft: #d4e6f1;
+  --green: #1e8449;
+  --green-soft: #d5f5e3;
+  --purple: #6c3483;
+  --purple-soft: #e8daef;
+  --orange: #d35400;
+  --orange-soft: #fdebd0;
+  --gray-100: #f7f5f2;
+  --gray-200: #e8e4de;
+  --gray-300: #d5d0c8;
+  --gray-400: #a09888;
+  --gray-500: #7a7265;
+  --gray-600: #5a5348;
+  --gray-700: #3a352e;
+  --radius: 6px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ─── TOP BAR ─── */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; height: 52px;
+  background: var(--ink); color: var(--paper);
+  position: sticky; top: 0; z-index: 100;
+}
+.topbar-brand { display: flex; align-items: center; gap: 12px; }
+.topbar-brand .logo { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 20px; letter-spacing: -0.5px; }
+.topbar-brand .divider { width: 1px; height: 20px; background: var(--gray-600); }
+.topbar-brand .org-name { font-size: 13px; font-weight: 500; color: var(--gray-400); }
+.topbar-actions { display: flex; align-items: center; gap: 16px; }
+.topbar-actions .ai-status {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 12px; background: rgba(30,132,73,0.15); border: 1px solid rgba(30,132,73,0.3);
+  border-radius: 20px; font-size: 11px; font-weight: 500; color: #2ecc71;
+}
+.ai-status .pulse { width: 6px; height: 6px; background: #2ecc71; border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.5)} }
+.role-badge { padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; cursor: pointer; }
+.role-editor { background: var(--accent); color: white; }
+.role-reporter { background: var(--blue); color: white; }
+.user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--gray-600); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; cursor: pointer; }
+
+/* ─── LAYOUT ─── */
+.layout { display: flex; min-height: calc(100vh - 52px); }
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: 240px; min-width: 240px; background: white;
+  border-right: 1px solid var(--gray-200); padding: 20px 0;
+  display: flex; flex-direction: column; overflow-y: auto; max-height: calc(100vh - 52px);
+}
+.sidebar-section { padding: 0 16px; margin-bottom: 20px; }
+.sidebar-section-title {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.2px; color: var(--gray-400); margin-bottom: 8px; padding: 0 8px;
+}
+.sidebar-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px; border-radius: var(--radius); cursor: pointer;
+  transition: var(--transition); font-size: 13px; font-weight: 400;
+  color: var(--gray-600); position: relative;
+}
+.sidebar-item:hover { background: var(--gray-100); color: var(--ink); }
+.sidebar-item.active { background: var(--ink); color: white; font-weight: 500; }
+.sidebar-item .icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.sidebar-item .count {
+  margin-left: auto; background: var(--gray-200); color: var(--gray-500);
+  font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px; min-width: 20px; text-align: center;
+}
+.sidebar-item.active .count { background: rgba(255,255,255,.2); color: rgba(255,255,255,.8); }
+.sidebar-topic-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.sidebar-spacer { flex: 1; min-height: 12px; }
+.sidebar-new-badge {
+  font-size: 8px; font-weight: 800; background: var(--accent); color: white;
+  padding: 1px 4px; border-radius: 3px; margin-left: 4px; letter-spacing: .3px;
+}
+.sidebar-ai-section { padding: 0 16px; }
+.ai-agent-card {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border-radius: 8px; padding: 12px; color: white; margin-bottom: 6px; cursor: pointer; transition: var(--transition);
+}
+.ai-agent-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.ai-agent-card .agent-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.ai-agent-card .agent-icon { width: 26px; height: 26px; background: rgba(255,255,255,.1); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.ai-agent-card .agent-name { font-size: 11px; font-weight: 700; }
+.ai-agent-card .agent-role { font-size: 9px; color: rgba(255,255,255,.5); }
+.ai-agent-card .agent-status { font-size: 10px; color: rgba(255,255,255,.6); line-height: 1.4; }
+.ai-agent-card .agent-status code { font-family: 'JetBrains Mono', monospace; font-size: 9px; background: rgba(255,255,255,.08); padding: 1px 4px; border-radius: 3px; }
+
+/* ─── MAIN ─── */
+.main { flex: 1; padding: 24px 28px; overflow-y: auto; max-height: calc(100vh - 52px); }
+.page { display: none; }
+.page.active { display: block; }
+
+/* ─── DASHBOARD ─── */
+.dash-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 2px solid var(--ink); }
+.dash-header h1 { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; letter-spacing: -.5px; line-height: 1.1; }
+.dash-header .subtitle { font-size: 13px; color: var(--gray-500); margin-top: 4px; }
+.dash-stats { display: flex; gap: 24px; }
+.dash-stat { text-align: right; }
+.dash-stat .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 500; line-height: 1; }
+.dash-stat .stat-label { font-size: 10px; color: var(--gray-400); text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+.trending-bar { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius); margin-bottom: 24px; overflow-x: auto; }
+.trending-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--accent); white-space: nowrap; }
+.trending-item { display: flex; align-items: center; gap: 6px; padding: 4px 12px; background: var(--gray-100); border-radius: 20px; font-size: 12px; white-space: nowrap; cursor: pointer; transition: var(--transition); }
+.trending-item:hover { background: var(--ink); color: white; }
+.trending-item .heat { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); font-weight: 500; }
+.trending-item:hover .heat { color: #ff9f7f; }
+.view-tabs { display: flex; gap: 2px; margin-bottom: 24px; background: var(--gray-200); border-radius: var(--radius); padding: 2px; width: fit-content; }
+.view-tab { padding: 6px 16px; font-size: 12px; font-weight: 500; border-radius: 4px; cursor: pointer; transition: var(--transition); color: var(--gray-500); background: transparent; border: none; }
+.view-tab:hover { color: var(--ink); }
+.view-tab.active { background: white; color: var(--ink); box-shadow: var(--shadow-sm); }
+.topic-section { margin-bottom: 32px; }
+.topic-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.topic-color-bar { width: 4px; height: 24px; border-radius: 2px; }
+.topic-name { font-size: 16px; font-weight: 700; letter-spacing: -.3px; }
+.topic-meta { font-size: 11px; color: var(--gray-400); font-family: 'JetBrains Mono', monospace; }
+.topic-actions { margin-left: auto; }
+.topic-action-btn { padding: 4px 10px; font-size: 11px; border: 1px solid var(--gray-300); border-radius: 4px; background: white; cursor: pointer; color: var(--gray-500); transition: var(--transition); }
+.topic-action-btn:hover { border-color: var(--ink); color: var(--ink); }
+.agenda-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+.agenda-card { background: white; border: 1px solid var(--gray-200); border-radius: 8px; padding: 18px; cursor: pointer; transition: var(--transition); position: relative; overflow: hidden; }
+.agenda-card:hover { border-color: var(--gray-300); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+.card-status { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 3px; text-transform: uppercase; letter-spacing: .5px; }
+.status-active { background: #d5f5e3; color: #1e8449; }
+.status-draft { background: var(--gray-200); color: var(--gray-500); }
+.status-hot { background: #fadbd8; color: #c0392b; }
+.status-review { background: #fdebd0; color: #d35400; }
+.card-priority { font-size: 11px; color: var(--gray-400); }
+.agenda-card h3 { font-size: 15px; font-weight: 700; line-height: 1.4; margin-bottom: 6px; letter-spacing: -.2px; }
+.agenda-card .card-desc { font-size: 12px; color: var(--gray-500); line-height: 1.5; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card-metrics { display: flex; gap: 16px; margin-bottom: 14px; padding: 10px; background: var(--gray-100); border-radius: 4px; }
+.card-metric { display: flex; flex-direction: column; align-items: center; flex: 1; }
+.card-metric .metric-val { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 500; line-height: 1; }
+.card-metric .metric-label { font-size: 9px; text-transform: uppercase; letter-spacing: .5px; color: var(--gray-400); margin-top: 2px; }
+.card-bottom { display: flex; align-items: center; justify-content: space-between; }
+.reporter-group { display: flex; align-items: center; }
+.reporter-avatar { width: 26px; height: 26px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: white; margin-left: -6px; position: relative; cursor: pointer; transition: var(--transition); }
+.reporter-avatar:first-child { margin-left: 0; }
+.reporter-avatar:hover { transform: scale(1.15); z-index: 2; }
+.reporter-avatar .tooltip { display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: var(--ink); color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; white-space: nowrap; margin-bottom: 4px; }
+.reporter-avatar:hover .tooltip { display: block; }
+.reporter-add { width: 26px; height: 26px; border-radius: 50%; border: 1.5px dashed var(--gray-300); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--gray-400); margin-left: -6px; cursor: pointer; background: white; }
+.articles-count { font-size: 11px; color: var(--gray-400); font-family: 'JetBrains Mono', monospace; }
+.opinion-bar { display: flex; height: 4px; border-radius: 2px; overflow: hidden; margin-top: 12px; gap: 1px; }
+.seg-pos { background: var(--green); } .seg-neu { background: var(--gray-300); } .seg-neg { background: var(--accent); }
+.opinion-label { display: flex; justify-content: space-between; margin-top: 4px; font-size: 9px; color: var(--gray-400); }
+
+/* ─── RIGHT PANEL ─── */
+.right-panel { width: 300px; min-width: 300px; background: white; border-left: 1px solid var(--gray-200); padding: 20px; overflow-y: auto; max-height: calc(100vh - 52px); }
+.panel-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gray-400); margin-bottom: 14px; }
+.panel-section { margin-bottom: 28px; }
+.live-feed-item { padding: 10px 0; border-bottom: 1px solid var(--gray-100); }
+.feed-time { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--gray-400); margin-bottom: 2px; }
+.feed-content { font-size: 12px; line-height: 1.5; color: var(--gray-700); }
+.feed-tag { display: inline-block; padding: 1px 5px; border-radius: 3px; font-size: 9px; font-weight: 700; margin-top: 4px; text-transform: uppercase; }
+.tag-ai { background: #e8daef; color: #6c3483; } .tag-breaking { background: #fadbd8; color: #c0392b; } .tag-assign { background: #d4e6f1; color: #1a5276; } .tag-publish { background: #d5f5e3; color: #1e8449; }
+.seo-card { background: var(--gray-100); border-radius: var(--radius); padding: 12px; margin-bottom: 8px; }
+.seo-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--gray-400); letter-spacing: .5px; margin-bottom: 4px; }
+.seo-score { display: flex; align-items: center; gap: 8px; }
+.seo-score-bar { flex: 1; height: 6px; background: var(--gray-200); border-radius: 3px; overflow: hidden; }
+.seo-score-fill { height: 100%; border-radius: 3px; }
+.seo-score-num { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; }
+.membership-tier { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-100); }
+.tier-name { font-size: 12px; font-weight: 500; }
+.tier-badge { width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; display: inline-block; vertical-align: middle; }
+.tier-count { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gray-500); }
+.tier-change { font-size: 10px; font-weight: 500; }
+.change-up { color: var(--green); } .change-down { color: var(--accent); }
+
+/* ─── MODALS ─── */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; }
+.modal-overlay.active { display: flex; }
+.modal { background: white; border-radius: 12px; max-width: 95vw; max-height: 85vh; overflow-y: auto; box-shadow: var(--shadow-lg); animation: modalIn .3s ease; }
+@keyframes modalIn { from{opacity:0;transform:translateY(20px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+.modal-header { padding: 20px 24px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: flex-start; justify-content: space-between; position: sticky; top: 0; background: white; z-index: 1; }
+.modal-header h2 { font-size: 18px; font-weight: 700; letter-spacing: -.3px; }
+.modal-topic { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.modal-close { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--gray-200); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--gray-500); transition: var(--transition); }
+.modal-close:hover { background: var(--gray-100); color: var(--ink); }
+.modal-body { padding: 24px; }
+.modal-section { margin-bottom: 24px; }
+.modal-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--gray-400); margin-bottom: 12px; }
+.reporter-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.reporter-chip { display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; background: var(--gray-100); border-radius: 20px; font-size: 12px; }
+.chip-avatar { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: white; }
+.chip-remove { margin-left: 4px; font-size: 11px; color: var(--gray-400); cursor: pointer; }
+.chip-remove:hover { color: var(--accent); }
+.article-list-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--gray-100); }
+.article-status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-published { background: var(--green); } .dot-writing { background: var(--orange); } .dot-review { background: var(--purple); }
+.article-info { flex: 1; }
+.article-title { font-size: 13px; font-weight: 500; line-height: 1.3; }
+.article-title a { color: var(--ink); text-decoration: none; }
+.article-title a:hover { color: var(--blue); text-decoration: underline; }
+.article-meta { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.article-views { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gray-500); }
+.opinion-detail-link { display: inline-flex; align-items: center; gap: 4px; margin-top: 12px; font-size: 12px; font-weight: 600; color: var(--blue); cursor: pointer; border-bottom: 1px dashed var(--blue); text-decoration: none; }
+.opinion-detail-link:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ─── TEAM ─── */
+.team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.team-card { background: white; border: 1px solid var(--gray-200); border-radius: 10px; padding: 20px; transition: var(--transition); position: relative; }
+.team-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.team-card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.team-avatar-lg { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; color: white; }
+.team-card-header .name { font-size: 15px; font-weight: 700; }
+.team-card-header .role { font-size: 11px; color: var(--gray-400); }
+.team-card-header .beat { font-size: 11px; color: var(--blue); font-weight: 500; }
+.team-stats-row { display: flex; gap: 12px; margin-bottom: 12px; }
+.team-stat-box { flex: 1; text-align: center; padding: 8px; background: var(--gray-100); border-radius: 6px; }
+.team-stat-box .val { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 600; }
+.team-stat-box .lbl { font-size: 9px; color: var(--gray-400); text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+.team-agendas { display: flex; flex-wrap: wrap; gap: 4px; }
+.team-agenda-tag { font-size: 10px; padding: 2px 8px; border-radius: 10px; background: var(--blue-soft); color: var(--blue); font-weight: 500; }
+.team-status-indicator { position: absolute; top: 16px; right: 16px; width: 10px; height: 10px; border-radius: 50%; }
+.team-status-online { background: #2ecc71; box-shadow: 0 0 0 3px rgba(46,204,113,.2); }
+.team-status-away { background: #f39c12; }
+.team-status-offline { background: var(--gray-300); }
+
+/* ─── CHATROOM ─── */
+.chatroom-container { display: flex; flex-direction: column; height: calc(100vh - 200px); background: white; border: 1px solid var(--gray-200); border-radius: 10px; overflow: hidden; }
+.chatroom-header-bar { padding: 14px 20px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: 12px; background: linear-gradient(135deg, #1a1a2e, #16213e); color: white; }
+.chatroom-header-bar h3 { font-size: 14px; font-weight: 700; }
+.chat-status { font-size: 10px; color: rgba(255,255,255,.5); }
+.chatroom-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.chat-msg { display: flex; gap: 10px; max-width: 80%; animation: msgIn .3s ease; }
+@keyframes msgIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.chat-agent-icon { width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.chat-bubble { padding: 10px 14px; border-radius: 10px; font-size: 12.5px; line-height: 1.6; }
+.chat-name { font-size: 10px; font-weight: 700; margin-bottom: 4px; display: block; }
+.chat-time { font-size: 9px; color: rgba(0,0,0,.3); margin-top: 4px; display: block; text-align: right; }
+.bubble-editor { background: #eef0f7; }
+.bubble-desk { background: #edf7ed; }
+.bubble-seo { background: #fef5e7; }
+.bubble-system { background: var(--gray-100); font-style: italic; color: var(--gray-500); text-align: center; max-width: 100%; margin: 0 auto; font-size: 11px; padding: 6px 14px; border-radius: 10px; }
+
+/* ─── FACTCHECK ─── */
+.factcheck-list { display: flex; flex-direction: column; gap: 14px; }
+.factcheck-card { background: white; border: 1px solid var(--gray-200); border-radius: 10px; padding: 20px; transition: var(--transition); }
+.factcheck-card:hover { box-shadow: var(--shadow-md); }
+.fc-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+.fc-status-badge { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 4px; text-transform: uppercase; }
+.fc-pending { background: #fdebd0; color: var(--orange); }
+.fc-verified { background: #d5f5e3; color: var(--green); }
+.fc-disputed { background: #fadbd8; color: #c0392b; }
+.fc-quote { padding: 12px 16px; background: var(--gray-100); border-left: 3px solid var(--blue); border-radius: 0 6px 6px 0; margin-bottom: 14px; font-size: 13px; line-height: 1.6; color: var(--gray-700); }
+.fc-meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.fc-meta-item { padding: 8px; background: var(--gray-100); border-radius: 6px; }
+.fc-meta-label { font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--gray-400); letter-spacing: .5px; }
+.fc-meta-value { font-size: 12px; font-weight: 500; margin-top: 2px; }
+.fc-source-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--gray-100); font-size: 12px; }
+.fc-source-item a { color: var(--blue); text-decoration: none; font-weight: 500; }
+.fc-source-item a:hover { text-decoration: underline; }
+.fc-src-date { font-size: 10px; color: var(--gray-400); margin-left: auto; font-family: 'JetBrains Mono', monospace; }
+.fc-run-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; background: var(--ink); color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); }
+.fc-run-btn:hover { background: var(--blue); }
+.fc-run-btn.running { background: var(--orange); pointer-events: none; }
+.fc-run-btn.done { background: var(--green); }
+
+/* ─── TIPS ─── */
+.tip-card { background: white; border: 1px solid var(--gray-200); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+.tip-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.tip-card p { font-size: 12px; color: var(--gray-500); margin-bottom: 16px; line-height: 1.5; }
+.tip-form-group { margin-bottom: 14px; }
+.tip-form-group label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--gray-500); margin-bottom: 6px; }
+.tip-input, .tip-textarea, .tip-select { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 13px; font-family: 'Noto Sans KR', sans-serif; transition: var(--transition); background: white; }
+.tip-input:focus, .tip-textarea:focus, .tip-select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,82,118,.1); }
+.tip-textarea { min-height: 100px; resize: vertical; }
+.tip-file-drop { border: 2px dashed var(--gray-300); border-radius: 8px; padding: 24px; text-align: center; color: var(--gray-400); font-size: 12px; cursor: pointer; }
+.tip-file-drop:hover { border-color: var(--blue); color: var(--blue); }
+.tip-submit-btn { padding: 10px 24px; background: var(--ink); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition); }
+.tip-submit-btn:hover { background: var(--blue); }
+.tip-encryption-note { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: #d5f5e3; border-radius: 6px; font-size: 11px; color: var(--green); font-weight: 500; margin-top: 8px; }
+.tip-inbox-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--gray-100); }
+.tip-inbox-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 3px; white-space: nowrap; }
+.tip-new { background: #fadbd8; color: #c0392b; }
+.tip-review { background: #fdebd0; color: var(--orange); }
+.tip-assigned { background: #d4e6f1; color: var(--blue); }
+.tip-content { flex: 1; }
+.tip-title { font-size: 13px; font-weight: 500; }
+.tip-meta { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+
+/* ─── OPINION BAR CHART ─── */
+.obc-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.obc-label { width: 70px; font-size: 11px; font-weight: 500; text-align: right; }
+.obc-bar-wrap { flex: 1; height: 22px; background: var(--gray-100); border-radius: 4px; overflow: hidden; }
+.obc-bar { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; font-size: 10px; font-weight: 700; color: white; transition: width 1s ease; }
+.comment-sample { padding: 10px 14px; background: var(--gray-100); border-radius: 8px; margin-bottom: 8px; font-size: 12px; line-height: 1.5; }
+.cm-author { font-weight: 700; color: var(--blue); }
+.cm-time { font-size: 10px; color: var(--gray-400); margin-left: 6px; }
+
+/* ─── ANIMATIONS ─── */
+.fade-in { animation: fadeIn .4s ease forwards; opacity: 0; }
+@keyframes fadeIn { to { opacity: 1; } }
+.stagger-1{animation-delay:.05s}.stagger-2{animation-delay:.1s}.stagger-3{animation-delay:.15s}
+.stagger-4{animation-delay:.2s}.stagger-5{animation-delay:.25s}.stagger-6{animation-delay:.3s}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--gray-300);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand">
+    <span class="logo">Newsroom</span><span class="divider"></span><span class="org-name">메디게이트 뉴스</span>
+  </div>
+  <div class="topbar-actions">
+    <div class="ai-status"><span class="pulse"></span>AI 에이전트 3개 활성</div>
+    <span class="role-badge role-editor" id="roleBadge" onclick="toggleRole()">Editor</span>
+    <div class="user-avatar" onclick="toggleRole()">박</div>
+  </div>
+</div>
+
+<div class="layout">
+
+<div class="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">뉴스룸</div>
+    <div class="sidebar-item active" data-page="dashboard" onclick="switchPage('dashboard',this)"><span class="icon">📋</span>대시보드</div>
+    <div class="sidebar-item" data-page="team" onclick="switchPage('team',this)"><span class="icon">👥</span>팀 현황<span class="count">12</span></div>
+    <div class="sidebar-item" data-page="ai-chatroom" onclick="switchPage('ai-chatroom',this)"><span class="icon">💬</span>AI 뉴스룸<span class="sidebar-new-badge">NEW</span></div>
+    <div class="sidebar-item" data-page="factcheck" onclick="switchPage('factcheck',this)"><span class="icon">✅</span>팩트체크<span class="count">4</span></div>
+    <div class="sidebar-item" data-page="tips" onclick="switchPage('tips',this)"><span class="icon">📨</span>제보/소스<span class="sidebar-new-badge">NEW</span></div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">토픽</div>
+    <div class="sidebar-item" onclick="filterTopic('all');switchPage('dashboard',document.querySelector('[data-page=dashboard]'))"><span class="icon">◉</span>전체 보기<span class="count">24</span></div>
+    <div class="sidebar-item" onclick="filterTopic('digital');switchPage('dashboard',document.querySelector('[data-page=dashboard]'))"><span class="sidebar-topic-dot" style="background:var(--blue)"></span>디지털 헬스케어<span class="count">7</span></div>
+    <div class="sidebar-item" onclick="filterTopic('policy');switchPage('dashboard',document.querySelector('[data-page=dashboard]'))"><span class="sidebar-topic-dot" style="background:var(--accent)"></span>의료정책·제도<span class="count">6</span></div>
+    <div class="sidebar-item" onclick="filterTopic('pharma');switchPage('dashboard',document.querySelector('[data-page=dashboard]'))"><span class="sidebar-topic-dot" style="background:var(--green)"></span>제약·바이오<span class="count">5</span></div>
+    <div class="sidebar-item" onclick="filterTopic('insurance');switchPage('dashboard',document.querySelector('[data-page=dashboard]'))"><span class="sidebar-topic-dot" style="background:var(--orange)"></span>수가·보험<span class="count">4</span></div>
+    <div class="sidebar-item" onclick="filterTopic('education');switchPage('dashboard',document.querySelector('[data-page=dashboard]'))"><span class="sidebar-topic-dot" style="background:var(--purple)"></span>의학교육<span class="count">2</span></div>
+  </div>
+  <div class="sidebar-spacer"></div>
+  <div class="sidebar-ai-section">
+    <div class="sidebar-section-title" style="padding:0 0 8px 0;">AI 에이전트</div>
+    <div class="ai-agent-card" onclick="openAgentModal('editor')"><div class="agent-header"><div class="agent-icon">🤖</div><div><div class="agent-name">편집장 에이전트</div><div class="agent-role">Chief Editor AI</div></div></div><div class="agent-status">마지막: <code>우선순위 재배치</code> 12분 전</div></div>
+    <div class="ai-agent-card" onclick="openAgentModal('desk')"><div class="agent-header"><div class="agent-icon">📡</div><div><div class="agent-name">데스크 에이전트</div><div class="agent-role">News Desk AI</div></div></div><div class="agent-status">모니터링: <code>소스 48개</code></div></div>
+    <div class="ai-agent-card" onclick="openAgentModal('seo')"><div class="agent-header"><div class="agent-icon">🔍</div><div><div class="agent-name">SEO 에이전트</div><div class="agent-role">SEO Optimizer AI</div></div></div><div class="agent-status">완료: <code>robot.txt</code> 3h 전</div></div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="dash-header fade-in"><div><h1>뉴스룸 대시보드</h1><div class="subtitle">2026년 3월 25일 수요일 · 메디게이트 뉴스 편집국</div></div><div class="dash-stats"><div class="dash-stat"><div class="stat-value">24</div><div class="stat-label">활성 아젠다</div></div><div class="dash-stat"><div class="stat-value">12</div><div class="stat-label">기자 투입</div></div><div class="dash-stat"><div class="stat-value" style="color:var(--accent)">6</div><div class="stat-label">HOT 이슈</div></div></div></div>
+  <div class="trending-bar fade-in stagger-1"><span class="trending-label">🔥 실시간</span><div class="trending-item"><span>AI 의료기기 허가 기준안</span><span class="heat">+342%</span></div><div class="trending-item"><span>전공의 복귀율 현황</span><span class="heat">+218%</span></div><div class="trending-item"><span>GLP-1 비만약 급여</span><span class="heat">+187%</span></div><div class="trending-item"><span>원격의료 시범사업</span><span class="heat">+156%</span></div></div>
+  <div class="view-tabs fade-in stagger-2"><button class="view-tab active">아젠다 보드</button><button class="view-tab">타임라인</button><button class="view-tab">기자별 현황</button><button class="view-tab">여론 분석</button></div>
+
+  <div class="topic-section fade-in stagger-3" data-topic="digital"><div class="topic-header"><div class="topic-color-bar" style="background:var(--blue)"></div><span class="topic-name">디지털 헬스케어</span><span class="topic-meta">7 아젠다 · 기자 5명</span><div class="topic-actions"><button class="topic-action-btn">+ 아젠다</button></div></div><div class="agenda-grid">
+    <div class="agenda-card" onclick="openModal('ai-device')"><div style="position:absolute;top:0;left:0;width:100%;height:3px;background:var(--blue)"></div><div class="card-top"><span class="card-status status-hot">🔥 HOT</span><span class="card-priority">P1</span></div><h3>AI 의료기기 인허가 기준안</h3><div class="card-desc">식약처 AI 기반 SaMD 인허가 가이드라인 개정안 발표. RWD 활용 기준 포함.</div><div class="card-metrics"><div class="card-metric"><span class="metric-val">5</span><span class="metric-label">기사</span></div><div class="card-metric"><span class="metric-val" style="color:var(--accent)">2.4K</span><span class="metric-label">댓글</span></div><div class="card-metric"><span class="metric-val">89</span><span class="metric-label">여론</span></div></div><div class="card-bottom"><div class="reporter-group"><div class="reporter-avatar" style="background:#2980b9"><span class="tooltip">김서연</span>김</div><div class="reporter-avatar" style="background:#8e44ad"><span class="tooltip">이준혁</span>이</div><div class="reporter-add">+</div></div><span class="articles-count">5 articles</span></div><div class="opinion-bar"><div class="seg-pos" style="width:62%"></div><div class="seg-neu" style="width:23%"></div><div class="seg-neg" style="width:15%"></div></div><div class="opinion-label"><span>긍정 62%</span><span>부정 15%</span></div></div>
+    <div class="agenda-card" onclick="openModal('telemedicine')"><div style="position:absolute;top:0;left:0;width:100%;height:3px;background:var(--blue)"></div><div class="card-top"><span class="card-status status-active">취재중</span><span class="card-priority">P2</span></div><h3>원격의료 시범사업 확대 논란</h3><div class="card-desc">비대면 진료 확대안 의료계 반발과 환자단체 지지 교차.</div><div class="card-metrics"><div class="card-metric"><span class="metric-val">3</span><span class="metric-label">기사</span></div><div class="card-metric"><span class="metric-val" style="color:var(--accent)">1.8K</span><span class="metric-label">댓글</span></div><div class="card-metric"><span class="metric-val">72</span><span class="metric-label">여론</span></div></div><div class="card-bottom"><div class="reporter-group"><div class="reporter-avatar" style="background:#27ae60"><span class="tooltip">박지민</span>박</div><div class="reporter-avatar" style="background:#d35400"><span class="tooltip">최하은</span>최</div><div class="reporter-avatar" style="background:#2c3e50"><span class="tooltip">정우성</span>정</div><div class="reporter-add">+</div></div><span class="articles-count">3 articles</span></div><div class="opinion-bar"><div class="seg-pos" style="width:35%"></div><div class="seg-neu" style="width:30%"></div><div class="seg-neg" style="width:35%"></div></div><div class="opinion-label"><span>긍정 35%</span><span>부정 35%</span></div></div>
+    <div class="agenda-card" onclick="openModal('ehr')"><div style="position:absolute;top:0;left:0;width:100%;height:3px;background:var(--blue)"></div><div class="card-top"><span class="card-status status-draft">기획</span><span class="card-priority">P3</span></div><h3>EMR 클라우드 전환 동향</h3><div class="card-desc">병원 EMR 클라우드 전환 트렌드. 대형병원 도입 사례 분석.</div><div class="card-metrics"><div class="card-metric"><span class="metric-val">1</span><span class="metric-label">기사</span></div><div class="card-metric"><span class="metric-val">320</span><span class="metric-label">댓글</span></div><div class="card-metric"><span class="metric-val">56</span><span class="metric-label">여론</span></div></div><div class="card-bottom"><div class="reporter-group"><div class="reporter-avatar" style="background:#e74c3c"><span class="tooltip">한민수</span>한</div><div class="reporter-add">+</div></div><span class="articles-count">1 article</span></div><div class="opinion-bar"><div class="seg-pos" style="width:48%"></div><div class="seg-neu" style="width:40%"></div><div class="seg-neg" style="width:12%"></div></div><div class="opinion-label"><span>긍정 48%</span><span>부정 12%</span></div></div>
+  </div></div>
+
+  <div class="topic-section fade-in stagger-4" data-topic="policy"><div class="topic-header"><div class="topic-color-bar" style="background:var(--accent)"></div><span class="topic-name">의료정책·제도</span><span class="topic-meta">6 아젠다 · 기자 4명</span><div class="topic-actions"><button class="topic-action-btn">+ 아젠다</button></div></div><div class="agenda-grid">
+    <div class="agenda-card" onclick="openModal('resident')"><div style="position:absolute;top:0;left:0;width:100%;height:3px;background:var(--accent)"></div><div class="card-top"><span class="card-status status-hot">🔥 HOT</span><span class="card-priority">P1</span></div><h3>전공의 수련환경 개선 및 복귀율</h3><div class="card-desc">전공의 이탈 이후 수련환경 개선안 이행 현황. 병원별 복귀율 격차.</div><div class="card-metrics"><div class="card-metric"><span class="metric-val">8</span><span class="metric-label">기사</span></div><div class="card-metric"><span class="metric-val" style="color:var(--accent)">4.1K</span><span class="metric-label">댓글</span></div><div class="card-metric"><span class="metric-val">94</span><span class="metric-label">여론</span></div></div><div class="card-bottom"><div class="reporter-group"><div class="reporter-avatar" style="background:#c0392b"><span class="tooltip">김서연</span>김</div><div class="reporter-avatar" style="background:#2980b9"><span class="tooltip">이준혁</span>이</div><div class="reporter-avatar" style="background:#27ae60"><span class="tooltip">박지민</span>박</div><div class="reporter-add">+</div></div><span class="articles-count">8 articles</span></div><div class="opinion-bar"><div class="seg-pos" style="width:28%"></div><div class="seg-neu" style="width:25%"></div><div class="seg-neg" style="width:47%"></div></div><div class="opinion-label"><span>긍정 28%</span><span>부정 47%</span></div></div>
+    <div class="agenda-card" onclick="openModal('medschool')"><div style="position:absolute;top:0;left:0;width:100%;height:3px;background:var(--accent)"></div><div class="card-top"><span class="card-status status-active">취재중</span><span class="card-priority">P1</span></div><h3>의대 증원 후속 조치 추적</h3><div class="card-desc">의대 정원 증원 이후 교육 인프라 확충 현황과 교원 확보.</div><div class="card-metrics"><div class="card-metric"><span class="metric-val">6</span><span class="metric-label">기사</span></div><div class="card-metric"><span class="metric-val" style="color:var(--accent)">3.2K</span><span class="metric-label">댓글</span></div><div class="card-metric"><span class="metric-val">91</span><span class="metric-label">여론</span></div></div><div class="card-bottom"><div class="reporter-group"><div class="reporter-avatar" style="background:#d35400"><span class="tooltip">최하은</span>최</div><div class="reporter-avatar" style="background:#7d3c98"><span class="tooltip">윤재호</span>윤</div><div class="reporter-add">+</div></div><span class="articles-count">6 articles</span></div><div class="opinion-bar"><div class="seg-pos" style="width:22%"></div><div class="seg-neu" style="width:33%"></div><div class="seg-neg" style="width:45%"></div></div><div class="opinion-label"><span>긍정 22%</span><span>부정 45%</span></div></div>
+  </div></div>
+
+  <div class="topic-section fade-in stagger-5" data-topic="pharma"><div class="topic-header"><div class="topic-color-bar" style="background:var(--green)"></div><span class="topic-name">제약·바이오</span><span class="topic-meta">5 아젠다 · 기자 3명</span><div class="topic-actions"><button class="topic-action-btn">+ 아젠다</button></div></div><div class="agenda-grid">
+    <div class="agenda-card" onclick="openModal('glp1')"><div style="position:absolute;top:0;left:0;width:100%;height:3px;background:var(--green)"></div><div class="card-top"><span class="card-status status-hot">🔥 HOT</span><span class="card-priority">P1</span></div><h3>GLP-1 수용체 작용제 급여 확대</h3><div class="card-desc">위고비·마운자로 등 비만 치료제 건강보험 급여 적용 논의.</div><div class="card-metrics"><div class="card-metric"><span class="metric-val">4</span><span class="metric-label">기사</span></div><div class="card-metric"><span class="metric-val" style="color:var(--accent)">2.9K</span><span class="metric-label">댓글</span></div><div class="card-metric"><span class="metric-val">86</span><span class="metric-label">여론</span></div></div><div class="card-bottom"><div class="reporter-group"><div class="reporter-avatar" style="background:#1abc9c"><span class="tooltip">한민수</span>한</div><div class="reporter-avatar" style="background:#e74c3c"><span class="tooltip">김서연</span>김</div><div class="reporter-add">+</div></div><span class="articles-count">4 articles</span></div><div class="opinion-bar"><div class="seg-pos" style="width:55%"></div><div class="seg-neu" style="width:28%"></div><div class="seg-neg" style="width:17%"></div></div><div class="opinion-label"><span>긍정 55%</span><span>부정 17%</span></div></div>
+    <div class="agenda-card" onclick="openModal('biosimilar')"><div style="position:absolute;top:0;left:0;width:100%;height:3px;background:var(--green)"></div><div class="card-top"><span class="card-status status-review">검토중</span><span class="card-priority">P2</span></div><h3>바이오시밀러 처방 전환 추이</h3><div class="card-desc">오리지널 대비 바이오시밀러 처방 전환율. 종별 패턴 차이.</div><div class="card-metrics"><div class="card-metric"><span class="metric-val">2</span><span class="metric-label">기사</span></div><div class="card-metric"><span class="metric-val">780</span><span class="metric-label">댓글</span></div><div class="card-metric"><span class="metric-val">61</span><span class="metric-label">여론</span></div></div><div class="card-bottom"><div class="reporter-group"><div class="reporter-avatar" style="background:#2c3e50"><span class="tooltip">정우성</span>정</div><div class="reporter-add">+</div></div><span class="articles-count">2 articles</span></div><div class="opinion-bar"><div class="seg-pos" style="width:41%"></div><div class="seg-neu" style="width:38%"></div><div class="seg-neg" style="width:21%"></div></div><div class="opinion-label"><span>긍정 41%</span><span>부정 21%</span></div></div>
+  </div></div>
+
+  <div class="topic-section fade-in stagger-6" data-topic="insurance"><div class="topic-header"><div class="topic-color-bar" style="background:var(--orange)"></div><span class="topic-name">수가·보험</span><span class="topic-meta">4 아젠다 · 기자 3명</span><div class="topic-actions"><button class="topic-action-btn">+ 아젠다</button></div></div><div class="agenda-grid">
+    <div class="agenda-card" onclick="openModal('fee')"><div style="position:absolute;top:0;left:0;width:100%;height:3px;background:var(--orange)"></div><div class="card-top"><span class="card-status status-active">취재중</span><span class="card-priority">P1</span></div><h3>2026년 수가 인상률 협상</h3><div class="card-desc">건정심 의결 이후 종별 수가 인상률. 의원급 환산지수 쟁점.</div><div class="card-metrics"><div class="card-metric"><span class="metric-val">3</span><span class="metric-label">기사</span></div><div class="card-metric"><span class="metric-val">1.5K</span><span class="metric-label">댓글</span></div><div class="card-metric"><span class="metric-val">77</span><span class="metric-label">여론</span></div></div><div class="card-bottom"><div class="reporter-group"><div class="reporter-avatar" style="background:#f39c12"><span class="tooltip">윤재호</span>윤</div><div class="reporter-avatar" style="background:#2980b9"><span class="tooltip">이준혁</span>이</div><div class="reporter-add">+</div></div><span class="articles-count">3 articles</span></div><div class="opinion-bar"><div class="seg-pos" style="width:20%"></div><div class="seg-neu" style="width:35%"></div><div class="seg-neg" style="width:45%"></div></div><div class="opinion-label"><span>긍정 20%</span><span>부정 45%</span></div></div>
+  </div></div>
+</div>
+
+<!-- TEAM -->
+<div class="page" id="page-team"><div class="dash-header"><div><h1>팀 현황</h1><div class="subtitle">편집국 소속 기자 12명 · 활성 아젠다 24건</div></div></div><div class="team-grid" id="teamGrid"></div></div>
+
+<!-- AI CHATROOM -->
+<div class="page" id="page-ai-chatroom"><div class="dash-header"><div><h1>AI 뉴스룸</h1><div class="subtitle">편집장·데스크·SEO 에이전트 실시간 협업 채널</div></div></div><div class="chatroom-container"><div class="chatroom-header-bar"><span style="font-size:18px">💬</span><div><h3>에이전트 협업 채널</h3><div class="chat-status">편집장 AI · 데스크 AI · SEO AI — 활성</div></div><div style="margin-left:auto;display:flex;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:#2ecc71"></span><span style="width:8px;height:8px;border-radius:50%;background:#2ecc71"></span><span style="width:8px;height:8px;border-radius:50%;background:#2ecc71"></span></div></div><div class="chatroom-messages" id="chatroomMessages"></div></div></div>
+
+<!-- FACTCHECK -->
+<div class="page" id="page-factcheck"><div class="dash-header"><div><h1>팩트체크 어시스턴트</h1><div class="subtitle">기사에서 검증 필요 구문 자동 발췌 · 출처 매칭 · 검증 실행</div></div><div class="dash-stats"><div class="dash-stat"><div class="stat-value">4</div><div class="stat-label">검증 대기</div></div><div class="dash-stat"><div class="stat-value" style="color:var(--green)">12</div><div class="stat-label">완료</div></div><div class="dash-stat"><div class="stat-value" style="color:var(--accent)">1</div><div class="stat-label">이의</div></div></div></div><div class="factcheck-list" id="factcheckList"></div></div>
+
+<!-- TIPS -->
+<div class="page" id="page-tips"><div class="dash-header"><div><h1>제보 / 소스 창구</h1><div class="subtitle">익명 제보 접수 · 소스 관리 · 종단간 암호화</div></div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+    <div><div class="tip-card"><h3>📨 새 제보 접수</h3><p>제보자 신원은 보호됩니다. 종단간 암호화(E2EE) 적용.</p>
+      <div class="tip-form-group"><label>제보 유형</label><select class="tip-select"><option>내부 고발 (Whistleblower)</option><option>현장 제보</option><option>문서/데이터 제공</option><option>전문가 소스 연결</option><option>기타</option></select></div>
+      <div class="tip-form-group"><label>관련 토픽</label><select class="tip-select"><option>디지털 헬스케어</option><option>의료정책·제도</option><option>제약·바이오</option><option>수가·보험</option><option>의학교육</option><option>기타</option></select></div>
+      <div class="tip-form-group"><label>제목</label><input class="tip-input" placeholder="제보 내용을 요약해 주세요"></div>
+      <div class="tip-form-group"><label>상세 내용</label><textarea class="tip-textarea" placeholder="시간, 장소, 관련 인물 등을 포함하면 취재에 도움됩니다."></textarea></div>
+      <div class="tip-form-group"><label>첨부 파일</label><div class="tip-file-drop">📎 파일 드래그 또는 클릭<br><span style="font-size:10px;color:var(--gray-400)">문서, 이미지, 영상 (최대 100MB)</span></div></div>
+      <div class="tip-form-group"><label>연락처 (선택)</label><input class="tip-input" placeholder="이메일 또는 시그널 ID"></div>
+      <button class="tip-submit-btn" onclick="submitTip(this)">🔒 암호화 제보 전송</button>
+      <div class="tip-encryption-note">🔐 종단간 암호화 · IP 미기록 · 편집국장만 열람</div>
+    </div></div>
+    <div><div class="tip-card"><h3>📥 제보 수신함</h3><p>최근 접수 제보 (편집인 권한)</p><div id="tipInbox"></div></div></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<div class="right-panel">
+  <div class="panel-section"><div class="panel-title">⚡ 실시간 피드</div>
+    <div class="live-feed-item"><div class="feed-time">14:32</div><div class="feed-content"><strong>AI 편집장</strong> "AI 의료기기" P1 상향</div><span class="feed-tag tag-ai">AI</span></div>
+    <div class="live-feed-item"><div class="feed-time">14:18</div><div class="feed-content"><strong>데스크 AI</strong> 속보: 식약처 SaMD 최종안</div><span class="feed-tag tag-breaking">속보</span></div>
+    <div class="live-feed-item"><div class="feed-time">13:55</div><div class="feed-content"><strong>박편집장</strong> 김서연 → 전공의 복귀율 배정</div><span class="feed-tag tag-assign">배정</span></div>
+    <div class="live-feed-item"><div class="feed-time">13:40</div><div class="feed-content"><strong>이준혁</strong> 원격의료 기사 발행</div><span class="feed-tag tag-publish">발행</span></div>
+    <div class="live-feed-item"><div class="feed-time">13:22</div><div class="feed-content"><strong>SEO AI</strong> GLP-1 메타태그 최적화</div><span class="feed-tag tag-ai">AI</span></div>
+    <div class="live-feed-item"><div class="feed-time">12:58</div><div class="feed-content"><strong>팩트체크</strong> 전공의 47% 검증 완료</div><span class="feed-tag tag-ai">AI</span></div>
+  </div>
+  <div class="panel-section"><div class="panel-title">🔍 AI SEO</div>
+    <div class="seo-card"><div class="seo-label">Overall SEO</div><div class="seo-score"><div class="seo-score-bar"><div class="seo-score-fill" style="width:87%;background:var(--green)"></div></div><span class="seo-score-num" style="color:var(--green)">87</span></div></div>
+    <div class="seo-card"><div class="seo-label">AI 크롤러</div><div class="seo-score"><div class="seo-score-bar"><div class="seo-score-fill" style="width:92%;background:var(--blue)"></div></div><span class="seo-score-num" style="color:var(--blue)">92</span></div></div>
+    <div class="seo-card"><div class="seo-label">robots.txt</div><div style="font-family:'JetBrains Mono';font-size:11px;color:var(--green)">✓ AI-optimized · 3h ago</div></div>
+  </div>
+  <div class="panel-section"><div class="panel-title">👤 멤버십</div>
+    <div class="membership-tier"><div class="tier-name"><span class="tier-badge" style="background:#f1c40f"></span>프리미엄</div><span class="tier-count">2,340</span><span class="tier-change change-up">+12%</span></div>
+    <div class="membership-tier"><div class="tier-name"><span class="tier-badge" style="background:#bdc3c7"></span>일반</div><span class="tier-count">18,720</span><span class="tier-change change-up">+5%</span></div>
+    <div class="membership-tier"><div class="tier-name"><span class="tier-badge" style="background:#95a5a6"></span>무료</div><span class="tier-count">45,300</span><span class="tier-change change-down">-2%</span></div>
+    <div style="margin-top:12px;padding:10px;background:var(--gray-100);border-radius:var(--radius);font-size:11px;color:var(--gray-500)"><strong style="color:var(--ink)">등업</strong>: 월 댓글 10회 + 열람 50건</div>
+  </div>
+</div>
+
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)"><div class="modal" style="width:720px" onclick="event.stopPropagation()"><div class="modal-header"><div><h2 id="modalTitle"></h2><div class="modal-topic" id="modalTopic"></div></div><button class="modal-close" onclick="closeModal()">✕</button></div><div class="modal-body" id="modalBody"></div></div></div>
+<div class="modal-overlay" id="agentModalOverlay" onclick="closeAgentModal(event)"><div class="modal" style="width:580px" onclick="event.stopPropagation()"><div class="modal-header"><div><h2 id="agentModalTitle"></h2><div class="modal-topic">AI Agent · 24시간 운영</div></div><button class="modal-close" onclick="closeAgentModal()">✕</button></div><div class="modal-body" id="agentModalBody"></div></div></div>
+<div class="modal-overlay" id="opinionModalOverlay" onclick="closeOpinionModal(event)"><div class="modal" style="width:780px" onclick="event.stopPropagation()"><div class="modal-header"><div><h2 id="opinionModalTitle">여론 분석 상세</h2><div class="modal-topic" id="opinionModalSub"></div></div><button class="modal-close" onclick="closeOpinionModal()">✕</button></div><div class="modal-body" id="opinionModalBody"></div></div></div>
+
+<script>
+const R=[{name:'김서연',beat:'의료기기·AI',color:'#2980b9',status:'online',agendas:['AI 의료기기 인허가','전공의 복귀율','GLP-1 급여'],articles:48,comments:3200,views:'124K'},{name:'이준혁',beat:'디지털헬스·IT',color:'#8e44ad',status:'online',agendas:['AI 의료기기 인허가','전공의 복귀율','수가 협상'],articles:52,comments:2800,views:'118K'},{name:'박지민',beat:'의료정책',color:'#27ae60',status:'online',agendas:['원격의료 시범사업','전공의 복귀율'],articles:35,comments:4100,views:'156K'},{name:'최하은',beat:'제도·법률',color:'#d35400',status:'away',agendas:['원격의료 시범사업','의대 증원'],articles:29,comments:1900,views:'87K'},{name:'정우성',beat:'바이오·제약',color:'#2c3e50',status:'online',agendas:['원격의료 시범사업','바이오시밀러'],articles:41,comments:2400,views:'105K'},{name:'한민수',beat:'헬스케어 산업',color:'#e74c3c',status:'online',agendas:['EMR 클라우드','GLP-1 급여'],articles:38,comments:2100,views:'92K'},{name:'윤재호',beat:'수가·보험',color:'#7d3c98',status:'away',agendas:['의대 증원','수가 인상률'],articles:44,comments:3500,views:'141K'},{name:'장소영',beat:'의학교육',color:'#1abc9c',status:'online',agendas:['의학교육 개혁'],articles:22,comments:980,views:'48K'},{name:'오현석',beat:'글로벌 헬스',color:'#f39c12',status:'offline',agendas:['WHO 팬데믹 조약'],articles:31,comments:1500,views:'76K'},{name:'신아름',beat:'간호·보건',color:'#e67e22',status:'online',agendas:['간호법 재추진'],articles:26,comments:2200,views:'93K'},{name:'류태현',beat:'데이터저널리즘',color:'#3498db',status:'online',agendas:['의료 데이터 활용'],articles:18,comments:640,views:'35K'},{name:'임수정',beat:'환자 권익',color:'#c0392b',status:'away',agendas:['환자안전법 개정'],articles:27,comments:1800,views:'81K'}];
+const AA={'ai-device':[{title:'식약처, AI 의료기기 인허가 가이드라인 개정안 발표',reporter:'김서연',date:'2026.03.25 14:00',status:'published',views:'12.4K',url:'https://www.medigate.net/article/ai-samd-guideline'},{title:'[분석] SaMD 규제, 미국 FDA vs 한국 식약처 비교',reporter:'이준혁',date:'2026.03.24 09:30',status:'published',views:'8.7K',url:'https://www.medigate.net/article/samd-fda-vs-mfds'},{title:'[인터뷰] "RWD 기반 임상 검증, 현실적 대안인가"',reporter:'김서연',date:'작성 중 (70%)',status:'writing',views:'—',url:'#'},{title:'국내 AI 의료기기 업체: 뷰노·루닛·딥노이드 비교',reporter:'이준혁',date:'데스크 검토 중',status:'review',views:'—',url:'#'},{title:'[칼럼] AI가 진단하는 시대, 의사의 역할 변화',reporter:'외부 기고',date:'2026.03.22',status:'published',views:'15.2K',url:'https://www.medigate.net/article/ai-doctor-role'}],'telemedicine':[{title:'원격의료 시범사업 2단계 확대안, 무엇이 달라지나',reporter:'박지민',date:'2026.03.24',status:'published',views:'9.8K',url:'https://www.medigate.net/article/telemedicine-phase2'},{title:'의사협회 "전면 허용은 의료 붕괴" 긴급 성명',reporter:'최하은',date:'2026.03.23',status:'published',views:'14.3K',url:'https://www.medigate.net/article/kma-telemedicine'},{title:'[데이터] 도서산간 비대면 진료 이용 현황',reporter:'정우성',date:'작성 중 (40%)',status:'writing',views:'—',url:'#'}],'resident':[{title:'전공의 복귀율 전국 47%, 수도권·지방 격차',reporter:'김서연',date:'2026.03.25',status:'published',views:'22.1K',url:'https://www.medigate.net/article/resident-return'},{title:'[단독] 5대 병원 전공의 이탈률 비교',reporter:'이준혁',date:'2026.03.24',status:'published',views:'31.5K',url:'https://www.medigate.net/article/big5-resident'},{title:'수련환경 개선안 6개월, 현장 반응',reporter:'박지민',date:'2026.03.23',status:'published',views:'11.2K',url:'https://www.medigate.net/article/resident-env'},{title:'[인포그래픽] 전문과별 복귀율 한눈에',reporter:'류태현',date:'2026.03.22',status:'published',views:'18.7K',url:'https://www.medigate.net/article/resident-info'}]};
+const DA=[{title:'관련 최신 기사',reporter:'편집국',date:'2026.03.25',status:'published',views:'5.2K',url:'https://www.medigate.net/article/sample-1'},{title:'관련 분석 기사',reporter:'편집국',date:'2026.03.24',status:'published',views:'3.8K',url:'https://www.medigate.net/article/sample-2'}];
+const AI_INFO={'ai-device':{title:'AI 의료기기 인허가 기준안',topic:'디지털 헬스케어·P1·HOT',pos:62,neu:23,neg:15,reporters:['김서연','이준혁']},'telemedicine':{title:'원격의료 시범사업 확대 논란',topic:'디지털 헬스케어·P2·취재중',pos:35,neu:30,neg:35,reporters:['박지민','최하은','정우성']},'ehr':{title:'EMR 클라우드 전환 동향',topic:'디지털 헬스케어·P3·기획',pos:48,neu:40,neg:12,reporters:['한민수']},'resident':{title:'전공의 수련환경 개선 및 복귀율',topic:'의료정책·P1·HOT',pos:28,neu:25,neg:47,reporters:['김서연','이준혁','박지민']},'medschool':{title:'의대 증원 후속 조치',topic:'의료정책·P1·취재중',pos:22,neu:33,neg:45,reporters:['최하은','윤재호']},'glp1':{title:'GLP-1 급여 확대 논의',topic:'제약·바이오·P1·HOT',pos:55,neu:28,neg:17,reporters:['한민수','김서연']},'biosimilar':{title:'바이오시밀러 처방 전환',topic:'제약·바이오·P2·검토중',pos:41,neu:38,neg:21,reporters:['정우성']},'fee':{title:'2026년 수가 인상률 협상',topic:'수가·보험·P1·취재중',pos:20,neu:35,neg:45,reporters:['윤재호','이준혁']}};
+
+const FC=[{id:'fc1',status:'pending',article:'AI 의료기기 인허가 가이드라인 개정안',quote:'식약처는 AI 기반 SaMD의 임상 검증 시 RWD만으로도 시판 허가가 가능하도록 기준을 완화했다.',reporter:'김서연',claim:'RWD "만으로" 허가 가능 여부 확인 필요',sources:[{name:'식약처 보도자료 (2026.03.25)',url:'https://www.mfds.go.kr/press/2026-0325',date:'2026.03.25',icon:'🏛️'},{name:'FDA AI/ML SaMD Action Plan',url:'https://www.fda.gov/ai-ml-samd',date:'2024.09.15',icon:'🇺🇸'},{name:'대한의료AI학회 해설',url:'https://www.kmai.org/guidelines',date:'2026.03.20',icon:'📋'}],verifier:null,verifyDate:null},{id:'fc2',status:'pending',article:'전공의 복귀율 전국 47%',quote:'보건복지부에 따르면 전공의 복귀율은 전국 평균 47%이며, 수도권(62%)과 비수도권(31%)의 격차가 31%p에 달한다.',reporter:'김서연',claim:'수치 정확성 교차 검증: 47%, 62%, 31%',sources:[{name:'보건복지부 전공의 통계',url:'https://www.mohw.go.kr/stats/resident',date:'2026.03.20',icon:'🏛️'},{name:'대한전공의협의회 조사',url:'https://www.kira.or.kr/survey',date:'2026.03.18',icon:'👨‍⚕️'}],verifier:null,verifyDate:null},{id:'fc3',status:'verified',article:'GLP-1 수용체 작용제 급여 확대',quote:'현재 국내에서 위고비는 BMI 30 이상 또는 BMI 27 이상+동반질환 시 처방 가능하다.',reporter:'한민수',claim:'처방 기준 확인 완료',sources:[{name:'건보심사평가원 급여 기준표',url:'https://www.hira.or.kr/criteria/glp1',date:'2026.01.15',icon:'🏥'},{name:'대한비만학회 진료지침',url:'https://www.kosso.or.kr/guidelines',date:'2025.11.01',icon:'📋'}],verifier:'AI 팩트체커',verifyDate:'2026.03.24 16:30'},{id:'fc4',status:'disputed',article:'의대 증원 후속 조치',quote:'지방 의대 10곳 중 7곳이 증원 대비 교원 확보율 50% 미만으로 나타났다.',reporter:'최하은',claim:'교육부 통계와 불일치 가능성',sources:[{name:'교육부 의대평가 (2026)',url:'https://www.moe.go.kr/medschool-eval',date:'2026.02.28',icon:'🏛️'},{name:'의학교육평가원 보고서',url:'https://www.kimee.or.kr/report',date:'2026.01.20',icon:'📋'},{name:'의대증원대책위 반론',url:'https://www.kma.org/counter',date:'2026.03.10',icon:'⚠️'}],verifier:'AI 팩트체커',verifyDate:'2026.03.25 09:15'}];
+
+const TI=[{status:'new',title:'대형병원 전공의 수련시간 조작 의혹',source:'익명·Signal',date:'03.25 13:40',topic:'의료정책'},{status:'new',title:'AI 의료기기 인증심사 편의 제공 정황',source:'익명',date:'03.25 10:22',topic:'디지털헬스'},{status:'review',title:'GLP-1 오프라벨 처방 급증 내부 데이터',source:'제약사 관계자',date:'03.24 18:15',topic:'제약·바이오'},{status:'assigned',title:'지방 의대 실습환경 열악 — 현장 사진',source:'의대생',date:'03.24 09:30',topic:'의학교육'},{status:'assigned',title:'원격의료 참여병원 실적 부풀리기',source:'병원 직원',date:'03.23 14:50',topic:'디지털헬스'},{status:'review',title:'건정심 위원 이해충돌 문서',source:'익명·SecureDrop',date:'03.22 21:10',topic:'수가·보험'}];
+
+const CM=[{agent:'system',text:'── 2026.03.25 오후 뉴스룸 세션 ──',time:''},{agent:'desk',text:'식약처 보도자료 감지. AI 의료기기(SaMD) 인허가 가이드라인 최종안 14시 공개. 소스 신뢰도: 공식(A등급).',time:'14:18'},{agent:'editor',text:'확인. 해당 아젠다 P2→P1 상향합니다. 김서연·이준혁 기자 현재 할당 중. 추가 인력 필요할까요?',time:'14:20'},{agent:'desk',text:'네이버 실검 7위→3위 급상승 중. 경쟁사(청년의사) 미보도. 선점 기회입니다.',time:'14:21'},{agent:'editor',text:'좋습니다. 김서연 기자에게 속보 발행 요청. SEO 에이전트, 발행 즉시 메타태그 최적화 부탁.',time:'14:22'},{agent:'seo',text:'준비 완료. 타겟 키워드: "AI 의료기기 인허가", "SaMD 가이드라인 2026". Schema.org/MedicalArticle 마크업 대기. GPTBot·ClaudeBot·PerplexityBot 크롤 허용 확인.',time:'14:23'},{agent:'desk',text:'팩트체크 알림: 김서연 기자 원고에 "RWD만으로 시판 허가 가능" 표현 검출. 식약처 원문 대조 필요.',time:'14:28'},{agent:'editor',text:'팩트체크 어시스턴트에 자동 등록. 김서연 기자에게 확인 알림 발송 완료.',time:'14:29'},{agent:'seo',text:'"전공의 복귀율" 기사가 Perplexity AI에서 인용 시작. AI 검색엔진 유입 전일비 +23%. 구조화 데이터 효과 확인.',time:'14:31'},{agent:'editor',text:'좋은 신호. 전공의 복귀율 아젠다 댓글 급증(+340건/1h). 여론 모니터링 강화 요청.',time:'14:32'},{agent:'desk',text:'여론 분석: 부정 47% 상승세. 키워드 "의료 공백", "지방 병원", "필수의료". 감정 강도 높은 댓글 증가 중.',time:'14:35'},{agent:'seo',text:'GLP-1 기사 og:image가 기본 썸네일. 전용 인포그래픽으로 교체 시 소셜 공유율 약 2.4배 예측.',time:'14:37'},{agent:'editor',text:'류태현 기자에게 인포그래픽 제작 요청. 다음 브리핑 17시. 수고하셨습니다.',time:'14:38'}];
+
+let isEditor=true;
+function toggleRole(){isEditor=!isEditor;const b=document.getElementById('roleBadge');b.textContent=isEditor?'EDITOR':'REPORTER';b.className=isEditor?'role-badge role-editor':'role-badge role-reporter';}
+function switchPage(id,el){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');document.querySelectorAll('.sidebar-section:first-child .sidebar-item').forEach(i=>i.classList.remove('active'));if(el)el.classList.add('active');if(id==='team')renderTeam();if(id==='ai-chatroom')renderChat();if(id==='factcheck')renderFC();if(id==='tips')renderTips();}
+function filterTopic(t){document.querySelectorAll('.topic-section').forEach(s=>{s.style.display=(t==='all'||s.dataset.topic===t)?'block':'none';});}
+
+function renderTeam(){document.getElementById('teamGrid').innerHTML=R.map((r,i)=>{const sc=r.status==='online'?'team-status-online':r.status==='away'?'team-status-away':'team-status-offline';return`<div class="team-card fade-in" style="animation-delay:${i*.05}s"><div class="team-status-indicator ${sc}"></div><div class="team-card-header"><div class="team-avatar-lg" style="background:${r.color}">${r.name[0]}</div><div><div class="name">${r.name}</div><div class="role">기자</div><div class="beat">${r.beat}</div></div></div><div class="team-stats-row"><div class="team-stat-box"><div class="val">${r.articles}</div><div class="lbl">기사</div></div><div class="team-stat-box"><div class="val">${r.views}</div><div class="lbl">조회</div></div><div class="team-stat-box"><div class="val">${(r.comments/1000).toFixed(1)}K</div><div class="lbl">댓글</div></div></div><div class="team-agendas">${r.agendas.map(a=>`<span class="team-agenda-tag">${a}</span>`).join('')}</div></div>`;}).join('');}
+
+function renderChat(){const c=document.getElementById('chatroomMessages');c.innerHTML='';const cfg={editor:{icon:'🤖',name:'편집장 AI',cls:'bubble-editor',bg:'#eef0f7'},desk:{icon:'📡',name:'데스크 AI',cls:'bubble-desk',bg:'#edf7ed'},seo:{icon:'🔍',name:'SEO AI',cls:'bubble-seo',bg:'#fef5e7'},system:{}};CM.forEach((m,i)=>{if(m.agent==='system'){const d=document.createElement('div');d.className='bubble-system fade-in';d.style.animationDelay=i*.06+'s';d.textContent=m.text;c.appendChild(d);}else{const cfg2=cfg[m.agent];const w=document.createElement('div');w.className='chat-msg fade-in';w.style.animationDelay=i*.06+'s';w.innerHTML=`<div class="chat-agent-icon" style="background:${cfg2.bg}">${cfg2.icon}</div><div class="chat-bubble ${cfg2.cls}"><span class="chat-name">${cfg2.name}</span>${m.text}<span class="chat-time">${m.time}</span></div>`;c.appendChild(w);}});setTimeout(()=>c.scrollTop=c.scrollHeight,100);}
+
+function renderFC(){document.getElementById('factcheckList').innerHTML=FC.map((f,i)=>{const sl=f.status==='pending'?'검증 대기':f.status==='verified'?'검증 완료':'이의 있음';const sc=f.status==='pending'?'fc-pending':f.status==='verified'?'fc-verified':'fc-disputed';const bc=f.status==='pending'?'':'done';const bt=f.status==='pending'?'🔍 팩트체크 실행':f.status==='verified'?'✓ 검증 완료':'⚠ 재검증 필요';return`<div class="factcheck-card fade-in" style="animation-delay:${i*.08}s"><div class="fc-header"><div><span class="fc-status-badge ${sc}">${sl}</span><div style="font-size:11px;color:var(--gray-400);margin-top:6px">📰 ${f.article} — ${f.reporter} 기자</div></div><button class="fc-run-btn ${bc}" onclick="runFC(this,'${f.id}')">${bt}</button></div><div class="fc-quote">"${f.quote}"</div><div style="font-size:12px;color:var(--orange);font-weight:600;margin-bottom:12px">⚡ ${f.claim}</div><div class="fc-meta-grid"><div class="fc-meta-item"><div class="fc-meta-label">검수자</div><div class="fc-meta-value">${f.verifier||'—'}</div></div><div class="fc-meta-item"><div class="fc-meta-label">검수일시</div><div class="fc-meta-value">${f.verifyDate||'—'}</div></div><div class="fc-meta-item"><div class="fc-meta-label">출처 수</div><div class="fc-meta-value">${f.sources.length}건</div></div></div><div class="modal-section-title">검증 출처 목록</div>${f.sources.map(s=>`<div class="fc-source-item"><span>${s.icon}</span><a href="${s.url}" target="_blank">${s.name}</a><span class="fc-src-date">${s.date}</span></div>`).join('')}</div>`;}).join('');}
+
+function runFC(btn,id){if(btn.classList.contains('done'))return;btn.classList.add('running');btn.innerHTML='⏳ 검증 중...';let p=0;const iv=setInterval(()=>{p+=Math.random()*30;if(p>=100){clearInterval(iv);btn.classList.remove('running');btn.classList.add('done');btn.innerHTML='✓ 검증 완료';const mv=btn.closest('.factcheck-card').querySelectorAll('.fc-meta-value');mv[0].textContent='AI 팩트체커';mv[1].textContent=new Date().toLocaleString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}},500);}
+
+function renderTips(){document.getElementById('tipInbox').innerHTML=TI.map(t=>{const bc=t.status==='new'?'tip-new':t.status==='review'?'tip-review':'tip-assigned';const bl=t.status==='new'?'신규':t.status==='review'?'검토중':'배정됨';return`<div class="tip-inbox-item"><span class="tip-inbox-badge ${bc}">${bl}</span><div class="tip-content"><div class="tip-title">${t.title}</div><div class="tip-meta">${t.source}·${t.date}·${t.topic}</div></div></div>`;}).join('');}
+
+function submitTip(b){b.textContent='✓ 암호화 전송 완료';b.style.background='var(--green)';setTimeout(()=>{b.textContent='🔒 암호화 제보 전송';b.style.background='';},2000);}
+
+function openModal(id){const info=AI_INFO[id];if(!info)return;document.getElementById('modalTitle').textContent=info.title;document.getElementById('modalTopic').textContent=info.topic;const arts=AA[id]||DA;const chips=info.reporters.map(n=>{const r=R.find(x=>x.name===n);return`<div class="reporter-chip"><div class="chip-avatar" style="background:${r?r.color:'#888'}">${n[0]}</div>${n} <span style="color:var(--gray-400);font-size:10px">·${r?r.beat:''}</span>${isEditor?`<span class="chip-remove" onclick="this.parentElement.remove()">✕</span>`:''}</div>`;}).join('');const al=arts.map(a=>{const dc=a.status==='published'?'dot-published':a.status==='writing'?'dot-writing':'dot-review';const lnk=a.url&&a.url!=='#';return`<div class="article-list-item"><div class="article-status-dot ${dc}"></div><div class="article-info"><div class="article-title">${lnk?`<a href="${a.url}" target="_blank">${a.title}</a>`:a.title}</div><div class="article-meta">${a.reporter}·${a.date}</div></div><div class="article-views">${a.views}</div></div>`;}).join('');document.getElementById('modalBody').innerHTML=`<div class="modal-section"><div class="modal-section-title">할당 기자 ${isEditor?'<span style="font-size:9px;color:var(--accent);font-weight:400;text-transform:none;letter-spacing:0">(Editor: 변경 가능)</span>':''}</div><div class="reporter-chips">${chips}</div></div><div class="modal-section"><div class="modal-section-title">기사 목록 (${arts.length})</div>${al}</div><div class="modal-section"><div class="modal-section-title">여론 분석</div><div style="display:flex;gap:16px"><div style="flex:1;text-align:center;padding:16px;background:#d5f5e3;border-radius:6px"><div style="font-size:24px;font-weight:700;color:#1e8449">${info.pos}%</div><div style="font-size:11px;color:#1e8449">긍정</div></div><div style="flex:1;text-align:center;padding:16px;background:var(--gray-100);border-radius:6px"><div style="font-size:24px;font-weight:700;color:var(--gray-500)">${info.neu}%</div><div style="font-size:11px;color:var(--gray-500)">중립</div></div><div style="flex:1;text-align:center;padding:16px;background:#fadbd8;border-radius:6px"><div style="font-size:24px;font-weight:700;color:#c0392b">${info.neg}%</div><div style="font-size:11px;color:#c0392b">부정</div></div></div><a class="opinion-detail-link" onclick="closeModal();setTimeout(()=>openOpinionModal('${id}'),300)">📊 여론 상세 분석 보기 →</a></div>`;document.getElementById('modalOverlay').classList.add('active');document.body.style.overflow='hidden';}
+function closeModal(e){if(e&&e.target!==e.currentTarget&&!e.target.classList.contains('modal-close'))return;document.getElementById('modalOverlay').classList.remove('active');document.body.style.overflow='';}
+
+function openOpinionModal(id){const info=AI_INFO[id];if(!info)return;document.getElementById('opinionModalSub').textContent=info.title;const kw=[{w:'규제 명확화',p:82,c:'var(--green)'},{w:'의료사고 책임',p:68,c:'var(--accent)'},{w:'RWD 활용',p:55,c:'var(--blue)'},{w:'수가 반영',p:48,c:'var(--orange)'},{w:'대형병원 편중',p:41,c:'var(--purple)'}];const comments=[{a:'내과의사_서울',t:'14:22',tx:'규제 명확화는 환영이지만 의료사고 책임 소재가 불분명합니다.'},{a:'영상의학전문의',t:'13:45',tx:'AI 판독 보조를 현장에서 쓰고 있는데, 정식 인허가가 마련되는 건 긍정적.'},{a:'가정의학과_대전',t:'13:12',tx:'1차 의료기관에서도 활용 가능한 AI 도구 급여화를 기대합니다.'},{a:'외과레지던트',t:'12:58',tx:'수술 보조 AI는 아직 먼데, 진단 보조만 먼저 가는 게 아쉽습니다.'},{a:'병원경영인',t:'12:30',tx:'도입 비용 대비 수가 미반영이면 결국 대형병원만 혜택을 봅니다.'}];
+document.getElementById('opinionModalBody').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px"><div style="background:white;border:1px solid var(--gray-200);border-radius:10px;padding:20px"><div class="modal-section-title">여론 분포</div><div style="display:flex;gap:12px;align-items:flex-end;height:120px;margin-top:10px"><div style="flex:1;display:flex;flex-direction:column;align-items:center"><div style="font-family:'JetBrains Mono';font-size:22px;font-weight:600;color:#1e8449">${info.pos}%</div><div style="width:100%;background:#d5f5e3;border-radius:4px;height:${info.pos*1.2}px;margin-top:6px"></div><div style="font-size:10px;margin-top:6px;color:var(--gray-500)">긍정</div></div><div style="flex:1;display:flex;flex-direction:column;align-items:center"><div style="font-family:'JetBrains Mono';font-size:22px;font-weight:600;color:var(--gray-500)">${info.neu}%</div><div style="width:100%;background:var(--gray-200);border-radius:4px;height:${info.neu*1.2}px;margin-top:6px"></div><div style="font-size:10px;margin-top:6px;color:var(--gray-500)">중립</div></div><div style="flex:1;display:flex;flex-direction:column;align-items:center"><div style="font-family:'JetBrains Mono';font-size:22px;font-weight:600;color:#c0392b">${info.neg}%</div><div style="width:100%;background:#fadbd8;border-radius:4px;height:${info.neg*1.2}px;margin-top:6px"></div><div style="font-size:10px;margin-top:6px;color:var(--gray-500)">부정</div></div></div></div><div style="background:white;border:1px solid var(--gray-200);border-radius:10px;padding:20px"><div class="modal-section-title">핵심 키워드</div>${kw.map(k=>`<div class="obc-row"><div class="obc-label">${k.w}</div><div class="obc-bar-wrap"><div class="obc-bar" style="width:${k.p}%;background:${k.c}">${k.p}%</div></div></div>`).join('')}</div></div><div class="modal-section"><div class="modal-section-title">주요 댓글 (의사 회원)</div>${comments.map(c=>`<div class="comment-sample"><span class="cm-author">${c.a}</span><span class="cm-time">${c.t}</span><br>${c.tx}</div>`).join('')}</div><div class="modal-section"><div class="modal-section-title">시간대별 변화</div><div style="padding:14px;background:var(--gray-100);border-radius:8px;font-size:12px;color:var(--gray-600);line-height:1.8"><div>09:00 — 긍정 ${info.pos-8}% / 중립 ${info.neu+5}% / 부정 ${info.neg+3}% <span style="color:var(--gray-400)">발행 직후</span></div><div>11:00 — 긍정 ${info.pos-4}% / 중립 ${info.neu+2}% / 부정 ${info.neg+2}% <span style="color:var(--gray-400)">SNS 확산</span></div><div>13:00 — 긍정 ${info.pos-1}% / 중립 ${info.neu}% / 부정 ${info.neg+1}% <span style="color:var(--gray-400)">커뮤니티 유입</span></div><div style="font-weight:700">14:00 — 긍정 ${info.pos}% / 중립 ${info.neu}% / 부정 ${info.neg}% <span style="color:var(--blue)">현재</span></div></div></div>`;
+document.getElementById('opinionModalOverlay').classList.add('active');document.body.style.overflow='hidden';}
+function closeOpinionModal(e){if(e&&e.target!==e.currentTarget&&!e.target.classList.contains('modal-close'))return;document.getElementById('opinionModalOverlay').classList.remove('active');document.body.style.overflow='';}
+
+const agentLogs={editor:{title:'편집장 에이전트',logs:[{t:'14:32',ty:'action',tx:'AI 의료기기 P2→P1 상향'},{t:'14:18',ty:'info',tx:'식약처 보도자료 감지→속보 부여'},{t:'13:45',ty:'warn',tx:'전공의 복귀율 댓글 급증→알림'},{t:'12:30',ty:'action',tx:'데일리 브리핑→슬랙 발송'},{t:'09:00',ty:'action',tx:'소스 48건 스캔→후보 3건'}]},desk:{title:'데스크 에이전트',logs:[{t:'14:20',ty:'info',tx:'네이버 실검 7위→3위'},{t:'13:50',ty:'action',tx:'이준혁 원고 팩트체크'},{t:'13:10',ty:'warn',tx:'경쟁사 속보 감지→알림'},{t:'12:00',ty:'action',tx:'A/B 테스트 세팅'},{t:'09:00',ty:'action',tx:'RSS 48개 모니터링 시작'}]},seo:{title:'SEO 에이전트',logs:[{t:'14:00',ty:'action',tx:'GLP-1 메타태그 최적화'},{t:'12:30',ty:'action',tx:'robots.txt GPTBot 허용'},{t:'11:00',ty:'info',tx:'Search Console 색인 12건'},{t:'10:00',ty:'warn',tx:'EMR 구조화 데이터 삽입'},{t:'09:00',ty:'action',tx:'MedicalArticle 마크업 검증'}]}};
+
+function openAgentModal(type){const d=agentLogs[type];document.getElementById('agentModalTitle').textContent=d.title;document.getElementById('agentModalBody').innerHTML=`<div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:8px;padding:20px;color:white"><div style="font-size:11px;font-weight:700;margin-bottom:10px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">활동 로그</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;color:rgba(255,255,255,.7)">${d.logs.map(l=>{const c=l.ty==='action'?'#2ecc71':l.ty==='warn'?'#f39c12':'#3498db';const lb=l.ty==='action'?'ACTION':l.ty==='warn'?'ALERT':'DETECT';return`<div><span style="color:rgba(255,255,255,.35)">${l.t}</span> <span style="color:${c}">[${lb}]</span> ${l.tx}</div>`;}).join('')}</div></div>`;document.getElementById('agentModalOverlay').classList.add('active');document.body.style.overflow='hidden';}
+function closeAgentModal(e){if(e&&e.target!==e.currentTarget&&!e.target.classList.contains('modal-close'))return;document.getElementById('agentModalOverlay').classList.remove('active');document.body.style.overflow='';}
+
+document.querySelectorAll('.view-tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.view-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeAgentModal();closeOpinionModal();}});
+</script>
+</body>
+</html>
