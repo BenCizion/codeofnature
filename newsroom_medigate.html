@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -7,485 +6,458 @@
 <title>Newsroom — AI-Native Newsroom Platform</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#08080a;--paper:#f6f4f0;--accent:#c23616;--blue:#1a5276;--blue-soft:#d4e6f1;--green:#1e8449;--green-soft:#d5f5e3;--purple:#6c3483;--purple-soft:#e8daef;--orange:#d35400;--orange-soft:#fdebd0;--gray-100:#f7f5f2;--gray-200:#e8e4de;--gray-300:#d5d0c8;--gray-400:#a09888;--gray-500:#7a7265;--gray-600:#5a5348;--gray-700:#3a352e;--radius:6px;--shadow-sm:0 1px 3px rgba(0,0,0,.06);--shadow-md:0 4px 14px rgba(0,0,0,.08);--shadow-lg:0 8px 32px rgba(0,0,0,.12);--transition:.2s cubic-bezier(.4,0,.2,1)}
+:root{--ink:#08080a;--paper:#f6f4f0;--accent:#c23616;--blue:#1a5276;--blue-soft:#d4e6f1;--green:#1e8449;--green-soft:#d5f5e3;--purple:#6c3483;--purple-soft:#e8daef;--orange:#d35400;--orange-soft:#fdebd0;--gray-100:#f7f5f2;--gray-200:#e8e4de;--gray-300:#d5d0c8;--gray-400:#a09888;--gray-500:#7a7265;--gray-600:#5a5348;--gray-700:#3a352e;--radius:6px;--shadow-sm:0 1px 3px rgba(0,0,0,.06);--shadow-md:0 4px 14px rgba(0,0,0,.08);--shadow-lg:0 8px 32px rgba(0,0,0,.12);--tr:.2s cubic-bezier(.4,0,.2,1)}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Noto Sans KR',sans-serif;background:var(--paper);color:var(--ink);font-size:14px;line-height:1.6;overflow-x:hidden}
+
+/* TOPBAR */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:52px;background:var(--ink);color:var(--paper);position:sticky;top:0;z-index:100}
 .topbar-brand{display:flex;align-items:center;gap:12px}
-.logo{font-family:'Playfair Display',serif;font-weight:900;font-size:20px;letter-spacing:-.5px}.logo-dot{color:var(--accent)}
-.org-name{font-size:12px;color:var(--gray-400);border-left:1px solid var(--gray-600);padding-left:12px;margin-left:4px}
-.topbar-center{display:flex;align-items:center;gap:20px}
+.logo{font-family:'Playfair Display',serif;font-weight:900;font-size:20px}.logo-dot{color:var(--accent)}
+.org-name{font-size:12px;color:var(--gray-400);border-left:1px solid var(--gray-600);padding-left:12px}
+.topbar-center{display:flex;align-items:center;gap:16px}
 .live-readers{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.6)}
-.live-readers .num{font-family:'JetBrains Mono',monospace;font-weight:600;color:#2ecc71;font-size:13px}
+.live-readers .num{font-family:'JetBrains Mono';font-weight:600;color:#2ecc71;font-size:13px}
 .live-dot{width:6px;height:6px;background:#2ecc71;border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.6)}}
 .ai-badge{display:flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.25);border-radius:20px;font-size:10px;font-weight:600;color:#2ecc71}
-.topbar-right{display:flex;align-items:center;gap:14px}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.wall-btn{padding:4px 10px;border-radius:4px;font-size:10px;font-weight:700;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.15);cursor:pointer;transition:var(--tr)}
+.wall-btn:hover{background:rgba(255,255,255,.2);color:white}
 .role-badge{padding:3px 10px;border-radius:4px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;cursor:pointer}
-.role-editor{background:var(--accent);color:white}.role-reporter{background:var(--blue);color:white}
+.role-editor{background:var(--accent);color:white}
 .notif-bell{position:relative;cursor:pointer;font-size:16px}.notif-dot{position:absolute;top:-2px;right:-4px;width:8px;height:8px;background:var(--accent);border-radius:50%;border:2px solid var(--ink)}
 .user-avatar{width:30px;height:30px;border-radius:50%;background:var(--gray-600);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;cursor:pointer}
 .layout{display:flex;min-height:calc(100vh - 52px)}
-.sidebar{width:232px;min-width:232px;background:white;border-right:1px solid var(--gray-200);padding:16px 0;display:flex;flex-direction:column;overflow-y:auto;max-height:calc(100vh - 52px)}
-.sidebar-section{padding:0 14px;margin-bottom:18px}
-.sidebar-section-title{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.4px;color:var(--gray-400);margin-bottom:6px;padding:0 8px}
-.sidebar-item{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:var(--radius);cursor:pointer;transition:var(--transition);font-size:12.5px;color:var(--gray-600)}
-.sidebar-item:hover{background:var(--gray-100);color:var(--ink)}
-.sidebar-item.active{background:var(--ink);color:white;font-weight:600}
-.sidebar-item .icon{width:18px;text-align:center;font-size:13px}
-.sidebar-item .count{margin-left:auto;background:var(--gray-200);color:var(--gray-500);font-size:9px;font-weight:700;padding:1px 6px;border-radius:8px}
-.sidebar-item.active .count{background:rgba(255,255,255,.15);color:rgba(255,255,255,.7)}
-.sidebar-topic-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0}
-.sidebar-new{font-size:7px;font-weight:900;background:var(--accent);color:white;padding:1px 4px;border-radius:3px;margin-left:4px}
-.sidebar-spacer{flex:1;min-height:10px}
-.sidebar-ai-section{padding:0 14px}
-.ai-agent-card{background:linear-gradient(135deg,#12122a,#1a2440);border-radius:8px;padding:10px 12px;color:white;margin-bottom:5px;cursor:pointer;transition:var(--transition)}
-.ai-agent-card:hover{transform:translateY(-1px);box-shadow:var(--shadow-md)}
-.agent-header{display:flex;align-items:center;gap:7px;margin-bottom:4px}
-.agent-icon{width:24px;height:24px;background:rgba(255,255,255,.08);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px}
-.agent-name{font-size:10.5px;font-weight:700}.agent-role{font-size:8px;color:rgba(255,255,255,.4)}
-.agent-status{font-size:9px;color:rgba(255,255,255,.5)}
-.agent-status code{font-family:'JetBrains Mono',monospace;font-size:8px;background:rgba(255,255,255,.06);padding:1px 4px;border-radius:3px}
+
+/* SIDEBAR */
+.sidebar{width:228px;min-width:228px;background:white;border-right:1px solid var(--gray-200);padding:16px 0;display:flex;flex-direction:column;overflow-y:auto;max-height:calc(100vh - 52px)}
+.sidebar-section{padding:0 12px;margin-bottom:16px}
+.ss-title{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.4px;color:var(--gray-400);margin-bottom:6px;padding:0 8px}
+.si{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:var(--radius);cursor:pointer;transition:var(--tr);font-size:12px;color:var(--gray-600)}
+.si:hover{background:var(--gray-100);color:var(--ink)}.si.active{background:var(--ink);color:white;font-weight:600}
+.si .icon{width:16px;text-align:center;font-size:12px}
+.si .cnt{margin-left:auto;background:var(--gray-200);color:var(--gray-500);font-size:8px;font-weight:700;padding:1px 5px;border-radius:8px}
+.si.active .cnt{background:rgba(255,255,255,.15);color:rgba(255,255,255,.7)}
+.si-new{font-size:7px;font-weight:900;background:var(--accent);color:white;padding:1px 4px;border-radius:3px;margin-left:auto}
+.sidebar-spacer{flex:1;min-height:8px}
+.ai-card{background:linear-gradient(135deg,#12122a,#1a2440);border-radius:7px;padding:9px 11px;color:white;margin-bottom:4px;cursor:pointer;transition:var(--tr)}
+.ai-card:hover{transform:translateY(-1px)}
+.ai-card .ah{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.ai-card .ai-icon{width:22px;height:22px;background:rgba(255,255,255,.08);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px}
+.ai-card .an{font-size:10px;font-weight:700}.ai-card .ar{font-size:8px;color:rgba(255,255,255,.4)}
+.ai-card .as{font-size:8px;color:rgba(255,255,255,.45)}
+.ai-card .as code{font-family:'JetBrains Mono';font-size:7px;background:rgba(255,255,255,.06);padding:1px 3px;border-radius:2px}
+
+/* MAIN */
 .main{flex:1;padding:20px 24px;overflow-y:auto;max-height:calc(100vh - 52px)}
 .page{display:none}.page.active{display:block}
-.dash-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--ink)}
-.dash-header h1{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;letter-spacing:-.5px;line-height:1.1}
-.dash-header .subtitle{font-size:12px;color:var(--gray-500);margin-top:3px}
-.dash-stats{display:flex;gap:20px}
-.dash-stat{text-align:right}.stat-value{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;line-height:1}
-.stat-label{font-size:9px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
-/* Briefing */
-.briefing-banner{background:linear-gradient(135deg,#12122a 0%,#1a2440 50%,#0d2137 100%);border-radius:12px;padding:24px 28px;color:white;margin-bottom:24px;position:relative;overflow:hidden}
-.briefing-banner::before{content:'';position:absolute;top:-50%;right:-10%;width:300px;height:300px;background:radial-gradient(circle,rgba(46,204,113,.08) 0%,transparent 70%);pointer-events:none}
-.briefing-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;position:relative;z-index:1}
-.briefing-label{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,.5)}
-.briefing-time{font-size:10px;color:rgba(255,255,255,.3);font-family:'JetBrains Mono',monospace}
-.briefing-body{position:relative;z-index:1}
-.briefing-headline{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;line-height:1.35;margin-bottom:12px}
-.briefing-items{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-.briefing-item{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:11px}
-.bi-label{font-size:8px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
-.bi-value{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600}
-.bi-sub{font-size:9px;color:rgba(255,255,255,.35);margin-top:1px}
-.bi-green{color:#2ecc71}.bi-blue{color:#3498db}.bi-orange{color:#f39c12}.bi-accent{color:#e74c3c}
-.briefing-recs{display:flex;gap:8px;flex-wrap:wrap}
-.briefing-rec{display:flex;align-items:center;gap:5px;padding:5px 12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;font-size:10px;color:rgba(255,255,255,.8);cursor:pointer;transition:var(--transition)}
-.briefing-rec:hover{background:rgba(255,255,255,.12)}
-/* Competitive */
-.competitive-bar{display:flex;align-items:stretch;background:white;border:1px solid var(--gray-200);border-radius:var(--radius);margin-bottom:20px;overflow:hidden}
-.comp-label{padding:10px 14px;background:var(--ink);color:white;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:6px;white-space:nowrap}
-.comp-items{display:flex;flex:1;overflow-x:auto}
-.comp-item{padding:8px 16px;border-right:1px solid var(--gray-100);min-width:155px;cursor:pointer;transition:var(--transition)}
-.comp-item:hover{background:var(--gray-100)}
-.comp-outlet{font-size:9px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.comp-headline{font-size:11px;font-weight:500;line-height:1.3;margin-top:2px}
-.comp-time{font-size:9px;color:var(--gray-400);font-family:'JetBrains Mono',monospace;margin-top:2px}
-.comp-item.comp-alert{background:#fff5f5;border-left:3px solid var(--accent)}.comp-item.comp-alert .comp-outlet{color:var(--accent)}
-/* Trending */
-.trending-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:white;border:1px solid var(--gray-200);border-radius:var(--radius);margin-bottom:20px;overflow-x:auto}
-.trending-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--accent);white-space:nowrap}
-.trending-item{display:flex;align-items:center;gap:5px;padding:4px 12px;background:var(--gray-100);border-radius:16px;font-size:11px;white-space:nowrap;cursor:pointer;transition:var(--transition)}
-.trending-item:hover{background:var(--ink);color:white}
-.heat{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--accent);font-weight:600}
-.trending-item:hover .heat{color:#ff9f7f}
-/* Tabs */
-.view-tabs{display:flex;gap:2px;margin-bottom:20px;background:var(--gray-200);border-radius:var(--radius);padding:2px;width:fit-content}
-.view-tab{padding:5px 14px;font-size:11px;font-weight:500;border-radius:4px;cursor:pointer;transition:var(--transition);color:var(--gray-500);background:transparent;border:none}
-.view-tab:hover{color:var(--ink)}.view-tab.active{background:white;color:var(--ink);box-shadow:var(--shadow-sm)}
-/* Topic */
-.topic-section{margin-bottom:28px}.topic-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.topic-color-bar{width:4px;height:22px;border-radius:2px}.topic-name{font-size:15px;font-weight:700}
-.topic-meta{font-size:10px;color:var(--gray-400);font-family:'JetBrains Mono',monospace}
-.topic-actions{margin-left:auto}
-.topic-action-btn{padding:3px 10px;font-size:10px;border:1px solid var(--gray-300);border-radius:4px;background:white;cursor:pointer;color:var(--gray-500);transition:var(--transition)}
-.topic-action-btn:hover{border-color:var(--ink);color:var(--ink)}
-/* Agenda Cards */
-.agenda-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px}
-.agenda-card{background:white;border:1px solid var(--gray-200);border-radius:8px;padding:16px;cursor:pointer;transition:var(--transition);position:relative;overflow:hidden}
-.agenda-card:hover{border-color:var(--gray-300);box-shadow:var(--shadow-md);transform:translateY(-2px)}
-.card-stripe{position:absolute;top:0;left:0;width:100%;height:3px}
-.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
-.card-status{font-size:9px;font-weight:800;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:.4px}
-.status-active{background:#d5f5e3;color:#1e8449}.status-draft{background:var(--gray-200);color:var(--gray-500)}.status-hot{background:#fadbd8;color:#c0392b}.status-review{background:#fdebd0;color:#d35400}
-.card-priority{font-size:10px;color:var(--gray-400)}
-.agenda-card h3{font-size:14px;font-weight:700;line-height:1.35;margin-bottom:5px}
-.card-desc{font-size:11px;color:var(--gray-500);line-height:1.5;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card-metrics{display:flex;gap:0;margin-bottom:12px;background:var(--gray-100);border-radius:4px;overflow:hidden}
-.card-metric{display:flex;flex-direction:column;align-items:center;flex:1;padding:8px 4px;border-right:1px solid var(--gray-200)}
-.card-metric:last-child{border:none}
-.metric-val{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;line-height:1}
-.metric-label{font-size:8px;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);margin-top:2px}
-.card-bottom{display:flex;align-items:center;justify-content:space-between}
-.reporter-group{display:flex;align-items:center}
-.reporter-avatar{width:24px;height:24px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;margin-left:-5px;position:relative;cursor:pointer;transition:var(--transition)}
-.reporter-avatar:first-child{margin-left:0}
-.reporter-avatar:hover{transform:scale(1.15);z-index:2}
-.reporter-avatar .tooltip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--ink);color:white;padding:3px 7px;border-radius:4px;font-size:9px;white-space:nowrap;margin-bottom:3px}
-.reporter-avatar:hover .tooltip{display:block}
-.reporter-add{width:24px;height:24px;border-radius:50%;border:1.5px dashed var(--gray-300);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--gray-400);margin-left:-5px;cursor:pointer;background:white}
-.articles-count{font-size:10px;color:var(--gray-400);font-family:'JetBrains Mono',monospace}
-.opinion-bar{display:flex;height:4px;border-radius:2px;overflow:hidden;margin-top:10px;gap:1px}
-.seg-pos{background:var(--green)}.seg-neu{background:var(--gray-300)}.seg-neg{background:var(--accent)}
-.opinion-label{display:flex;justify-content:space-between;margin-top:3px;font-size:8px;color:var(--gray-400)}
-.card-ai-insight{display:flex;align-items:center;gap:5px;margin-top:10px;padding:6px 10px;background:linear-gradient(135deg,#f0ebff,#e8f4ff);border-radius:5px;font-size:10px;color:var(--purple);border:1px solid rgba(108,52,131,.1)}
-/* Right Panel */
-.right-panel{width:290px;min-width:290px;background:white;border-left:1px solid var(--gray-200);padding:16px;overflow-y:auto;max-height:calc(100vh - 52px)}
-.panel-title{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--gray-400);margin-bottom:12px}
-.panel-section{margin-bottom:24px}
-.live-feed-item{padding:8px 0;border-bottom:1px solid var(--gray-100)}
-.feed-time{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--gray-400);margin-bottom:1px}
-.feed-content{font-size:11px;line-height:1.4;color:var(--gray-700)}
-.feed-tag{display:inline-block;padding:1px 5px;border-radius:3px;font-size:8px;font-weight:700;margin-top:3px;text-transform:uppercase}
-.tag-ai{background:#e8daef;color:#6c3483}.tag-breaking{background:#fadbd8;color:#c0392b}.tag-assign{background:#d4e6f1;color:#1a5276}.tag-publish{background:#d5f5e3;color:#1e8449}.tag-fc{background:#fef5e7;color:var(--orange)}.tag-opinion{background:#fce4ec;color:#c2185b}
-.ai-impact-card{background:linear-gradient(135deg,#12122a,#1a2440);border-radius:8px;padding:14px;color:white;margin-bottom:6px}
-.ai-impact-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0}
-.ai-impact-row .label{font-size:10px;color:rgba(255,255,255,.5)}
-.ai-impact-row .value{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600}
-.seo-card{background:var(--gray-100);border-radius:var(--radius);padding:10px;margin-bottom:6px}
-.seo-label{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--gray-400);letter-spacing:.5px;margin-bottom:3px}
-.seo-score{display:flex;align-items:center;gap:6px}
-.seo-score-bar{flex:1;height:5px;background:var(--gray-200);border-radius:3px;overflow:hidden}
-.seo-score-fill{height:100%;border-radius:3px}
-.seo-score-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600}
-/* Modals */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center}
-.modal-overlay.active{display:flex}
-.modal{background:white;border-radius:12px;max-width:95vw;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:modalIn .3s ease}
-@keyframes modalIn{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
-.modal-header{padding:18px 22px;border-bottom:1px solid var(--gray-200);display:flex;align-items:flex-start;justify-content:space-between;position:sticky;top:0;background:white;z-index:1}
-.modal-header h2{font-size:17px;font-weight:700}.modal-topic{font-size:10px;color:var(--gray-400);margin-top:2px}
-.modal-close{width:26px;height:26px;border-radius:6px;border:1px solid var(--gray-200);background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--gray-500);transition:var(--transition)}
-.modal-close:hover{background:var(--gray-100);color:var(--ink)}
-.modal-body{padding:22px}.modal-section{margin-bottom:22px}
-.modal-section-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);margin-bottom:10px}
 
-/* ═══ OPINION INTELLIGENCE ═══ */
-.oi-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-.oi-card{background:white;border:1px solid var(–gray-200);border-radius:10px;padding:18px;transition:var(–transition)}
-.oi-card:hover{box-shadow:var(–shadow-md)}
-.oi-card-title{font-size:12px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.oi-card-title .oi-icon{font-size:14px}
+/* COMMON */
+.dh{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:2px solid var(--ink)}
+.dh h1{font-family:'Playfair Display',serif;font-size:24px;font-weight:900;letter-spacing:-.5px;line-height:1.1}
+.dh .sub{font-size:11px;color:var(--gray-500);margin-top:3px}
+.ds{display:flex;gap:16px}
+.dst{text-align:right}.dst .v{font-family:'JetBrains Mono';font-size:18px;font-weight:600;line-height:1}.dst .l{font-size:8px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
+.oi-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.oi-card{background:white;border:1px solid var(--gray-200);border-radius:9px;padding:16px;transition:var(--tr)}
+.oi-card:hover{box-shadow:var(--shadow-md)}
+.oi-title{font-size:11px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:5px}
 .oi-full{grid-column:1/-1}
-/* Heatmap */
-.heatmap-grid{display:grid;grid-template-columns:60px repeat(8,1fr);gap:2px;font-size:9px}
-.heatmap-label{display:flex;align-items:center;justify-content:flex-end;padding-right:6px;color:var(–gray-500);font-weight:500}
-.heatmap-header{text-align:center;color:var(–gray-400);font-family:‘JetBrains Mono’,monospace;padding:3px 0;font-size:8px}
-.heatmap-cell{border-radius:3px;height:28px;display:flex;align-items:center;justify-content:center;font-family:‘JetBrains Mono’,monospace;font-size:8px;font-weight:600;color:white;cursor:pointer;transition:var(–transition)}
-.heatmap-cell:hover{transform:scale(1.1);z-index:1}
-/* Specialty bars */
-.spec-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.spec-name{width:70px;font-size:10px;font-weight:500;text-align:right;flex-shrink:0}
-.spec-bar-wrap{flex:1;display:flex;height:22px;border-radius:3px;overflow:hidden;gap:1px}
-.spec-seg{display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:white;transition:width .8s ease}
-.spec-count{width:35px;font-size:9px;color:var(–gray-400);text-align:right;font-family:‘JetBrains Mono’,monospace;flex-shrink:0}
-/* KOL */
-.kol-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(–gray-100)}
-.kol-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0}
-.kol-info{flex:1}
-.kol-name{font-size:12px;font-weight:600}.kol-spec{font-size:10px;color:var(–gray-400)}
-.kol-stats{display:flex;gap:12px;margin-top:2px}
-.kol-stat{font-size:9px;color:var(–gray-500)}.kol-stat b{color:var(–ink);font-family:‘JetBrains Mono’,monospace}
-.kol-action{padding:4px 10px;background:var(–blue-soft);color:var(–blue);border:none;border-radius:4px;font-size:9px;font-weight:600;cursor:pointer;transition:var(–transition);white-space:nowrap}
-.kol-action:hover{background:var(–blue);color:white}
-/* Tone Gap */
-.gap-item{padding:12px;background:var(–gray-100);border-radius:8px;margin-bottom:8px}
-.gap-item-title{font-size:12px;font-weight:600;margin-bottom:8px}
-.gap-bars{display:flex;gap:12px;align-items:center}
-.gap-bar-col{flex:1}
-.gap-bar-label{font-size:9px;color:var(–gray-400);margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px}
-.gap-bar{height:8px;border-radius:4px;display:flex;gap:1px;overflow:hidden}
-.gap-alert{display:flex;align-items:center;gap:5px;margin-top:8px;font-size:10px;color:var(–accent);font-weight:600}
-/* Agenda Discovery */
-.discovery-item{display:flex;align-items:center;gap:12px;padding:10px;background:var(–gray-100);border-radius:8px;margin-bottom:6px;cursor:pointer;transition:var(–transition)}
-.discovery-item:hover{background:var(–gray-200)}
-.discovery-keyword{font-size:13px;font-weight:700;color:var(–blue)}
-.discovery-meta{font-size:10px;color:var(–gray-500)}
-.discovery-action{margin-left:auto;padding:4px 10px;background:var(–ink);color:white;border:none;border-radius:4px;font-size:9px;font-weight:600;cursor:pointer;white-space:nowrap}
-.discovery-action:hover{background:var(–blue)}
-/* Poll */
-.poll-card{background:white;border:1px solid var(–gray-200);border-radius:10px;padding:16px;margin-bottom:10px}
-.poll-question{font-size:13px;font-weight:700;margin-bottom:10px}
-.poll-option{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.poll-option-bar{flex:1;height:28px;background:var(–gray-100);border-radius:4px;overflow:hidden;position:relative}
-.poll-option-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:10px;font-size:11px;font-weight:600;color:white;transition:width 1s ease}
-.poll-option-label{font-size:11px;min-width:140px}
-.poll-pct{font-family:‘JetBrains Mono’,monospace;font-size:12px;font-weight:600;width:40px;text-align:right}
-.poll-respondents{font-size:10px;color:var(–gray-400);margin-top:6px;font-family:‘JetBrains Mono’,monospace}
-/* Regional Map */
-.region-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.region-box{padding:12px;background:var(–gray-100);border-radius:8px;text-align:center;transition:var(–transition);cursor:pointer}
-.region-box:hover{background:var(–gray-200)}
-.region-name{font-size:11px;font-weight:600;margin-bottom:4px}
-.region-temp{font-family:‘JetBrains Mono’,monospace;font-size:20px;font-weight:700;line-height:1}
-.region-detail{font-size:9px;color:var(–gray-400);margin-top:2px}
-.region-bar{height:4px;border-radius:2px;margin-top:6px;display:flex;gap:1px;overflow:hidden}
+.btn-sm{padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;border:none;cursor:pointer;transition:var(--tr)}
+.btn-dark{background:var(--ink);color:white}.btn-dark:hover{background:var(--blue)}
+.btn-green{background:var(--green);color:white}
+.btn-outline{background:white;color:var(--gray-600);border:1px solid var(--gray-200)}.btn-outline:hover{border-color:var(--ink);color:var(--ink)}
+.tag-sm{display:inline-block;padding:1px 5px;border-radius:3px;font-size:8px;font-weight:700;text-transform:uppercase}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* ─── BRIEFING ─── */
+.briefing{background:linear-gradient(135deg,#12122a,#1a2440,#0d2137);border-radius:11px;padding:22px 26px;color:white;margin-bottom:20px;position:relative;overflow:hidden}
+.briefing::before{content:'';position:absolute;top:-50%;right:-10%;width:300px;height:300px;background:radial-gradient(circle,rgba(46,204,113,.07) 0%,transparent 70%);pointer-events:none}
+.briefing .bt{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;position:relative;z-index:1}
+.briefing .bl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,.45);display:flex;align-items:center;gap:7px}
+.briefing .btime{font-size:9px;color:rgba(255,255,255,.25);font-family:'JetBrains Mono'}
+.briefing .bh{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;line-height:1.35;margin-bottom:11px;position:relative;z-index:1}
+.briefing .bi{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:12px;position:relative;z-index:1}
+.briefing .bi-item{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:7px;padding:10px}
+.bi-l{font-size:7px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.bi-v{font-family:'JetBrains Mono';font-size:17px;font-weight:600}
+.bi-s{font-size:8px;color:rgba(255,255,255,.3);margin-top:1px}
+.bi-g{color:#2ecc71}.bi-b{color:#3498db}.bi-o{color:#f39c12}.bi-a{color:#e74c3c}
+.briefing .br{display:flex;gap:7px;flex-wrap:wrap;position:relative;z-index:1}
+.briefing .br-item{padding:4px 11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:14px;font-size:9px;color:rgba(255,255,255,.75);cursor:pointer}
+.briefing .br-item:hover{background:rgba(255,255,255,.1)}
+
+/* ─── LIVE COMMENT HUB (피드백 #4) ─── */
+.comment-hub{display:flex;gap:0;background:white;border:1px solid var(--gray-200);border-radius:var(--radius);margin-bottom:18px;overflow:hidden}
+.comment-hub .ch-label{padding:8px 12px;background:var(--accent);color:white;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:5px;white-space:nowrap;writing-mode:horizontal-tb}
+.comment-hub .ch-items{display:flex;flex:1;overflow-x:auto;gap:0}
+.ch-item{padding:8px 14px;border-right:1px solid var(--gray-100);min-width:220px;cursor:pointer;transition:var(--tr)}
+.ch-item:hover{background:var(--gray-100)}
+.ch-item .ch-article{font-size:10px;font-weight:600;line-height:1.3;margin-bottom:3px;color:var(--ink)}
+.ch-item .ch-comment{font-size:10px;color:var(--gray-600);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ch-item .ch-meta{font-size:8px;color:var(--gray-400);margin-top:3px;display:flex;align-items:center;gap:8px}
+.ch-item .ch-heat{font-family:'JetBrains Mono';font-size:9px;font-weight:600;color:var(--accent)}
+.ch-item.ch-hot{border-bottom:2px solid var(--accent)}
+
+/* ─── COMPETITIVE BAR ─── */
+.comp-bar{display:flex;background:white;border:1px solid var(--gray-200);border-radius:var(--radius);margin-bottom:18px;overflow:hidden}
+.comp-bar .cl{padding:8px 12px;background:var(--ink);color:white;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.comp-bar .ci{display:flex;flex:1;overflow-x:auto}
+.comp-item{padding:7px 14px;border-right:1px solid var(--gray-100);min-width:150px;cursor:pointer;transition:var(--tr)}
+.comp-item:hover{background:var(--gray-100)}
+.comp-item .co{font-size:8px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.comp-item .ch{font-size:10px;font-weight:500;line-height:1.3;margin-top:1px}
+.comp-item .ct{font-size:8px;color:var(--gray-400);font-family:'JetBrains Mono';margin-top:1px}
+.comp-item.comp-alert{background:#fff5f5;border-left:3px solid var(--accent)}.comp-item.comp-alert .co{color:var(--accent)}
+
+/* AGENDA CARDS */
+.agenda-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:11px}
+.a-card{background:white;border:1px solid var(--gray-200);border-radius:8px;padding:15px;cursor:pointer;transition:var(--tr);position:relative;overflow:hidden}
+.a-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.a-card .stripe{position:absolute;top:0;left:0;width:100%;height:3px}
+.a-card .top{display:flex;justify-content:space-between;margin-bottom:6px}
+.badge{font-size:8px;font-weight:800;padding:2px 7px;border-radius:3px;text-transform:uppercase;letter-spacing:.3px}
+.bg-hot{background:#fadbd8;color:#c0392b}.bg-active{background:#d5f5e3;color:#1e8449}.bg-draft{background:var(--gray-200);color:var(--gray-500)}
+.a-card h3{font-size:13px;font-weight:700;line-height:1.35;margin-bottom:4px}
+.a-card .desc{font-size:10px;color:var(--gray-500);line-height:1.4;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.metrics{display:flex;background:var(--gray-100);border-radius:4px;overflow:hidden;margin-bottom:10px}
+.metric{flex:1;padding:7px 3px;text-align:center;border-right:1px solid var(--gray-200)}
+.metric:last-child{border:none}
+.metric .mv{font-family:'JetBrains Mono';font-size:14px;font-weight:600;line-height:1}
+.metric .ml{font-size:7px;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);margin-top:1px}
+.a-card .bottom{display:flex;align-items:center;justify-content:space-between}
+.avatars{display:flex}.av{width:22px;height:22px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:white;margin-left:-4px;position:relative}.av:first-child{margin-left:0}
+.av .tip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--ink);color:white;padding:2px 6px;border-radius:3px;font-size:8px;white-space:nowrap;margin-bottom:2px}
+.av:hover .tip{display:block}
+.a-card .insight{display:flex;align-items:center;gap:4px;margin-top:8px;padding:5px 8px;background:linear-gradient(135deg,#f0ebff,#e8f4ff);border-radius:4px;font-size:9px;color:var(--purple);border:1px solid rgba(108,52,131,.08)}
+.obar{display:flex;height:3px;border-radius:2px;overflow:hidden;margin-top:8px;gap:1px}
+.obar .sp{background:var(--green)}.obar .sn{background:var(--gray-300)}.obar .sng{background:var(--accent)}
+
+/* ─── RIGHT PANEL ─── */
+.right-panel{width:280px;min-width:280px;background:white;border-left:1px solid var(--gray-200);padding:14px;overflow-y:auto;max-height:calc(100vh - 52px)}
+.pt{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--gray-400);margin-bottom:10px}
+.ps{margin-bottom:20px}
+.fi{padding:7px 0;border-bottom:1px solid var(--gray-100)}
+.fi .ft{font-size:8px;font-family:'JetBrains Mono';color:var(--gray-400);margin-bottom:1px}
+.fi .fc{font-size:10px;line-height:1.4;color:var(--gray-700)}
+.ai-impact{background:linear-gradient(135deg,#12122a,#1a2440);border-radius:7px;padding:12px;color:white;margin-bottom:5px}
+.ai-row{display:flex;justify-content:space-between;padding:4px 0;font-size:10px}
+.ai-row .al{color:rgba(255,255,255,.45)}.ai-row .av2{font-family:'JetBrains Mono';font-weight:600}
+
+/* ─── EMAIL MAILROOM (#1) ─── */
+.mail-list{display:flex;flex-direction:column;gap:8px}
+.mail-card{background:white;border:1px solid var(--gray-200);border-radius:9px;padding:16px;transition:var(--tr);position:relative}
+.mail-card:hover{box-shadow:var(--shadow-md)}
+.mail-card.mail-high{border-left:3px solid var(--accent)}
+.mail-card.mail-mid{border-left:3px solid var(--orange)}
+.mail-card.mail-low{border-left:3px solid var(--gray-300)}
+.mail-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.mail-from{font-size:12px;font-weight:600}.mail-time{font-size:9px;color:var(--gray-400);font-family:'JetBrains Mono'}
+.mail-subject{font-size:13px;font-weight:700;margin-bottom:4px}
+.mail-preview{font-size:11px;color:var(--gray-500);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mail-ai-box{background:linear-gradient(135deg,#f0ebff,#e8f4ff);border:1px solid rgba(108,52,131,.1);border-radius:7px;padding:10px 12px;margin-bottom:10px}
+.mail-ai-label{font-size:9px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.mail-ai-summary{font-size:11px;line-height:1.5;color:var(--gray-700)}
+.mail-ai-tags{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.mail-tag{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:500}
+.mail-actions{display:flex;gap:6px;align-items:center}
+.mail-draft-box{background:var(--gray-100);border-radius:7px;padding:12px;margin-top:10px;display:none}
+.mail-draft-box.show{display:block}
+.mail-draft-label{font-size:9px;font-weight:700;color:var(--gray-500);text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.mail-draft-content{font-size:11px;line-height:1.7;color:var(--gray-700)}
+.smtp-badge{display:flex;align-items:center;gap:5px;padding:5px 10px;background:var(--green-soft);border-radius:6px;font-size:9px;color:var(--green);font-weight:600}
+
+/* ─── PR PORTAL (#5) ─── */
+.pr-card{background:white;border:1px solid var(--gray-200);border-radius:9px;padding:16px;margin-bottom:10px;transition:var(--tr)}
+.pr-card:hover{box-shadow:var(--shadow-md)}
+.pr-company{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.pr-logo{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:white}
+.pr-company-name{font-size:13px;font-weight:700}.pr-company-type{font-size:9px;color:var(--gray-400)}
+.pr-title{font-size:12px;font-weight:600;margin-bottom:4px}
+.pr-status{display:flex;gap:8px;margin-bottom:8px}
+.pr-stat-item{padding:6px 10px;background:var(--gray-100);border-radius:5px;text-align:center;flex:1}
+.pr-stat-item .pv{font-family:'JetBrains Mono';font-size:14px;font-weight:600}
+.pr-stat-item .pl{font-size:7px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.4px}
+.pr-feedback-box{background:var(--blue-soft);border-radius:6px;padding:10px;margin-top:8px}
+.pr-fb-label{font-size:9px;font-weight:700;color:var(--blue);margin-bottom:4px}
+.pr-fb-content{font-size:11px;line-height:1.5;color:var(--gray-700)}
+.pr-revenue-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;background:#fef5e7;border-radius:4px;font-size:8px;font-weight:700;color:var(--orange)}
+
+/* ─── WALL BOARD MODE (#3) ─── */
+body.wall-mode .sidebar,body.wall-mode .right-panel,body.wall-mode .topbar{display:none}
+body.wall-mode .layout{min-height:100vh}
+body.wall-mode .main{max-height:100vh;padding:20px}
+body.wall-mode .wall-exit{display:flex}
+.wall-exit{display:none;position:fixed;top:12px;right:12px;z-index:999;padding:6px 14px;background:rgba(0,0,0,.7);color:white;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;backdrop-filter:blur(4px)}
+
+/* MODALS */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center}
+.mo.active{display:flex}
+.modal{background:white;border-radius:11px;max-width:95vw;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:mi .3s ease}
+@keyframes mi{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.mh{padding:16px 20px;border-bottom:1px solid var(--gray-200);display:flex;align-items:flex-start;justify-content:space-between;position:sticky;top:0;background:white;z-index:1}
+.mh h2{font-size:16px;font-weight:700}.mh .mt{font-size:9px;color:var(--gray-400);margin-top:1px}
+.mx{width:24px;height:24px;border-radius:5px;border:1px solid var(--gray-200);background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--gray-500)}
+.mx:hover{background:var(--gray-100);color:var(--ink)}
+.mb{padding:20px}
+.ms{margin-bottom:18px}
+.ms-title{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);margin-bottom:8px}
 
 .fade-in{animation:fadeIn .4s ease forwards;opacity:0}
 @keyframes fadeIn{to{opacity:1}}
-.stagger-1{animation-delay:.05s}.stagger-2{animation-delay:.1s}.stagger-3{animation-delay:.15s}.stagger-4{animation-delay:.2s}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(–gray-300);border-radius:3px}
+.s1{animation-delay:.05s}.s2{animation-delay:.1s}.s3{animation-delay:.15s}.s4{animation-delay:.2s}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--gray-300);border-radius:3px}
 </style>
-
 </head>
 <body>
 
+<button class="wall-exit" onclick="document.body.classList.remove('wall-mode')">✕ 월보드 종료</button>
+
 <div class="topbar">
   <div class="topbar-brand"><span class="logo">Newsroom<span class="logo-dot">.</span></span><span class="org-name">메디게이트 뉴스</span></div>
-  <div class="topbar-center"><div class="live-readers"><span class="live-dot"></span>실시간 독자 <span class="num" id="liveCount">14,283</span></div><div class="ai-badge"><span class="live-dot"></span>AI 에이전트 3 Active</div></div>
-  <div class="topbar-right"><div class="notif-bell">🔔<span class="notif-dot"></span></div><span class="role-badge role-editor" id="roleBadge" onclick="toggleRole()">Editor</span><div class="user-avatar" onclick="toggleRole()">박</div></div>
+  <div class="topbar-center"><div class="live-readers"><span class="live-dot"></span>실시간 <span class="num" id="liveCount">14,283</span></div><div class="ai-badge"><span class="live-dot"></span>AI 3 Active</div></div>
+  <div class="topbar-right">
+    <button class="wall-btn" onclick="document.body.classList.add('wall-mode')" title="편집국 벽걸이 모드">🖥️ 월보드</button>
+    <div class="notif-bell">🔔<span class="notif-dot"></span></div>
+    <span class="role-badge role-editor" id="roleBadge" onclick="toggleRole()">Editor</span>
+    <div class="user-avatar" onclick="toggleRole()">박</div>
+  </div>
 </div>
 
 <div class="layout">
 <div class="sidebar">
   <div class="sidebar-section">
-    <div class="sidebar-section-title">뉴스룸</div>
-    <div class="sidebar-item active" data-page="dashboard" onclick="switchPage('dashboard',this)"><span class="icon">📋</span>대시보드</div>
-    <div class="sidebar-item" data-page="opinion-intel" onclick="switchPage('opinion-intel',this)"><span class="icon">🧠</span>여론 인텔리전스<span class="sidebar-new">NEW</span></div>
-    <div class="sidebar-item" data-page="team" onclick="switchPage('team',this)"><span class="icon">👥</span>팀 현황<span class="count">12</span></div>
-    <div class="sidebar-item" data-page="ai-chatroom" onclick="switchPage('ai-chatroom',this)"><span class="icon">💬</span>AI 뉴스룸</div>
-    <div class="sidebar-item" data-page="factcheck" onclick="switchPage('factcheck',this)"><span class="icon">✅</span>팩트체크<span class="count">4</span></div>
-    <div class="sidebar-item" data-page="tips" onclick="switchPage('tips',this)"><span class="icon">📨</span>제보/소스</div>
+    <div class="ss-title">뉴스룸</div>
+    <div class="si active" data-page="dashboard" onclick="sp('dashboard',this)"><span class="icon">📋</span>대시보드</div>
+    <div class="si" data-page="mailroom" onclick="sp('mailroom',this)"><span class="icon">📧</span>AI 메일룸<span class="si-new">NEW</span></div>
+    <div class="si" data-page="opinion" onclick="sp('opinion',this)"><span class="icon">🧠</span>여론 인텔리전스</div>
+    <div class="si" data-page="factcheck" onclick="sp('factcheck',this)"><span class="icon">✅</span>팩트체크<span class="cnt">4</span></div>
+    <div class="si" data-page="pr-portal" onclick="sp('pr-portal',this)"><span class="icon">💼</span>PR 포털<span class="si-new">NEW</span></div>
+    <div class="si" data-page="team" onclick="sp('team',this)"><span class="icon">👥</span>팀 현황<span class="cnt">12</span></div>
+    <div class="si" data-page="chatroom" onclick="sp('chatroom',this)"><span class="icon">💬</span>AI 뉴스룸</div>
+    <div class="si" data-page="tips" onclick="sp('tips',this)"><span class="icon">📨</span>제보/소스</div>
   </div>
   <div class="sidebar-section">
-    <div class="sidebar-section-title">토픽</div>
-    <div class="sidebar-item" onclick="filterTopic('all');switchPage('dashboard',document.querySelector('[data-page=dashboard]'))"><span class="icon">◉</span>전체<span class="count">24</span></div>
-    <div class="sidebar-item" onclick="filterTopic('digital');switchPage('dashboard',document.querySelector('[data-page=dashboard]'))"><span class="sidebar-topic-dot" style="background:var(--blue)"></span>디지털 헬스케어<span class="count">7</span></div>
-    <div class="sidebar-item" onclick="filterTopic('policy');switchPage('dashboard',document.querySelector('[data-page=dashboard]'))"><span class="sidebar-topic-dot" style="background:var(--accent)"></span>의료정책<span class="count">6</span></div>
-    <div class="sidebar-item" onclick="filterTopic('pharma');switchPage('dashboard',document.querySelector('[data-page=dashboard]'))"><span class="sidebar-topic-dot" style="background:var(--green)"></span>제약·바이오<span class="count">5</span></div>
-    <div class="sidebar-item" onclick="filterTopic('insurance');switchPage('dashboard',document.querySelector('[data-page=dashboard]'))"><span class="sidebar-topic-dot" style="background:var(--orange)"></span>수가·보험<span class="count">4</span></div>
+    <div class="ss-title">토픽</div>
+    <div class="si" onclick="ft('all');sp('dashboard',document.querySelector('[data-page=dashboard]'))"><span class="icon">◉</span>전체<span class="cnt">24</span></div>
+    <div class="si" onclick="ft('digital');sp('dashboard',document.querySelector('[data-page=dashboard]'))"><span style="width:7px;height:7px;border-radius:2px;background:var(--blue);flex-shrink:0"></span>디지털 헬스케어<span class="cnt">7</span></div>
+    <div class="si" onclick="ft('policy');sp('dashboard',document.querySelector('[data-page=dashboard]'))"><span style="width:7px;height:7px;border-radius:2px;background:var(--accent);flex-shrink:0"></span>의료정책<span class="cnt">6</span></div>
+    <div class="si" onclick="ft('pharma');sp('dashboard',document.querySelector('[data-page=dashboard]'))"><span style="width:7px;height:7px;border-radius:2px;background:var(--green);flex-shrink:0"></span>제약·바이오<span class="cnt">5</span></div>
   </div>
   <div class="sidebar-spacer"></div>
-  <div class="sidebar-ai-section">
-    <div class="sidebar-section-title" style="padding:0 0 6px 0">AI 에이전트</div>
-    <div class="ai-agent-card" onclick="openAgentModal('editor')"><div class="agent-header"><div class="agent-icon">🤖</div><div><div class="agent-name">편집장 AI</div><div class="agent-role">Chief Editor</div></div></div><div class="agent-status"><code>우선순위 재배치</code> 12m</div></div>
-    <div class="ai-agent-card" onclick="openAgentModal('desk')"><div class="agent-header"><div class="agent-icon">📡</div><div><div class="agent-name">데스크 AI</div><div class="agent-role">News Desk</div></div></div><div class="agent-status"><code>소스 48 · 경쟁사 6곳</code></div></div>
-    <div class="ai-agent-card" onclick="openAgentModal('seo')"><div class="agent-header"><div class="agent-icon">🔍</div><div><div class="agent-name">SEO AI</div><div class="agent-role">Optimizer</div></div></div><div class="agent-status"><code>robots.txt + schema</code></div></div>
+  <div style="padding:0 12px">
+    <div class="ss-title" style="padding:0 0 5px 0">AI 에이전트</div>
+    <div class="ai-card"><div class="ah"><div class="ai-icon">🤖</div><div><div class="an">편집장 AI</div><div class="ar">Chief Editor</div></div></div><div class="as"><code>우선순위 재배치</code> 12m</div></div>
+    <div class="ai-card"><div class="ah"><div class="ai-icon">📡</div><div><div class="an">데스크 AI</div><div class="ar">News Desk</div></div></div><div class="as"><code>소스 48 · 경쟁사 6</code></div></div>
+    <div class="ai-card"><div class="ah"><div class="ai-icon">📧</div><div><div class="an">메일룸 AI</div><div class="ar">Email Triage</div></div></div><div class="as"><code>오늘 수신 47건 · 선별 8건</code></div></div>
+    <div class="ai-card"><div class="ah"><div class="ai-icon">🔍</div><div><div class="an">SEO AI</div><div class="ar">Optimizer</div></div></div><div class="as"><code>robots.txt + schema</code></div></div>
   </div>
 </div>
 
 <div class="main">
 
-<!-- ═══ DASHBOARD (축약) ═══ -->
-
+<!-- ═══ DASHBOARD ═══ -->
 <div class="page active" id="page-dashboard">
-  <div class="briefing-banner fade-in"><div class="briefing-top"><div class="briefing-label"><span style="font-size:14px">✦</span> AI 모닝 브리핑</div><div class="briefing-time">2026.03.26 THU 08:30</div></div><div class="briefing-body"><div class="briefing-headline">"SaMD 최종안 발표 후 업계 반응 분석이 급선무. 전공의 기사는 AI 검색엔진에서 인용 급증 중."</div><div class="briefing-items"><div class="briefing-item"><div class="bi-label">AI 절약 시간</div><div class="bi-value bi-green">14.2h</div><div class="bi-sub">편집·모니터링·SEO</div></div><div class="briefing-item"><div class="bi-label">AI검색 유입</div><div class="bi-value bi-blue">+23%</div><div class="bi-sub">Perplexity·SearchGPT</div></div><div class="briefing-item"><div class="bi-label">선점 기회</div><div class="bi-value bi-orange">3건</div><div class="bi-sub">경쟁사 미보도</div></div><div class="briefing-item"><div class="bi-label">여론 급변 감지</div><div class="bi-value bi-accent">2건</div><div class="bi-sub">전공의·원격의료</div></div></div><div class="briefing-recs"><div class="briefing-rec">🎯 SaMD 후속 취재 배정 권고</div><div class="briefing-rec">📊 전공의 인포그래픽 소셜 배포</div><div class="briefing-rec">⚠️ RWD 팩트체크 즉시 처리</div><div class="briefing-rec">🧠 전문과별 여론 분석 리포트 발행 추천</div></div></div></div>
-  <div class="competitive-bar fade-in stagger-1"><div class="comp-label">📡 경쟁사</div><div class="comp-items"><div class="comp-item comp-alert"><div class="comp-outlet">청년의사</div><div class="comp-headline">전공의 복귀율 자체취재 포착</div><div class="comp-time">14:45 · 🔴 위협</div></div><div class="comp-item"><div class="comp-outlet">의협신문</div><div class="comp-headline">의대 증원 교원 확보 단독</div><div class="comp-time">13:20</div></div><div class="comp-item"><div class="comp-outlet">히트뉴스</div><div class="comp-headline">GLP-1 오프라벨 기획</div><div class="comp-time">12:00</div></div></div></div>
-  <div class="dash-header fade-in stagger-2"><div><h1>뉴스룸 대시보드</h1><div class="subtitle">2026.03.26 · 메디게이트 뉴스 편집국</div></div><div class="dash-stats"><div class="dash-stat"><div class="stat-value">24</div><div class="stat-label">아젠다</div></div><div class="dash-stat"><div class="stat-value">12</div><div class="stat-label">기자</div></div><div class="dash-stat"><div class="stat-value" style="color:var(--accent)">6</div><div class="stat-label">HOT</div></div><div class="dash-stat"><div class="stat-value" style="color:var(--green)">87%</div><div class="stat-label">SEO</div></div></div></div>
-  <div class="trending-bar fade-in stagger-2"><span class="trending-label">🔥 실시간</span><div class="trending-item">AI 의료기기 허가<span class="heat">+342%</span></div><div class="trending-item">전공의 복귀율<span class="heat">+218%</span></div><div class="trending-item">GLP-1 급여<span class="heat">+187%</span></div><div class="trending-item">원격의료 확대<span class="heat">+156%</span></div></div>
-  <div class="topic-section fade-in stagger-3" data-topic="digital"><div class="topic-header"><div class="topic-color-bar" style="background:var(--blue)"></div><span class="topic-name">디지털 헬스케어</span><span class="topic-meta">7 아젠다 · 5명</span></div><div class="agenda-grid">
-    <div class="agenda-card" onclick="openModal('ai-device')"><div class="card-stripe" style="background:var(--blue)"></div><div class="card-top"><span class="card-status status-hot">🔥 HOT</span><span class="card-priority">P1</span></div><h3>AI 의료기기 인허가 기준안</h3><div class="card-desc">식약처 SaMD 인허가 최종안 발표. RWD 활용 기준 강화.</div><div class="card-metrics"><div class="card-metric"><span class="metric-val">5</span><span class="metric-label">기사</span></div><div class="card-metric"><span class="metric-val" style="color:var(--accent)">2.4K</span><span class="metric-label">댓글</span></div><div class="card-metric"><span class="metric-val">89</span><span class="metric-label">여론</span></div><div class="card-metric"><span class="metric-val" style="color:var(--blue)">45K</span><span class="metric-label">조회</span></div></div><div class="card-bottom"><div class="reporter-group"><div class="reporter-avatar" style="background:#2980b9"><span class="tooltip">김서연</span>김</div><div class="reporter-avatar" style="background:#8e44ad"><span class="tooltip">이준혁</span>이</div><div class="reporter-add">+</div></div><span class="articles-count">5 articles</span></div><div class="opinion-bar"><div class="seg-pos" style="width:62%"></div><div class="seg-neu" style="width:23%"></div><div class="seg-neg" style="width:15%"></div></div><div class="opinion-label"><span>긍정 62%</span><span>부정 15%</span></div><div class="card-ai-insight">✦ AI: Perplexity 3회 인용 · 경쟁사 미보도 후속 기회</div></div>
-    <div class="agenda-card" onclick="openModal('telemedicine')"><div class="card-stripe" style="background:var(--blue)"></div><div class="card-top"><span class="card-status status-active">취재중</span><span class="card-priority">P2</span></div><h3>원격의료 시범사업 확대 논란</h3><div class="card-desc">의료계 반발과 환자단체 지지 교차. 양극화 심화.</div><div class="card-metrics"><div class="card-metric"><span class="metric-val">3</span><span class="metric-label">기사</span></div><div class="card-metric"><span class="metric-val" style="color:var(--accent)">1.8K</span><span class="metric-label">댓글</span></div><div class="card-metric"><span class="metric-val">72</span><span class="metric-label">여론</span></div><div class="card-metric"><span class="metric-val" style="color:var(--blue)">28K</span><span class="metric-label">조회</span></div></div><div class="card-bottom"><div class="reporter-group"><div class="reporter-avatar" style="background:#27ae60"><span class="tooltip">박지민</span>박</div><div class="reporter-avatar" style="background:#d35400"><span class="tooltip">최하은</span>최</div><div class="reporter-add">+</div></div><span class="articles-count">3 articles</span></div><div class="opinion-bar"><div class="seg-pos" style="width:35%"></div><div class="seg-neu" style="width:30%"></div><div class="seg-neg" style="width:35%"></div></div><div class="opinion-label"><span>긍정 35%</span><span>부정 35%</span></div><div class="card-ai-insight">⚠️ 전문과별 의견 극심한 분열 · 균형보도 권고</div></div>
+  <div class="briefing fade-in"><div class="bt"><div class="bl"><span style="font-size:13px">✦</span>AI 모닝 브리핑</div><div class="btime">2026.03.27 FRI 08:30</div></div><div class="bh">"SaMD 업계 반응 분석이 급선무. 전공의 기사 AI검색 인용 급증. 메일 제보 중 식약처 내부자 건 즉시 확인 필요."</div><div class="bi"><div class="bi-item"><div class="bi-l">AI 절약 시간</div><div class="bi-v bi-g">14.2h</div><div class="bi-s">편집·메일분류·SEO</div></div><div class="bi-item"><div class="bi-l">메일 제보 선별</div><div class="bi-v bi-b">8/47</div><div class="bi-s">기사 초안 3건 생성</div></div><div class="bi-item"><div class="bi-l">경쟁사 선점</div><div class="bi-v bi-o">3건</div><div class="bi-s">미보도 기회</div></div><div class="bi-item"><div class="bi-l">핫 댓글 급등</div><div class="bi-v bi-a">+340/h</div><div class="bi-s">전공의 이슈</div></div></div><div class="br"><div class="br-item">📧 식약처 내부자 메일 → 김서연 배정 권고</div><div class="br-item">🔥 전공의 댓글 급등 → 후속 발행 필요</div><div class="br-item">💼 삼성바이오 PR 수정요청 3건 대기</div></div></div>
+
+  <!-- 피드백#4: 핫 댓글 허브 -->
+  <div class="comment-hub fade-in s1">
+    <div class="ch-label">🔥 핫 댓글</div>
+    <div class="ch-items">
+      <div class="ch-item ch-hot"><div class="ch-article">전공의 복귀율 47%, 격차 심화</div><div class="ch-comment">"남은 의사들이 2배로 일하고 있습니다. 이걸 복귀율이라고 포장하지 마세요."</div><div class="ch-meta"><span>내과의사_서울</span><span class="ch-heat">🔥 답글 342</span><span>14:48</span></div></div>
+      <div class="ch-item ch-hot"><div class="ch-article">AI 의료기기 인허가 최종안</div><div class="ch-comment">"RWD만으로 허가? 오진 나면 누가 책임지나. AI 회사? 의사?"</div><div class="ch-meta"><span>외과소신발언</span><span class="ch-heat">🔥 답글 228</span><span>14:42</span></div></div>
+      <div class="ch-item"><div class="ch-article">원격의료 시범사업 확대</div><div class="ch-comment">"동네의원 환자를 대형병원이 원격으로 빼앗아가면 1차 의료 생태계 끝납니다."</div><div class="ch-meta"><span>가정의학여의사</span><span class="ch-heat">🔥 답글 156</span><span>14:22</span></div></div>
+      <div class="ch-item"><div class="ch-article">GLP-1 급여 확대 논의</div><div class="ch-comment">"비만학회 권고대로라면 환자 100만명. 건보 재정 감당 가능한지."</div><div class="ch-meta"><span>병원경영인</span><span class="ch-heat">답글 89</span><span>13:50</span></div></div>
+    </div>
+  </div>
+
+  <div class="comp-bar fade-in s1"><div class="cl">📡 경쟁사</div><div class="ci"><div class="comp-item comp-alert"><div class="co">청년의사</div><div class="ch">전공의 후속취재 포착</div><div class="ct">14:45 · 🔴</div></div><div class="comp-item"><div class="co">의협신문</div><div class="ch">의대 증원 교원 단독</div><div class="ct">13:20</div></div><div class="comp-item"><div class="co">히트뉴스</div><div class="ch">GLP-1 오프라벨 기획</div><div class="ct">12:00</div></div></div></div>
+
+  <div class="dh fade-in s2"><div><h1>뉴스룸 대시보드</h1><div class="sub">2026.03.27 · 메디게이트 뉴스 편집국</div></div><div class="ds"><div class="dst"><div class="v">24</div><div class="l">아젠다</div></div><div class="dst"><div class="v">12</div><div class="l">기자</div></div><div class="dst"><div class="v" style="color:var(--accent)">6</div><div class="l">HOT</div></div><div class="dst"><div class="v" style="color:var(--green)">87%</div><div class="l">SEO</div></div></div></div>
+
+  <div class="topic-section fade-in s3" data-topic="digital" style="margin-bottom:24px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><div style="width:4px;height:20px;border-radius:2px;background:var(--blue)"></div><span style="font-size:14px;font-weight:700">디지털 헬스케어</span><span style="font-size:10px;color:var(--gray-400);font-family:'JetBrains Mono'">7 아젠다 · 5명</span></div><div class="agenda-grid">
+    <div class="a-card" onclick="openModal('ai-device')"><div class="stripe" style="background:var(--blue)"></div><div class="top"><span class="badge bg-hot">🔥 HOT</span><span style="font-size:9px;color:var(--gray-400)">P1</span></div><h3>AI 의료기기 인허가 기준안</h3><div class="desc">식약처 SaMD 인허가 최종안. RWD 기준 강화.</div><div class="metrics"><div class="metric"><div class="mv">5</div><div class="ml">기사</div></div><div class="metric"><div class="mv" style="color:var(--accent)">2.4K</div><div class="ml">댓글</div></div><div class="metric"><div class="mv">89</div><div class="ml">여론</div></div><div class="metric"><div class="mv" style="color:var(--blue)">45K</div><div class="ml">조회</div></div></div><div class="bottom"><div class="avatars"><div class="av" style="background:#2980b9"><span class="tip">김서연</span>김</div><div class="av" style="background:#8e44ad"><span class="tip">이준혁</span>이</div></div><span class="mono" style="font-size:9px;color:var(--gray-400)">5 articles</span></div><div class="obar"><div class="sp" style="width:62%"></div><div class="sn" style="width:23%"></div><div class="sng" style="width:15%"></div></div><div class="insight">✦ Perplexity 3회 인용 · 메일 제보 1건 대기</div></div>
+    <div class="a-card" onclick="openModal('telemedicine')"><div class="stripe" style="background:var(--blue)"></div><div class="top"><span class="badge bg-active">취재중</span><span style="font-size:9px;color:var(--gray-400)">P2</span></div><h3>원격의료 시범사업 확대 논란</h3><div class="desc">의료계 반발 vs 환자단체 지지. 양극화.</div><div class="metrics"><div class="metric"><div class="mv">3</div><div class="ml">기사</div></div><div class="metric"><div class="mv" style="color:var(--accent)">1.8K</div><div class="ml">댓글</div></div><div class="metric"><div class="mv">72</div><div class="ml">여론</div></div><div class="metric"><div class="mv" style="color:var(--blue)">28K</div><div class="ml">조회</div></div></div><div class="bottom"><div class="avatars"><div class="av" style="background:#27ae60"><span class="tip">박지민</span>박</div><div class="av" style="background:#d35400"><span class="tip">최하은</span>최</div></div><span class="mono" style="font-size:9px;color:var(--gray-400)">3 articles</span></div><div class="obar"><div class="sp" style="width:35%"></div><div class="sn" style="width:30%"></div><div class="sng" style="width:35%"></div></div><div class="insight">⚠️ 전문과별 극심한 분열 · 균형보도 권고</div></div>
   </div></div>
-  <div class="topic-section fade-in stagger-4" data-topic="policy"><div class="topic-header"><div class="topic-color-bar" style="background:var(--accent)"></div><span class="topic-name">의료정책·제도</span><span class="topic-meta">6 아젠다 · 4명</span></div><div class="agenda-grid">
-    <div class="agenda-card" onclick="openModal('resident')"><div class="card-stripe" style="background:var(--accent)"></div><div class="card-top"><span class="card-status status-hot">🔥 HOT</span><span class="card-priority">P1</span></div><h3>전공의 수련환경 및 복귀율</h3><div class="card-desc">수도권 62% vs 비수도권 31%. 댓글 급증+부정 여론 상승.</div><div class="card-metrics"><div class="card-metric"><span class="metric-val">8</span><span class="metric-label">기사</span></div><div class="card-metric"><span class="metric-val" style="color:var(--accent)">4.1K</span><span class="metric-label">댓글</span></div><div class="card-metric"><span class="metric-val">94</span><span class="metric-label">여론</span></div><div class="card-metric"><span class="metric-val" style="color:var(--blue)">82K</span><span class="metric-label">조회</span></div></div><div class="card-bottom"><div class="reporter-group"><div class="reporter-avatar" style="background:#c0392b"><span class="tooltip">김서연</span>김</div><div class="reporter-avatar" style="background:#2980b9"><span class="tooltip">이준혁</span>이</div><div class="reporter-avatar" style="background:#27ae60"><span class="tooltip">박지민</span>박</div><div class="reporter-add">+</div></div><span class="articles-count">8 articles</span></div><div class="opinion-bar"><div class="seg-pos" style="width:28%"></div><div class="seg-neu" style="width:25%"></div><div class="seg-neg" style="width:47%"></div></div><div class="opinion-label"><span>긍정 28%</span><span>부정 47%</span></div><div class="card-ai-insight">⚠️ 청년의사 후속취재 감지 · 댓글 +340/h · 지방 의사 불만 집중</div></div>
+  <div class="topic-section fade-in s4" data-topic="policy" style="margin-bottom:24px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><div style="width:4px;height:20px;border-radius:2px;background:var(--accent)"></div><span style="font-size:14px;font-weight:700">의료정책·제도</span><span style="font-size:10px;color:var(--gray-400);font-family:'JetBrains Mono'">6 아젠다 · 4명</span></div><div class="agenda-grid">
+    <div class="a-card" onclick="openModal('resident')"><div class="stripe" style="background:var(--accent)"></div><div class="top"><span class="badge bg-hot">🔥 HOT</span><span style="font-size:9px;color:var(--gray-400)">P1</span></div><h3>전공의 수련환경 및 복귀율</h3><div class="desc">수도권 62% vs 비수도권 31%. 댓글 폭증.</div><div class="metrics"><div class="metric"><div class="mv">8</div><div class="ml">기사</div></div><div class="metric"><div class="mv" style="color:var(--accent)">4.1K</div><div class="ml">댓글</div></div><div class="metric"><div class="mv">94</div><div class="ml">여론</div></div><div class="metric"><div class="mv" style="color:var(--blue)">82K</div><div class="ml">조회</div></div></div><div class="bottom"><div class="avatars"><div class="av" style="background:#c0392b"><span class="tip">김서연</span>김</div><div class="av" style="background:#2980b9"><span class="tip">이준혁</span>이</div><div class="av" style="background:#27ae60"><span class="tip">박지민</span>박</div></div><span class="mono" style="font-size:9px;color:var(--gray-400)">8 articles</span></div><div class="obar"><div class="sp" style="width:28%"></div><div class="sn" style="width:25%"></div><div class="sng" style="width:47%"></div></div><div class="insight">⚠️ 청년의사 후속취재 · 댓글 +340/h · 지방 분노 집중</div></div>
   </div></div>
+</div>
+
+<!-- ═══ AI MAILROOM (#1) ═══ -->
+<div class="page" id="page-mailroom">
+  <div class="dh fade-in"><div><h1>AI 메일룸</h1><div class="sub">기자 이메일 제보 자동 분류 · 의미 선별 · 기사 초안 생성</div></div><div class="ds"><div class="dst"><div class="v">47</div><div class="l">오늘 수신</div></div><div class="dst"><div class="v" style="color:var(--accent)">8</div><div class="l">AI 선별</div></div><div class="dst"><div class="v" style="color:var(--green)">3</div><div class="l">초안 생성</div></div><div class="dst"><div class="v" style="color:var(--blue)">39</div><div class="l">자동 스킵</div></div></div></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px" class="fade-in s1">
+    <div class="smtp-badge">📡 SMTP 연동 활성 · imap.medigate.net · 최종 동기화 2분 전</div>
+    <div style="display:flex;gap:6px"><button class="btn-sm btn-outline">전체 메일함</button><button class="btn-sm btn-dark">AI 선별만</button></div>
+  </div>
+  <div class="mail-list" id="mailList"></div>
 </div>
 
 <!-- ═══ OPINION INTELLIGENCE ═══ -->
-
-<div class="page" id="page-opinion-intel">
-  <div class="dash-header fade-in">
-    <div><h1>여론 인텔리전스</h1><div class="subtitle">메디게이트 뉴스 댓글 · 의사 회원 여론을 뉴스룸 전략 자산으로 전환</div></div>
-    <div class="dash-stats">
-      <div class="dash-stat"><div class="stat-value">14.2K</div><div class="stat-label">오늘 댓글</div></div>
-      <div class="dash-stat"><div class="stat-value" style="color:var(--accent)">2건</div><div class="stat-label">급변 감지</div></div>
-      <div class="dash-stat"><div class="stat-value" style="color:var(--blue)">8,340</div><div class="stat-label">활성 의사회원</div></div>
-      <div class="dash-stat"><div class="stat-value" style="color:var(--green)">3건</div><div class="stat-label">신규 아젠다 후보</div></div>
-    </div>
-  </div>
-
-  <!-- Row 1: Heatmap + Specialty -->
-
-  <div class="oi-grid fade-in stagger-1">
-    <div class="oi-card">
-      <div class="oi-card-title"><span class="oi-icon">🌡️</span>실시간 여론 히트맵 — 시간대 × 토픽</div>
-      <div class="heatmap-grid" id="heatmapGrid"></div>
-    </div>
-    <div class="oi-card">
-      <div class="oi-card-title"><span class="oi-icon">🩺</span>전문과별 의견 분포 — 전공의 복귀율</div>
-      <div id="specialtyBars"></div>
-    </div>
-  </div>
-
-  <!-- Row 2: Tone Gap + KOL -->
-
-  <div class="oi-grid fade-in stagger-2">
-    <div class="oi-card">
-      <div class="oi-card-title"><span class="oi-icon">⚡</span>기사 톤 vs 댓글 여론 갭 분석</div>
-      <div id="toneGaps"></div>
-    </div>
-    <div class="oi-card">
-      <div class="oi-card-title"><span class="oi-icon">👑</span>KOL 트래커 — 영향력 높은 댓글러</div>
-      <div id="kolList"></div>
-    </div>
-  </div>
-
-  <!-- Row 3: Agenda Discovery (full) -->
-
-  <div class="oi-grid fade-in stagger-3">
-    <div class="oi-card">
-      <div class="oi-card-title"><span class="oi-icon">💡</span>댓글 → 아젠다 자동 발굴</div>
-      <div style="font-size:10px;color:var(--gray-400);margin-bottom:10px">AI가 댓글에서 반복 등장하는 미취재 키워드를 감지 → 신규 아젠다 후보 추천</div>
-      <div id="discoveryList"></div>
-    </div>
-    <div class="oi-card">
-      <div class="oi-card-title"><span class="oi-icon">🗺️</span>지역별 여론 온도차 — 전공의 복귀율</div>
-      <div id="regionMap"></div>
-    </div>
-  </div>
-
-  <!-- Row 4: Live Poll + Comment Pulse -->
-
-  <div class="oi-grid fade-in stagger-4">
-    <div class="oi-card">
-      <div class="oi-card-title"><span class="oi-icon">📊</span>실시간 의사 설문 결과</div>
-      <div id="pollResults"></div>
-    </div>
-    <div class="oi-card">
-      <div class="oi-card-title"><span class="oi-icon">🔥</span>댓글 펄스 — 감정 강도 TOP 5</div>
-      <div id="commentPulse"></div>
-    </div>
-  </div>
+<div class="page" id="page-opinion">
+  <div class="dh fade-in"><div><h1>여론 인텔리전스</h1><div class="sub">의사 회원 댓글 → 뉴스룸 전략 자산</div></div><div class="ds"><div class="dst"><div class="v">14.2K</div><div class="l">댓글</div></div><div class="dst"><div class="v" style="color:var(--accent)">2</div><div class="l">급변</div></div><div class="dst"><div class="v" style="color:var(--blue)">8,340</div><div class="l">활성회원</div></div></div></div>
+  <div id="oiContent"></div>
 </div>
 
-<!-- Other pages (stubs) -->
-
-<div class="page" id="page-team"><div class="dash-header"><div><h1>팀 현황</h1><div class="subtitle">편집국 12명</div></div></div><div id="teamGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px"></div></div>
-<div class="page" id="page-ai-chatroom"><div class="dash-header"><div><h1>AI 뉴스룸</h1><div class="subtitle">에이전트 실시간 협업</div></div></div><div style="background:white;border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;height:calc(100vh - 200px);display:flex;flex-direction:column"><div style="padding:12px 18px;background:linear-gradient(135deg,#12122a,#1a2440);color:white;font-size:13px;font-weight:700">💬 에이전트 협업 채널</div><div id="chatroomMessages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px"></div></div></div>
-<div class="page" id="page-factcheck"><div class="dash-header"><div><h1>팩트체크</h1><div class="subtitle">자동 발췌 · 검증</div></div></div><div id="factcheckList" style="display:flex;flex-direction:column;gap:12px"></div></div>
-<div class="page" id="page-tips"><div class="dash-header"><div><h1>제보 / 소스</h1><div class="subtitle">익명 제보 · E2EE</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:20px"><div style="background:white;border:1px solid var(--gray-200);border-radius:10px;padding:22px"><h3 style="font-size:14px;font-weight:700;margin-bottom:14px">📨 새 제보 접수</h3><div style="margin-bottom:10px"><label style="font-size:10px;font-weight:700;color:var(--gray-500);display:block;margin-bottom:4px">유형</label><select style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:6px;font-size:12px"><option>내부 고발</option><option>현장 제보</option><option>문서/데이터</option></select></div><div style="margin-bottom:10px"><label style="font-size:10px;font-weight:700;color:var(--gray-500);display:block;margin-bottom:4px">상세</label><textarea style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:6px;font-size:12px;min-height:80px;resize:vertical" placeholder="시간, 장소, 관련 인물"></textarea></div><button style="padding:8px 20px;background:var(--ink);color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer" onclick="this.textContent='✓ 전송완료';this.style.background='var(--green)';setTimeout(()=>{this.textContent='🔒 암호화 전송';this.style.background='var(--ink)'},2000)">🔒 암호화 전송</button><div style="margin-top:6px;padding:7px 10px;background:#d5f5e3;border-radius:6px;font-size:10px;color:var(--green)">🔐 E2EE · IP 미기록 · 편집국장만 열람</div></div><div style="background:white;border:1px solid var(--gray-200);border-radius:10px;padding:22px"><h3 style="font-size:14px;font-weight:700;margin-bottom:14px">📥 수신함</h3><div id="tipInbox"></div></div></div></div>
+<!-- ═══ FACTCHECK (#2 강화) ═══ -->
+<div class="page" id="page-factcheck">
+  <div class="dh fade-in"><div><h1>팩트체크 어시스턴트</h1><div class="sub">AI 자동 선별 → 사람이 클릭 → 자동 검증 · Human-in-the-Loop</div></div><div class="ds"><div class="dst"><div class="v">4</div><div class="l">AI 선별</div></div><div class="dst"><div class="v" style="color:var(--green)">12</div><div class="l">검증 완료</div></div><div class="dst"><div class="v" style="color:var(--accent)">1</div><div class="l">이의</div></div></div></div>
+  <!-- Workflow diagram -->
+  <div style="display:flex;align-items:center;gap:0;margin-bottom:18px;padding:14px 18px;background:white;border:1px solid var(--gray-200);border-radius:9px" class="fade-in s1">
+    <div style="text-align:center;flex:1"><div style="font-size:20px;margin-bottom:4px">🤖</div><div style="font-size:10px;font-weight:700">AI 자동 발췌</div><div style="font-size:8px;color:var(--gray-400)">기사에서 검증 필요 문장 추출</div></div>
+    <div style="font-size:18px;color:var(--gray-300)">→</div>
+    <div style="text-align:center;flex:1;background:var(--orange-soft);padding:10px;border-radius:8px;border:2px solid var(--orange)"><div style="font-size:20px;margin-bottom:4px">👤</div><div style="font-size:10px;font-weight:700;color:var(--orange)">사람이 클릭</div><div style="font-size:8px;color:var(--orange)">"검증 실행" 버튼 한 번</div></div>
+    <div style="font-size:18px;color:var(--gray-300)">→</div>
+    <div style="text-align:center;flex:1"><div style="font-size:20px;margin-bottom:4px">⚡</div><div style="font-size:10px;font-weight:700">AI 자동 검증</div><div style="font-size:8px;color:var(--gray-400)">출처 대조 · 메타 생성</div></div>
+    <div style="font-size:18px;color:var(--gray-300)">→</div>
+    <div style="text-align:center;flex:1"><div style="font-size:20px;margin-bottom:4px">👤</div><div style="font-size:10px;font-weight:700">사람이 최종 확인</div><div style="font-size:8px;color:var(--gray-400)">이의 시 재검증 요청</div></div>
+  </div>
+  <div id="fcList" class="fade-in s2"></div>
 </div>
 
-<!-- Right Panel -->
+<!-- ═══ PR PORTAL (#5) ═══ -->
+<div class="page" id="page-pr-portal">
+  <div class="dh fade-in"><div><h1>PR 포털</h1><div class="sub">기업/홍보실 보도자료 관리 · 자동 피드백 · 수정요청 대응 <span class="pr-revenue-badge">💰 유료 서비스</span></div></div><div class="ds"><div class="dst"><div class="v">12</div><div class="l">구독사</div></div><div class="dst"><div class="v" style="color:var(--blue)">34</div><div class="l">보도자료</div></div><div class="dst"><div class="v" style="color:var(--orange)">7</div><div class="l">수정요청</div></div><div class="dst"><div class="v" style="color:var(--green)">₩4.2M</div><div class="l">월 매출</div></div></div></div>
+  <div style="display:flex;gap:6px;margin-bottom:14px" class="fade-in s1">
+    <button class="btn-sm btn-dark">전체</button><button class="btn-sm btn-outline">보도자료 대기</button><button class="btn-sm btn-outline">수정요청</button><button class="btn-sm btn-outline">피드백 발송</button>
+  </div>
+  <div id="prList" class="fade-in s2"></div>
+</div>
 
+<!-- OTHER PAGES (stubs) -->
+<div class="page" id="page-team"><div class="dh"><div><h1>팀 현황</h1><div class="sub">편집국 12명</div></div></div><div id="teamGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px"></div></div>
+<div class="page" id="page-chatroom"><div class="dh"><div><h1>AI 뉴스룸</h1><div class="sub">에이전트 협업 채널</div></div></div><div id="chatBox" style="background:white;border:1px solid var(--gray-200);border-radius:9px;overflow:hidden;height:calc(100vh - 200px);display:flex;flex-direction:column"><div style="padding:10px 16px;background:linear-gradient(135deg,#12122a,#1a2440);color:white;font-size:12px;font-weight:700">💬 에이전트 채널</div><div id="chatMsgs" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px"></div></div></div>
+<div class="page" id="page-tips"><div class="dh"><div><h1>제보 / 소스</h1><div class="sub">E2EE 제보</div></div></div><div style="background:white;border:1px solid var(--gray-200);border-radius:9px;padding:20px;max-width:500px"><div style="margin-bottom:10px"><label style="font-size:10px;font-weight:700;color:var(--gray-500);display:block;margin-bottom:4px">상세</label><textarea style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:6px;font-size:12px;min-height:80px;resize:vertical;font-family:'Noto Sans KR'" placeholder="시간, 장소, 인물"></textarea></div><button class="btn-sm btn-dark" onclick="this.textContent='✓ 전송완료';this.style.background='var(--green)';setTimeout(()=>{this.textContent='🔒 암호화 전송';this.style.background='var(--ink)'},2000)">🔒 암호화 전송</button></div></div>
+</div>
+
+<!-- RIGHT PANEL -->
 <div class="right-panel">
-  <div class="panel-section"><div class="panel-title">✦ AI 임팩트</div><div class="ai-impact-card"><div class="ai-impact-row"><span class="label">절약 시간</span><span class="value" style="color:#2ecc71">14.2h</span></div><div class="ai-impact-row"><span class="label">속보 선점</span><span class="value" style="color:#f39c12">3건</span></div><div class="ai-impact-row"><span class="label">여론 급변 감지</span><span class="value" style="color:#e74c3c">2건</span></div><div class="ai-impact-row"><span class="label">댓글→아젠다 발굴</span><span class="value" style="color:#9b59b6">3건</span></div><div class="ai-impact-row"><span class="label">KOL 소스 후보</span><span class="value" style="color:#3498db">5명</span></div></div></div>
-  <div class="panel-section"><div class="panel-title">⚡ 실시간 피드</div>
-    <div class="live-feed-item"><div class="feed-time">14:52</div><div class="feed-content"><strong>여론AI</strong> "전공의" 부정 여론 50% 돌파 → 편집장 알림</div><span class="feed-tag tag-opinion">여론</span></div>
-    <div class="live-feed-item"><div class="feed-time">14:45</div><div class="feed-content"><strong>데스크AI</strong> 청년의사 후속취재 감지</div><span class="feed-tag tag-breaking">경쟁</span></div>
-    <div class="live-feed-item"><div class="feed-time">14:38</div><div class="feed-content"><strong>여론AI</strong> 댓글에서 "야간 당직 수당" 키워드 급증 → 아젠다 후보 등록</div><span class="feed-tag tag-opinion">여론</span></div>
-    <div class="live-feed-item"><div class="feed-time">14:32</div><div class="feed-content"><strong>편집장AI</strong> AI 의료기기 P1 상향</div><span class="feed-tag tag-ai">AI</span></div>
-    <div class="live-feed-item"><div class="feed-time">14:28</div><div class="feed-content"><strong>팩트체크</strong> "RWD 허가" 검증 대기</div><span class="feed-tag tag-fc">FC</span></div>
-    <div class="live-feed-item"><div class="feed-time">14:20</div><div class="feed-content"><strong>여론AI</strong> KOL 후보: "내과의사_서울" 영향력 스코어 92</div><span class="feed-tag tag-opinion">여론</span></div>
-  </div>
-  <div class="panel-section"><div class="panel-title">🔍 AI SEO</div>
-    <div class="seo-card"><div class="seo-label">Overall</div><div class="seo-score"><div class="seo-score-bar"><div class="seo-score-fill" style="width:87%;background:var(--green)"></div></div><span class="seo-score-num" style="color:var(--green)">87</span></div></div>
-    <div class="seo-card"><div class="seo-label">AI 크롤러</div><div class="seo-score"><div class="seo-score-bar"><div class="seo-score-fill" style="width:92%;background:var(--blue)"></div></div><span class="seo-score-num" style="color:var(--blue)">92</span></div></div>
+  <div class="ps"><div class="pt">✦ AI 임팩트</div><div class="ai-impact"><div class="ai-row"><span class="al">절약 시간</span><span class="av2" style="color:#2ecc71">14.2h</span></div><div class="ai-row"><span class="al">메일 자동 분류</span><span class="av2" style="color:#3498db">47→8건</span></div><div class="ai-row"><span class="al">기사 초안 생성</span><span class="av2" style="color:#9b59b6">3건</span></div><div class="ai-row"><span class="al">속보 선점</span><span class="av2" style="color:#f39c12">3건</span></div><div class="ai-row"><span class="al">팩트체크 발췌</span><span class="av2" style="color:#e74c3c">4건</span></div><div class="ai-row"><span class="al">PR 피드백 자동</span><span class="av2" style="color:#1abc9c">12건</span></div></div></div>
+  <div class="ps"><div class="pt">⚡ 피드</div>
+    <div class="fi"><div class="ft">14:52</div><div class="fc"><strong>메일룸AI</strong> 식약처 내부자 메일 → P1 선별</div><span class="tag-sm" style="background:#e8daef;color:#6c3483;margin-top:2px">메일</span></div>
+    <div class="fi"><div class="ft">14:48</div><div class="fc"><strong>여론AI</strong> 전공의 부정 50% 돌파</div><span class="tag-sm" style="background:#fce4ec;color:#c2185b;margin-top:2px">여론</span></div>
+    <div class="fi"><div class="ft">14:45</div><div class="fc"><strong>데스크AI</strong> 청년의사 후속취재 감지</div><span class="tag-sm" style="background:#fadbd8;color:#c0392b;margin-top:2px">경쟁</span></div>
+    <div class="fi"><div class="ft">14:40</div><div class="fc"><strong>PR포털</strong> 삼성바이오 수정요청 접수</div><span class="tag-sm" style="background:#fef5e7;color:var(--orange);margin-top:2px">PR</span></div>
+    <div class="fi"><div class="ft">14:32</div><div class="fc"><strong>편집장AI</strong> AI 의료기기 P1 상향</div><span class="tag-sm" style="background:#e8daef;color:#6c3483;margin-top:2px">AI</span></div>
+    <div class="fi"><div class="ft">14:28</div><div class="fc"><strong>팩트체크</strong> "RWD 허가" 검증 대기</div><span class="tag-sm" style="background:#fdebd0;color:var(--orange);margin-top:2px">FC</span></div>
   </div>
 </div>
 </div>
 
-<!-- Modals -->
-
-<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)"><div class="modal" style="width:700px" onclick="event.stopPropagation()"><div class="modal-header"><div><h2 id="modalTitle"></h2><div class="modal-topic" id="modalTopic"></div></div><button class="modal-close" onclick="closeModal()">✕</button></div><div class="modal-body" id="modalBody"></div></div></div>
-<div class="modal-overlay" id="agentModalOverlay" onclick="closeAgentModal(event)"><div class="modal" style="width:540px" onclick="event.stopPropagation()"><div class="modal-header"><div><h2 id="agentModalTitle"></h2><div class="modal-topic">AI Agent · 24h</div></div><button class="modal-close" onclick="closeAgentModal()">✕</button></div><div class="modal-body" id="agentModalBody"></div></div></div>
+<!-- MODAL -->
+<div class="mo" id="mOverlay" onclick="cm(event)"><div class="modal" style="width:680px" onclick="event.stopPropagation()"><div class="mh"><div><h2 id="mTitle"></h2><div class="mt" id="mTopic"></div></div><button class="mx" onclick="cm()">✕</button></div><div class="mb" id="mBody"></div></div></div>
 
 <script>
-// ═══ DATA ═══
-const AI_INFO={'ai-device':{title:'AI 의료기기 인허가',topic:'디지털 헬스케어·P1·HOT',pos:62,neu:23,neg:15,reporters:['김서연','이준혁']},'telemedicine':{title:'원격의료 시범사업',topic:'디지털 헬스케어·P2',pos:35,neu:30,neg:35,reporters:['박지민','최하은']},'resident':{title:'전공의 복귀율',topic:'의료정책·P1·HOT',pos:28,neu:25,neg:47,reporters:['김서연','이준혁','박지민']}};
-const AA={'ai-device':[{title:'식약처, SaMD 인허가 최종안 발표',reporter:'김서연',date:'03.26 14:00',status:'published',views:'12.4K',url:'https://medigate.net/ai-samd'},{title:'[분석] FDA vs 식약처 비교',reporter:'이준혁',date:'03.25',status:'published',views:'8.7K',url:'https://medigate.net/fda-vs'}],'resident':[{title:'전공의 복귀율 47%, 격차 심화',reporter:'김서연',date:'03.26',status:'published',views:'22.1K',url:'https://medigate.net/resident-47'},{title:'[단독] 5대 병원 이탈률',reporter:'이준혁',date:'03.25',status:'published',views:'31.5K',url:'https://medigate.net/big5'}]};
-const DA=[{title:'관련 기사',reporter:'편집국',date:'03.26',status:'published',views:'5K',url:'https://medigate.net/s1'}];
-const R=[{name:'김서연',beat:'의료기기·AI',color:'#2980b9',status:'online',agendas:['AI 의료기기','전공의','GLP-1'],articles:48,comments:3200,views:'124K'},{name:'이준혁',beat:'디지털헬스',color:'#8e44ad',status:'online',agendas:['AI 의료기기','전공의','수가'],articles:52,comments:2800,views:'118K'},{name:'박지민',beat:'의료정책',color:'#27ae60',status:'online',agendas:['원격의료','전공의'],articles:35,comments:4100,views:'156K'},{name:'최하은',beat:'법률',color:'#d35400',status:'away',agendas:['원격의료','의대 증원'],articles:29,comments:1900,views:'87K'},{name:'정우성',beat:'바이오',color:'#2c3e50',status:'online',agendas:['바이오시밀러'],articles:41,comments:2400,views:'105K'},{name:'한민수',beat:'산업',color:'#e74c3c',status:'online',agendas:['EMR','GLP-1'],articles:38,comments:2100,views:'92K'},{name:'윤재호',beat:'수가',color:'#7d3c98',status:'away',agendas:['의대 증원','수가'],articles:44,comments:3500,views:'141K'},{name:'장소영',beat:'교육',color:'#1abc9c',status:'online',agendas:['의학교육'],articles:22,comments:980,views:'48K'},{name:'오현석',beat:'글로벌',color:'#f39c12',status:'offline',agendas:['WHO'],articles:31,comments:1500,views:'76K'},{name:'신아름',beat:'간호',color:'#e67e22',status:'online',agendas:['간호법'],articles:26,comments:2200,views:'93K'},{name:'류태현',beat:'데이터',color:'#3498db',status:'online',agendas:['데이터'],articles:18,comments:640,views:'35K'},{name:'임수정',beat:'권익',color:'#c0392b',status:'away',agendas:['환자안전법'],articles:27,comments:1800,views:'81K'}];
-const TI=[{status:'new',title:'전공의 수련시간 조작 의혹',source:'익명·Signal',date:'03.26',topic:'정책'},{status:'new',title:'AI 인증심사 편의 정황',source:'익명',date:'03.26',topic:'디지털'},{status:'review',title:'GLP-1 오프라벨 데이터',source:'제약사',date:'03.25',topic:'바이오'},{status:'assigned',title:'지방 의대 실습환경',source:'의대생',date:'03.25',topic:'교육'}];
-const CM=[{agent:'system',text:'── 2026.03.26 오후 세션 ──'},{agent:'desk',text:'식약처 SaMD 최종안 14시 공개 감지. A등급.',time:'14:18'},{agent:'editor',text:'P2→P1 상향. 김서연 속보 발행 요청.',time:'14:20'},{agent:'seo',text:'키워드 준비 완료. Schema.org/MedicalArticle 대기.',time:'14:23'},{agent:'desk',text:'⚠️ "RWD만으로 허가" 표현 검출. 원문은 "보완적 활용".',time:'14:28'},{agent:'editor',text:'팩트체크 등록. 김서연 알림 발송.',time:'14:29'},{agent:'desk',text:'🔴 청년의사 전공의 후속취재 포착.',time:'14:45'},{agent:'editor',text:'박지민 긴급 후속 배정. 류태현 인포그래픽 소셜 준비.',time:'14:46'}];
-const FC=[{id:'fc1',status:'pending',article:'SaMD 인허가 최종안',quote:'"RWD만으로 시판 허가 가능"',reporter:'김서연',claim:'원문 확인 필요',sources:[{name:'식약처 보도자료',url:'#',date:'03.26',icon:'🏛️'}],verifier:null,verifyDate:null},{id:'fc2',status:'verified',article:'GLP-1 급여 확대',quote:'"BMI 30 이상 또는 27+동반질환"',reporter:'한민수',claim:'확인 완료',sources:[{name:'심평원 기준표',url:'#',date:'01.15',icon:'🏥'}],verifier:'AI',verifyDate:'03.25 16:30'}];
+const AI_I={'ai-device':{title:'AI 의료기기 인허가',topic:'디지털헬스·P1·HOT',pos:62,neu:23,neg:15},'telemedicine':{title:'원격의료 시범사업',topic:'디지털헬스·P2',pos:35,neu:30,neg:35},'resident':{title:'전공의 복귀율',topic:'의료정책·P1·HOT',pos:28,neu:25,neg:47}};
+const R=[{name:'김서연',beat:'AI',color:'#2980b9',status:'online',agendas:['AI의료기기','전공의'],articles:48,views:'124K'},{name:'이준혁',beat:'디지털',color:'#8e44ad',status:'online',agendas:['AI의료기기','수가'],articles:52,views:'118K'},{name:'박지민',beat:'정책',color:'#27ae60',status:'online',agendas:['원격의료','전공의'],articles:35,views:'156K'},{name:'최하은',beat:'법률',color:'#d35400',status:'away',agendas:['원격의료'],articles:29,views:'87K'},{name:'정우성',beat:'바이오',color:'#2c3e50',status:'online',agendas:['바이오시밀러'],articles:41,views:'105K'},{name:'한민수',beat:'산업',color:'#e74c3c',status:'online',agendas:['GLP-1'],articles:38,views:'92K'},{name:'윤재호',beat:'수가',color:'#7d3c98',status:'away',agendas:['수가'],articles:44,views:'141K'},{name:'장소영',beat:'교육',color:'#1abc9c',status:'online',agendas:['의학교육'],articles:22,views:'48K'},{name:'오현석',beat:'글로벌',color:'#f39c12',status:'offline',agendas:['WHO'],articles:31,views:'76K'},{name:'신아름',beat:'간호',color:'#e67e22',status:'online',agendas:['간호법'],articles:26,views:'93K'},{name:'류태현',beat:'데이터',color:'#3498db',status:'online',agendas:['데이터'],articles:18,views:'35K'},{name:'임수정',beat:'권익',color:'#c0392b',status:'away',agendas:['환자안전법'],articles:27,views:'81K'}];
 
-// ═══ OPINION INTELLIGENCE DATA ═══
-const heatmapData = {
-  topics: ['AI의료기기','전공의','원격의료','GLP-1','의대증원','수가'],
-  hours: ['09','10','11','12','13','14','15','현재'],
-  values: [
-    [32,38,41,45,52,68,72,78],[18,22,35,42,58,65,72,85],[25,28,30,32,35,38,40,42],[30,35,38,40,42,44,46,48],[15,18,22,28,32,38,42,50],[20,22,25,28,30,32,35,38]
-  ]
-};
-const specialtyData = [
-  {name:'내과',pos:22,neu:28,neg:50,count:1240},
-  {name:'외과',pos:18,neu:22,neg:60,count:890},
-  {name:'영상의학',pos:35,neu:30,neg:35,count:420},
-  {name:'가정의학',pos:30,neu:35,neg:35,count:680},
-  {name:'응급의학',pos:15,neu:20,neg:65,count:310},
-  {name:'정신건강',pos:25,neu:40,neg:35,count:180},
-  {name:'소아청소년',pos:12,neu:18,neg:70,count:520}
-];
-const toneGapData = [
-  {title:'전공의 복귀율 47%',article:{pos:55,neu:30,neg:15},comments:{pos:28,neu:25,neg:47},alert:'기사는 "개선 추세" 긍정 톤 → 댓글 47% 부정. 32%p 갭'},
-  {title:'원격의료 시범사업 확대',article:{pos:50,neu:35,neg:15},comments:{pos:35,neu:30,neg:35},alert:'기사 긍정 50% vs 댓글 긍정 35%. 의사 독자 반발 확인'},
-  {title:'GLP-1 급여 확대 논의',article:{pos:40,neu:40,neg:20},comments:{pos:55,neu:28,neg:17},alert:null}
-];
-const kolData = [
-  {name:'내과의사_서울',spec:'내과 · 대학병원 · 15년차',color:'#2980b9',score:92,comments:342,replies:1840,influence:'전공의 이슈 여론 선도'},
-  {name:'외과소신발언',spec:'외과 · 상급종합 · 20년차',color:'#c0392b',score:88,comments:228,replies:1420,influence:'수가·정책 비판 여론 형성'},
-  {name:'영상의AI연구',spec:'영상의학 · 교수 · 12년차',color:'#8e44ad',score:85,comments:186,replies:960,influence:'AI 의료기기 전문 의견'},
-  {name:'지방소아과의사',spec:'소아과 · 의원 · 8년차',color:'#e67e22',score:81,comments:294,replies:1180,influence:'지방 의료 현실 대변'},
-  {name:'가정의학여의사',spec:'가정의학 · 의원 · 10년차',color:'#1abc9c',score:78,comments:156,replies:720,influence:'1차 의료 관점 제시'}
-];
-const discoveryData = [
-  {keyword:'야간 당직 수당',mentions:847,trend:'+312%',source:'전공의 복귀율 기사 댓글',action:'아젠다 등록'},
-  {keyword:'AI 오진 책임보험',mentions:523,trend:'+189%',source:'AI 의료기기 기사 댓글',action:'아젠다 등록'},
-  {keyword:'비대면 처방전 위변조',mentions:418,trend:'+156%',source:'원격의료 기사 댓글',action:'팩트체크'}
-];
-const regionData = [
-  {name:'서울',temp:38,pos:32,neu:30,neg:38,detail:'불만 있으나 상대적 온건'},{name:'경기·인천',temp:42,pos:28,neu:30,neg:42,detail:'수도권 외곽 불만 상승'},{name:'부산·경남',temp:58,pos:18,neu:22,neg:60,detail:'지방 의료 공백 분노'},{name:'대구·경북',temp:62,pos:15,neu:20,neg:65,detail:'전공의 이탈 직격탄'},{name:'광주·전라',temp:55,pos:20,neu:25,neg:55,detail:'필수의료 우려 집중'},{name:'대전·충청',temp:48,pos:25,neu:27,neg:48,detail:'의대 증원 갈등'}
-];
-const pollData = [
-  {q:'AI 의료기기의 RWD 기반 인허가에 대한 입장은?',options:[{label:'적극 찬성 (혁신 촉진)',pct:28,color:'var(--green)'},{label:'조건부 찬성 (보완 필요)',pct:41,color:'var(--blue)'},{label:'반대 (임상근거 부족)',pct:22,color:'var(--accent)'},{label:'판단 유보',pct:9,color:'var(--gray-400)'}],respondents:2847},
-  {q:'전공의 수련환경, 실질적으로 개선되었다고 느끼시나요?',options:[{label:'확실히 개선됨',pct:8,color:'var(--green)'},{label:'일부 개선',pct:23,color:'var(--blue)'},{label:'변화 없음',pct:38,color:'var(--orange)'},{label:'오히려 악화',pct:31,color:'var(--accent)'}],respondents:4120}
-];
-const commentPulseData = [
-  {author:'내과의사_서울',text:'전공의가 떠난 자리를 누가 메우고 있는지 아십니까. 남은 의사들이 2배로 일하고 있습니다.',emotion:95,time:'14:48',topic:'전공의'},
-  {author:'외과소신발언',text:'RWD만으로 허가? 의료 AI 오진으로 환자가 다치면 누가 책임지나.',emotion:91,time:'14:42',topic:'AI의료기기'},
-  {author:'지방소아과의사',text:'우리 지역은 복귀율 20%도 안 됩니다. 서울 기준으로 기사 쓰지 마세요.',emotion:88,time:'14:35',topic:'전공의'},
-  {author:'응급의학전문의',text:'야간 당직 수당이 시간당 만원입니다. 이게 나라입니까.',emotion:86,time:'14:30',topic:'수가'},
-  {author:'가정의학여의사',text:'원격의료가 동네 의원 환자를 빼앗아가면 1차 의료 생태계가 무너집니다.',emotion:82,time:'14:22',topic:'원격의료'}
+// ═══ MAILROOM DATA (#1) ═══
+const mails=[
+  {from:'김OO (식약처 관계자)',email:'k***@korea.kr',time:'14:32',subject:'SaMD 가이드라인 내부 검토안 관련',preview:'안녕하세요, 식약처 의료기기정책과에서 근무하고 있습니다. 이번 SaMD 가이드라인 최종안 발표 과정에서 원안과 달라진 부분이 있어 알려드리고 싶습니다. 특히 RWD 관련 조항이 업계 로비로 완화되었다는...',score:'high',aiSummary:'식약처 내부자 제보. SaMD 가이드라인 원안 대비 최종안에서 RWD 조항이 업계 로비로 완화되었다는 내용. 구체적 조항 번호와 로비 정황 언급.',tags:[{t:'🔴 긴급',c:'background:#fadbd8;color:#c0392b'},{t:'식약처',c:'background:var(--blue-soft);color:var(--blue)'},{t:'AI의료기기',c:'background:var(--purple-soft);color:var(--purple)'}],draft:'[속보] 식약처 SaMD 가이드라인, 원안 대비 업계 유리하게 수정 정황\n\n식약처의 AI 의료기기(SaMD) 인허가 가이드라인 최종안이 당초 내부 검토안 대비 실사용 데이터(RWD) 관련 규정이 완화된 것으로 확인됐다.\n\n본지가 입수한 내부 자료에 따르면, 원안에서는 RWD를 "보완적 근거"로만 활용하도록 했으나 최종안에서는 "주요 근거"로도 활용 가능하도록 변경됐다.\n\n[이하 취재 필요]',assignTo:'김서연'},
+  {from:'삼성바이오로직스 홍보실',email:'pr@samsungbio.com',time:'13:45',subject:'[보도자료] 2026년 1분기 실적 발표 — 바이오시밀러 매출 사상 최대',preview:'삼성바이오로직스가 2026년 1분기 매출 1조 2,340억원을 기록했다고 밝혔습니다. 이는 전년 동기 대비 23% 증가한 수치로, 바이오시밀러 부문이...',score:'mid',aiSummary:'삼성바이오 1Q 실적 보도자료. 매출 1조 2,340억(YoY +23%). 바이오시밀러 매출 사상 최대. 기존 취재 라인과 연결 가능.',tags:[{t:'보도자료',c:'background:var(--blue-soft);color:var(--blue)'},{t:'제약·바이오',c:'background:var(--green-soft);color:var(--green)'}],draft:null,assignTo:null},
+  {from:'대한전공의협의회',email:'info@kira.or.kr',time:'12:20',subject:'전공의 수련환경 실태조사 결과 공유 요청',preview:'안녕하세요, 대한전공의협의회입니다. 저희가 자체적으로 실시한 전공의 수련환경 실태조사 결과를 공유드리고 싶습니다. 조사 대상 1,200명 중...',score:'high',aiSummary:'전공의협의회 자체 실태조사 데이터 제공. 1,200명 대상 설문. 현재 취재 중인 "전공의 복귀율" 아젠다 핵심 소스가 될 수 있음.',tags:[{t:'🔴 핵심소스',c:'background:#fadbd8;color:#c0392b'},{t:'전공의',c:'background:var(--accent-soft,#e8d5cf);color:var(--accent)'},{t:'데이터',c:'background:var(--blue-soft);color:var(--blue)'}],draft:'[단독] 전공의 69% "수련환경 개선 체감 못해" — 전공의협의회 자체 조사\n\n대한전공의협의회가 전공의 1,200명을 대상으로 실시한 수련환경 실태조사 결과, 응답자의 69%가 "수련환경이 개선되었다고 느끼지 못한다"고 답한 것으로 나타났다.\n\n이는 정부가 발표한 공식 복귀율 47%와 현장 체감 사이에 큰 괴리가 있음을 보여주는 결과다.\n\n[이하 데이터 분석 필요]',assignTo:'이준혁'},
+  {from:'건강보험심사평가원',email:'press@hira.or.kr',time:'11:00',subject:'GLP-1 급여 현황 통계자료 송부',preview:'요청하신 GLP-1 수용체 작용제 처방 현황 통계자료를 송부드립니다. 2025년 4분기 기준 처방 건수, 급여 적용 현황...',score:'mid',aiSummary:'심평원 공식 통계 자료 회신. GLP-1 처방 데이터. 기존 기사 팩트체크 및 후속 보도에 활용 가능.',tags:[{t:'공식자료',c:'background:var(--green-soft);color:var(--green)'},{t:'GLP-1',c:'background:var(--orange-soft);color:var(--orange)'}],draft:null,assignTo:null},
+  {from:'OO대학교 의과대학 교수',email:'prof***@snu.ac.kr',time:'10:30',subject:'의대 증원 관련 교원 현황 데이터',preview:'메디게이트 기사를 보고 연락드립니다. 실제로 저희 대학의 경우 증원 대비 교원 확보율이 38%에 불과합니다. 교육부 공식 통계와 차이가...',score:'high',aiSummary:'의대 교수 실명 제보. 자신의 대학 교원 확보율 38%라고 직접 증언. 교육부 통계와의 괴리 지적. 팩트체크 "이의 있음" 건과 연결됨.',tags:[{t:'🔴 제보',c:'background:#fadbd8;color:#c0392b'},{t:'의대 증원',c:'background:var(--accent-soft,#e8d5cf);color:var(--accent)'},{t:'팩트체크',c:'background:var(--orange-soft);color:var(--orange)'}],draft:'[단독] "교원 확보율 38%"... 의대 교수가 직접 밝힌 증원의 현실\n\nOO대학교 의과대학 A 교수는 본지에 "우리 대학의 증원 대비 교원 확보율이 38%에 불과하다"며 "교육부 공식 통계는 현실을 반영하지 못한다"고 증언했다.\n\n[이하 추가 인터뷰 필요]',assignTo:'최하은'}
 ];
 
-// ═══ PAGE SWITCHING ═══
+// ═══ PR PORTAL DATA (#5) ═══
+const prData=[
+  {company:'삼성바이오로직스',logo:'#2980b9',type:'제약·바이오 · Premium',title:'2026년 1분기 실적 발표 보도자료',status:'발행완료',articles:3,views:'28K',feedback:'기사 3건 발행 완료. 총 조회 28K. SNS 공유 1,240회. AI SEO 최적화 적용.',revision:'제목 내 "사상 최대" 표현 수정 요청 → 데스크 검토 중',plan:'Premium'},
+  {company:'뷰노',logo:'#8e44ad',type:'AI 의료기기 · Standard',title:'AI 판독 보조 솔루션 식약처 인허가 획득',status:'송고대기',articles:0,views:'—',feedback:'AI 분석: 현재 HOT 아젠다 "AI 의료기기 인허가"와 연동 가능. 발행 시 조회수 상위 예측.',revision:null,plan:'Standard'},
+  {company:'대한비만학회',logo:'#1e8449',type:'학회 · Basic',title:'GLP-1 급여 확대 촉구 성명서',status:'발행완료',articles:1,views:'15K',feedback:'기사 1건 발행. 댓글 반응: 긍정 55% / 부정 17%. 의사 독자 관심도 높음.',revision:'"비만 치료제"를 "항비만 약물"로 용어 수정 요청 → 완료',plan:'Basic'},
+  {company:'보건복지부',logo:'#c0392b',type:'정부 · 기관',title:'전공의 수련환경 개선 6개월 성과 보고',status:'발행완료',articles:2,views:'45K',feedback:'기사 2건 발행. ⚠️ 댓글 반응 강한 부정 (47%). "현장과 괴리" 지적 다수.',revision:'"복귀율 개선" 표현에 대해 "복귀 추이"로 수정 요청 → 데스크 판단 필요',plan:'기관'}
+];
+
+// ═══ FC DATA (#2) ═══
+const FC=[
+  {id:'fc1',status:'pending',article:'SaMD 인허가 최종안',quote:'"식약처는 RWD만으로도 시판 허가가 가능하도록 기준을 완화했다."',reporter:'김서연',claim:'원문은 "보완적 활용" — "만으로" 표현 검증 필요',sources:[{name:'식약처 보도자료',url:'#',date:'03.27',icon:'🏛️'},{name:'FDA AI/ML Plan',url:'#',date:'2024.09',icon:'🇺🇸'}]},
+  {id:'fc2',status:'pending',article:'전공의 복귀율 47%',quote:'"수도권 62%, 비수도권 31%의 격차가 31%p에 달한다."',reporter:'김서연',claim:'복지부 공식 수치 교차 검증',sources:[{name:'복지부 통계',url:'#',date:'03.20',icon:'🏛️'},{name:'전공의협의회 조사',url:'#',date:'03.18',icon:'👨‍⚕️'}]},
+  {id:'fc3',status:'verified',article:'GLP-1 급여 확대',quote:'"BMI 30 이상 또는 27+동반질환 시 처방 가능"',reporter:'한민수',claim:'처방 기준 확인 완료',sources:[{name:'심평원 기준표',url:'#',date:'01.15',icon:'🏥'}]},
+  {id:'fc4',status:'disputed',article:'의대 증원 후속',quote:'"지방 의대 10곳 중 7곳이 교원 확보율 50% 미만"',reporter:'최하은',claim:'교육부 통계와 불일치 · 교수 실명 제보와 연결',sources:[{name:'교육부 평가',url:'#',date:'02.28',icon:'🏛️'},{name:'증원대책위 반론',url:'#',date:'03.10',icon:'⚠️'}]}
+];
+
 let isEditor=true;
-function toggleRole(){isEditor=!isEditor;const b=document.getElementById('roleBadge');b.textContent=isEditor?'EDITOR':'REPORTER';b.className=isEditor?'role-badge role-editor':'role-badge role-reporter';}
-function switchPage(id,el){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');document.querySelectorAll('.sidebar-section:first-child .sidebar-item').forEach(i=>i.classList.remove('active'));if(el)el.classList.add('active');
-  if(id==='opinion-intel')renderOI();if(id==='team')renderTeam();if(id==='ai-chatroom')renderChat();if(id==='factcheck')renderFC();if(id==='tips')renderTips();}
-function filterTopic(t){document.querySelectorAll('.topic-section').forEach(s=>{s.style.display=(t==='all'||s.dataset.topic===t)?'block':'none'});}
+function toggleRole(){isEditor=!isEditor;document.getElementById('roleBadge').textContent=isEditor?'EDITOR':'REPORTER';document.getElementById('roleBadge').className=isEditor?'role-badge role-editor':'role-badge role-editor';}
+function sp(id,el){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');document.querySelectorAll('.sidebar-section:first-child .si').forEach(i=>i.classList.remove('active'));if(el)el.classList.add('active');
+if(id==='mailroom')renderMail();if(id==='opinion')renderOI();if(id==='factcheck')renderFC();if(id==='pr-portal')renderPR();if(id==='team')renderTeam();if(id==='chatroom')renderChat();}
+function ft(t){document.querySelectorAll('.topic-section').forEach(s=>{s.style.display=(t==='all'||s.dataset.topic===t)?'block':'none'});}
 
-// ═══ OPINION INTELLIGENCE RENDER ═══
-function renderOI(){renderHeatmap();renderSpecialty();renderToneGaps();renderKOL();renderDiscovery();renderRegion();renderPolls();renderPulse();}
+// ═══ MAILROOM RENDER ═══
+function renderMail(){document.getElementById('mailList').innerHTML=mails.map((m,i)=>{
+const cls=m.score==='high'?'mail-high':m.score==='mid'?'mail-mid':'mail-low';
+const scoreLabel=m.score==='high'?'<span style="font-size:9px;font-weight:700;color:var(--accent)">● 높음</span>':m.score==='mid'?'<span style="font-size:9px;font-weight:700;color:var(--orange)">● 보통</span>':'<span style="font-size:9px;color:var(--gray-400)">● 낮음</span>';
+return`<div class="mail-card ${cls} fade-in" style="animation-delay:${i*.06}s">
+<div class="mail-header"><div><div class="mail-from">${m.from} ${scoreLabel}</div><div style="font-size:10px;color:var(--gray-400)">${m.email}</div></div><div class="mail-time">${m.time}</div></div>
+<div class="mail-subject">${m.subject}</div>
+<div class="mail-preview">${m.preview}</div>
+<div class="mail-ai-box"><div class="mail-ai-label">✦ AI 분석</div><div class="mail-ai-summary">${m.aiSummary}</div><div class="mail-ai-tags">${m.tags.map(t=>`<span class="mail-tag" style="${t.c}">${t.t}</span>`).join('')}</div></div>
+<div class="mail-actions">
+${m.draft?`<button class="btn-sm btn-dark" onclick="this.parentElement.nextElementSibling.classList.toggle('show');this.textContent=this.textContent.includes('보기')?'📝 초안 닫기':'📝 기사 초안 보기'">📝 기사 초안 보기</button>`:''}
+${m.assignTo?`<button class="btn-sm btn-outline" onclick="this.textContent='✓ ${m.assignTo} 배정';this.style.background='var(--green)';this.style.color='white';this.style.border='none'">👤 ${m.assignTo} 기자 배정</button>`:''}
+<button class="btn-sm btn-outline">↗ 아젠다 연결</button>
+<button class="btn-sm btn-outline" style="color:var(--gray-400)">🗑️ 스킵</button>
+</div>
+${m.draft?`<div class="mail-draft-box"><div class="mail-draft-label">📝 AI 생성 기사 초안</div><div class="mail-draft-content" style="white-space:pre-line">${m.draft}</div><div style="margin-top:8px;display:flex;gap:6px"><button class="btn-sm btn-dark">편집기로 이동</button><button class="btn-sm btn-outline">수정 요청</button></div></div>`:'<div></div>'}
+</div>`;}).join('');}
 
-function renderHeatmap(){const g=document.getElementById('heatmapGrid');let html='<div></div>';heatmapData.hours.forEach(h=>html+=`<div class="heatmap-header">${h}</div>`);heatmapData.topics.forEach((t,ti)=>{html+=`<div class="heatmap-label">${t}</div>`;heatmapData.values[ti].forEach(v=>{const intensity=v/100;const r=Math.round(194*(intensity)+30*(1-intensity));const g2=Math.round(54*(intensity)+180*(1-intensity));const b=Math.round(22*(intensity)+100*(1-intensity));const bg=v>60?`rgb(${r},${g2},${b})`:`hsl(${120-v*1.2},${40+v*.4}%,${85-v*.3}%)`;html+=`<div class="heatmap-cell" style="background:${bg};${v>60?'color:white':'color:var(--gray-600)'}" title="${t} ${v}">${v}</div>`;});});g.innerHTML=html;}
+// ═══ OI RENDER ═══
+function renderOI(){
+const spec=[{n:'내과',p:22,nu:28,ng:50,c:1240},{n:'외과',p:18,nu:22,ng:60,c:890},{n:'영상의학',p:35,nu:30,ng:35,c:420},{n:'가정의학',p:30,nu:35,ng:35,c:680},{n:'응급의학',p:15,nu:20,ng:65,c:310},{n:'소아청소년',p:12,nu:18,ng:70,c:520}];
+const kol=[{n:'내과의사_서울',sp:'내과·15년차',c:'#2980b9',s:92,cm:342,rp:1840},{n:'외과소신발언',sp:'외과·20년차',c:'#c0392b',s:88,cm:228,rp:1420},{n:'영상의AI연구',sp:'영상의학·교수',c:'#8e44ad',s:85,cm:186,rp:960},{n:'지방소아과의사',sp:'소아과·8년차',c:'#e67e22',s:81,cm:294,rp:1180}];
+document.getElementById('oiContent').innerHTML=`
+<div class="oi-grid fade-in s1">
+  <div class="oi-card"><div class="oi-title">🩺 전문과별 의견 — 전공의 복귀율</div>${spec.map(s=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:55px;font-size:10px;font-weight:500;text-align:right">${s.n}</div><div style="flex:1;display:flex;height:20px;border-radius:3px;overflow:hidden;gap:1px"><div style="width:${s.p}%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:white">${s.p>10?s.p+'%':''}</div><div style="width:${s.nu}%;background:var(--gray-300)"></div><div style="width:${s.ng}%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:white">${s.ng}%</div></div><div style="width:30px;font-size:8px;color:var(--gray-400);text-align:right;font-family:'JetBrains Mono'">${(s.c/1000).toFixed(1)}K</div></div>`).join('')}</div>
+  <div class="oi-card"><div class="oi-title">👑 KOL 트래커</div>${kol.map(k=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--gray-100)"><div style="width:32px;height:32px;border-radius:50%;background:${k.c};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white">${k.n[0]}</div><div style="flex:1"><div style="font-size:11px;font-weight:600">${k.n} <span style="font-family:'JetBrains Mono';font-size:9px;color:var(--blue)">Score ${k.s}</span></div><div style="font-size:9px;color:var(--gray-400)">${k.sp} · 댓글 ${k.cm} · 답글유발 ${k.rp.toLocaleString()}</div></div><button class="btn-sm btn-outline" style="font-size:8px">📞 소스</button></div>`).join('')}</div>
+</div>
+<div class="oi-grid fade-in s2">
+  <div class="oi-card"><div class="oi-title">💡 댓글 → 아젠다 발굴</div>
+    <div style="padding:8px;background:var(--gray-100);border-radius:6px;margin-bottom:6px;display:flex;align-items:center;gap:10px;cursor:pointer"><div><div style="font-size:12px;font-weight:700;color:var(--blue)">#야간 당직 수당</div><div style="font-size:9px;color:var(--gray-500)">847건 · +312% · 전공의 기사 댓글</div></div><button class="btn-sm btn-dark" style="margin-left:auto;font-size:8px" onclick="this.textContent='✓ 등록'">아젠다 등록</button></div>
+    <div style="padding:8px;background:var(--gray-100);border-radius:6px;margin-bottom:6px;display:flex;align-items:center;gap:10px;cursor:pointer"><div><div style="font-size:12px;font-weight:700;color:var(--blue)">#AI 오진 책임보험</div><div style="font-size:9px;color:var(--gray-500)">523건 · +189% · AI의료기기 댓글</div></div><button class="btn-sm btn-dark" style="margin-left:auto;font-size:8px" onclick="this.textContent='✓ 등록'">아젠다 등록</button></div>
+    <div style="padding:8px;background:var(--gray-100);border-radius:6px;display:flex;align-items:center;gap:10px;cursor:pointer"><div><div style="font-size:12px;font-weight:700;color:var(--blue)">#비대면 처방전 위변조</div><div style="font-size:9px;color:var(--gray-500)">418건 · +156% · 원격의료 댓글</div></div><button class="btn-sm btn-dark" style="margin-left:auto;font-size:8px" onclick="this.textContent='✓ 등록'">팩트체크</button></div>
+  </div>
+  <div class="oi-card"><div class="oi-title">⚡ 기사 톤 vs 댓글 갭</div>
+    <div style="padding:10px;background:var(--gray-100);border-radius:6px;margin-bottom:6px"><div style="font-size:11px;font-weight:600;margin-bottom:6px">전공의 복귀율 47%</div><div style="display:flex;gap:8px;align-items:center"><div style="flex:1"><div style="font-size:8px;color:var(--gray-400);margin-bottom:2px">기사 톤</div><div style="height:6px;display:flex;gap:1px;border-radius:3px;overflow:hidden"><div style="width:55%;background:var(--green)"></div><div style="width:30%;background:var(--gray-300)"></div><div style="width:15%;background:var(--accent)"></div></div></div><div style="font-size:14px;color:var(--gray-300)">⟷</div><div style="flex:1"><div style="font-size:8px;color:var(--gray-400);margin-bottom:2px">댓글 여론</div><div style="height:6px;display:flex;gap:1px;border-radius:3px;overflow:hidden"><div style="width:28%;background:var(--green)"></div><div style="width:25%;background:var(--gray-300)"></div><div style="width:47%;background:var(--accent)"></div></div></div></div><div style="margin-top:6px;font-size:9px;color:var(--accent);font-weight:600">⚠️ 기사 긍정55% vs 댓글 부정47% — 32%p 갭. 독자 괴리 감지</div></div>
+    <div style="padding:10px;background:var(--gray-100);border-radius:6px"><div style="font-size:11px;font-weight:600;margin-bottom:6px">원격의료 시범사업</div><div style="display:flex;gap:8px;align-items:center"><div style="flex:1"><div style="font-size:8px;color:var(--gray-400);margin-bottom:2px">기사 톤</div><div style="height:6px;display:flex;gap:1px;border-radius:3px;overflow:hidden"><div style="width:50%;background:var(--green)"></div><div style="width:35%;background:var(--gray-300)"></div><div style="width:15%;background:var(--accent)"></div></div></div><div style="font-size:14px;color:var(--gray-300)">⟷</div><div style="flex:1"><div style="font-size:8px;color:var(--gray-400);margin-bottom:2px">댓글 여론</div><div style="height:6px;display:flex;gap:1px;border-radius:3px;overflow:hidden"><div style="width:35%;background:var(--green)"></div><div style="width:30%;background:var(--gray-300)"></div><div style="width:35%;background:var(--accent)"></div></div></div></div><div style="margin-top:6px;font-size:9px;color:var(--orange);font-weight:600">⚠️ 의사 독자 반발 확인. 양측 균형보도 권고</div></div>
+  </div>
+</div>`;}
 
-function renderSpecialty(){document.getElementById('specialtyBars').innerHTML=specialtyData.map(s=>`<div class="spec-row"><div class="spec-name">${s.name}</div><div class="spec-bar-wrap"><div class="spec-seg" style="width:${s.pos}%;background:var(--green)">${s.pos>10?s.pos+'%':''}</div><div class="spec-seg" style="width:${s.neu}%;background:var(--gray-300)">${s.neu>10?s.neu+'%':''}</div><div class="spec-seg" style="width:${s.neg}%;background:var(--accent)">${s.neg>10?s.neg+'%':''}</div></div><div class="spec-count">${(s.count/1000).toFixed(1)}K</div></div>`).join('');}
+// ═══ FACTCHECK RENDER (#2) ═══
+function renderFC(){document.getElementById('fcList').innerHTML=FC.map((f,i)=>{
+const sl=f.status==='pending'?'AI 선별':f.status==='verified'?'검증 완료':'이의 있음';
+const sc=f.status==='pending'?'background:#fdebd0;color:var(--orange)':f.status==='verified'?'background:#d5f5e3;color:var(--green)':'background:#fadbd8;color:#c0392b';
+const btnTxt=f.status==='pending'?'👤 검증 실행 (클릭)':f.status==='verified'?'✓ 완료':'⚠ 재검증';
+const btnCls=f.status==='pending'?'btn-dark':f.status==='verified'?'btn-green':'btn-dark';
+return`<div class="mail-card fade-in" style="animation-delay:${i*.07}s;border-left:3px solid ${f.status==='pending'?'var(--orange)':f.status==='verified'?'var(--green)':'var(--accent)'}">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px"><div><span class="tag-sm" style="${sc}">${sl}</span><div style="font-size:10px;color:var(--gray-400);margin-top:4px">📰 ${f.article} — ${f.reporter} 기자</div></div><button class="btn-sm ${btnCls}" onclick="runFC(this)">${btnTxt}</button></div>
+<div style="padding:10px 14px;background:var(--gray-100);border-left:3px solid var(--blue);border-radius:0 6px 6px 0;margin-bottom:8px;font-size:12px;line-height:1.55;color:var(--gray-700)">${f.quote}</div>
+<div style="font-size:10px;color:var(--orange);font-weight:600;margin-bottom:8px">⚡ ${f.claim}</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px"><div style="padding:6px;background:var(--gray-100);border-radius:5px"><div style="font-size:7px;font-weight:700;color:var(--gray-400);text-transform:uppercase">검수자</div><div style="font-size:10px;font-weight:500;margin-top:1px" class="fc-verifier">${f.status==='verified'||f.status==='disputed'?'AI 팩트체커':'대기 중'}</div></div><div style="padding:6px;background:var(--gray-100);border-radius:5px"><div style="font-size:7px;font-weight:700;color:var(--gray-400);text-transform:uppercase">출처</div><div style="font-size:10px;font-weight:500;margin-top:1px">${f.sources.length}건</div></div><div style="padding:6px;background:var(--gray-100);border-radius:5px"><div style="font-size:7px;font-weight:700;color:var(--gray-400);text-transform:uppercase">워크플로우</div><div style="font-size:10px;font-weight:500;margin-top:1px;color:${f.status==='pending'?'var(--orange)':f.status==='verified'?'var(--green)':'var(--accent)'}">${f.status==='pending'?'👤 사람 클릭 대기':f.status==='verified'?'✓ 완료':'👤 재검토 필요'}</div></div></div>
+${f.sources.map(s=>`<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--gray-100);font-size:10px"><span>${s.icon}</span><a href="${s.url}" style="color:var(--blue);text-decoration:none;font-weight:500">${s.name}</a><span style="margin-left:auto;font-size:8px;color:var(--gray-400);font-family:'JetBrains Mono'">${s.date}</span></div>`).join('')}
+</div>`;}).join('');}
+function runFC(btn){if(btn.textContent.includes('완료'))return;btn.textContent='⏳ AI 검증 중...';btn.style.background='var(--orange)';setTimeout(()=>{btn.textContent='✓ 검증 완료';btn.style.background='var(--green)';const card=btn.closest('.mail-card');card.style.borderLeftColor='var(--green)';const v=card.querySelector('.fc-verifier');if(v)v.textContent='AI 팩트체커';},1500);}
 
-function renderToneGaps(){document.getElementById('toneGaps').innerHTML=toneGapData.map(g=>`<div class="gap-item"><div class="gap-item-title">${g.title}</div><div class="gap-bars"><div class="gap-bar-col"><div class="gap-bar-label">기사 톤</div><div class="gap-bar"><div style="width:${g.article.pos}%;background:var(--green);height:100%;border-radius:4px 0 0 4px"></div><div style="width:${g.article.neu}%;background:var(--gray-300);height:100%"></div><div style="width:${g.article.neg}%;background:var(--accent);height:100%;border-radius:0 4px 4px 0"></div></div></div><div style="font-size:16px;color:var(--gray-300)">⟷</div><div class="gap-bar-col"><div class="gap-bar-label">댓글 여론</div><div class="gap-bar"><div style="width:${g.comments.pos}%;background:var(--green);height:100%;border-radius:4px 0 0 4px"></div><div style="width:${g.comments.neu}%;background:var(--gray-300);height:100%"></div><div style="width:${g.comments.neg}%;background:var(--accent);height:100%;border-radius:0 4px 4px 0"></div></div></div></div>${g.alert?`<div class="gap-alert">⚡ ${g.alert}</div>`:''}</div>`).join('');}
+// ═══ PR PORTAL RENDER (#5) ═══
+function renderPR(){document.getElementById('prList').innerHTML=prData.map((p,i)=>`
+<div class="pr-card fade-in" style="animation-delay:${i*.06}s">
+  <div class="pr-company"><div class="pr-logo" style="background:${p.logo}">${p.company[0]}</div><div><div class="pr-company-name">${p.company} <span class="pr-revenue-badge">💰 ${p.plan}</span></div><div class="pr-company-type">${p.type}</div></div><span class="tag-sm" style="margin-left:auto;${p.status==='발행완료'?'background:var(--green-soft);color:var(--green)':'background:var(--orange-soft);color:var(--orange)'}">${p.status}</span></div>
+  <div class="pr-title">${p.title}</div>
+  <div class="pr-status"><div class="pr-stat-item"><div class="pv">${p.articles}</div><div class="pl">기사</div></div><div class="pr-stat-item"><div class="pv">${p.views}</div><div class="pl">조회</div></div><div class="pr-stat-item"><div class="pv" style="color:var(--blue)">자동</div><div class="pl">피드백</div></div></div>
+  <div class="pr-feedback-box"><div class="pr-fb-label">📊 AI 자동 피드백 (발행사에 전송됨)</div><div class="pr-fb-content">${p.feedback}</div></div>
+  ${p.revision?`<div style="margin-top:8px;padding:10px;background:#fff5f5;border-radius:6px;border:1px solid rgba(194,54,22,.1)"><div style="font-size:9px;font-weight:700;color:var(--accent);margin-bottom:3px">✏️ 수정 요청</div><div style="font-size:10px;line-height:1.5;color:var(--gray-700)">${p.revision}</div><div style="margin-top:6px;display:flex;gap:4px"><button class="btn-sm btn-dark" style="font-size:8px" onclick="this.textContent='✓ 수정 반영';this.style.background='var(--green)'">수정 반영</button><button class="btn-sm btn-outline" style="font-size:8px">거부 (편집권)</button></div></div>`:''}
+</div>`).join('');}
 
-function renderKOL(){document.getElementById('kolList').innerHTML=kolData.map(k=>`<div class="kol-item"><div class="kol-avatar" style="background:${k.color}">${k.name[0]}</div><div class="kol-info"><div class="kol-name">${k.name} <span style="font-family:'JetBrains Mono';font-size:10px;color:var(--blue);font-weight:600">Score ${k.score}</span></div><div class="kol-spec">${k.spec}</div><div class="kol-stats"><span class="kol-stat">댓글 <b>${k.comments}</b></span><span class="kol-stat">답글유발 <b>${k.replies.toLocaleString()}</b></span></div><div style="font-size:9px;color:var(--purple);margin-top:2px">${k.influence}</div></div><button class="kol-action">📞 소스 제안</button></div>`).join('');}
+// ═══ OTHER RENDERS ═══
+function renderTeam(){document.getElementById('teamGrid').innerHTML=R.map(r=>`<div style="background:white;border:1px solid var(--gray-200);border-radius:8px;padding:14px;position:relative"><div style="position:absolute;top:10px;right:10px;width:7px;height:7px;border-radius:50%;background:${r.status==='online'?'#2ecc71':r.status==='away'?'#f39c12':'var(--gray-300)'}"></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:50%;background:${r.color};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:white">${r.name[0]}</div><div><div style="font-size:12px;font-weight:700">${r.name}</div><div style="font-size:9px;color:var(--gray-400)">${r.beat}</div></div></div><div style="display:flex;gap:4px;margin-bottom:6px"><div style="flex:1;text-align:center;padding:5px;background:var(--gray-100);border-radius:4px"><div style="font-family:'JetBrains Mono';font-size:13px;font-weight:600">${r.articles}</div><div style="font-size:7px;color:var(--gray-400)">기사</div></div><div style="flex:1;text-align:center;padding:5px;background:var(--gray-100);border-radius:4px"><div style="font-family:'JetBrains Mono';font-size:13px;font-weight:600">${r.views}</div><div style="font-size:7px;color:var(--gray-400)">조회</div></div></div><div style="display:flex;flex-wrap:wrap;gap:2px">${r.agendas.map(a=>`<span style="font-size:7px;padding:1px 5px;border-radius:5px;background:var(--blue-soft);color:var(--blue);font-weight:500">${a}</span>`).join('')}</div></div>`).join('');}
 
-function renderDiscovery(){document.getElementById('discoveryList').innerHTML=discoveryData.map(d=>`<div class="discovery-item"><div><div class="discovery-keyword">#${d.keyword}</div><div class="discovery-meta">댓글 ${d.mentions}건 언급 · ${d.trend} · ${d.source}</div></div><button class="discovery-action" onclick="this.textContent='✓ 등록됨';this.style.background='var(--green)'">${d.action}</button></div>`).join('');}
+const chatMsgs=[{a:'system',t:'── 2026.03.27 오후 세션 ──'},{a:'desk',t:'식약처 SaMD 최종안 감지. A등급.',tm:'14:18'},{a:'editor',t:'P1 상향. 김서연 속보 발행 요청.',tm:'14:20'},{a:'desk',t:'📧 메일룸에서 식약처 내부자 제보 감지. P1 선별됨.',tm:'14:32'},{a:'editor',t:'김서연 기자에게 메일 제보 + 속보 동시 배정.',tm:'14:33'},{a:'seo',t:'Schema.org/MedicalArticle 준비. AI검색유입 +23%.',tm:'14:35'},{a:'desk',t:'🔴 청년의사 전공의 후속취재 포착.',tm:'14:45'},{a:'editor',t:'박지민 긴급 후속 배정. 류태현 인포그래픽.',tm:'14:46'}];
+function renderChat(){const c=document.getElementById('chatMsgs');c.innerHTML='';const cfg={editor:{i:'🤖',n:'편집장 AI',bg:'#eef0f7'},desk:{i:'📡',n:'데스크 AI',bg:'#edf7ed'},seo:{i:'🔍',n:'SEO AI',bg:'#fef5e7'}};chatMsgs.forEach(m=>{if(m.a==='system'){c.innerHTML+=`<div style="background:var(--gray-100);font-style:italic;color:var(--gray-500);text-align:center;font-size:9px;padding:4px 10px;border-radius:8px;margin:0 auto">${m.t}</div>`;}else{const cf=cfg[m.a];c.innerHTML+=`<div style="display:flex;gap:7px;max-width:80%"><div style="width:28px;height:28px;border-radius:7px;background:${cf.bg};display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">${cf.i}</div><div style="padding:8px 12px;border-radius:9px;font-size:11px;line-height:1.5;background:${cf.bg}"><span style="font-size:8px;font-weight:700;display:block;margin-bottom:2px">${cf.n}</span>${m.t}<span style="font-size:7px;color:rgba(0,0,0,.2);display:block;text-align:right;margin-top:2px">${m.tm||''}</span></div></div>`;}});setTimeout(()=>c.scrollTop=c.scrollHeight,50);}
 
-function renderRegion(){document.getElementById('regionMap').innerHTML=`<div class="region-grid">${regionData.map(r=>{const tempColor=r.temp>55?'var(--accent)':r.temp>45?'var(--orange)':r.temp>35?'var(--blue)':'var(--green)';return`<div class="region-box"><div class="region-name">${r.name}</div><div class="region-temp" style="color:${tempColor}">${r.temp}°</div><div class="region-detail">${r.detail}</div><div class="region-bar"><div class="seg-pos" style="width:${r.pos}%"></div><div class="seg-neu" style="width:${r.neu}%"></div><div class="seg-neg" style="width:${r.neg}%"></div></div></div>`;}).join('')}</div><div style="margin-top:10px;font-size:10px;color:var(--gray-400);display:flex;gap:16px"><span>🟢 온건</span><span>🔵 주의</span><span>🟠 경계</span><span>🔴 과열</span></div>`;}
-
-function renderPolls(){document.getElementById('pollResults').innerHTML=pollData.map(p=>`<div class="poll-card"><div class="poll-question">${p.q}</div>${p.options.map(o=>`<div class="poll-option"><div class="poll-option-label">${o.label}</div><div class="poll-option-bar"><div class="poll-option-fill" style="width:${o.pct}%;background:${o.color}">${o.pct>15?o.pct+'%':''}</div></div><div class="poll-pct">${o.pct}%</div></div>`).join('')}<div class="poll-respondents">응답 ${p.respondents.toLocaleString()}명 (의사 인증 회원)</div></div>`).join('');}
-
-function renderPulse(){document.getElementById('commentPulse').innerHTML=commentPulseData.map(c=>{const barW=c.emotion;const barColor=c.emotion>85?'var(--accent)':c.emotion>70?'var(--orange)':'var(--blue)';return`<div style="padding:10px 0;border-bottom:1px solid var(--gray-100)"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div style="font-size:11px;font-weight:600;color:var(--blue)">${c.author}</div><div style="display:flex;align-items:center;gap:6px"><span style="font-size:9px;padding:1px 6px;background:var(--gray-100);border-radius:3px;color:var(--gray-500)">${c.topic}</span><span style="font-size:9px;color:var(--gray-400);font-family:'JetBrains Mono'">${c.time}</span></div></div><div style="font-size:11px;line-height:1.5;color:var(--gray-700);margin-bottom:6px">"${c.text}"</div><div style="display:flex;align-items:center;gap:6px"><div style="font-size:9px;color:var(--gray-400)">감정강도</div><div style="flex:1;height:4px;background:var(--gray-100);border-radius:2px;overflow:hidden"><div style="width:${barW}%;height:100%;background:${barColor};border-radius:2px"></div></div><div style="font-family:'JetBrains Mono';font-size:10px;font-weight:600;color:${barColor}">${c.emotion}</div></div></div>`;}).join('');}
-
-// ═══ OTHER PAGES ═══
-function renderTeam(){document.getElementById('teamGrid').innerHTML=R.map((r,i)=>`<div style="background:white;border:1px solid var(--gray-200);border-radius:10px;padding:16px;position:relative" class="fade-in" style="animation-delay:${i*.04}s"><div style="position:absolute;top:12px;right:12px;width:8px;height:8px;border-radius:50%;background:${r.status==='online'?'#2ecc71':r.status==='away'?'#f39c12':'var(--gray-300)'}"></div><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="width:40px;height:40px;border-radius:50%;background:${r.color};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:white">${r.name[0]}</div><div><div style="font-size:13px;font-weight:700">${r.name}</div><div style="font-size:9px;color:var(--gray-400)">기자 · ${r.beat}</div></div></div><div style="display:flex;gap:6px;margin-bottom:8px"><div style="flex:1;text-align:center;padding:6px;background:var(--gray-100);border-radius:4px"><div style="font-family:'JetBrains Mono';font-size:14px;font-weight:600">${r.articles}</div><div style="font-size:7px;color:var(--gray-400);text-transform:uppercase">기사</div></div><div style="flex:1;text-align:center;padding:6px;background:var(--gray-100);border-radius:4px"><div style="font-family:'JetBrains Mono';font-size:14px;font-weight:600">${r.views}</div><div style="font-size:7px;color:var(--gray-400);text-transform:uppercase">조회</div></div></div><div style="display:flex;flex-wrap:wrap;gap:3px">${r.agendas.map(a=>`<span style="font-size:8px;padding:2px 6px;border-radius:6px;background:var(--blue-soft);color:var(--blue);font-weight:500">${a}</span>`).join('')}</div></div>`).join('');}
-
-function renderChat(){const c=document.getElementById('chatroomMessages');c.innerHTML='';const cfg={editor:{icon:'🤖',name:'편집장 AI',cls:'bubble-editor',bg:'#eef0f7'},desk:{icon:'📡',name:'데스크 AI',cls:'bubble-desk',bg:'#edf7ed'},seo:{icon:'🔍',name:'SEO AI',cls:'bubble-seo',bg:'#fef5e7'}};CM.forEach((m,i)=>{if(m.agent==='system'){const d=document.createElement('div');d.className='bubble-system';d.style.cssText='background:var(--gray-100);font-style:italic;color:var(--gray-500);text-align:center;font-size:10px;padding:5px 12px;border-radius:10px;margin:0 auto';d.textContent=m.text;c.appendChild(d);}else{const cf=cfg[m.agent],w=document.createElement('div');w.style.cssText='display:flex;gap:8px;max-width:80%';w.innerHTML=`<div style="width:30px;height:30px;border-radius:8px;background:${cf.bg};display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${cf.icon}</div><div style="padding:9px 13px;border-radius:10px;font-size:12px;line-height:1.55;background:${cf.bg}"><span style="font-size:9px;font-weight:700;display:block;margin-bottom:3px">${cf.name}</span>${m.text}<span style="font-size:8px;color:rgba(0,0,0,.25);display:block;text-align:right;margin-top:3px">${m.time||''}</span></div>`;c.appendChild(w);}});setTimeout(()=>c.scrollTop=c.scrollHeight,100);}
-
-function renderFC(){document.getElementById('factcheckList').innerHTML=FC.map(f=>{const sl=f.status==='pending'?'검증 대기':'검증 완료',sc=f.status==='pending'?'background:#fdebd0;color:var(--orange)':'background:#d5f5e3;color:var(--green)';return`<div style="background:white;border:1px solid var(--gray-200);border-radius:10px;padding:18px"><div style="display:flex;justify-content:space-between;margin-bottom:10px"><div><span style="font-size:9px;font-weight:800;padding:3px 9px;border-radius:4px;${sc}">${sl}</span><div style="font-size:10px;color:var(--gray-400);margin-top:5px">📰 ${f.article} — ${f.reporter}</div></div><button style="padding:6px 14px;background:${f.status==='pending'?'var(--ink)':'var(--green)'};color:white;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer" onclick="if(!this.dataset.done){this.textContent='✓ 완료';this.style.background='var(--green)';this.dataset.done=1}">${f.status==='pending'?'🔍 실행':'✓ 완료'}</button></div><div style="padding:10px 14px;background:var(--gray-100);border-left:3px solid var(--blue);border-radius:0 6px 6px 0;margin-bottom:10px;font-size:12px;line-height:1.55">${f.quote}</div>${f.sources.map(s=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--gray-100);font-size:11px"><span>${s.icon}</span><a href="${s.url}" style="color:var(--blue);text-decoration:none;font-weight:500">${s.name}</a><span style="margin-left:auto;font-size:9px;color:var(--gray-400);font-family:'JetBrains Mono'">${s.date}</span></div>`).join('')}</div>`;}).join('');}
-
-function renderTips(){document.getElementById('tipInbox').innerHTML=TI.map(t=>{const bc=t.status==='new'?'background:#fadbd8;color:#c0392b':t.status==='review'?'background:#fdebd0;color:var(--orange)':'background:#d4e6f1;color:var(--blue)';const bl=t.status==='new'?'신규':t.status==='review'?'검토중':'배정';return`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-100)"><span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;white-space:nowrap;${bc}">${bl}</span><div><div style="font-size:12px;font-weight:500">${t.title}</div><div style="font-size:10px;color:var(--gray-400)">${t.source}·${t.date}</div></div></div>`;}).join('');}
-
-// ═══ MODALS ═══
-function openModal(id){const info=AI_INFO[id];if(!info)return;document.getElementById('modalTitle').textContent=info.title;document.getElementById('modalTopic').textContent=info.topic;const arts=AA[id]||DA;document.getElementById('modalBody').innerHTML=`<div class="modal-section"><div class="modal-section-title">기사 (${arts.length})</div>${arts.map(a=>`<div class="article-list-item"><div class="article-status-dot dot-${a.status}"></div><div class="article-info"><div class="article-title"><a href="${a.url}" target="_blank">${a.title}</a></div><div class="article-meta">${a.reporter}·${a.date}</div></div><div class="article-views">${a.views}</div></div>`).join('')}</div><div class="modal-section"><div class="modal-section-title">여론</div><div style="display:flex;gap:12px"><div style="flex:1;text-align:center;padding:12px;background:#d5f5e3;border-radius:6px"><div style="font-size:20px;font-weight:700;color:#1e8449">${info.pos}%</div><div style="font-size:9px;color:#1e8449">긍정</div></div><div style="flex:1;text-align:center;padding:12px;background:var(--gray-100);border-radius:6px"><div style="font-size:20px;font-weight:700;color:var(--gray-500)">${info.neu}%</div><div style="font-size:9px;color:var(--gray-500)">중립</div></div><div style="flex:1;text-align:center;padding:12px;background:#fadbd8;border-radius:6px"><div style="font-size:20px;font-weight:700;color:#c0392b">${info.neg}%</div><div style="font-size:9px;color:#c0392b">부정</div></div></div><a class="opinion-detail-link" onclick="closeModal();switchPage('opinion-intel',document.querySelector('[data-page=opinion-intel]'))">🧠 여론 인텔리전스에서 상세 분석 →</a></div>`;document.getElementById('modalOverlay').classList.add('active');document.body.style.overflow='hidden';}
-function closeModal(e){if(e&&e.target!==e.currentTarget&&!e.target.classList.contains('modal-close'))return;document.getElementById('modalOverlay').classList.remove('active');document.body.style.overflow='';}
-
-const agentLogs={editor:{title:'편집장 AI',logs:['14:46 [ACTION] 박지민 긴급 후속 배정','14:32 [ACTION] AI 의료기기 P1 상향','14:29 [ACTION] 팩트체크 등록','12:30 [ACTION] 데일리 브리핑 발송']},desk:{title:'데스크 AI',logs:['14:45 [ALERT] 🔴 청년의사 후속취재 감지','14:28 [ALERT] RWD 표현 검출','14:21 [DETECT] 네이버 실검 7→3위','14:18 [DETECT] 식약처 보도자료 A등급']},seo:{title:'SEO AI',logs:['14:48 [ACTION] og:image 교체 대기 2.4x','14:31 [DETECT] AI검색유입 +23%','14:23 [ACTION] Schema.org 마크업 대기','12:30 [ACTION] robots.txt 갱신']}};
-function openAgentModal(type){const d=agentLogs[type];document.getElementById('agentModalTitle').textContent=d.title;document.getElementById('agentModalBody').innerHTML=`<div style="background:linear-gradient(135deg,#12122a,#1a2440);border-radius:8px;padding:18px;color:white;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:2;color:rgba(255,255,255,.7)">${d.logs.map(l=>{const c=l.includes('ACTION')?'#2ecc71':l.includes('ALERT')?'#f39c12':'#3498db';return`<div>${l.replace(/\[(.*?)\]/,`<span style="color:${c}">[$1]</span>`)}</div>`;}).join('')}</div>`;document.getElementById('agentModalOverlay').classList.add('active');document.body.style.overflow='hidden';}
-function closeAgentModal(e){if(e&&e.target!==e.currentTarget&&!e.target.classList.contains('modal-close'))return;document.getElementById('agentModalOverlay').classList.remove('active');document.body.style.overflow='';}
-
-document.querySelectorAll('.view-tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.view-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');}));
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeAgentModal();}});
+function openModal(id){const i=AI_I[id];if(!i)return;document.getElementById('mTitle').textContent=i.title;document.getElementById('mTopic').textContent=i.topic;document.getElementById('mBody').innerHTML=`<div class="ms"><div class="ms-title">여론</div><div style="display:flex;gap:10px"><div style="flex:1;text-align:center;padding:10px;background:#d5f5e3;border-radius:6px"><div style="font-size:18px;font-weight:700;color:#1e8449">${i.pos}%</div><div style="font-size:9px;color:#1e8449">긍정</div></div><div style="flex:1;text-align:center;padding:10px;background:var(--gray-100);border-radius:6px"><div style="font-size:18px;font-weight:700;color:var(--gray-500)">${i.neu}%</div><div style="font-size:9px;color:var(--gray-500)">중립</div></div><div style="flex:1;text-align:center;padding:10px;background:#fadbd8;border-radius:6px"><div style="font-size:18px;font-weight:700;color:#c0392b">${i.neg}%</div><div style="font-size:9px;color:#c0392b">부정</div></div></div><a style="display:inline-flex;align-items:center;gap:4px;margin-top:8px;font-size:10px;font-weight:600;color:var(--blue);cursor:pointer;border-bottom:1px dashed var(--blue);text-decoration:none" onclick="cm();sp('opinion',document.querySelector('[data-page=opinion]'))">🧠 여론 인텔리전스 상세 →</a></div>`;document.getElementById('mOverlay').classList.add('active');document.body.style.overflow='hidden';}
+function cm(e){if(e&&e.target!==e.currentTarget&&!e.target.classList.contains('mx'))return;document.getElementById('mOverlay').classList.remove('active');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')cm();});
 setInterval(()=>{const el=document.getElementById('liveCount');let v=parseInt(el.textContent.replace(/,/g,''));v+=Math.floor(Math.random()*7)-3;el.textContent=v.toLocaleString();},3000);
 </script>
-
 </body>
 </html>
