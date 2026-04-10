@@ -3,187 +3,212 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PRESS. — AI Press Release Platform</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<title>PRESS. — 보도자료를 보내면, 기사가 됩니다</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0b0b0f;--surface:#141419;--surface2:#1c1c24;--surface3:#25252f;--border:#2a2a36;--text:#e8e6e3;--text2:#9b97a0;--text3:#5f5b66;--accent:#6c5ce7;--accent2:#a29bfe;--accent-soft:rgba(108,92,231,.12);--green:#00b894;--green-soft:rgba(0,184,148,.12);--red:#e17055;--red-soft:rgba(225,112,85,.12);--orange:#fdcb6e;--orange-soft:rgba(253,203,110,.12);--blue:#74b9ff;--blue-soft:rgba(116,185,255,.12);--radius:8px;--tr:.2s ease}
+:root{
+  --bg:#ffffff;--bg2:#f8f8fa;--bg3:#f1f1f5;
+  --ink:#111118;--ink2:#3a3a4a;--ink3:#6b6b7b;--ink4:#9b9bab;--ink5:#c5c5d0;
+  --border:#e8e8ee;--border2:#d5d5de;
+  --primary:#2546f0;--primary-soft:#eef0ff;--primary-hover:#1a35cc;
+  --green:#0d9f6e;--green-soft:#ecfdf5;--green-border:#a7f3d0;
+  --red:#dc3545;--red-soft:#fef2f2;--red-border:#fecaca;
+  --orange:#e67e22;--orange-soft:#fffbeb;--orange-border:#fde68a;
+  --purple:#7c3aed;--purple-soft:#f5f3ff;
+  --radius:8px;--tr:.15s ease
+}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;overflow-x:hidden}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg2);color:var(--ink);font-size:14px;line-height:1.6}
 
-/* TOPBAR */
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
-.brand{display:flex;align-items:center;gap:14px}
-.brand .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;letter-spacing:-1px;color:white}
-.brand .logo span{color:var(--accent)}
-.brand .tagline{font-size:10px;color:var(--text3);border-left:1px solid var(--border);padding-left:12px;letter-spacing:.5px;text-transform:uppercase}
-.topbar-center{display:flex;align-items:center;gap:16px}
-.live-pill{display:flex;align-items:center;gap:6px;padding:4px 14px;background:var(--green-soft);border:1px solid rgba(0,184,148,.2);border-radius:20px;font-size:10px;font-weight:600;color:var(--green)}
-.live-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
-.topbar-right{display:flex;align-items:center;gap:12px}
-.top-btn{padding:5px 14px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:var(--tr);border:none}
-.btn-accent{background:var(--accent);color:white}.btn-accent:hover{background:var(--accent2)}
-.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
-.avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;cursor:pointer}
-.notif{position:relative;cursor:pointer;font-size:18px;color:var(--text2)}.notif-dot{position:absolute;top:-2px;right:-4px;width:7px;height:7px;background:var(--red);border-radius:50%;border:2px solid var(--surface)}
+/* ─── TOPBAR ─── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:56px;background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.brand{display:flex;align-items:center;gap:16px}
+.logo{font-family:'Instrument Serif',serif;font-weight:400;font-size:26px;color:var(--ink);letter-spacing:-1px}
+.logo span{color:var(--primary)}
+.tagline{font-size:11px;color:var(--ink4);border-left:1px solid var(--border);padding-left:14px;letter-spacing:.2px}
+.topbar-center{display:flex;align-items:center;gap:14px}
+.pill{display:flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:500}
+.pill-live{background:var(--green-soft);color:var(--green);border:1px solid var(--green-border)}
+.pill-info{background:var(--primary-soft);color:var(--primary);border:1px solid #d5daff}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.btn{padding:7px 18px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:var(--tr);border:none;display:inline-flex;align-items:center;gap:5px}
+.btn-primary{background:var(--primary);color:white}.btn-primary:hover{background:var(--primary-hover)}
+.btn-outline{background:var(--bg);color:var(--ink3);border:1px solid var(--border)}.btn-outline:hover{border-color:var(--primary);color:var(--primary)}
+.btn-sm{padding:5px 12px;font-size:11px}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;cursor:pointer}
+.notif{position:relative;cursor:pointer;font-size:18px;color:var(--ink4)}.notif-dot{position:absolute;top:-1px;right:-3px;width:7px;height:7px;background:var(--red);border-radius:50%;border:2px solid var(--bg)}
 
-/* LAYOUT */
+/* ─── LAYOUT ─── */
 .layout{display:flex;min-height:calc(100vh - 56px)}
-.sidebar{width:220px;min-width:220px;background:var(--surface);border-right:1px solid var(--border);padding:16px 0;display:flex;flex-direction:column;overflow-y:auto;max-height:calc(100vh - 56px)}
-.ss-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);padding:0 20px;margin-bottom:6px}
-.si{display:flex;align-items:center;gap:9px;padding:7px 20px;cursor:pointer;transition:var(--tr);font-size:12px;color:var(--text2);border-left:2px solid transparent}
-.si:hover{background:var(--surface2);color:var(--text)}
-.si.active{background:var(--accent-soft);color:var(--accent);border-left-color:var(--accent);font-weight:600}
-.si .icon{width:16px;text-align:center;font-size:13px}
-.si .cnt{margin-left:auto;background:var(--surface3);color:var(--text3);font-size:8px;font-weight:700;padding:1px 6px;border-radius:6px}
-.si.active .cnt{background:var(--accent-soft);color:var(--accent)}
-.si-badge{margin-left:auto;font-size:7px;font-weight:800;background:var(--accent);color:white;padding:1px 5px;border-radius:3px}
-.sidebar-spacer{flex:1}
-.sidebar-plan{margin:0 12px;padding:12px;background:linear-gradient(135deg,var(--accent),#4834d4);border-radius:8px;color:white}
-.sidebar-plan .sp-label{font-size:9px;opacity:.6;text-transform:uppercase;letter-spacing:.5px}
-.sidebar-plan .sp-name{font-size:13px;font-weight:700;margin:2px 0}
-.sidebar-plan .sp-usage{font-size:10px;opacity:.7}
-.sidebar-plan .sp-bar{height:3px;background:rgba(255,255,255,.2);border-radius:2px;margin-top:6px;overflow:hidden}
-.sidebar-plan .sp-fill{height:100%;background:white;border-radius:2px}
 
-/* MAIN */
-.main{flex:1;padding:20px 24px;overflow-y:auto;max-height:calc(100vh - 56px)}
+/* ─── SIDEBAR ─── */
+.sidebar{width:224px;min-width:224px;background:var(--bg);border-right:1px solid var(--border);padding:20px 0;display:flex;flex-direction:column;overflow-y:auto;max-height:calc(100vh - 56px)}
+.ss-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink4);padding:0 20px;margin:16px 0 8px}
+.ss-title:first-child{margin-top:0}
+.si{display:flex;align-items:center;gap:10px;padding:8px 20px;cursor:pointer;transition:var(--tr);font-size:13px;color:var(--ink3);border-right:2px solid transparent}
+.si:hover{background:var(--bg2);color:var(--ink)}
+.si.active{background:var(--primary-soft);color:var(--primary);font-weight:600;border-right-color:var(--primary)}
+.si .icon{width:18px;text-align:center;font-size:14px}
+.si .cnt{margin-left:auto;background:var(--bg3);color:var(--ink4);font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px}
+.si.active .cnt{background:var(--primary-soft);color:var(--primary)}
+.si-new{margin-left:auto;font-size:7px;font-weight:800;background:var(--primary);color:white;padding:2px 5px;border-radius:3px;letter-spacing:.3px}
+.sidebar-spacer{flex:1}
+.sidebar-plan{margin:0 14px;padding:16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)}
+.sidebar-plan .sp-label{font-size:10px;color:var(--ink4);text-transform:uppercase;letter-spacing:.5px}
+.sidebar-plan .sp-name{font-size:14px;font-weight:700;color:var(--ink);margin:2px 0}
+.sidebar-plan .sp-usage{font-size:11px;color:var(--ink3)}
+.sidebar-plan .sp-bar{height:4px;background:var(--bg3);border-radius:2px;margin-top:8px;overflow:hidden}
+.sidebar-plan .sp-fill{height:100%;background:var(--primary);border-radius:2px}
+.sp-upgrade{display:block;margin-top:10px;text-align:center;font-size:11px;color:var(--primary);font-weight:600;text-decoration:none;cursor:pointer}
+.sp-upgrade:hover{text-decoration:underline}
+
+/* ─── MAIN ─── */
+.main{flex:1;padding:24px 28px;overflow-y:auto;max-height:calc(100vh - 56px)}
 .page{display:none}.page.active{display:block}
 
-/* COMMON */
-.dh{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px}
-.dh h1{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;letter-spacing:-.5px;color:white}
-.dh .sub{font-size:11px;color:var(--text3);margin-top:2px}
-.stats-row{display:flex;gap:12px;margin-bottom:20px}
-.stat-card{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
-.stat-card .sc-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
-.stat-card .sc-value{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:600;color:white;margin-top:2px}
-.stat-card .sc-sub{font-size:10px;color:var(--text3);margin-top:2px}
-.stat-card .sc-change{font-size:10px;font-weight:600;margin-top:4px}
+/* ─── COMMON ─── */
+.page-header{margin-bottom:24px}
+.page-header h1{font-family:'Instrument Serif',serif;font-size:28px;font-weight:400;color:var(--ink);letter-spacing:-.5px;line-height:1.2}
+.page-header .sub{font-size:13px;color:var(--ink4);margin-top:4px}
+.page-header .actions{display:flex;gap:8px;margin-top:12px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px}
+.stat-card .sc-label{font-size:11px;color:var(--ink4);letter-spacing:.3px}
+.stat-card .sc-value{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:600;color:var(--ink);margin-top:2px;line-height:1}
+.stat-card .sc-sub{font-size:11px;color:var(--ink4);margin-top:4px}
+.stat-card .sc-change{font-size:11px;font-weight:600;margin-top:6px}
 .change-up{color:var(--green)}.change-down{color:var(--red)}
 
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;transition:var(--tr)}
-.card:hover{border-color:var(--accent);box-shadow:0 0 20px rgba(108,92,231,.08)}
-.card-title{font-size:12px;font-weight:700;color:white;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-
-.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:600}
-.tag-green{background:var(--green-soft);color:var(--green)}
-.tag-red{background:var(--red-soft);color:var(--red)}
-.tag-blue{background:var(--blue-soft);color:var(--blue)}
-.tag-orange{background:var(--orange-soft);color:var(--orange)}
-.tag-accent{background:var(--accent-soft);color:var(--accent)}
+.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:var(--tr)}
+.card:hover{box-shadow:0 4px 20px rgba(0,0,0,.04)}
+.card-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.card-title .ct-icon{font-size:16px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
 .mono{font-family:'JetBrains Mono',monospace}
-.btn-sm{padding:5px 12px;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;transition:var(--tr);border:none}
 
-/* ─── COMPARISON TABLE ─── */
-.compare-table{width:100%;border-collapse:collapse;margin-bottom:20px}
-.compare-table th,.compare-table td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);font-size:12px}
-.compare-table th{color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
-.compare-table .us{color:var(--accent);font-weight:600}
-.compare-table .old{color:var(--text3)}
-.compare-table .feat{color:var(--text)}
+.tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:5px;font-size:10px;font-weight:600;gap:4px}
+.tag-green{background:var(--green-soft);color:var(--green)}.tag-red{background:var(--red-soft);color:var(--red)}
+.tag-blue{background:var(--primary-soft);color:var(--primary)}.tag-orange{background:var(--orange-soft);color:var(--orange)}
+.tag-purple{background:var(--purple-soft);color:var(--purple)}.tag-gray{background:var(--bg3);color:var(--ink4)}
+
+/* ─── PIPELINE ─── */
+.pipeline{display:flex;align-items:stretch;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:24px}
+.pipe-stage{flex:1;padding:18px 12px;text-align:center;border-right:1px solid var(--border);position:relative;transition:var(--tr)}
+.pipe-stage:last-child{border:none}
+.pipe-stage.pipe-active{background:var(--primary-soft)}
+.pipe-stage .ps-icon{font-size:22px;margin-bottom:4px}
+.pipe-stage .ps-name{font-size:12px;font-weight:700;color:var(--ink)}
+.pipe-stage .ps-desc{font-size:10px;color:var(--ink4);margin-top:1px}
+.pipe-stage .ps-count{font-family:'JetBrains Mono';font-size:20px;font-weight:600;color:var(--primary);margin-top:6px}
+.pipe-arrow{position:absolute;right:-7px;top:50%;transform:translateY(-50%);color:var(--ink5);font-size:12px;z-index:1;background:var(--bg);padding:2px}
 
 /* ─── PR LIST ─── */
-.pr-item{display:flex;align-items:center;gap:14px;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:var(--tr)}
-.pr-item:hover{border-color:var(--accent);transform:translateY(-1px)}
-.pr-status{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.pr-status.st-live{background:var(--green);box-shadow:0 0 8px rgba(0,184,148,.4)}
-.pr-status.st-review{background:var(--orange)}
-.pr-status.st-draft{background:var(--text3)}
-.pr-status.st-scheduled{background:var(--blue)}
+.pr-item{display:flex;align-items:center;gap:16px;padding:16px 20px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:var(--tr)}
+.pr-item:hover{border-color:var(--primary);box-shadow:0 2px 12px rgba(37,70,240,.06)}
+.pr-status{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.st-live{background:var(--green);box-shadow:0 0 0 3px rgba(13,159,110,.15)}
+.st-review{background:var(--orange)}
+.st-draft{background:var(--ink5)}
+.st-scheduled{background:var(--primary)}
 .pr-info{flex:1}
-.pr-title{font-size:13px;font-weight:600;color:white;margin-bottom:2px}
-.pr-meta{font-size:10px;color:var(--text3)}
-.pr-score{text-align:right}
-.pr-score .score-val{font-family:'JetBrains Mono';font-size:18px;font-weight:600}
-.pr-score .score-label{font-size:8px;color:var(--text3);text-transform:uppercase}
-
-/* ─── PIPELINE VISUAL ─── */
-.pipeline{display:flex;align-items:stretch;gap:0;margin-bottom:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.pipe-stage{flex:1;padding:16px;text-align:center;position:relative;border-right:1px solid var(--border)}
-.pipe-stage:last-child{border:none}
-.pipe-stage.pipe-active{background:var(--accent-soft)}
-.pipe-stage .ps-icon{font-size:20px;margin-bottom:4px}
-.pipe-stage .ps-name{font-size:11px;font-weight:700;color:white;margin-bottom:2px}
-.pipe-stage .ps-desc{font-size:9px;color:var(--text3)}
-.pipe-stage .ps-count{font-family:'JetBrains Mono';font-size:16px;font-weight:600;color:var(--accent);margin-top:4px}
-.pipe-arrow{position:absolute;right:-8px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;z-index:1}
+.pr-title{font-size:14px;font-weight:600;color:var(--ink);line-height:1.3}
+.pr-meta{font-size:11px;color:var(--ink4);margin-top:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pr-stats{display:flex;gap:16px;align-items:center}
+.pr-stat{text-align:right}
+.pr-stat .pv{font-family:'JetBrains Mono';font-size:16px;font-weight:600;color:var(--ink)}
+.pr-stat .pl{font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:.3px}
 
 /* ─── ARTICLE PREVIEW ─── */
-.article-preview{background:var(--surface2);border-radius:var(--radius);padding:20px;margin-bottom:14px}
-.article-preview .ap-cat{font-size:9px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.article-preview h3{font-size:17px;font-weight:700;color:white;line-height:1.4;margin-bottom:8px}
-.article-preview .ap-lead{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px}
-.article-preview .ap-meta{display:flex;gap:16px;font-size:10px;color:var(--text3)}
-.article-preview .ap-ai-note{margin-top:12px;padding:10px;background:var(--accent-soft);border:1px solid rgba(108,92,231,.15);border-radius:6px;font-size:10px;color:var(--accent2)}
+.article-preview{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px}
+.ap-cat{font-size:11px;color:var(--primary);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.article-preview h3{font-family:'Instrument Serif',serif;font-size:22px;font-weight:400;color:var(--ink);line-height:1.4;margin-bottom:10px}
+.article-preview .ap-lead{font-size:14px;color:var(--ink2);line-height:1.8;margin-bottom:14px}
+.article-preview .ap-meta{display:flex;gap:16px;font-size:11px;color:var(--ink4);flex-wrap:wrap}
+.ai-note{margin-top:14px;padding:12px 16px;background:var(--purple-soft);border:1px solid #e0d5ff;border-radius:6px;font-size:12px;color:var(--purple);line-height:1.5}
+.ai-note strong{font-weight:700}
 
-/* ─── DISTRIBUTION MAP ─── */
-.dist-channel{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
-.dist-channel:last-child{border:none}
-.dc-icon{width:32px;height:32px;border-radius:6px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.dc-info{flex:1}
-.dc-name{font-size:12px;font-weight:600;color:white}
-.dc-status{font-size:10px;color:var(--text3)}
-.dc-stats{display:flex;gap:16px}
-.dc-stat{text-align:right}
-.dc-stat .dv{font-family:'JetBrains Mono';font-size:13px;font-weight:600;color:white}
-.dc-stat .dl{font-size:8px;color:var(--text3);text-transform:uppercase}
+/* ─── DISTRIBUTION ─── */
+.dist-item{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border)}
+.dist-item:last-child{border:none}
+.di-icon{width:36px;height:36px;border-radius:8px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.di-info{flex:1}
+.di-name{font-size:13px;font-weight:600;color:var(--ink)}
+.di-status{font-size:11px;color:var(--ink4);margin-top:1px}
+.di-stats{display:flex;gap:20px}
+.di-stat{text-align:right}
+.di-stat .dv{font-family:'JetBrains Mono';font-size:14px;font-weight:600;color:var(--ink)}
+.di-stat .dl{font-size:9px;color:var(--ink4);text-transform:uppercase}
 
 /* ─── BRAND INTEL ─── */
-.brand-temp{text-align:center;padding:20px}
-.brand-temp .bt-value{font-family:'JetBrains Mono';font-size:48px;font-weight:700;line-height:1}
-.brand-temp .bt-label{font-size:11px;color:var(--text3);margin-top:4px}
-.sentiment-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;gap:2px;margin-top:8px}
-.sent-pos{background:var(--green)}.sent-neu{background:var(--text3)}.sent-neg{background:var(--red)}
-.competitor-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
-.competitor-row:last-child{border:none}
-.comp-logo{width:28px;height:28px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text2);flex-shrink:0}
-.comp-name{flex:1;font-size:12px;font-weight:500}
-.comp-score{font-family:'JetBrains Mono';font-size:14px;font-weight:600}
+.brand-hero{text-align:center;padding:24px}
+.brand-hero .bh-temp{font-family:'JetBrains Mono';font-size:56px;font-weight:700;line-height:1}
+.brand-hero .bh-label{font-size:13px;color:var(--ink4);margin-top:4px}
+.sentiment-bar{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px}
+.sb-pos{background:var(--green)}.sb-neu{background:var(--ink5)}.sb-neg{background:var(--red)}
+.competitor-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.competitor-item:last-child{border:none}
+.ci-logo{width:32px;height:32px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--ink3);flex-shrink:0}
+.ci-name{flex:1;font-size:13px;font-weight:500;color:var(--ink)}
+.ci-score{font-family:'JetBrains Mono';font-size:16px;font-weight:600}
+.crisis-alert{padding:16px;background:var(--red-soft);border:1px solid var(--red-border);border-radius:var(--radius);margin-bottom:12px}
+.crisis-alert .ca-level{font-size:10px;font-weight:800;color:var(--red);text-transform:uppercase;letter-spacing:.5px}
+.crisis-alert .ca-title{font-size:14px;font-weight:700;color:var(--ink);margin-top:4px}
+.crisis-alert .ca-desc{font-size:12px;color:var(--ink2);margin-top:4px;line-height:1.5}
 
-/* ─── CRISIS ALERT ─── */
-.crisis-card{background:var(--red-soft);border:1px solid rgba(225,112,85,.2);border-radius:var(--radius);padding:14px;margin-bottom:10px}
-.crisis-card .cc-level{font-size:9px;font-weight:800;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.crisis-card .cc-title{font-size:13px;font-weight:700;color:white;margin-bottom:4px}
-.crisis-card .cc-desc{font-size:11px;color:var(--text2);line-height:1.5}
+/* ─── COMPARE TABLE ─── */
+.cmp-table{width:100%;border-collapse:collapse}
+.cmp-table th,.cmp-table td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);font-size:13px}
+.cmp-table th{font-size:11px;color:var(--ink4);font-weight:600;text-transform:uppercase;letter-spacing:.5px;background:var(--bg2)}
+.cmp-table .us{color:var(--primary);font-weight:600}
+.cmp-table .old{color:var(--ink4)}
+.cmp-table tr:hover{background:var(--bg2)}
 
-/* ─── REPORT PREVIEW ─── */
-.report-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px;cursor:pointer;transition:var(--tr)}
-.report-card:hover{border-color:var(--accent)}
-.report-card .rc-type{font-size:9px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.report-card .rc-title{font-size:13px;font-weight:600;color:white;margin-top:2px}
-.report-card .rc-meta{font-size:10px;color:var(--text3);margin-top:4px}
+/* ─── REPORT CARDS ─── */
+.report-item{display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:var(--tr)}
+.report-item:hover{border-color:var(--primary)}
+.ri-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ri-info{flex:1}
+.ri-type{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.ri-title{font-size:14px;font-weight:600;color:var(--ink);margin-top:2px}
+.ri-meta{font-size:11px;color:var(--ink4);margin-top:2px}
 
-/* RIGHT PANEL */
-.right-panel{width:280px;min-width:280px;background:var(--surface);border-left:1px solid var(--border);padding:14px;overflow-y:auto;max-height:calc(100vh - 56px)}
-.rp-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:10px}
-.rp-section{margin-bottom:20px}
-.feed-item{padding:8px 0;border-bottom:1px solid var(--border)}
-.feed-item .fi-time{font-size:8px;font-family:'JetBrains Mono';color:var(--text3)}
-.feed-item .fi-text{font-size:10px;color:var(--text2);line-height:1.4;margin-top:1px}
+/* ─── RIGHT PANEL ─── */
+.right-panel{width:280px;min-width:280px;background:var(--bg);border-left:1px solid var(--border);padding:20px 16px;overflow-y:auto;max-height:calc(100vh - 56px)}
+.rp-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink4);margin-bottom:12px}
+.rp-section{margin-bottom:24px}
+.feed-item{padding:10px 0;border-bottom:1px solid var(--border)}
+.feed-item:last-child{border:none}
+.fi-time{font-size:9px;font-family:'JetBrains Mono';color:var(--ink4)}
+.fi-text{font-size:11px;color:var(--ink2);line-height:1.5;margin-top:2px}
+.fi-tag{margin-top:4px}
+.pricing-card{padding:14px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;transition:var(--tr);cursor:pointer}
+.pricing-card:hover{border-color:var(--primary)}
+.pricing-card.pc-active{border-color:var(--primary);background:var(--primary-soft)}
+.pc-plan{font-size:11px;color:var(--ink4);font-weight:500}
+.pc-active .pc-plan{color:var(--primary);font-weight:700}
+.pc-price{font-size:18px;font-weight:700;color:var(--ink);margin-top:2px}
+.pc-price small{font-size:11px;color:var(--ink4);font-weight:400}
+.pc-desc{font-size:10px;color:var(--ink4);margin-top:2px}
 
 .fade-in{animation:fadeIn .4s ease forwards;opacity:0}
 @keyframes fadeIn{to{opacity:1}}
 .s1{animation-delay:.05s}.s2{animation-delay:.1s}.s3{animation-delay:.15s}.s4{animation-delay:.2s}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--ink5);border-radius:3px}
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
 <div class="topbar">
-  <div class="brand">
-    <div class="logo">PRESS<span>.</span></div>
-    <div class="tagline">AI Press Release Platform</div>
-  </div>
+  <div class="brand"><div class="logo">PRESS<span>.</span></div><div class="tagline">보도자료를 보내면, 기사가 됩니다</div></div>
   <div class="topbar-center">
-    <div class="live-pill"><span class="live-dot"></span>AI 엔진 4개 활성</div>
-    <div class="live-pill" style="background:var(--blue-soft);border-color:rgba(116,185,255,.2);color:var(--blue)">오늘 처리 <span class="mono" style="font-weight:700;margin-left:2px">34건</span></div>
+    <div class="pill pill-live"><span class="live-dot"></span>AI 엔진 활성</div>
+    <div class="pill pill-info">오늘 처리 <span class="mono" style="font-weight:600;margin-left:2px" id="todayCount">34건</span></div>
   </div>
   <div class="topbar-right">
-    <button class="top-btn btn-accent">+ 보도자료 등록</button>
+    <button class="btn btn-primary">+ 보도자료 등록</button>
     <div class="notif">🔔<span class="notif-dot"></span></div>
     <div class="avatar">김</div>
   </div>
@@ -191,156 +216,133 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 
 <div class="layout">
 
-<!-- SIDEBAR -->
 <div class="sidebar">
-  <div style="padding:0 0 12px"><div class="ss-title" style="padding-top:0">메인</div>
-    <div class="si active" data-page="dashboard" onclick="sp('dashboard',this)"><span class="icon">📊</span>대시보드</div>
-    <div class="si" data-page="pipeline" onclick="sp('pipeline',this)"><span class="icon">📨</span>보도자료 파이프라인<span class="cnt">12</span></div>
-    <div class="si" data-page="articles" onclick="sp('articles',this)"><span class="icon">📰</span>AI 기사 스튜디오<span class="cnt">8</span></div>
-    <div class="si" data-page="distribution" onclick="sp('distribution',this)"><span class="icon">📡</span>배포 트래커</div>
-    <div class="si" data-page="brand" onclick="sp('brand',this)"><span class="icon">🛡️</span>브랜드 인텔리전스</div>
-    <div class="si" data-page="reports" onclick="sp('reports',this)"><span class="icon">📋</span>성과 리포트</div>
-  </div>
-  <div style="padding:0 0 12px"><div class="ss-title">비교</div>
-    <div class="si" data-page="compare" onclick="sp('compare',this)"><span class="icon">⚡</span>뉴스와이어 vs PRESS.</div>
-  </div>
+  <div class="ss-title">홍보 관리</div>
+  <div class="si active" data-page="dashboard" onclick="sp('dashboard',this)"><span class="icon">📊</span>대시보드</div>
+  <div class="si" data-page="pipeline" onclick="sp('pipeline',this)"><span class="icon">📨</span>보도자료 관리<span class="cnt">12</span></div>
+  <div class="si" data-page="articles" onclick="sp('articles',this)"><span class="icon">📰</span>기사 현황<span class="cnt">34</span></div>
+  <div class="si" data-page="distribution" onclick="sp('distribution',this)"><span class="icon">📡</span>배포 트래커</div>
+  <div class="si" data-page="brand" onclick="sp('brand',this)"><span class="icon">🛡️</span>브랜드 모니터링</div>
+  <div class="si" data-page="reports" onclick="sp('reports',this)"><span class="icon">📋</span>성과 리포트</div>
+  <div class="ss-title">비교</div>
+  <div class="si" data-page="compare" onclick="sp('compare',this)"><span class="icon">⚡</span>뉴스와이어 vs PRESS.</div>
   <div class="sidebar-spacer"></div>
-  <div style="padding:0 12px 12px"><div class="ss-title" style="padding:0 0 6px">AI 엔진</div>
-    <div style="background:var(--surface2);border-radius:6px;padding:8px 10px;margin-bottom:4px;font-size:10px"><span style="color:var(--green)">●</span> <span style="color:var(--text2)">분류 엔진</span> <span class="mono" style="color:var(--text3);font-size:9px;float:right">47건 처리</span></div>
-    <div style="background:var(--surface2);border-radius:6px;padding:8px 10px;margin-bottom:4px;font-size:10px"><span style="color:var(--green)">●</span> <span style="color:var(--text2)">기사 생성</span> <span class="mono" style="color:var(--text3);font-size:9px;float:right">34건 생성</span></div>
-    <div style="background:var(--surface2);border-radius:6px;padding:8px 10px;margin-bottom:4px;font-size:10px"><span style="color:var(--green)">●</span> <span style="color:var(--text2)">팩트체크</span> <span class="mono" style="color:var(--text3);font-size:9px;float:right">29건 검증</span></div>
-    <div style="background:var(--surface2);border-radius:6px;padding:8px 10px;font-size:10px"><span style="color:var(--green)">●</span> <span style="color:var(--text2)">여론 분석</span> <span class="mono" style="color:var(--text3);font-size:9px;float:right">실시간</span></div>
-  </div>
-  <div style="padding:0 12px">
-    <div class="sidebar-plan">
-      <div class="sp-label">현재 플랜</div>
-      <div class="sp-name">Growth · ₩79만/월</div>
-      <div class="sp-usage">이번 달 14/20건 사용</div>
-      <div class="sp-bar"><div class="sp-fill" style="width:70%"></div></div>
-    </div>
+  <div class="sidebar-plan">
+    <div class="sp-label">현재 플랜</div>
+    <div class="sp-name">Growth · ₩79만/월</div>
+    <div class="sp-usage">이번 달 14 / 20건 사용</div>
+    <div class="sp-bar"><div class="sp-fill" style="width:70%"></div></div>
+    <a class="sp-upgrade">Enterprise로 업그레이드 →</a>
   </div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
 <!-- ═══ DASHBOARD ═══ -->
 <div class="page active" id="page-dashboard">
-  <div class="dh fade-in"><div><h1>대시보드</h1><div class="sub">삼성바이오로직스 홍보실 · 2026년 3월</div></div></div>
-
+  <div class="page-header fade-in"><h1>대시보드</h1><div class="sub">삼성바이오로직스 홍보실 · 2026년 3월</div></div>
   <div class="stats-row fade-in s1">
     <div class="stat-card"><div class="sc-label">보도자료 접수</div><div class="sc-value">47</div><div class="sc-sub">이번 달</div><div class="sc-change change-up">↑ 23% vs 전월</div></div>
-    <div class="stat-card"><div class="sc-label">기사화 완료</div><div class="sc-value" style="color:var(--green)">34</div><div class="sc-sub">기사화율 72%</div><div class="sc-change change-up">뉴스와이어 대비 7.2배</div></div>
-    <div class="stat-card"><div class="sc-label">총 도달</div><div class="sc-value" style="color:var(--blue)">2.8M</div><div class="sc-sub">조회 + 노출 합산</div><div class="sc-change change-up">↑ 45% vs 전월</div></div>
-    <div class="stat-card"><div class="sc-label">브랜드 온도</div><div class="sc-value" style="color:var(--accent)">72°</div><div class="sc-sub">긍정 58% · 부정 12%</div><div class="sc-change change-up">↑ 4° vs 전주</div></div>
+    <div class="stat-card"><div class="sc-label">기사화 완료</div><div class="sc-value" style="color:var(--green)">34</div><div class="sc-sub">기사화율 72%</div><div class="sc-change change-up">뉴스와이어 대비 7.2배 ↑</div></div>
+    <div class="stat-card"><div class="sc-label">총 도달</div><div class="sc-value" style="color:var(--primary)">2.8M</div><div class="sc-sub">조회 + 노출 합산</div><div class="sc-change change-up">↑ 45% vs 전월</div></div>
+    <div class="stat-card"><div class="sc-label">브랜드 온도</div><div class="sc-value" style="color:var(--green)">72°</div><div class="sc-sub">긍정 58% · 부정 12%</div><div class="sc-change change-up">↑ 4° vs 전주</div></div>
   </div>
 
-  <!-- Newswire Comparison Highlight -->
-  <div class="card fade-in s2" style="margin-bottom:14px;border-color:var(--accent);background:linear-gradient(135deg,var(--surface),rgba(108,92,231,.05))">
-    <div class="card-title">⚡ 뉴스와이어 대비 성과</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
-      <div style="text-align:center"><div class="mono" style="font-size:22px;font-weight:700;color:var(--accent)">7.2x</div><div style="font-size:9px;color:var(--text3)">기사화율</div><div style="font-size:8px;color:var(--text3)">뉴스와이어 10% → PRESS. 72%</div></div>
-      <div style="text-align:center"><div class="mono" style="font-size:22px;font-weight:700;color:var(--green)">2분</div><div style="font-size:9px;color:var(--text3)">접수→기사</div><div style="font-size:8px;color:var(--text3)">뉴스와이어: 기약 없음</div></div>
-      <div style="text-align:center"><div class="mono" style="font-size:22px;font-weight:700;color:var(--blue)">12ch</div><div style="font-size:9px;color:var(--text3)">동시 배포</div><div style="font-size:8px;color:var(--text3)">뉴스와이어: 이메일만</div></div>
-      <div style="text-align:center"><div class="mono" style="font-size:22px;font-weight:700;color:var(--orange)">실시간</div><div style="font-size:9px;color:var(--text3)">성과 리포트</div><div style="font-size:8px;color:var(--text3)">뉴스와이어: 없음</div></div>
+  <!-- Newswire Comparison -->
+  <div class="card fade-in s2" style="margin-bottom:16px;border-color:var(--primary);border-width:1.5px">
+    <div class="card-title"><span class="ct-icon">⚡</span>뉴스와이어 대비 성과 비교</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+      <div style="text-align:center;padding:12px;background:var(--bg2);border-radius:var(--radius)"><div class="mono" style="font-size:26px;font-weight:700;color:var(--primary)">7.2x</div><div style="font-size:11px;color:var(--ink3);margin-top:2px">기사화율</div><div style="font-size:10px;color:var(--ink4);margin-top:2px">뉴스와이어 10% → PRESS. 72%</div></div>
+      <div style="text-align:center;padding:12px;background:var(--bg2);border-radius:var(--radius)"><div class="mono" style="font-size:26px;font-weight:700;color:var(--green)">2분</div><div style="font-size:11px;color:var(--ink3);margin-top:2px">접수 → 기사</div><div style="font-size:10px;color:var(--ink4);margin-top:2px">뉴스와이어: 기약 없음</div></div>
+      <div style="text-align:center;padding:12px;background:var(--bg2);border-radius:var(--radius)"><div class="mono" style="font-size:26px;font-weight:700;color:var(--primary)">12ch</div><div style="font-size:11px;color:var(--ink3);margin-top:2px">동시 배포</div><div style="font-size:10px;color:var(--ink4);margin-top:2px">뉴스와이어: 이메일만</div></div>
+      <div style="text-align:center;padding:12px;background:var(--bg2);border-radius:var(--radius)"><div class="mono" style="font-size:26px;font-weight:700;color:var(--green)">실시간</div><div style="font-size:11px;color:var(--ink3);margin-top:2px">성과 리포트</div><div style="font-size:10px;color:var(--ink4);margin-top:2px">뉴스와이어: 없음</div></div>
     </div>
   </div>
 
   <!-- Recent PRs -->
-  <div class="card fade-in s3" style="margin-bottom:14px">
-    <div class="card-title">최근 보도자료</div>
-    <div id="recentPRs"></div>
-  </div>
+  <div class="card fade-in s3" style="margin-bottom:16px"><div class="card-title">최근 보도자료</div><div id="recentPRs"></div></div>
 
-  <!-- Quick Brand Overview -->
   <div class="grid-2 fade-in s4">
-    <div class="card">
-      <div class="card-title">🛡️ 브랜드 여론</div>
-      <div class="brand-temp"><div class="bt-value" style="color:var(--green)">72°</div><div class="bt-label">전체 브랜드 온도</div></div>
-      <div class="sentiment-bar"><div class="sent-pos" style="width:58%"></div><div class="sent-neu" style="width:30%"></div><div class="sent-neg" style="width:12%"></div></div>
-      <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--text3)"><span>긍정 58%</span><span>중립 30%</span><span>부정 12%</span></div>
+    <div class="card"><div class="card-title"><span class="ct-icon">🛡️</span>브랜드 여론</div>
+      <div class="brand-hero"><div class="bh-temp" style="color:var(--green)">72°</div><div class="bh-label">전체 브랜드 온도</div></div>
+      <div class="sentiment-bar"><div class="sb-pos" style="width:58%"></div><div class="sb-neu" style="width:30%"></div><div class="sb-neg" style="width:12%"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--ink4)"><span>긍정 58%</span><span>중립 30%</span><span>부정 12%</span></div>
     </div>
-    <div class="card">
-      <div class="card-title">📡 배포 채널 성과</div>
-      <div style="display:flex;flex-direction:column;gap:6px" id="quickChannels"></div>
-    </div>
+    <div class="card"><div class="card-title"><span class="ct-icon">📡</span>배포 채널 TOP</div><div id="quickChannels"></div></div>
   </div>
 </div>
 
 <!-- ═══ PIPELINE ═══ -->
 <div class="page" id="page-pipeline">
-  <div class="dh fade-in"><div><h1>보도자료 파이프라인</h1><div class="sub">접수 → 검수 → 기사화 → 배포 → 관리</div></div><button class="top-btn btn-accent">+ 보도자료 등록</button></div>
-
+  <div class="page-header fade-in"><h1>보도자료 관리</h1><div class="sub">접수 → AI 검수 → 기사화 → 발행 → 성과 추적</div><div class="actions"><button class="btn btn-primary">+ 보도자료 등록</button><button class="btn btn-outline">이메일로 접수 (press@press.kr)</button></div></div>
   <div class="pipeline fade-in s1">
-    <div class="pipe-stage"><div class="ps-icon">📨</div><div class="ps-name">접수</div><div class="ps-desc">이메일·웹·API</div><div class="ps-count">47</div><span class="pipe-arrow">→</span></div>
-    <div class="pipe-stage pipe-active"><div class="ps-icon">🔍</div><div class="ps-name">검수</div><div class="ps-desc">AI 자동 검증</div><div class="ps-count">5</div><span class="pipe-arrow">→</span></div>
-    <div class="pipe-stage"><div class="ps-icon">📝</div><div class="ps-name">기사화</div><div class="ps-desc">AI 기사 생성</div><div class="ps-count">3</div><span class="pipe-arrow">→</span></div>
-    <div class="pipe-stage"><div class="ps-icon">👤</div><div class="ps-name">승인대기</div><div class="ps-desc">에디터 클릭</div><div class="ps-count" style="color:var(--orange)">2</div><span class="pipe-arrow">→</span></div>
-    <div class="pipe-stage"><div class="ps-icon">🚀</div><div class="ps-name">발행</div><div class="ps-desc">동시 배포</div><div class="ps-count">34</div><span class="pipe-arrow">→</span></div>
-    <div class="pipe-stage"><div class="ps-icon">📊</div><div class="ps-name">추적</div><div class="ps-desc">성과 실시간</div><div class="ps-count" style="color:var(--green)">34</div></div>
+    <div class="pipe-stage"><div class="ps-icon">📨</div><div class="ps-name">접수</div><div class="ps-desc">이메일 · 웹 · API</div><div class="ps-count">47</div><span class="pipe-arrow">→</span></div>
+    <div class="pipe-stage pipe-active"><div class="ps-icon">🔍</div><div class="ps-name">AI 검수</div><div class="ps-desc">맞춤법 · 팩트 · 법적</div><div class="ps-count">5</div><span class="pipe-arrow">→</span></div>
+    <div class="pipe-stage"><div class="ps-icon">📝</div><div class="ps-name">기사 생성</div><div class="ps-desc">AI 자동 변환</div><div class="ps-count">3</div><span class="pipe-arrow">→</span></div>
+    <div class="pipe-stage"><div class="ps-icon">👤</div><div class="ps-name">승인 대기</div><div class="ps-desc">에디터 확인</div><div class="ps-count" style="color:var(--orange)">2</div><span class="pipe-arrow">→</span></div>
+    <div class="pipe-stage"><div class="ps-icon">🚀</div><div class="ps-name">발행 완료</div><div class="ps-desc">12채널 배포</div><div class="ps-count">34</div><span class="pipe-arrow">→</span></div>
+    <div class="pipe-stage"><div class="ps-icon">📊</div><div class="ps-name">성과 추적</div><div class="ps-desc">실시간</div><div class="ps-count" style="color:var(--green)">34</div></div>
   </div>
-
-  <div style="display:flex;gap:8px;margin-bottom:14px" class="fade-in s2">
-    <button class="btn-sm btn-accent">전체</button>
-    <button class="btn-sm btn-ghost">접수</button>
-    <button class="btn-sm btn-ghost">검수 중</button>
-    <button class="btn-sm btn-ghost" style="border-color:var(--orange);color:var(--orange)">승인 대기 (2)</button>
-    <button class="btn-sm btn-ghost">발행 완료</button>
+  <div style="display:flex;gap:6px;margin-bottom:16px" class="fade-in s2">
+    <button class="btn btn-sm btn-primary">전체</button>
+    <button class="btn btn-sm btn-outline">접수</button>
+    <button class="btn btn-sm btn-outline">검수 중</button>
+    <button class="btn btn-sm btn-outline" style="border-color:var(--orange);color:var(--orange)">승인 대기 (2)</button>
+    <button class="btn btn-sm btn-outline">발행 완료</button>
   </div>
   <div id="pipelineList" class="fade-in s3"></div>
 </div>
 
 <!-- ═══ ARTICLES ═══ -->
 <div class="page" id="page-articles">
-  <div class="dh fade-in"><div><h1>AI 기사 스튜디오</h1><div class="sub">보도자료 → AI 기사 변환 · 실시간 편집 · 원클릭 발행</div></div></div>
+  <div class="page-header fade-in"><h1>AI 기사 현황</h1><div class="sub">보도자료 → AI 기사 변환 · 제목 후보 · 팩트체크 · 원클릭 발행</div></div>
   <div id="articleStudio" class="fade-in s1"></div>
 </div>
 
 <!-- ═══ DISTRIBUTION ═══ -->
 <div class="page" id="page-distribution">
-  <div class="dh fade-in"><div><h1>배포 트래커</h1><div class="sub">12개 채널 동시 배포 · 매체별 성과 실시간 추적</div></div></div>
+  <div class="page-header fade-in"><h1>배포 트래커</h1><div class="sub">12개 채널 동시 배포 · 매체별 실시간 성과</div></div>
   <div id="distTracker" class="fade-in s1"></div>
 </div>
 
-<!-- ═══ BRAND INTELLIGENCE ═══ -->
+<!-- ═══ BRAND ═══ -->
 <div class="page" id="page-brand">
-  <div class="dh fade-in"><div><h1>브랜드 인텔리전스</h1><div class="sub">여론 모니터링 · 위기 감지 · 경쟁사 비교</div></div></div>
+  <div class="page-header fade-in"><h1>브랜드 모니터링</h1><div class="sub">여론 온도 · 경쟁사 비교 · 위기 감지</div></div>
   <div id="brandIntel" class="fade-in s1"></div>
 </div>
 
 <!-- ═══ REPORTS ═══ -->
 <div class="page" id="page-reports">
-  <div class="dh fade-in"><div><h1>성과 리포트</h1><div class="sub">기업이 돈을 내는 이유 — 뉴스와이어에 없는 것</div></div></div>
+  <div class="page-header fade-in"><h1>성과 리포트</h1><div class="sub">건별 · 주간 · 월간 자동 생성 — 뉴스와이어에는 없는 것</div></div>
   <div id="reportsList" class="fade-in s1"></div>
 </div>
 
 <!-- ═══ COMPARE ═══ -->
 <div class="page" id="page-compare">
-  <div class="dh fade-in"><div><h1>뉴스와이어 vs PRESS.</h1><div class="sub">왜 AI 시대에 뉴스와이어를 쓰면 안 되는가</div></div></div>
+  <div class="page-header fade-in"><h1>뉴스와이어 vs PRESS.</h1><div class="sub">왜 AI 시대에 뉴스와이어를 쓰면 안 되는가</div></div>
   <div class="fade-in s1">
-    <table class="compare-table">
-      <thead><tr><th style="width:25%">기능</th><th style="width:30%">뉴스와이어 (기존)</th><th style="width:30%">PRESS. (AI)</th><th>차이</th></tr></thead>
+    <table class="cmp-table">
+      <thead><tr><th style="width:22%">기능</th><th style="width:30%">뉴스와이어 (기존)</th><th style="width:30%">PRESS. (AI)</th><th>비고</th></tr></thead>
       <tbody>
-        <tr><td class="feat">보도자료 접수</td><td class="old">이메일로 접수</td><td class="us">이메일 + 웹 + API 자동 파싱</td><td><span class="tag tag-green">자동화</span></td></tr>
-        <tr><td class="feat">기사화</td><td class="old">❌ 안 해줌 (기자 마음)</td><td class="us">✅ AI가 2분 내 기사 생성</td><td><span class="tag tag-accent">핵심 차별</span></td></tr>
-        <tr><td class="feat">기사화율</td><td class="old">~10% (운 좋으면)</td><td class="us">72% (AI 자동 + 에디터 승인)</td><td><span class="tag tag-green">7.2배</span></td></tr>
-        <tr><td class="feat">배포 채널</td><td class="old">언론사 이메일함만</td><td class="us">자사사이트 + 포털 + SNS + 이메일 + 제휴매체</td><td><span class="tag tag-green">12채널</span></td></tr>
-        <tr><td class="feat">성과 측정</td><td class="old">❌ 없음</td><td class="us">실시간 조회 · 댓글 · 공유 · 여론</td><td><span class="tag tag-accent">핵심 차별</span></td></tr>
-        <tr><td class="feat">피드백</td><td class="old">❌ 없음</td><td class="us">AI 개선 제안 + 다음 보도자료 가이드</td><td><span class="tag tag-accent">핵심 차별</span></td></tr>
-        <tr><td class="feat">수정 요청</td><td class="old">기자에게 직접 연락...</td><td class="us">대시보드에서 요청 → 자동/수동 처리</td><td><span class="tag tag-green">자동화</span></td></tr>
-        <tr><td class="feat">팩트체크</td><td class="old">❌ 기자 책임</td><td class="us">AI 자동 검증 + 사람 최종 확인</td><td><span class="tag tag-green">품질↑</span></td></tr>
-        <tr><td class="feat">경쟁사 모니터링</td><td class="old">❌ 없음</td><td class="us">경쟁사 보도·여론 자동 비교 리포트</td><td><span class="tag tag-accent">핵심 차별</span></td></tr>
-        <tr><td class="feat">위기 감지</td><td class="old">❌ 없음</td><td class="us">부정 여론 급등 시 즉시 알림 + 대응안</td><td><span class="tag tag-accent">핵심 차별</span></td></tr>
-        <tr><td class="feat">SEO</td><td class="old">❌ 없음</td><td class="us">AI 자동 최적화 · AI검색엔진 대응</td><td><span class="tag tag-green">자동화</span></td></tr>
-        <tr><td class="feat">리포트</td><td class="old">❌ 없음</td><td class="us">건별·주간·월간 자동 리포트 + ROI 산출</td><td><span class="tag tag-accent">핵심 차별</span></td></tr>
-        <tr><td class="feat">가격</td><td class="old">건당 ₩3~10만</td><td class="us">월 ₩29만~ (기사화+배포+리포트 포함)</td><td><span class="tag tag-green">가성비↑</span></td></tr>
-        <tr><td class="feat">속도</td><td class="old">배포만 (기사화 보장 없음)</td><td class="us">접수 → 기사 → 배포 = 10분</td><td><span class="tag tag-green">10분</span></td></tr>
+        <tr><td>보도자료 접수</td><td class="old">웹 등록 → 사람 검수</td><td class="us">이메일 + 웹 + API · AI 자동 파싱</td><td><span class="tag tag-green">자동화</span></td></tr>
+        <tr><td><b>기사화</b></td><td class="old">❌ 안 해줌 (기자 판단)</td><td class="us">✅ AI 2분 내 기사 생성</td><td><span class="tag tag-purple">핵심</span></td></tr>
+        <tr><td>기사화율</td><td class="old">~10%</td><td class="us">72%+</td><td><span class="tag tag-green">7.2배</span></td></tr>
+        <tr><td>배포 채널</td><td class="old">이메일 + 뉴스와이어 게재</td><td class="us">자사사이트 + 포털 + SNS + 이메일 + 제휴매체</td><td><span class="tag tag-green">12ch</span></td></tr>
+        <tr><td><b>성과 측정</b></td><td class="old">클리핑 보고서 (사후)</td><td class="us">실시간 대시보드 + AI 인사이트</td><td><span class="tag tag-purple">핵심</span></td></tr>
+        <tr><td>피드백</td><td class="old">❌ 없음</td><td class="us">AI 개선 제안 + 다음 보도자료 가이드</td><td><span class="tag tag-purple">핵심</span></td></tr>
+        <tr><td>수정 요청</td><td class="old">기자에게 직접...</td><td class="us">대시보드에서 자동/수동 처리</td><td><span class="tag tag-green">자동화</span></td></tr>
+        <tr><td>팩트체크</td><td class="old">❌</td><td class="us">AI 자동 + 사람 확인</td><td><span class="tag tag-green">품질↑</span></td></tr>
+        <tr><td>경쟁사 모니터링</td><td class="old">❌</td><td class="us">보도량 · 여론 · 비교 리포트</td><td><span class="tag tag-purple">핵심</span></td></tr>
+        <tr><td><b>위기 감지</b></td><td class="old">❌</td><td class="us">부정 여론 알림 + AI 대응안</td><td><span class="tag tag-purple">핵심</span></td></tr>
+        <tr><td>SEO</td><td class="old">기본 수준</td><td class="us">AI 자동 + AI 검색엔진 대응</td><td><span class="tag tag-green">자동화</span></td></tr>
+        <tr><td>리포트</td><td class="old">클리핑 엑셀/워드</td><td class="us">건별 · 주간 · 월간 + ROI 산출</td><td><span class="tag tag-purple">핵심</span></td></tr>
+        <tr><td>가격 (20건)</td><td class="old">₩594만 (프리미엄)</td><td class="us"><b>₩79만</b></td><td><span class="tag tag-green">7.5배 ↓</span></td></tr>
       </tbody>
     </table>
-    <div class="card" style="text-align:center;padding:24px;border-color:var(--accent);background:linear-gradient(135deg,var(--surface),rgba(108,92,231,.08))">
-      <div style="font-size:18px;font-weight:700;color:white;margin-bottom:6px">뉴스와이어는 택배입니다. 배달만 합니다.</div>
-      <div style="font-size:14px;color:var(--accent2);margin-bottom:12px">PRESS.는 풀서비스 미디어 에이전시입니다. AI가 운영합니다.</div>
-      <div style="font-size:12px;color:var(--text3)">"보도자료를 보내면, 기사가 되고, 성과를 측정하고, 브랜드를 지킨다."</div>
+    <div class="card" style="text-align:center;padding:28px;margin-top:20px;border:1.5px solid var(--primary)">
+      <div style="font-family:'Instrument Serif',serif;font-size:22px;color:var(--ink)">뉴스와이어는 택배입니다. 배달만 합니다.</div>
+      <div style="font-size:16px;color:var(--primary);font-weight:600;margin-top:6px">PRESS.는 기사화를 보장합니다.</div>
+      <div style="font-size:13px;color:var(--ink4);margin-top:8px">"보도자료를 보내면, 기사가 되고, 성과를 보고, 브랜드를 지킵니다."</div>
     </div>
   </div>
 </div>
@@ -349,53 +351,51 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 
 <!-- RIGHT PANEL -->
 <div class="right-panel">
-  <div class="rp-section"><div class="rp-title">⚡ 실시간</div>
-    <div class="feed-item"><div class="fi-time">14:52</div><div class="fi-text"><span style="color:var(--green)">●</span> 삼성바이오 1Q 실적 기사 <b>발행 완료</b> — 12개 채널 동시 배포</div></div>
-    <div class="feed-item"><div class="fi-time">14:48</div><div class="fi-text"><span style="color:var(--orange)">●</span> 뷰노 AI 의료기기 보도자료 <b>검수 중</b> — 수치 교차검증</div></div>
-    <div class="feed-item"><div class="fi-time">14:40</div><div class="fi-text"><span style="color:var(--accent)">●</span> 셀트리온 기사에 <b>댓글 45건</b> 유입 — 긍정 62%</div></div>
-    <div class="feed-item"><div class="fi-time">14:35</div><div class="fi-text"><span style="color:var(--blue)">●</span> Perplexity AI에서 삼성바이오 기사 <b>2회 인용</b></div></div>
-    <div class="feed-item"><div class="fi-time">14:30</div><div class="fi-text"><span style="color:var(--red)">●</span> 경쟁사 셀트리온 — 부정 뉴스 감지 "품질 논란"</div></div>
-    <div class="feed-item"><div class="fi-time">14:22</div><div class="fi-text"><span style="color:var(--green)">●</span> SK바이오 보도자료 접수 — AI 분류 완료 (바이오·당일)</div></div>
+  <div class="rp-section"><div class="rp-title">⚡ 실시간 현황</div>
+    <div class="feed-item"><div class="fi-time">14:52</div><div class="fi-text"><b>삼성바이오 1Q 실적</b> 기사 발행 완료 — 12채널 배포</div><div class="fi-tag"><span class="tag tag-green">발행</span></div></div>
+    <div class="feed-item"><div class="fi-time">14:48</div><div class="fi-text"><b>뷰노 AI 의료기기</b> 보도자료 AI 검수 중</div><div class="fi-tag"><span class="tag tag-orange">검수</span></div></div>
+    <div class="feed-item"><div class="fi-time">14:40</div><div class="fi-text"><b>셀트리온 유럽 수출</b> 기사에 댓글 45건 유입</div><div class="fi-tag"><span class="tag tag-blue">반응</span></div></div>
+    <div class="feed-item"><div class="fi-time">14:35</div><div class="fi-text"><b>Perplexity AI</b>에서 삼성바이오 기사 2회 인용</div><div class="fi-tag"><span class="tag tag-purple">AI검색</span></div></div>
+    <div class="feed-item"><div class="fi-time">14:30</div><div class="fi-text">경쟁사 <b>셀트리온</b> 부정 뉴스 감지</div><div class="fi-tag"><span class="tag tag-red">경고</span></div></div>
   </div>
-  <div class="rp-section"><div class="rp-title">🏆 이번 주 TOP 기사</div>
-    <div style="padding:8px 0;border-bottom:1px solid var(--border)"><div style="font-size:11px;font-weight:600;color:white">삼성바이오, 1Q 매출 1조 2,340억</div><div style="font-size:9px;color:var(--text3);margin-top:2px" class="mono">조회 45K · 댓글 89 · 공유 1,240</div></div>
-    <div style="padding:8px 0;border-bottom:1px solid var(--border)"><div style="font-size:11px;font-weight:600;color:white">셀트리온, 바이오시밀러 유럽 수출 확대</div><div style="font-size:9px;color:var(--text3);margin-top:2px" class="mono">조회 32K · 댓글 67 · 공유 890</div></div>
-    <div style="padding:8px 0"><div style="font-size:11px;font-weight:600;color:white">뷰노, AI 판독 보조 FDA 승인 획득</div><div style="font-size:9px;color:var(--text3);margin-top:2px" class="mono">조회 28K · 댓글 45 · 공유 670</div></div>
+  <div class="rp-section"><div class="rp-title">🏆 이번 주 TOP</div>
+    <div style="padding:8px 0;border-bottom:1px solid var(--border)"><div style="font-size:12px;font-weight:600;color:var(--ink)">삼성바이오, 1Q 매출 1조 2,340억</div><div class="mono" style="font-size:10px;color:var(--ink4);margin-top:2px">45K 조회 · 89 댓글 · 1,240 공유</div></div>
+    <div style="padding:8px 0;border-bottom:1px solid var(--border)"><div style="font-size:12px;font-weight:600;color:var(--ink)">셀트리온, 유럽 수출 확대</div><div class="mono" style="font-size:10px;color:var(--ink4);margin-top:2px">32K 조회 · 67 댓글 · 890 공유</div></div>
+    <div style="padding:8px 0"><div style="font-size:12px;font-weight:600;color:var(--ink)">뷰노, FDA 510(k) 승인</div><div class="mono" style="font-size:10px;color:var(--ink4);margin-top:2px">28K 조회 · 45 댓글 · 670 공유</div></div>
   </div>
   <div class="rp-section"><div class="rp-title">💰 요금제</div>
-    <div style="background:var(--surface2);border-radius:6px;padding:10px;margin-bottom:6px"><div style="font-size:10px;color:var(--text3)">Starter</div><div style="font-size:14px;font-weight:700;color:white">₩29만<span style="font-size:10px;color:var(--text3)">/월</span></div><div style="font-size:9px;color:var(--text3)">월 5건 · 기본 리포트</div></div>
-    <div style="background:var(--accent-soft);border:1px solid rgba(108,92,231,.2);border-radius:6px;padding:10px;margin-bottom:6px"><div style="font-size:10px;color:var(--accent)">Growth ← 현재</div><div style="font-size:14px;font-weight:700;color:white">₩79만<span style="font-size:10px;color:var(--text3)">/월</span></div><div style="font-size:9px;color:var(--accent2)">월 20건 · 상세 리포트 · 경쟁사</div></div>
-    <div style="background:var(--surface2);border-radius:6px;padding:10px"><div style="font-size:10px;color:var(--text3)">Enterprise</div><div style="font-size:14px;font-weight:700;color:white">₩199만<span style="font-size:10px;color:var(--text3)">/월</span></div><div style="font-size:9px;color:var(--text3)">무제한 · 전담 · API · 위기관리</div></div>
+    <div class="pricing-card"><div class="pc-plan">Starter</div><div class="pc-price">₩29만<small>/월</small></div><div class="pc-desc">월 5건 · 기본 리포트</div></div>
+    <div class="pricing-card pc-active"><div class="pc-plan">Growth ← 현재</div><div class="pc-price">₩79만<small>/월</small></div><div class="pc-desc">월 20건 · 상세 리포트 · 경쟁사</div></div>
+    <div class="pricing-card"><div class="pc-plan">Enterprise</div><div class="pc-price">₩199만<small>/월</small></div><div class="pc-desc">무제한 · 전담 · API · 위기관리</div></div>
   </div>
 </div>
 
 </div>
 
 <script>
-// DATA
 const prList=[
-  {title:'2026년 1분기 매출 1조 2,340억원 달성',company:'삼성바이오로직스',status:'live',score:92,time:'14:41',cat:'실적',views:'45K',comments:89},
-  {title:'바이오시밀러 유럽 5개국 수출 계약 체결',company:'셀트리온',status:'live',score:85,time:'13:20',cat:'사업',views:'32K',comments:67},
-  {title:'AI 판독 보조 솔루션 FDA 510(k) 승인',company:'뷰노',status:'live',score:88,time:'11:00',cat:'인허가',views:'28K',comments:45},
-  {title:'혁신신약 임상 3상 중간 결과 발표',company:'유한양행',status:'review',score:74,time:'14:48',cat:'임상',views:'—',comments:0},
-  {title:'디지털 치료제 건강보험 급여 적용 신청',company:'웰트',status:'review',score:71,time:'14:30',cat:'정책',views:'—',comments:0},
-  {title:'자가면역질환 항체치료제 기술이전 계약',company:'에이비엘바이오',status:'scheduled',score:79,time:'내일 09:00',cat:'사업',views:'—',comments:0},
-  {title:'스마트 혈당측정기 CE 인증 획득',company:'아이센스',status:'draft',score:65,time:'작성 중',cat:'인증',views:'—',comments:0}
+  {title:'2026년 1분기 매출 1조 2,340억원 달성',company:'삼성바이오로직스',status:'live',time:'14:41',cat:'실적',views:'45K',comments:89,shares:1240,score:92},
+  {title:'바이오시밀러 유럽 5개국 수출 계약 체결',company:'셀트리온',status:'live',time:'13:20',cat:'사업',views:'32K',comments:67,shares:890,score:85},
+  {title:'AI 판독 보조 솔루션 FDA 510(k) 승인',company:'뷰노',status:'live',time:'11:00',cat:'인허가',views:'28K',comments:45,shares:670,score:88},
+  {title:'혁신신약 임상 3상 중간 결과 발표',company:'유한양행',status:'review',time:'14:48',cat:'임상',views:'—',comments:0,shares:0,score:74},
+  {title:'디지털 치료제 건강보험 급여 적용 신청',company:'웰트',status:'review',time:'14:30',cat:'정책',views:'—',comments:0,shares:0,score:71},
+  {title:'자가면역질환 항체치료제 기술이전 계약',company:'에이비엘바이오',status:'scheduled',time:'내일 09:00',cat:'사업',views:'—',comments:0,shares:0,score:79},
+  {title:'스마트 혈당측정기 CE 인증 획득',company:'아이센스',status:'draft',time:'작성 중',cat:'인증',views:'—',comments:0,shares:0,score:65}
 ];
 
 const channels=[
-  {icon:'🌐',name:'PRESS. 뉴스사이트',status:'✅ 발행 즉시',views:'45,200',clicks:'12,340',share:'1,240'},
-  {icon:'🟢',name:'네이버 뉴스',status:'✅ 제휴 노출',views:'89,400',clicks:'23,100',share:'3,420'},
-  {icon:'🔵',name:'다음 뉴스',status:'✅ 제휴 노출',views:'34,200',clicks:'8,900',share:'1,120'},
-  {icon:'🔍',name:'구글 뉴스',status:'✅ 색인 완료',views:'12,800',clicks:'3,400',share:'—'},
-  {icon:'📧',name:'이메일 뉴스레터',status:'✅ 12,400명 발송',views:'—',clicks:'4,340 (35%)',share:'—'},
-  {icon:'🐦',name:'X (Twitter)',status:'✅ 자동 포스팅',views:'8,200',clicks:'340',share:'45 RT'},
-  {icon:'💼',name:'LinkedIn',status:'✅ 자동 포스팅',views:'5,600',clicks:'890',share:'67'},
-  {icon:'📱',name:'Facebook',status:'✅ 자동 포스팅',views:'3,200',clicks:'210',share:'34'},
-  {icon:'📗',name:'네이버 블로그',status:'✅ 자동 포스팅',views:'1,800',clicks:'420',share:'—'},
+  {icon:'🌐',name:'PRESS. 뉴스사이트',status:'✅ 즉시 발행',views:'45.2K',clicks:'12.3K',share:'1,240'},
+  {icon:'🟢',name:'네이버 뉴스',status:'✅ 제휴 노출',views:'89.4K',clicks:'23.1K',share:'3,420'},
+  {icon:'🔵',name:'다음 뉴스',status:'✅ 노출',views:'34.2K',clicks:'8.9K',share:'1,120'},
+  {icon:'🔍',name:'구글 뉴스',status:'✅ 색인 완료',views:'12.8K',clicks:'3.4K',share:'—'},
+  {icon:'📧',name:'이메일 뉴스레터',status:'✅ 12,400명 발송',views:'—',clicks:'4,340',share:'—'},
+  {icon:'𝕏',name:'X (Twitter)',status:'✅ 자동',views:'8.2K',clicks:'340',share:'45 RT'},
+  {icon:'💼',name:'LinkedIn',status:'✅ 자동',views:'5.6K',clicks:'890',share:'67'},
+  {icon:'📘',name:'Facebook',status:'✅ 자동',views:'3.2K',clicks:'210',share:'34'},
+  {icon:'📗',name:'네이버 블로그',status:'✅ 자동',views:'1.8K',clicks:'420',share:'—'},
   {icon:'🤖',name:'Perplexity AI',status:'✅ 인용 2회',views:'—',clicks:'—',share:'인용 2'},
   {icon:'🧠',name:'SearchGPT',status:'✅ 인용 1회',views:'—',clicks:'—',share:'인용 1'},
-  {icon:'📰',name:'제휴매체 (메디게이트 외 3곳)',status:'✅ 신디케이션',views:'5,600',clicks:'1,200',share:'—'}
+  {icon:'📰',name:'제휴매체 4곳',status:'✅ 신디케이션',views:'5.6K',clicks:'1.2K',share:'—'}
 ];
 
 const competitors=[
@@ -407,83 +407,67 @@ const competitors=[
 ];
 
 const reports=[
-  {type:'건별 성과',title:'삼성바이오로직스 1Q 실적 발표',meta:'2026.03.27 · 조회 45K · 댓글 89 · 도달 2.1M',color:'var(--green)'},
-  {type:'건별 성과',title:'셀트리온 유럽 수출 계약',meta:'2026.03.27 · 조회 32K · 댓글 67 · 도달 1.4M',color:'var(--green)'},
-  {type:'주간 리포트',title:'3월 4주차 종합 성과 리포트',meta:'2026.03.25 · 기사 12건 · 총 도달 4.8M · ROI 340%',color:'var(--accent)'},
-  {type:'경쟁 인텔리전스',title:'바이오업계 경쟁사 주간 비교',meta:'2026.03.25 · 경쟁사 5곳 · 우리 브랜드 온도 1위',color:'var(--blue)'},
-  {type:'월간 리포트',title:'2026년 2월 종합 성과',meta:'기사 34건 · 총 도달 8.2M · 기사화율 72% · ROI 420%',color:'var(--orange)'},
-  {type:'위기 알림',title:'[경고] 셀트리온 품질 논란 확산 모니터링',meta:'2026.03.27 14:30 · 부정 멘션 급증 · 우리 영향도: 낮음',color:'var(--red)'}
+  {type:'건별 성과',title:'삼성바이오로직스 1Q 실적 발표',meta:'2026.03.27 · 조회 45K · 도달 2.1M',icon:'📊',bg:'var(--green-soft)',tc:'var(--green)'},
+  {type:'주간 리포트',title:'3월 4주차 종합 성과',meta:'기사 12건 · 총 도달 4.8M · ROI 340%',icon:'📅',bg:'var(--primary-soft)',tc:'var(--primary)'},
+  {type:'경쟁 인텔리전스',title:'바이오업계 주간 비교',meta:'경쟁사 5곳 · 브랜드 온도 1위',icon:'🏆',bg:'var(--purple-soft)',tc:'var(--purple)'},
+  {type:'월간 리포트',title:'2026년 2월 종합 성과',meta:'기사 34건 · 도달 8.2M · ROI 420%',icon:'📋',bg:'var(--orange-soft)',tc:'var(--orange)'},
+  {type:'위기 알림',title:'셀트리온 품질 논란 — 우리 영향도 모니터링',meta:'부정 멘션 급증 감지 · 직접 영향: 낮음',icon:'⚠️',bg:'var(--red-soft)',tc:'var(--red)'}
 ];
 
-// RENDER
 function sp(id,el){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');document.querySelectorAll('.si').forEach(i=>i.classList.remove('active'));if(el)el.classList.add('active');
 if(id==='pipeline')renderPipeline();if(id==='articles')renderArticles();if(id==='distribution')renderDist();if(id==='brand')renderBrand();if(id==='reports')renderReports();}
 
-// Dashboard init
 function initDash(){
   document.getElementById('recentPRs').innerHTML=prList.slice(0,5).map(p=>{
     const sc=p.status==='live'?'st-live':p.status==='review'?'st-review':p.status==='scheduled'?'st-scheduled':'st-draft';
     const sl=p.status==='live'?'발행':p.status==='review'?'검수중':p.status==='scheduled'?'예약':'작성중';
-    const scColor=p.score>=85?'var(--green)':p.score>=70?'var(--accent)':'var(--text3)';
-    return`<div class="pr-item"><div class="pr-status ${sc}"></div><div class="pr-info"><div class="pr-title">${p.title}</div><div class="pr-meta">${p.company} · ${p.cat} · ${p.time} · <span class="tag tag-${p.status==='live'?'green':p.status==='review'?'orange':'blue'}">${sl}</span></div></div><div class="pr-score"><div class="score-val" style="color:${scColor}">${p.score}</div><div class="score-label">뉴스가치</div></div>${p.views!=='—'?`<div style="text-align:right"><div class="mono" style="font-size:13px;font-weight:600;color:white">${p.views}</div><div style="font-size:8px;color:var(--text3)">조회</div></div>`:''}</div>`;
-  }).join('');
-
-  document.getElementById('quickChannels').innerHTML=channels.slice(0,5).map(c=>`<div style="display:flex;align-items:center;gap:8px"><div style="font-size:14px">${c.icon}</div><div style="flex:1;font-size:11px;color:var(--text2)">${c.name}</div><div class="mono" style="font-size:11px;color:white">${c.views||'—'}</div></div>`).join('');
+    const tc=p.status==='live'?'green':p.status==='review'?'orange':p.status==='scheduled'?'blue':'gray';
+    return`<div class="pr-item"><div class="pr-status ${sc}"></div><div class="pr-info"><div class="pr-title">${p.title}</div><div class="pr-meta"><span>${p.company}</span><span>·</span><span>${p.cat}</span><span>·</span><span>${p.time}</span><span class="tag tag-${tc}">${sl}</span></div></div>${p.views!=='—'?`<div class="pr-stats"><div class="pr-stat"><div class="pv">${p.views}</div><div class="pl">조회</div></div><div class="pr-stat"><div class="pv">${p.comments}</div><div class="pl">댓글</div></div><div class="pr-stat"><div class="pv">${p.shares.toLocaleString()}</div><div class="pl">공유</div></div></div>`:''}</div>`;}).join('');
+  document.getElementById('quickChannels').innerHTML=channels.slice(0,6).map(c=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;${channels.indexOf(c)<5?'border-bottom:1px solid var(--border)':''}"><div style="font-size:16px;width:24px;text-align:center">${c.icon}</div><div style="flex:1;font-size:12px;color:var(--ink2)">${c.name}</div><div class="mono" style="font-size:12px;font-weight:600;color:var(--ink)">${c.views||'—'}</div></div>`).join('');
 }
 initDash();
 
-function renderPipeline(){
-  document.getElementById('pipelineList').innerHTML=prList.map(p=>{
-    const sc=p.status==='live'?'st-live':p.status==='review'?'st-review':p.status==='scheduled'?'st-scheduled':'st-draft';
-    const sl=p.status==='live'?'발행완료':p.status==='review'?'AI 검수중':p.status==='scheduled'?'발행 예약':'초안 작성중';
-    const scColor=p.score>=85?'var(--green)':p.score>=70?'var(--accent)':'var(--text3)';
-    return`<div class="pr-item"><div class="pr-status ${sc}"></div><div class="pr-info"><div class="pr-title">${p.title}</div><div class="pr-meta">${p.company} · ${p.cat} · ${p.time}</div><div style="margin-top:4px"><span class="tag tag-${p.status==='live'?'green':p.status==='review'?'orange':p.status==='scheduled'?'blue':'accent'}">${sl}</span>${p.views!=='—'?` <span style="font-size:9px;color:var(--text3);margin-left:8px">조회 ${p.views} · 댓글 ${p.comments}</span>`:''}</div></div><div class="pr-score"><div class="score-val" style="color:${scColor}">${p.score}</div><div class="score-label">뉴스가치</div></div></div>`;
-  }).join('');
-}
+function renderPipeline(){document.getElementById('pipelineList').innerHTML=prList.map(p=>{
+  const sc=p.status==='live'?'st-live':p.status==='review'?'st-review':p.status==='scheduled'?'st-scheduled':'st-draft';
+  const sl=p.status==='live'?'발행 완료':p.status==='review'?'AI 검수중':p.status==='scheduled'?'발행 예약':'초안';
+  const tc=p.status==='live'?'green':p.status==='review'?'orange':p.status==='scheduled'?'blue':'gray';
+  return`<div class="pr-item"><div class="pr-status ${sc}"></div><div class="pr-info"><div class="pr-title">${p.title}</div><div class="pr-meta"><span>${p.company}</span><span>·</span><span>${p.cat}</span><span>·</span><span>${p.time}</span><span class="tag tag-${tc}">${sl}</span></div></div>${p.views!=='—'?`<div class="pr-stats"><div class="pr-stat"><div class="pv">${p.views}</div><div class="pl">조회</div></div><div class="pr-stat"><div class="pv">${p.comments}</div><div class="pl">댓글</div></div></div>`:''}</div>`;}).join('');}
 
-function renderArticles(){
-  document.getElementById('articleStudio').innerHTML=`
-  <div class="article-preview"><div class="ap-cat">제약·바이오 > 실적</div><h3>삼성바이오로직스, 2026년 1분기 매출 1조 2,340억원 달성… 바이오시밀러 사상 최대</h3><div class="ap-lead">삼성바이오로직스가 2026년 1분기 연결 기준 매출 1조 2,340억원을 기록했다. 이는 전년 동기 대비 23.4% 증가한 수치로, 바이오시밀러 부문이 성장을 견인했다. 바이오의약품 위탁생산(CMO) 부문도 글로벌 수주 확대에 힘입어 전분기 대비 15% 증가했다.</div><div class="ap-meta"><span>📝 AI 생성 · 2026.03.27 14:35</span><span>✅ 팩트체크: DART 공시 일치</span><span>🔍 SEO 스코어 94</span><span>👤 에디터 승인 완료</span></div><div class="ap-ai-note">✦ AI 인사이트: 제목 후보 3개 중 현재 제목이 CTR 예측 최상 (87%). "사상 최대" 표현은 DART 공시 데이터로 확인 완료. 경쟁사 셀트리온 1Q 발표는 다음 주 예정 — 비교 기사 선제 준비 권고.</div></div>
-  <div class="grid-2">
-    <div class="card"><div class="card-title">📝 제목 후보 (AI 생성)</div>
-      <div style="padding:8px;background:var(--accent-soft);border:1px solid rgba(108,92,231,.2);border-radius:6px;margin-bottom:6px;font-size:12px;color:white">✅ 삼성바이오로직스, 1Q 매출 1조 2,340억원… 바이오시밀러 사상 최대 <span style="color:var(--accent);font-size:10px">CTR 87%</span></div>
-      <div style="padding:8px;background:var(--surface2);border-radius:6px;margin-bottom:6px;font-size:12px;color:var(--text2)">삼성바이오, 바이오시밀러 힘입어 1분기 매출 23% 성장 <span style="color:var(--text3);font-size:10px">CTR 72%</span></div>
-      <div style="padding:8px;background:var(--surface2);border-radius:6px;font-size:12px;color:var(--text2)">[실적] 삼성바이오로직스, CMO+바이오시밀러 쌍끌이 성장 <span style="color:var(--text3);font-size:10px">CTR 68%</span></div>
-    </div>
-    <div class="card"><div class="card-title">🔍 팩트체크 결과</div>
-      <div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:11px"><span style="color:var(--green)">✅</span> 매출 1조 2,340억원 → DART 일치</div>
-      <div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:11px"><span style="color:var(--green)">✅</span> YoY +23.4% → 계산 정확</div>
-      <div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:11px"><span style="color:var(--green)">✅</span> "사상 최대" → 과거 분기 대비 확인</div>
-      <div style="padding:6px 0;font-size:11px"><span style="color:var(--orange)">⚠️</span> CMO +15% → 원문은 "약 15%" (정확 수치 미공개)</div>
-    </div>
-  </div>`;
-}
+function renderArticles(){document.getElementById('articleStudio').innerHTML=`
+<div class="article-preview"><div class="ap-cat">제약·바이오 › 실적</div><h3>삼성바이오로직스, 2026년 1분기 매출 1조 2,340억원 달성… 바이오시밀러 사상 최대</h3><div class="ap-lead">삼성바이오로직스가 2026년 1분기 연결 기준 매출 1조 2,340억원을 기록했다. 이는 전년 동기 대비 23.4% 증가한 수치로, 바이오시밀러 부문이 성장을 견인했다. 바이오의약품 위탁생산(CMO) 부문도 글로벌 수주 확대에 힘입어 전분기 대비 15% 증가했다.</div><div class="ap-meta"><span>📝 AI 생성 · 2026.03.27 14:35</span><span>✅ 팩트체크 통과</span><span>🔍 SEO 94점</span><span>👤 에디터 승인 완료</span></div><div class="ai-note"><strong>✦ AI 인사이트:</strong> 제목 CTR 예측 87% (3개 후보 중 최상). "사상 최대" 표현은 DART 공시 대비 검증 완료. 경쟁사 셀트리온 1Q 발표 다음 주 예정 — 비교 기사 선제 준비 권고.</div></div>
+<div class="grid-2">
+  <div class="card"><div class="card-title">📝 제목 후보</div>
+    <div style="padding:10px;background:var(--primary-soft);border:1px solid #d5daff;border-radius:6px;margin-bottom:8px;font-size:13px;color:var(--ink)">✅ 삼성바이오로직스, 1Q 매출 1조 2,340억원… 바이오시밀러 사상 최대 <span class="mono" style="font-size:10px;color:var(--primary)">CTR 87%</span></div>
+    <div style="padding:10px;background:var(--bg2);border-radius:6px;margin-bottom:8px;font-size:13px;color:var(--ink3)">삼성바이오, 바이오시밀러로 1분기 매출 23% 성장 <span class="mono" style="font-size:10px;color:var(--ink4)">CTR 72%</span></div>
+    <div style="padding:10px;background:var(--bg2);border-radius:6px;font-size:13px;color:var(--ink3)">[실적] 삼성바이오, CMO+바이오시밀러 쌍끌이 <span class="mono" style="font-size:10px;color:var(--ink4)">CTR 68%</span></div>
+  </div>
+  <div class="card"><div class="card-title">🔍 팩트체크 결과</div>
+    <div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:12px"><span style="color:var(--green)">✅</span> 매출 1조 2,340억원 — DART 공시 일치</div>
+    <div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:12px"><span style="color:var(--green)">✅</span> YoY +23.4% — 계산 정확</div>
+    <div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:12px"><span style="color:var(--green)">✅</span> "사상 최대" — 과거 분기 대비 확인</div>
+    <div style="padding:8px 0;font-size:12px"><span style="color:var(--orange)">⚠️</span> CMO +15% — 원문 "약 15%" (정확 수치 미공개)</div>
+  </div>
+</div>`;}
 
-function renderDist(){
-  document.getElementById('distTracker').innerHTML=`
-  <div class="stats-row"><div class="stat-card"><div class="sc-label">총 도달</div><div class="sc-value" style="color:var(--blue)">2.1M</div><div class="sc-sub">삼성바이오 1Q 실적 기사</div></div><div class="stat-card"><div class="sc-label">배포 채널</div><div class="sc-value" style="color:var(--accent)">12</div><div class="sc-sub">활성 채널</div></div><div class="stat-card"><div class="sc-label">총 클릭</div><div class="sc-value" style="color:var(--green)">54.2K</div><div class="sc-sub">전 채널 합산</div></div><div class="stat-card"><div class="sc-label">AI 검색 인용</div><div class="sc-value" style="color:var(--orange)">3회</div><div class="sc-sub">Perplexity 2 + SearchGPT 1</div></div></div>
-  <div class="card">${channels.map(c=>`<div class="dist-channel"><div class="dc-icon">${c.icon}</div><div class="dc-info"><div class="dc-name">${c.name}</div><div class="dc-status">${c.status}</div></div><div class="dc-stats"><div class="dc-stat"><div class="dv">${c.views||'—'}</div><div class="dl">조회</div></div><div class="dc-stat"><div class="dv">${c.clicks||'—'}</div><div class="dl">클릭</div></div><div class="dc-stat"><div class="dv">${c.share||'—'}</div><div class="dl">공유</div></div></div></div>`).join('')}</div>`;
-}
+function renderDist(){document.getElementById('distTracker').innerHTML=`
+<div class="stats-row"><div class="stat-card"><div class="sc-label">총 도달</div><div class="sc-value" style="color:var(--primary)">2.1M</div><div class="sc-sub">삼성바이오 1Q 기사</div></div><div class="stat-card"><div class="sc-label">배포 채널</div><div class="sc-value">12</div><div class="sc-sub">활성 채널</div></div><div class="stat-card"><div class="sc-label">총 클릭</div><div class="sc-value" style="color:var(--green)">54.2K</div><div class="sc-sub">전 채널 합산</div></div><div class="stat-card"><div class="sc-label">AI 검색 인용</div><div class="sc-value" style="color:var(--purple)">3회</div><div class="sc-sub">Perplexity + SearchGPT</div></div></div>
+<div class="card">${channels.map(c=>`<div class="dist-item"><div class="di-icon">${c.icon}</div><div class="di-info"><div class="di-name">${c.name}</div><div class="di-status">${c.status}</div></div><div class="di-stats"><div class="di-stat"><div class="dv">${c.views||'—'}</div><div class="dl">조회</div></div><div class="di-stat"><div class="dv">${c.clicks||'—'}</div><div class="dl">클릭</div></div><div class="di-stat"><div class="dv">${c.share||'—'}</div><div class="dl">공유</div></div></div></div>`).join('')}</div>`;}
 
-function renderBrand(){
-  document.getElementById('brandIntel').innerHTML=`
-  <div class="stats-row"><div class="stat-card"><div class="sc-label">브랜드 온도</div><div class="sc-value" style="color:var(--green)">72°</div><div class="sc-change change-up">↑ 4° vs 전주</div></div><div class="stat-card"><div class="sc-label">긍정 비율</div><div class="sc-value" style="color:var(--green)">58%</div><div class="sc-sub">부정 12%</div></div><div class="stat-card"><div class="sc-label">오늘 멘션</div><div class="sc-value" style="color:var(--blue)">342</div><div class="sc-sub">뉴스+SNS+커뮤니티</div></div><div class="stat-card"><div class="sc-label">업계 순위</div><div class="sc-value" style="color:var(--accent)">1위</div><div class="sc-sub">바이오 TOP 5 중</div></div></div>
-  <div class="grid-2">
-    <div class="card"><div class="card-title">🛡️ 경쟁사 비교</div>${competitors.map(c=>`<div class="competitor-row"><div class="comp-logo">${c.name[0]}</div><div class="comp-name">${c.name}</div><div class="comp-score" style="color:${c.score>=65?'var(--green)':c.score>=50?'var(--text2)':'var(--red)'}">${c.score}°</div><div style="font-size:10px;font-weight:600;color:${c.color};width:30px;text-align:right">${c.change}</div></div>`).join('')}</div>
-    <div class="card"><div class="card-title">⚠️ 위기 감지</div>
-      <div class="crisis-card"><div class="cc-level">LEVEL 2 — 주의</div><div class="cc-title">셀트리온 "품질 논란" 확산 중</div><div class="cc-desc">경쟁사 셀트리온에 대한 품질 관련 부정 멘션이 급증하고 있습니다. 현재 당사 직접 영향은 낮으나, 바이오시밀러 업계 전반 여론에 영향을 줄 수 있습니다.</div></div>
-      <div style="padding:10px;background:var(--surface2);border-radius:6px"><div style="font-size:10px;color:var(--accent2);font-weight:600;margin-bottom:4px">✦ AI 권고</div><div style="font-size:11px;color:var(--text2);line-height:1.5">"바이오시밀러 품질 관리" 관련 선제적 보도자료 발행을 검토하세요. 당사의 품질 관리 시스템을 강조하면 경쟁사 이슈에서 차별화할 수 있습니다.</div></div>
-    </div>
-  </div>`;
-}
+function renderBrand(){document.getElementById('brandIntel').innerHTML=`
+<div class="stats-row"><div class="stat-card"><div class="sc-label">브랜드 온도</div><div class="sc-value" style="color:var(--green)">72°</div><div class="sc-change change-up">↑ 4° vs 전주</div></div><div class="stat-card"><div class="sc-label">긍정 비율</div><div class="sc-value" style="color:var(--green)">58%</div><div class="sc-sub">부정 12%</div></div><div class="stat-card"><div class="sc-label">오늘 멘션</div><div class="sc-value" style="color:var(--primary)">342</div><div class="sc-sub">뉴스 + SNS + 커뮤니티</div></div><div class="stat-card"><div class="sc-label">업계 순위</div><div class="sc-value" style="color:var(--primary)">1위</div><div class="sc-sub">바이오 TOP 5 중</div></div></div>
+<div class="grid-2">
+  <div class="card"><div class="card-title"><span class="ct-icon">🏆</span>경쟁사 비교</div>${competitors.map(c=>`<div class="competitor-item"><div class="ci-logo">${c.name[0]}</div><div class="ci-name">${c.name}</div><div class="ci-score" style="color:${c.score>=65?'var(--green)':c.score>=50?'var(--ink3)':'var(--red)'}">${c.score}°</div><div style="font-size:11px;font-weight:600;color:${c.color};width:35px;text-align:right">${c.change}</div></div>`).join('')}</div>
+  <div class="card"><div class="card-title"><span class="ct-icon">⚠️</span>위기 감지</div>
+    <div class="crisis-alert"><div class="ca-level">LEVEL 2 — 주의</div><div class="ca-title">셀트리온 "품질 논란" 확산 중</div><div class="ca-desc">경쟁사 관련 부정 멘션 급증. 바이오시밀러 업계 전반에 영향 가능.</div></div>
+    <div class="ai-note" style="background:var(--bg2);border-color:var(--border);color:var(--ink2)"><strong style="color:var(--primary)">✦ AI 권고:</strong> "바이오시밀러 품질 관리" 관련 선제적 보도자료 발행을 검토하세요. 당사 품질 관리 시스템을 강조하면 경쟁사 이슈에서 차별화 가능합니다.</div>
+  </div>
+</div>`;}
 
-function renderReports(){
-  document.getElementById('reportsList').innerHTML=`
-  <div style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)">뉴스와이어에는 이 페이지가 없습니다. <b style="color:white">보도자료를 보내고 나면, 그 다음이 없습니다.</b><br>PRESS.는 보도자료가 기사가 된 이후의 <b style="color:var(--accent)">모든 성과를 측정하고 리포트</b>합니다. 이것이 기업이 매월 돈을 내는 이유입니다.</div>
-  ${reports.map(r=>`<div class="report-card"><div class="rc-type" style="color:${r.color}">${r.type}</div><div class="rc-title">${r.title}</div><div class="rc-meta">${r.meta}</div></div>`).join('')}`;
-}
+function renderReports(){document.getElementById('reportsList').innerHTML=`
+<div style="padding:16px 20px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;font-size:13px;color:var(--ink2);line-height:1.6">뉴스와이어에는 이 페이지가 없습니다. <b style="color:var(--ink)">보도자료를 보내고 나면 그 다음이 없습니다.</b><br>PRESS.는 기사가 된 이후의 <b style="color:var(--primary)">모든 성과를 측정하고 리포트합니다.</b> 이것이 매월 돈을 내는 이유입니다.</div>
+${reports.map(r=>`<div class="report-item"><div class="ri-icon" style="background:${r.bg}">${r.icon}</div><div class="ri-info"><div class="ri-type" style="color:${r.tc}">${r.type}</div><div class="ri-title">${r.title}</div><div class="ri-meta">${r.meta}</div></div><button class="btn btn-sm btn-outline">PDF 다운로드</button></div>`).join('')}`;}
 
-setInterval(()=>{const el=document.querySelector('.live-pill .mono');if(el){let v=parseInt(el.textContent);el.textContent=v+Math.floor(Math.random()*3)+'건';}},5000);
+setInterval(()=>{const el=document.getElementById('todayCount');if(el){let v=parseInt(el.textContent);el.textContent=(v+Math.floor(Math.random()*2))+'건';}},8000);
 </script>
 </body>
 </html>
