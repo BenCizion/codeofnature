@@ -4,16 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LiveRe Press</title>
-<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"/>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#fff;--bg2:#f6f6fa;--bg3:#edeef3;--ink:#0f0f14;--ink2:#3b3b4a;--ink3:#6e6e80;--ink4:#a0a0b0;--ink5:#cbcbd4;--border:#e3e3ec;--primary:#2952cc;--psoft:#edf1ff;--pborder:#c5d2f8;--green:#0b8a5e;--gsoft:#edfcf5;--gborder:#b0e8d0;--red:#d63031;--rsoft:#fef2f2;--orange:#e67e22;--osoft:#fef8ec;--purple:#6c3aed;--ppsoft:#f4f0ff;--radius:10px;--tr:.15s ease}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Pretendard Variable',Pretendard,-apple-system,sans-serif;background:var(--bg2);color:var(--ink);font-size:14px;line-height:1.6}
-
 .top{display:flex;align-items:center;padding:0 32px;height:60px;background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
-.logo{font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-.3px}
-.logo em{font-style:normal;color:var(--primary);font-weight:300}
+.logo{font-size:20px;font-weight:800;letter-spacing:-.3px}.logo em{font-style:normal;color:var(--primary);font-weight:300}
 .tdiv{width:1px;height:24px;background:var(--border);margin:0 16px}
 .torg{font-size:12px;color:var(--ink4)}.torg b{color:var(--ink2);font-weight:600}
 .tright{margin-left:auto;display:flex;align-items:center;gap:10px}
@@ -21,12 +19,18 @@ body{font-family:'Pretendard Variable',Pretendard,-apple-system,sans-serif;backg
 .btn-p{background:var(--primary);color:#fff}.btn-p:hover{background:#1f3faa}
 .btn-o{background:var(--bg);color:var(--ink3);border:1px solid var(--border)}.btn-o:hover{border-color:var(--primary);color:var(--primary)}
 .btn-s{padding:5px 14px;font-size:11px}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:#097a50}
 .av{width:34px;height:34px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff}
+/* Credit badge */
+.credit-badge{display:flex;align-items:center;gap:6px;padding:6px 14px;background:var(--osoft);border:1px solid #fde68a;border-radius:20px;font-size:12px;font-weight:600;color:var(--orange)}
+.credit-badge .cb-num{font-family:'JetBrains Mono';font-weight:700}
 
 .nav{display:flex;align-items:center;gap:0;padding:0 32px;background:var(--bg);border-bottom:1px solid var(--border)}
-.nt{padding:14px 24px;font-size:13px;font-weight:500;color:var(--ink3);cursor:pointer;transition:var(--tr);border-bottom:2px solid transparent}
+.nt{padding:14px 20px;font-size:13px;font-weight:500;color:var(--ink3);cursor:pointer;transition:var(--tr);border-bottom:2px solid transparent;display:flex;align-items:center;gap:6px}
 .nt:hover{color:var(--ink)}.nt.on{color:var(--primary);font-weight:700;border-bottom-color:var(--primary)}
-.nt .bd{background:var(--primary);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:8px;margin-left:6px}
+.nt .bd{background:var(--primary);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:8px}
+.nt .step{width:20px;height:20px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--ink4)}
+.nt.on .step{background:var(--primary);color:#fff}
 
 .m{max-width:1200px;margin:0 auto;padding:28px 32px}
 .page{display:none}.page.active{display:block}
@@ -39,86 +43,91 @@ body{font-family:'Pretendard Variable',Pretendard,-apple-system,sans-serif;backg
 .card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px}
 .ct{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:6px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
 .mono{font-family:'JetBrains Mono',monospace}
 .tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:5px;font-size:10px;font-weight:600}
 .t-g{background:var(--gsoft);color:var(--green)}.t-o{background:var(--osoft);color:var(--orange)}.t-b{background:var(--psoft);color:var(--primary)}.t-r{background:var(--rsoft);color:var(--red)}.t-p{background:var(--ppsoft);color:var(--purple)}.t-x{background:var(--bg3);color:var(--ink4)}
 
-/* ═══ FLOW DIAGRAM ═══ */
-.flow{display:flex;align-items:center;justify-content:center;gap:0;padding:32px 20px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:24px;position:relative;overflow:hidden}
-.flow::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(41,82,204,.03),transparent 60%),radial-gradient(ellipse at 80% 50%,rgba(11,138,94,.03),transparent 60%)}
-.flow-node{text-align:center;padding:16px 20px;border-radius:12px;position:relative;z-index:1;min-width:140px}
-.flow-node .fn-icon{font-size:28px;margin-bottom:6px}
-.flow-node .fn-label{font-size:13px;font-weight:700;color:var(--ink)}
-.flow-node .fn-sub{font-size:10px;color:var(--ink4);margin-top:2px}
-.flow-node .fn-num{font-family:'JetBrains Mono';font-size:20px;font-weight:700;margin-top:6px}
-.fn-company{background:var(--psoft);border:1.5px solid var(--pborder)}
-.fn-company .fn-num{color:var(--primary)}
-.fn-media{background:var(--gsoft);border:1.5px solid var(--gborder)}
-.fn-media .fn-num{color:var(--green)}
-.fn-public{background:#fef3ff;border:1.5px solid #e8c5f0}
-.fn-public .fn-num{color:var(--purple)}
-.flow-arrow{display:flex;flex-direction:column;align-items:center;gap:2px;padding:0 8px;z-index:1}
-.flow-arrow .fa-line{width:60px;height:2px;background:linear-gradient(90deg,var(--primary),var(--green));border-radius:1px;position:relative}
-.flow-arrow .fa-line::after{content:'›';position:absolute;right:-8px;top:-9px;font-size:18px;color:var(--green);font-weight:300}
-.flow-arrow .fa-label{font-size:9px;color:var(--ink4);white-space:nowrap}
-.flow-pulse{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--primary);animation:flowPulse 3s infinite}
-@keyframes flowPulse{0%{left:22%;opacity:1}50%{left:50%;opacity:.6;background:var(--green)}100%{left:78%;opacity:0;background:var(--purple)}}
+/* FLOW */
+.flow{display:flex;align-items:center;justify-content:center;gap:0;padding:28px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:24px;position:relative;overflow:hidden}
+.flow::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 15% 50%,rgba(41,82,204,.03),transparent 50%),radial-gradient(ellipse at 50% 50%,rgba(230,126,34,.03),transparent 40%),radial-gradient(ellipse at 85% 50%,rgba(11,138,94,.03),transparent 50%)}
+.fn{text-align:center;padding:14px 16px;border-radius:12px;position:relative;z-index:1;min-width:120px}
+.fn .fi{font-size:24px;margin-bottom:4px}.fn .fl{font-size:12px;font-weight:700;color:var(--ink)}.fn .fs{font-size:10px;color:var(--ink4);margin-top:1px}
+.fn .fv{font-family:'JetBrains Mono';font-size:18px;font-weight:700;margin-top:4px}
+.fn-a{background:var(--psoft);border:1.5px solid var(--pborder)}.fn-a .fv{color:var(--primary)}
+.fn-b{background:var(--osoft);border:1.5px solid #fde68a}.fn-b .fv{color:var(--orange)}
+.fn-c{background:var(--gsoft);border:1.5px solid var(--gborder)}.fn-c .fv{color:var(--green)}
+.fn-d{background:#fef3ff;border:1.5px solid #e8c5f0}.fn-d .fv{color:var(--purple)}
+.fa{display:flex;flex-direction:column;align-items:center;gap:1px;padding:0 6px;z-index:1}
+.fa-line{width:40px;height:2px;background:linear-gradient(90deg,var(--ink5),var(--ink4));border-radius:1px;position:relative}
+.fa-line::after{content:'›';position:absolute;right:-6px;top:-8px;font-size:14px;color:var(--ink4)}
+.fa-label{font-size:8px;color:var(--ink4);white-space:nowrap}
+.flow-pulse{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--primary);animation:fp 4s infinite;opacity:.6}
+@keyframes fp{0%{left:12%;opacity:.8}33%{left:37%;background:var(--orange)}66%{left:62%;background:var(--green)}100%{left:87%;opacity:0;background:var(--purple)}}
 
-/* ═══ PR LIST ═══ */
+/* PR LIST */
 .pr{display:flex;align-items:stretch;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:var(--tr);overflow:hidden}
 .pr:hover{border-color:var(--primary);box-shadow:0 2px 16px rgba(41,82,204,.05)}
 .pr-c{width:4px;flex-shrink:0}
 .pr-b{flex:1;padding:16px 20px;display:flex;align-items:center;gap:16px}
-.pr-i{flex:1}
-.pr-t{font-size:14px;font-weight:600;color:var(--ink);line-height:1.4}
+.pr-i{flex:1}.pr-t{font-size:14px;font-weight:600;color:var(--ink);line-height:1.4}
 .pr-m{font-size:11px;color:var(--ink4);margin-top:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-/* Sparkline */
 .sparkline{display:flex;align-items:flex-end;gap:1px;height:24px}
-.spark-bar{width:3px;border-radius:1px;background:var(--primary);opacity:.6;transition:height .3s}
+.spark-bar{width:3px;border-radius:1px;background:var(--primary);opacity:.5}
 .pr-n{display:flex;gap:18px;flex-shrink:0}
-.pr-nv{text-align:center}
-.pr-nv .v{font-family:'JetBrains Mono';font-size:17px;font-weight:600;color:var(--ink)}
-.pr-nv .l{font-size:9px;color:var(--ink4);text-transform:uppercase;margin-top:2px}
+.pr-nv{text-align:center}.pr-nv .v{font-family:'JetBrains Mono';font-size:17px;font-weight:600;color:var(--ink)}.pr-nv .l{font-size:9px;color:var(--ink4);text-transform:uppercase;margin-top:2px}
 
-/* ═══ DONUT CHART ═══ */
-.donut-wrap{display:flex;align-items:center;gap:24px}
-.donut{position:relative;width:140px;height:140px;flex-shrink:0}
-.donut svg{transform:rotate(-90deg)}
-.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.donut-center .dc-v{font-family:'JetBrains Mono';font-size:24px;font-weight:700;color:var(--ink)}
-.donut-center .dc-l{font-size:10px;color:var(--ink4)}
-.donut-legend{display:flex;flex-direction:column;gap:8px;flex:1}
-.dl-item{display:flex;align-items:center;gap:8px}
-.dl-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
-.dl-name{font-size:12px;color:var(--ink2);flex:1}
-.dl-val{font-family:'JetBrains Mono';font-size:12px;font-weight:600;color:var(--ink)}
+/* ═══ PACKAGE SELECTION ═══ */
+.pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.pkg{background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:24px;cursor:pointer;transition:var(--tr);position:relative;text-align:center}
+.pkg:hover{border-color:var(--primary);box-shadow:0 4px 20px rgba(41,82,204,.08)}
+.pkg.pkg-selected{border-color:var(--primary);background:var(--psoft)}
+.pkg-pop{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;font-size:9px;font-weight:700;padding:3px 12px;border-radius:10px;letter-spacing:.3px}
+.pkg-name{font-size:16px;font-weight:800;color:var(--ink);margin-bottom:4px}
+.pkg-price{font-family:'JetBrains Mono';font-size:32px;font-weight:700;color:var(--primary);margin:8px 0}
+.pkg-price small{font-size:13px;color:var(--ink4);font-weight:400}
+.pkg-per{font-size:11px;color:var(--ink4);margin-bottom:16px}
+.pkg-features{text-align:left;display:flex;flex-direction:column;gap:8px}
+.pkg-feat{font-size:12px;color:var(--ink2);display:flex;align-items:flex-start;gap:6px}
+.pkg-feat .pf-check{color:var(--green);font-weight:700;flex-shrink:0}
+.pkg-feat.pf-disabled{color:var(--ink5)}.pkg-feat.pf-disabled .pf-check{color:var(--ink5)}
+.pkg-btn{margin-top:16px;width:100%;padding:10px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;transition:var(--tr);border:none}
+.pkg-btn-primary{background:var(--primary);color:#fff}.pkg-btn-primary:hover{background:var(--primary-hover,#1f3faa)}
+.pkg-btn-outline{background:var(--bg);color:var(--ink3);border:2px solid var(--border)}.pkg-btn-outline:hover{border-color:var(--primary);color:var(--primary)}
 
-/* ═══ LINE CHART ═══ */
-.line-chart{position:relative;height:160px;border-left:1px solid var(--border);border-bottom:1px solid var(--border);margin-top:10px}
-.lc-area{position:absolute;inset:0}
-.lc-labels{display:flex;justify-content:space-between;padding-top:4px;font-size:9px;color:var(--ink4);font-family:'JetBrains Mono'}
-.lc-y{position:absolute;left:-30px;font-size:9px;color:var(--ink5);font-family:'JetBrains Mono'}
+/* Compare strip */
+.compare-strip{display:flex;align-items:center;gap:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:24px}
+.cs-label{padding:14px 18px;background:var(--ink);color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;white-space:nowrap}
+.cs-items{display:flex;flex:1;overflow-x:auto}
+.cs-item{padding:12px 20px;border-right:1px solid var(--border);flex:1;min-width:160px;text-align:center}
+.cs-item:last-child{border:none}
+.cs-item .cs-name{font-size:10px;color:var(--ink4);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.cs-item .cs-val{font-family:'JetBrains Mono';font-size:18px;font-weight:700;margin-top:2px}
+.cs-us{color:var(--primary)}.cs-old{color:var(--ink5)}
 
-/* ═══ DIST ROW ═══ */
+/* Order history */
+.order-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)}
+.order-row:last-child{border:none}
+.or-info{flex:1}
+.or-title{font-size:13px;font-weight:600;color:var(--ink)}
+.or-meta{font-size:11px;color:var(--ink4);margin-top:2px}
+.or-price{font-family:'JetBrains Mono';font-size:15px;font-weight:600}
+.or-status{font-size:11px;font-weight:600}
+
+/* DIST */
 .dr{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border)}
 .dr:last-child{border:none}
 .dr-i{width:38px;height:38px;border-radius:10px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .dr-info{flex:1}.dr-name{font-size:13px;font-weight:600;color:var(--ink)}.dr-sub{font-size:11px;color:var(--ink4);margin-top:1px}
-.dr-bar{flex:1;max-width:180px}
-.dr-bar-bg{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.dr-bar-bg{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;max-width:140px}
 .dr-bar-fill{height:100%;border-radius:4px;transition:width 1s}
 .dr-nums{display:flex;gap:20px}
 .dr-num{text-align:right}.dr-num .dv{font-family:'JetBrains Mono';font-size:14px;font-weight:600;color:var(--ink)}.dr-num .dl{font-size:9px;color:var(--ink4)}
 
-/* ═══ SENTIMENT ═══ */
+/* SENTIMENT */
 .sent{display:flex;height:12px;border-radius:6px;overflow:hidden;gap:2px}.sp{background:var(--green)}.sn{background:var(--ink5)}.sng{background:var(--red)}
 .sent-legend{display:flex;gap:16px;margin-top:6px;font-size:11px;color:var(--ink3)}
-.sent-legend span::before{content:'';display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle}
-.sl-p::before{background:var(--green)}.sl-n::before{background:var(--ink5)}.sl-ng::before{background:var(--red)}
-
-/* TIMELINE */
-.tl{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
-.tl:last-child{border:none}
+.tl{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}.tl:last-child{border:none}
 .tl-t{font-family:'JetBrains Mono';font-size:11px;color:var(--ink4);width:46px;flex-shrink:0;padding-top:1px}
 .tl-d{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px}
 .tl-c{flex:1;font-size:12px;color:var(--ink2);line-height:1.5}
@@ -134,101 +143,170 @@ body{font-family:'Pretendard Variable',Pretendard,-apple-system,sans-serif;backg
   <div class="tdiv"></div>
   <div class="torg"><b>삼성바이오로직스</b> 홍보실</div>
   <div class="tright">
+    <div class="credit-badge">🎫 잔여 크레딧 <span class="cb-num">6건</span></div>
     <button class="btn btn-p">+ 보도자료 등록</button>
     <div class="av">김</div>
   </div>
 </div>
 
 <div class="nav">
-  <div class="nt on" onclick="go(0)">📄 보도자료<span class="bd">7</span></div>
-  <div class="nt" onclick="go(1)">📡 배포 현황</div>
-  <div class="nt" onclick="go(2)">📊 성과 분석</div>
+  <div class="nt on" onclick="go(0)"><span class="step">1</span>보도자료<span class="bd">7</span></div>
+  <div class="nt" onclick="go(1)"><span class="step">2</span>배포 패키지</div>
+  <div class="nt" onclick="go(2)"><span class="step">3</span>배포 현황</div>
+  <div class="nt" onclick="go(3)"><span class="step">4</span>성과 분석</div>
 </div>
 
 <div class="m">
 
 <!-- ═══ TAB 0: 보도자료 ═══ -->
 <div class="page active" id="p0">
-  <div class="ph fade"><h1>보도자료</h1><p>작성한 보도자료가 미디어와 대중에게 전달되는 과정을 추적합니다</p></div>
-
-  <!-- Communication Flow Diagram -->
+  <div class="ph fade"><h1>보도자료</h1><p>작성한 보도자료의 현재 상태를 확인하고, 배포 패키지를 선택합니다</p></div>
   <div class="flow fade d1">
     <div class="flow-pulse"></div>
-    <div class="flow-node fn-company">
-      <div class="fn-icon">🏢</div>
-      <div class="fn-label">삼성바이오로직스</div>
-      <div class="fn-sub">보도자료 작성</div>
-      <div class="fn-num">7건</div>
-    </div>
-    <div class="flow-arrow">
-      <div class="fa-label">AI 검수 · 기사화</div>
-      <div class="fa-line"></div>
-    </div>
-    <div class="flow-node fn-media">
-      <div class="fn-icon">📡</div>
-      <div class="fn-label">미디어 · 언론</div>
-      <div class="fn-sub">배포 매체</div>
-      <div class="fn-num">12채널</div>
-    </div>
-    <div class="flow-arrow">
-      <div class="fa-label">기사 · SNS · 뉴스레터</div>
-      <div class="fa-line"></div>
-    </div>
-    <div class="flow-node fn-public">
-      <div class="fn-icon">👥</div>
-      <div class="fn-label">대중 · 시장</div>
-      <div class="fn-sub">독자 · 투자자</div>
-      <div class="fn-num">2.8M 도달</div>
-    </div>
+    <div class="fn fn-a"><div class="fi">📝</div><div class="fl">작성</div><div class="fs">보도자료 등록</div><div class="fv">7건</div></div>
+    <div class="fa"><div class="fa-label">패키지 선택</div><div class="fa-line"></div></div>
+    <div class="fn fn-b"><div class="fi">💳</div><div class="fl">결제·배포</div><div class="fs">패키지별 과금</div><div class="fv">₩148만</div></div>
+    <div class="fa"><div class="fa-label">AI 기사화</div><div class="fa-line"></div></div>
+    <div class="fn fn-c"><div class="fi">📡</div><div class="fl">배포</div><div class="fs">매체 전달</div><div class="fv">12채널</div></div>
+    <div class="fa"><div class="fa-label">성과 추적</div><div class="fa-line"></div></div>
+    <div class="fn fn-d"><div class="fi">👥</div><div class="fl">대중·시장</div><div class="fs">도달</div><div class="fv">2.8M</div></div>
   </div>
-
   <div class="stats fade d2">
-    <div class="st"><div class="sl">보도자료</div><div class="sv">7</div><div class="ss">이번 달 등록</div></div>
-    <div class="st"><div class="sl">기사화 완료</div><div class="sv" style="color:var(--green)">4</div><div class="ss">기사화율 57%</div><div class="sc up">뉴스와이어 대비 5.7배</div></div>
-    <div class="st"><div class="sl">총 도달</div><div class="sv" style="color:var(--primary)">2.8M</div><div class="ss">전 채널 합산</div><div class="sc up">↑ 45% vs 전월</div></div>
-    <div class="st"><div class="sl">여론 긍정률</div><div class="sv" style="color:var(--green)">64%</div><div class="ss">부정 12%</div><div class="sc up">↑ 3%p vs 전월</div></div>
+    <div class="st"><div class="sl">전체 등록</div><div class="sv">7</div><div class="ss">이번 달</div></div>
+    <div class="st"><div class="sl">발행 완료</div><div class="sv" style="color:var(--green)">4</div><div class="ss">기사화율 57%</div></div>
+    <div class="st"><div class="sl">이번 달 비용</div><div class="sv" style="color:var(--orange)">₩148만</div><div class="ss">뉴스와이어 대비 63% 절감</div><div class="sc up">₩252만 절약</div></div>
+    <div class="st"><div class="sl">잔여 크레딧</div><div class="sv" style="color:var(--primary)">6건</div><div class="ss">Growth 플랜 (20건/월)</div></div>
   </div>
-
   <div id="prList" class="fade d3"></div>
 </div>
 
-<!-- ═══ TAB 1: 배포 현황 ═══ -->
+<!-- ═══ TAB 1: 배포 패키지 (결제) ═══ -->
 <div class="page" id="p1">
-  <div class="ph fade"><h1>배포 현황</h1><p>보도자료가 실제로 어디에 배포되었는지 매체별로 추적합니다</p></div>
+  <div class="ph fade"><h1>배포 패키지</h1><p>보도자료별로 배포 범위를 선택합니다 — 패키지에 따라 기사화율과 도달이 달라집니다</p></div>
+
+  <!-- Newswire Price Comparison -->
+  <div class="compare-strip fade d1">
+    <div class="cs-label">💰 뉴스와이어 대비</div>
+    <div class="cs-items">
+      <div class="cs-item"><div class="cs-name">뉴스와이어 베이직</div><div class="cs-val cs-old" style="text-decoration:line-through">₩6.6만</div><div style="font-size:10px;color:var(--ink5)">게재만 · 기사화 ❌</div></div>
+      <div class="cs-item"><div class="cs-name">뉴스와이어 프리미엄</div><div class="cs-val cs-old" style="text-decoration:line-through">₩29.7만</div><div style="font-size:10px;color:var(--ink5)">기자 메일링 · 기사화 ❌</div></div>
+      <div class="cs-item" style="background:var(--psoft)"><div class="cs-name" style="color:var(--primary)">LiveRe Press 기본</div><div class="cs-val cs-us">₩14.5만</div><div style="font-size:10px;color:var(--primary)">기사화 ✅ · 3채널 · 리포트 ✅</div></div>
+      <div class="cs-item" style="background:var(--gsoft)"><div class="cs-name" style="color:var(--green)">LiveRe Press 프리미엄</div><div class="cs-val" style="color:var(--green)">₩39.5만</div><div style="font-size:10px;color:var(--green)">기사화 ✅ · 12채널 · 풀 리포트</div></div>
+    </div>
+  </div>
+
+  <!-- Package Cards -->
+  <div class="pkg-grid fade d2">
+    <div class="pkg" onclick="selectPkg(this,0)">
+      <div class="pkg-name">Basic</div>
+      <div class="pkg-price">₩14.5만<small>/건</small></div>
+      <div class="pkg-per">크레딧 차감 1건</div>
+      <div class="pkg-features">
+        <div class="pkg-feat"><span class="pf-check">✓</span>AI 기사 자동 생성</div>
+        <div class="pkg-feat"><span class="pf-check">✓</span>자사 뉴스 사이트 발행</div>
+        <div class="pkg-feat"><span class="pf-check">✓</span>네이버·다음·구글 뉴스 송출</div>
+        <div class="pkg-feat"><span class="pf-check">✓</span>기본 성과 리포트</div>
+        <div class="pkg-feat pf-disabled"><span class="pf-check">—</span>종합지 기사화 (한경·매경 등)</div>
+        <div class="pkg-feat pf-disabled"><span class="pf-check">—</span>SNS 자동 배포</div>
+        <div class="pkg-feat pf-disabled"><span class="pf-check">—</span>여론 분석 · AI 인사이트</div>
+      </div>
+      <button class="pkg-btn pkg-btn-outline">Basic 선택</button>
+    </div>
+
+    <div class="pkg pkg-selected" onclick="selectPkg(this,1)">
+      <div class="pkg-pop">BEST</div>
+      <div class="pkg-name">Standard</div>
+      <div class="pkg-price">₩24.5만<small>/건</small></div>
+      <div class="pkg-per">크레딧 차감 1건</div>
+      <div class="pkg-features">
+        <div class="pkg-feat"><span class="pf-check">✓</span>AI 기사 자동 생성</div>
+        <div class="pkg-feat"><span class="pf-check">✓</span>자사 + 포털 3곳 송출</div>
+        <div class="pkg-feat"><span class="pf-check">✓</span>종합지 2곳 기사화 (한경·매경)</div>
+        <div class="pkg-feat"><span class="pf-check">✓</span>전문지 2곳 기사화</div>
+        <div class="pkg-feat"><span class="pf-check">✓</span>이메일 뉴스레터 배포</div>
+        <div class="pkg-feat"><span class="pf-check">✓</span>상세 성과 리포트 + 여론 분석</div>
+        <div class="pkg-feat pf-disabled"><span class="pf-check">—</span>SNS 자동 · AI 검색 최적화</div>
+      </div>
+      <button class="pkg-btn pkg-btn-primary">Standard 선택</button>
+    </div>
+
+    <div class="pkg" onclick="selectPkg(this,2)">
+      <div class="pkg-name">Premium</div>
+      <div class="pkg-price">₩39.5만<small>/건</small></div>
+      <div class="pkg-per">크레딧 차감 2건</div>
+      <div class="pkg-features">
+        <div class="pkg-feat"><span class="pf-check">✓</span>AI 기사 생성 + 제목 A/B 테스트</div>
+        <div class="pkg-feat"><span class="pf-check">✓</span>포털 3곳 + 종합지 + 전문지 + SNS</div>
+        <div class="pkg-feat"><span class="pf-check">✓</span>LinkedIn · X 자동 포스팅</div>
+        <div class="pkg-feat"><span class="pf-check">✓</span>이메일 뉴스레터 14,000명 발송</div>
+        <div class="pkg-feat"><span class="pf-check">✓</span>AI 검색엔진 최적화 (Perplexity 등)</div>
+        <div class="pkg-feat"><span class="pf-check">✓</span>풀 리포트 + AI 인사이트 + 경쟁사 비교</div>
+        <div class="pkg-feat"><span class="pf-check">✓</span>위기 감지 알림</div>
+      </div>
+      <button class="pkg-btn pkg-btn-outline">Premium 선택</button>
+    </div>
+  </div>
+
+  <!-- Monthly Plan -->
+  <div class="card fade d3">
+    <div class="ct">📋 월정액 플랜 (크레딧 묶음 구매 · 건당 단가 절감)</div>
+    <div class="g3">
+      <div style="padding:16px;border:1px solid var(--border);border-radius:8px;text-align:center">
+        <div style="font-size:14px;font-weight:700">Starter</div>
+        <div class="mono" style="font-size:28px;font-weight:700;color:var(--ink);margin:8px 0">₩29만<small style="font-size:12px;color:var(--ink4);font-weight:400">/월</small></div>
+        <div style="font-size:12px;color:var(--ink4)">월 5건 크레딧</div>
+        <div style="font-size:11px;color:var(--green);font-weight:600;margin-top:4px">건당 ₩5.8만 (Basic 기준)</div>
+      </div>
+      <div style="padding:16px;border:2px solid var(--primary);border-radius:8px;text-align:center;background:var(--psoft);position:relative">
+        <div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;font-size:9px;font-weight:700;padding:2px 10px;border-radius:8px">현재 플랜</div>
+        <div style="font-size:14px;font-weight:700">Growth</div>
+        <div class="mono" style="font-size:28px;font-weight:700;color:var(--primary);margin:8px 0">₩79만<small style="font-size:12px;color:var(--ink4);font-weight:400">/월</small></div>
+        <div style="font-size:12px;color:var(--ink4)">월 20건 크레딧</div>
+        <div style="font-size:11px;color:var(--green);font-weight:600;margin-top:4px">건당 ₩3.95만 (Basic 기준)</div>
+      </div>
+      <div style="padding:16px;border:1px solid var(--border);border-radius:8px;text-align:center">
+        <div style="font-size:14px;font-weight:700">Enterprise</div>
+        <div class="mono" style="font-size:28px;font-weight:700;color:var(--ink);margin:8px 0">₩199만<small style="font-size:12px;color:var(--ink4);font-weight:400">/월</small></div>
+        <div style="font-size:12px;color:var(--ink4)">무제한 크레딧</div>
+        <div style="font-size:11px;color:var(--green);font-weight:600;margin-top:4px">무제한 + 전담 매니저</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order History -->
+  <div class="card fade d3">
+    <div class="ct">📜 이번 달 배포 내역</div>
+    <div id="orderHistory"></div>
+  </div>
+</div>
+
+<!-- ═══ TAB 2: 배포 현황 ═══ -->
+<div class="page" id="p2">
+  <div class="ph fade"><h1>배포 현황</h1><p>보도자료가 실제로 어디에, 어떤 패키지로 배포되었는지 추적합니다</p></div>
   <div style="margin-bottom:20px" class="fade d1">
     <select id="dSel" onchange="renderDist()" style="padding:10px 16px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:'Pretendard Variable';background:var(--bg);color:var(--ink);min-width:420px;cursor:pointer"></select>
   </div>
   <div class="stats fade d2" id="dStats"></div>
-  <div class="g2 fade d3">
-    <div class="card" id="dDonut"></div>
-    <div class="card" id="dMediaTop"></div>
-  </div>
+  <div class="g2 fade d3"><div class="card" id="dDonut"></div><div class="card" id="dTop"></div></div>
   <div class="card fade d3" id="dList" style="margin-top:0"></div>
 </div>
 
-<!-- ═══ TAB 2: 성과 분석 ═══ -->
-<div class="page" id="p2">
-  <div class="ph fade"><h1>성과 분석</h1><p>기사화 이후 실제 결과 — 조회수, 댓글, 공유, 여론을 분석합니다</p></div>
+<!-- ═══ TAB 3: 성과 분석 ═══ -->
+<div class="page" id="p3">
+  <div class="ph fade"><h1>성과 분석</h1><p>기사화 이후 실제 결과 — 투자한 비용 대비 어떤 성과가 나왔는가</p></div>
   <div style="margin-bottom:20px" class="fade d1">
     <select id="rSel" onchange="renderResult()" style="padding:10px 16px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:'Pretendard Variable';background:var(--bg);color:var(--ink);min-width:420px;cursor:pointer"></select>
   </div>
   <div class="stats fade d2" id="rStats"></div>
-  <div class="g2 fade d3">
-    <div class="card" id="rChart"></div>
-    <div class="card" id="rSent"></div>
-  </div>
-  <div class="g2 fade d3" style="margin-top:0">
-    <div class="card" id="rTimeline"></div>
-    <div class="card" id="rInsight"></div>
-  </div>
+  <div class="g2 fade d3"><div class="card" id="rChart"></div><div class="card" id="rSent"></div></div>
+  <div class="g2 fade d3" style="margin-top:0"><div class="card" id="rTl"></div><div class="card" id="rAi"></div></div>
 </div>
 
 </div>
 
 <script>
-// ═══ DATA ═══
 const P=[
-  {id:0,title:'2026년 1분기 매출 1조 2,340억원 달성',date:'2026.03.27',status:'published',cat:'실적',color:'var(--green)',
+  {id:0,title:'2026년 1분기 매출 1조 2,340억원 달성',date:'2026.03.27',status:'published',cat:'실적',color:'var(--green)',pkg:'Premium',cost:'₩39.5만',
    spark:[12,18,34,52,78,95,88,72,60,55,50,48],
    dist:{total:12,reach:'2.1M',clicks:'54.2K',articles:8},
    channels:[
@@ -245,150 +323,91 @@ const P=[
      {icon:'𝕏',name:'X',type:'SNS',status:'✅ 자동',views:8200,clicks:420,comments:12,shares:67},
      {icon:'🤖',name:'Perplexity AI',type:'AI검색',status:'✅ 인용 3회',views:0,clicks:0,comments:0,shares:0}
    ],
-   result:{views:'381,200',uniq:'298,400',readTime:'2:34',bounce:'28%',comments:539,shares:12106,
+   result:{views:'381,200',uniq:'298,400',readTime:'2:34',bounce:'28%',comments:539,shares:12106,roi:'966%',costPerView:'₩1.04',
      sentiment:{pos:64,neu:24,neg:12},
      hourly:[0,0,0,0,0,0,0,0,0,2100,8400,18200,32400,45600,62300,78400,95200,120800,148200,180400,220600,268400,320200,381200],
      topComment:'바이오시밀러 부문 성장이 인상적입니다. CMO 수주도 기대됩니다.',
      timeline:[
-       {time:'14:41',dot:'var(--green)',text:'LiveRe Press 발행 · 12채널 동시 배포 시작'},
-       {time:'14:45',dot:'var(--green)',text:'네이버 뉴스 노출 · 검색 8위 진입'},
-       {time:'15:10',dot:'var(--primary)',text:'한국경제 기사화 확인 · 매일경제 기사화 확인'},
-       {time:'15:40',dot:'var(--green)',text:'네이버 검색 3위 진입 · 조회 5만 돌파'},
-       {time:'16:00',dot:'var(--orange)',text:'댓글 100건 돌파 · 긍정 68% · "바이오시밀러 성장" 키워드 급등'},
-       {time:'17:30',dot:'var(--purple)',text:'Perplexity AI 인용 3회 · AI 검색 시대 노출 확인'},
-       {time:'18:00',dot:'var(--primary)',text:'LinkedIn 공유 89건 · 투자자/업계 관계자 반응 집중'},
-       {time:'20:00',dot:'var(--green)',text:'조회 20만 돌파 · 댓글 400건 · 이번 달 최고 성과'}
+       {time:'14:41',dot:'var(--green)',text:'LiveRe Press 발행 · 12채널 배포'},
+       {time:'14:45',dot:'var(--green)',text:'네이버 뉴스 노출 · 검색 8위'},
+       {time:'15:10',dot:'var(--primary)',text:'한국경제·매일경제 기사화'},
+       {time:'15:40',dot:'var(--green)',text:'네이버 검색 3위 · 조회 5만 돌파'},
+       {time:'16:00',dot:'var(--orange)',text:'댓글 100건 · 긍정 68%'},
+       {time:'17:30',dot:'var(--purple)',text:'Perplexity AI 인용 3회'},
+       {time:'20:00',dot:'var(--green)',text:'조회 20만 돌파 · 이번 달 최고 성과'}
      ],
-     insight:'이번 달 보도자료 중 최고 성과입니다.\n\n• 네이버 뉴스 검색 3위까지 올라갔고, 한경·매경 동시 기사화로 주요 매체 커버리지가 확보되었습니다.\n• Perplexity AI에서 3회 인용 — AI 검색 시대에 기업 뉴스가 올바르게 노출되고 있습니다.\n• LinkedIn에서 투자자/업계 관계자 반응이 집중되어 IR 효과도 확인됩니다.\n\n📌 다음 분기 실적 발표 시 인포그래픽을 추가하면 소셜 공유율이 약 2배 상승할 것으로 예측됩니다.'
-   }
+     insight:'이번 달 최고 성과 보도자료입니다.\n\n📌 투자 ₩39.5만 → 도달 2.1M · ROI 966%\n📌 뉴스와이어 프리미엄(₩29.7만)으로는 기사화 보장 없음\n📌 동일 비용 대비 도달 범위 약 20배 차이\n\n• 네이버 검색 3위, 한경·매경 동시 기사화\n• Perplexity AI 3회 인용 — AI 검색 노출 확보\n• 다음 분기에는 인포그래픽 추가 시 소셜 공유율 2배 예측'}
   },
-  {id:1,title:'바이오시밀러 유럽 5개국 수출 계약 체결',date:'2026.03.25',status:'published',cat:'사업',color:'var(--primary)',
+  {id:1,title:'바이오시밀러 유럽 5개국 수출 계약',date:'2026.03.25',status:'published',cat:'사업',color:'var(--primary)',pkg:'Standard',cost:'₩24.5만',
    spark:[8,14,22,38,52,48,42,38,34,30,28,26],
-   dist:{total:10,reach:'1.4M',clicks:'32.1K',articles:6},
+   dist:{total:8,reach:'1.4M',clicks:'32.1K',articles:6},
    channels:[
-     {icon:'🌐',name:'LiveRe Press',type:'자사',status:'✅ 발행',views:32100,clicks:8900,comments:67,shares:890},
-     {icon:'🟢',name:'네이버 뉴스',type:'포털',status:'✅ 노출',views:89200,clicks:24300,comments:156,shares:3200},
-     {icon:'📰',name:'한국경제',type:'종합지',status:'✅ 기사화',views:42300,clicks:12100,comments:28,shares:1400},
-     {icon:'📰',name:'바이오타임즈',type:'전문지',status:'✅ 기사화',views:7200,clicks:2800,comments:9,shares:280}
+     {icon:'🌐',name:'LiveRe Press',type:'자사',status:'✅',views:32100,clicks:8900,comments:67,shares:890},
+     {icon:'🟢',name:'네이버 뉴스',type:'포털',status:'✅',views:89200,clicks:24300,comments:156,shares:3200},
+     {icon:'📰',name:'한국경제',type:'종합지',status:'✅',views:42300,clicks:12100,comments:28,shares:1400},
+     {icon:'📰',name:'바이오타임즈',type:'전문지',status:'✅',views:7200,clicks:2800,comments:9,shares:280}
    ],
-   result:{views:'210,800',uniq:'168,400',readTime:'2:12',bounce:'32%',comments:312,shares:8450,
+   result:{views:'210,800',uniq:'168,400',readTime:'2:12',bounce:'32%',comments:312,shares:8450,roi:'860%',costPerView:'₥1.16',
      sentiment:{pos:72,neu:20,neg:8},hourly:[0,0,0,0,0,0,0,0,0,3200,12400,28600,48200,72400,98200,128400,152600,178200,195400,204600,208200,209800,210400,210800],
-     topComment:'유럽 시장 진출이 본격화되는 신호입니다.',
-     timeline:[{time:'10:00',dot:'var(--green)',text:'발행 · 10개 채널 배포'},{time:'11:30',dot:'var(--primary)',text:'한국경제 기사화'},{time:'14:00',dot:'var(--orange)',text:'댓글 200건 · 긍정 72%'}],
-     insight:'유럽 수출 계약 뉴스는 투자자 반응이 특히 좋았습니다. LinkedIn 금융권 공유 다수, 주가 +1.8% 영향 관찰.'
-   }
+     topComment:'유럽 시장 진출 본격화 신호입니다.',timeline:[{time:'10:00',dot:'var(--green)',text:'발행 · 8채널 배포'},{time:'11:30',dot:'var(--primary)',text:'한국경제 기사화'},{time:'14:00',dot:'var(--orange)',text:'댓글 200건 돌파'}],
+     insight:'투자자 반응이 매우 좋았습니다.\n\n📌 투자 ₩24.5만 → 도달 1.4M · ROI 860%\n📌 LinkedIn 금융권 공유 다수, 주가 +1.8%\n📌 Standard 패키지로 충분한 성과'}
   },
-  {id:2,title:'바이오의약품 4공장 준공 및 가동 개시',date:'2026.03.22',status:'published',cat:'사업',color:'var(--primary)',
-   spark:[5,8,18,28,35,30,26,22,20,18,16,15],
-   dist:{total:11,reach:'980K',clicks:'22.4K',articles:7},channels:[{icon:'🌐',name:'LiveRe Press',type:'자사',status:'✅',views:18400,clicks:5200,comments:34,shares:420}],
-   result:{views:'142,000',uniq:'118,200',readTime:'1:58',bounce:'34%',comments:189,shares:3200,sentiment:{pos:68,neu:22,neg:10},hourly:[0,0,0,0,0,0,0,0,2400,8800,22400,42600,62800,82400,98200,112400,124600,132400,138200,140200,141200,141600,141800,142000],topComment:'글로벌 CMO 시장 입지 강화.',timeline:[{time:'09:00',dot:'var(--green)',text:'발행'}],insight:'제조 설비 뉴스는 전문지에서 반응 좋음.'}
-  },
-  {id:3,title:'CDO 사업부문 신설 및 임원 선임',date:'2026.03.20',status:'published',cat:'인사',color:'var(--purple)',
-   spark:[3,5,12,18,14,10,8,7,6,5,5,4],
-   dist:{total:9,reach:'620K',clicks:'14.8K',articles:5},channels:[{icon:'🌐',name:'LiveRe Press',type:'자사',status:'✅',views:12100,clicks:3400,comments:18,shares:210}],
-   result:{views:'86,400',uniq:'72,100',readTime:'1:42',bounce:'38%',comments:98,shares:1800,sentiment:{pos:55,neu:35,neg:10},hourly:[0,0,0,0,0,0,0,0,0,4200,14800,28400,42600,56200,68400,76200,80400,83200,84800,85600,86000,86200,86300,86400],topComment:'CDO 사업 확장은 좋은 전략.',timeline:[{time:'10:00',dot:'var(--green)',text:'발행'}],insight:'인사 보도자료는 업계 관계자 깊은 관심.'}
-  },
-  {id:4,title:'ESG 경영보고서 2025 발간',date:'2026.03.28',status:'reviewing',cat:'ESG',color:'var(--orange)',spark:[],dist:{total:0,reach:'—',clicks:'—',articles:0},channels:[],result:null},
-  {id:5,title:'글로벌 R&D 센터 보스턴 설립 추진',date:'2026.03.28',status:'reviewing',cat:'사업',color:'var(--orange)',spark:[],dist:{total:0,reach:'—',clicks:'—',articles:0},channels:[],result:null},
-  {id:6,title:'2026년 하반기 사업 전략 설명회 안내',date:'—',status:'draft',cat:'IR',color:'var(--ink5)',spark:[],dist:{total:0,reach:'—',clicks:'—',articles:0},channels:[],result:null}
+  {id:2,title:'바이오의약품 4공장 준공',date:'2026.03.22',status:'published',cat:'사업',color:'var(--primary)',pkg:'Standard',cost:'₩24.5만',spark:[5,8,18,28,35,30,26,22,20,18,16,15],dist:{total:8,reach:'980K',clicks:'22.4K',articles:7},channels:[{icon:'🌐',name:'LiveRe Press',type:'자사',status:'✅',views:18400,clicks:5200,comments:34,shares:420}],result:{views:'142,000',uniq:'118,200',readTime:'1:58',bounce:'34%',comments:189,shares:3200,roi:'580%',costPerView:'₩1.72',sentiment:{pos:68,neu:22,neg:10},hourly:[0,0,0,0,0,0,0,0,2400,8800,22400,42600,62800,82400,98200,112400,124600,132400,138200,140200,141200,141600,141800,142000],topComment:'글로벌 CMO 입지 강화.',timeline:[{time:'09:00',dot:'var(--green)',text:'발행'}],insight:'전문지 반응 좋음.\n📌 투자 ₩24.5만 → 도달 980K'}},
+  {id:3,title:'CDO 사업부문 신설',date:'2026.03.20',status:'published',cat:'인사',color:'var(--purple)',pkg:'Basic',cost:'₩14.5만',spark:[3,5,12,18,14,10,8,7,6,5,5,4],dist:{total:5,reach:'620K',clicks:'14.8K',articles:5},channels:[{icon:'🌐',name:'LiveRe Press',type:'자사',status:'✅',views:12100,clicks:3400,comments:18,shares:210}],result:{views:'86,400',uniq:'72,100',readTime:'1:42',bounce:'38%',comments:98,shares:1800,roi:'596%',costPerView:'₩1.68',sentiment:{pos:55,neu:35,neg:10},hourly:[0,0,0,0,0,0,0,0,0,4200,14800,28400,42600,56200,68400,76200,80400,83200,84800,85600,86000,86200,86300,86400],topComment:'CDO 사업 확장 좋은 전략.',timeline:[{time:'10:00',dot:'var(--green)',text:'발행'}],insight:'인사 뉴스는 업계 관계자 관심.\n📌 투자 ₩14.5만 → 도달 620K · Basic으로 충분'}},
+  {id:4,title:'ESG 경영보고서 2025 발간',date:'2026.03.28',status:'reviewing',cat:'ESG',color:'var(--orange)',pkg:'—',cost:'—',spark:[],dist:{total:0,reach:'—',clicks:'—',articles:0},channels:[],result:null},
+  {id:5,title:'글로벌 R&D 센터 보스턴 설립',date:'2026.03.28',status:'reviewing',cat:'사업',color:'var(--orange)',pkg:'—',cost:'—',spark:[],dist:{total:0,reach:'—',clicks:'—',articles:0},channels:[],result:null},
+  {id:6,title:'하반기 사업 전략 설명회 안내',date:'—',status:'draft',cat:'IR',color:'var(--ink5)',pkg:'—',cost:'—',spark:[],dist:{total:0,reach:'—',clicks:'—',articles:0},channels:[],result:null}
 ];
 
-// ═══ NAV ═══
 const tabs=document.querySelectorAll('.nt');
-function go(i){tabs.forEach(t=>t.classList.remove('on'));tabs[i].classList.add('on');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('p'+i).classList.add('active');if(i===1)initD();if(i===2)initR();}
+function go(i){tabs.forEach(t=>t.classList.remove('on'));tabs[i].classList.add('on');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('p'+i).classList.add('active');if(i===1)renderOrders();if(i===2)initD();if(i===3)initR();}
 
-// ═══ TAB 0 ═══
-function renderPR(){
-  document.getElementById('prList').innerHTML=P.map(p=>{
-    const sl=p.status==='published'?'발행 완료':p.status==='reviewing'?'검수 중':'작성 중';
-    const tc=p.status==='published'?'t-g':p.status==='reviewing'?'t-o':'t-x';
-    const pub=p.status==='published';
-    const sparkHTML=p.spark.length?`<div class="sparkline">${p.spark.map(v=>`<div class="spark-bar" style="height:${Math.max(v/100*24,2)}px"></div>`).join('')}</div>`:'';
-    return`<div class="pr" onclick="go(1);document.getElementById('dSel').value=${p.id};renderDist()">
-      <div class="pr-c" style="background:${p.color}"></div>
-      <div class="pr-b">
-        <div class="pr-i"><div class="pr-t">${p.title}</div><div class="pr-m"><span class="tag ${tc}">${sl}</span><span>${p.cat}</span><span>${p.date}</span>${pub?`<span>→ <b>${p.dist.articles}개 매체</b> 기사화</span>`:''}</div></div>
-        ${pub?sparkHTML:''}
-        ${pub?`<div class="pr-n"><div class="pr-nv"><div class="v">${p.dist.reach}</div><div class="l">도달</div></div><div class="pr-nv"><div class="v">${p.dist.clicks}</div><div class="l">클릭</div></div><div class="pr-nv"><div class="v">${p.dist.total}</div><div class="l">매체</div></div></div>`:''}
-      </div></div>`;
-  }).join('');
-}
+function selectPkg(el,idx){document.querySelectorAll('.pkg').forEach(p=>{p.classList.remove('pkg-selected');p.querySelector('.pkg-btn').className='pkg-btn pkg-btn-outline';});el.classList.add('pkg-selected');el.querySelector('.pkg-btn').className='pkg-btn pkg-btn-primary';}
+
+// TAB 0
+function renderPR(){document.getElementById('prList').innerHTML=P.map(p=>{
+  const sl=p.status==='published'?'발행':p.status==='reviewing'?'검수 중':'작성 중';const tc=p.status==='published'?'t-g':p.status==='reviewing'?'t-o':'t-x';const pub=p.status==='published';
+  const pkgTag=p.pkg!=='—'?`<span class="tag t-b">${p.pkg}</span>`:'';const costTag=p.cost!=='—'?`<span style="font-family:'JetBrains Mono';font-size:11px;color:var(--orange);font-weight:600">${p.cost}</span>`:'';
+  const sparkHTML=p.spark.length?`<div class="sparkline">${p.spark.map(v=>`<div class="spark-bar" style="height:${Math.max(v/100*24,2)}px"></div>`).join('')}</div>`:'';
+  return`<div class="pr" onclick="${pub?`go(2);document.getElementById('dSel').value=${p.id};renderDist()`:`go(1)`}">
+    <div class="pr-c" style="background:${p.color}"></div><div class="pr-b"><div class="pr-i"><div class="pr-t">${p.title}</div>
+    <div class="pr-m"><span class="tag ${tc}">${sl}</span>${pkgTag}${costTag}<span>${p.cat}</span><span>${p.date}</span>${pub?`<span>→ <b>${p.dist.articles}개 매체</b></span>`:''}</div></div>
+    ${pub?sparkHTML:''}${pub?`<div class="pr-n"><div class="pr-nv"><div class="v">${p.dist.reach}</div><div class="l">도달</div></div><div class="pr-nv"><div class="v">${p.dist.clicks}</div><div class="l">클릭</div></div></div>`:p.status==='reviewing'?'<button class="btn btn-s btn-p" onclick="event.stopPropagation();go(1)">패키지 선택 →</button>':''}</div></div>`;}).join('');}
 renderPR();
 
-// ═══ TAB 1 ═══
-function initD(){document.getElementById('dSel').innerHTML=P.filter(p=>p.status==='published').map(p=>`<option value="${p.id}">${p.title} (${p.date})</option>`).join('');renderDist();}
+// TAB 1 Orders
+function renderOrders(){document.getElementById('orderHistory').innerHTML=P.filter(p=>p.status==='published').map(p=>{
+  return`<div class="order-row"><div style="width:10px;height:10px;border-radius:50%;background:var(--green);flex-shrink:0"></div><div class="or-info"><div class="or-title">${p.title}</div><div class="or-meta">${p.date} · ${p.pkg} 패키지 · ${p.dist.total}개 채널 배포</div></div><div class="or-price" style="color:var(--orange)">${p.cost}</div><div class="or-status" style="color:var(--green)">✅ 완료</div></div>`;}).join('')+
+  `<div style="display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-top:2px solid var(--border);margin-top:8px"><div style="font-size:14px;font-weight:700">이번 달 합계</div><div style="font-family:'JetBrains Mono';font-size:20px;font-weight:700;color:var(--orange)">₩148만</div></div>
+  <div style="padding:12px;background:var(--gsoft);border-radius:8px;font-size:12px;color:var(--green);display:flex;align-items:center;gap:6px">💰 뉴스와이어 프리미엄으로 동일 4건 배포 시: ₩118.8만 → <b>그러나 기사화 미보장.</b> LiveRe Press는 기사화 + 성과 추적 포함 ₩148만. 실질 ROI로 보면 <b>20배 이상 가성비.</b></div>`;}
 
-function renderDist(){
-  const p=P[parseInt(document.getElementById('dSel').value)||0];if(!p||!p.channels.length)return;
-  document.getElementById('dStats').innerHTML=`<div class="st"><div class="sl">배포 매체</div><div class="sv">${p.dist.total}</div><div class="ss">동시 배포</div></div><div class="st"><div class="sl">총 도달</div><div class="sv" style="color:var(--primary)">${p.dist.reach}</div><div class="ss">조회+노출</div></div><div class="st"><div class="sl">총 클릭</div><div class="sv" style="color:var(--green)">${p.dist.clicks}</div><div class="ss">전 채널</div></div><div class="st"><div class="sl">기사화 매체</div><div class="sv">${p.dist.articles}</div><div class="ss">실제 게재</div></div>`;
+// TAB 2
+function initD(){const s=document.getElementById('dSel');s.innerHTML=P.filter(p=>p.status==='published').map(p=>`<option value="${p.id}">${p.title} [${p.pkg}·${p.cost}]</option>`).join('');renderDist();}
 
-  // Donut chart
-  const typeMap={};p.channels.forEach(c=>{const v=c.views||0;typeMap[c.type]=(typeMap[c.type]||0)+v;});
-  const types=Object.entries(typeMap).sort((a,b)=>b[1]-a[1]);
-  const total=types.reduce((s,t)=>s+t[1],0)||1;
+function renderDist(){const p=P[parseInt(document.getElementById('dSel').value)||0];if(!p||!p.channels.length)return;
+  document.getElementById('dStats').innerHTML=`<div class="st"><div class="sl">선택 패키지</div><div class="sv" style="font-size:22px;color:var(--primary)">${p.pkg}</div><div class="ss">투자: ${p.cost}</div></div><div class="st"><div class="sl">배포 매체</div><div class="sv">${p.dist.total}</div><div class="ss">동시 배포</div></div><div class="st"><div class="sl">총 도달</div><div class="sv" style="color:var(--primary)">${p.dist.reach}</div></div><div class="st"><div class="sl">기사화 매체</div><div class="sv" style="color:var(--green)">${p.dist.articles}</div><div class="ss">실제 게재</div></div>`;
+  const typeMap={};p.channels.forEach(c=>{typeMap[c.type]=(typeMap[c.type]||0)+(c.views||0);});
+  const types=Object.entries(typeMap).sort((a,b)=>b[1]-a[1]);const total=types.reduce((s,t)=>s+t[1],0)||1;
   const colors={'포털':'var(--green)','종합지':'var(--primary)','자사':'#6366f1','전문지':'var(--purple)','SNS':'var(--orange)','이메일':'#64748b','AI검색':'#ec4899'};
-  let offset=0;
-  const segments=types.map(([type,val])=>{const pct=val/total*100;const dash=pct*2.51327;const gap=251.327-dash;const seg=`<circle cx="40" cy="40" r="32" fill="none" stroke="${colors[type]||'var(--ink5)'}" stroke-width="10" stroke-dasharray="${dash} ${gap}" stroke-dashoffset="${-offset*2.51327}" />`;offset+=pct;return seg;});
-  document.getElementById('dDonut').innerHTML=`<div class="ct">📊 채널 유형별 조회 비중</div><div class="donut-wrap"><div class="donut"><svg viewBox="0 0 80 80" width="140" height="140">${segments.join('')}</svg><div class="donut-center"><div class="dc-v">${p.dist.total}</div><div class="dc-l">채널</div></div></div><div class="donut-legend">${types.map(([type,val])=>`<div class="dl-item"><div class="dl-dot" style="background:${colors[type]||'var(--ink5)'}"></div><div class="dl-name">${type}</div><div class="dl-val">${val>=1000?(val/1000).toFixed(1)+'K':val}</div></div>`).join('')}</div></div>`;
-
-  // Top media bar chart
-  const topCh=p.channels.filter(c=>c.views>0).sort((a,b)=>b.views-a.views).slice(0,6);
-  const maxV=topCh[0]?.views||1;
-  document.getElementById('dMediaTop').innerHTML=`<div class="ct">🏆 매체별 조회수 TOP</div>${topCh.map(c=>{const pct=Math.round(c.views/maxV*100);return`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:12px"><span style="color:var(--ink2)">${c.icon} ${c.name}</span><span class="mono" style="font-weight:600">${c.views.toLocaleString()}</span></div><div class="dr-bar-bg"><div class="dr-bar-fill" style="width:${pct}%;background:${colors[c.type]||'var(--primary)'}"></div></div></div>`;}).join('')}`;
-
-  // Full list
+  let offset=0;const segs=types.map(([t,v])=>{const pct=v/total*100;const d=pct*2.51327;const g=251.327-d;const s2=`<circle cx="40" cy="40" r="32" fill="none" stroke="${colors[t]||'#ccc'}" stroke-width="10" stroke-dasharray="${d} ${g}" stroke-dashoffset="${-offset*2.51327}"/>`;offset+=pct;return s2;});
+  document.getElementById('dDonut').innerHTML=`<div class="ct">📊 채널 유형별 비중</div><div style="display:flex;align-items:center;gap:24px"><div style="position:relative;width:140px;height:140px;flex-shrink:0"><svg viewBox="0 0 80 80" width="140" height="140">${segs.join('')}</svg><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><div class="mono" style="font-size:22px;font-weight:700">${p.dist.total}</div><div style="font-size:10px;color:var(--ink4)">채널</div></div></div><div style="display:flex;flex-direction:column;gap:6px">${types.map(([t,v])=>`<div style="display:flex;align-items:center;gap:8px"><div style="width:10px;height:10px;border-radius:3px;background:${colors[t]||'#ccc'}"></div><div style="font-size:12px;color:var(--ink2);flex:1">${t}</div><div class="mono" style="font-size:12px;font-weight:600">${v>=1000?(v/1000).toFixed(1)+'K':v}</div></div>`).join('')}</div></div>`;
+  const topCh=p.channels.filter(c=>c.views>0).sort((a,b)=>b.views-a.views).slice(0,6);const mx=topCh[0]?.views||1;
+  document.getElementById('dTop').innerHTML=`<div class="ct">🏆 매체별 조회 TOP</div>${topCh.map(c=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:12px"><span>${c.icon} ${c.name}</span><span class="mono" style="font-weight:600">${c.views.toLocaleString()}</span></div><div class="dr-bar-bg"><div class="dr-bar-fill" style="width:${Math.round(c.views/mx*100)}%;background:${colors[c.type]||'var(--primary)'}"></div></div></div>`).join('')}`;
   const grouped={};p.channels.forEach(c=>{if(!grouped[c.type])grouped[c.type]=[];grouped[c.type].push(c);});
-  let html='<div class="ct">📡 전체 배포 매체 상세</div>';
-  for(const [type,chs] of Object.entries(grouped)){
-    html+=`<div style="font-size:11px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:1px;padding:12px 0 6px;border-bottom:1px solid var(--border)">${type}</div>`;
-    chs.forEach(c=>{html+=`<div class="dr"><div class="dr-i">${c.icon}</div><div class="dr-info"><div class="dr-name">${c.name}</div><div class="dr-sub">${c.status}</div></div><div class="dr-nums"><div class="dr-num"><div class="dv">${c.views?c.views.toLocaleString():'—'}</div><div class="dl">조회</div></div><div class="dr-num"><div class="dv">${c.clicks?c.clicks.toLocaleString():'—'}</div><div class="dl">클릭</div></div><div class="dr-num"><div class="dv">${c.comments||'—'}</div><div class="dl">댓글</div></div><div class="dr-num"><div class="dv">${c.shares?c.shares.toLocaleString():'—'}</div><div class="dl">공유</div></div></div></div>`;});
-  }
-  document.getElementById('dList').innerHTML=html;
-}
+  let html='<div class="ct">📡 전체 매체 상세</div>';for(const[t,cs]of Object.entries(grouped)){html+=`<div style="font-size:10px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:1px;padding:12px 0 6px;border-bottom:1px solid var(--border)">${t}</div>`;cs.forEach(c=>{html+=`<div class="dr"><div class="dr-i">${c.icon}</div><div class="dr-info"><div class="dr-name">${c.name}</div><div class="dr-sub">${c.status}</div></div><div class="dr-nums"><div class="dr-num"><div class="dv">${c.views?c.views.toLocaleString():'—'}</div><div class="dl">조회</div></div><div class="dr-num"><div class="dv">${c.clicks?c.clicks.toLocaleString():'—'}</div><div class="dl">클릭</div></div><div class="dr-num"><div class="dv">${c.comments||'—'}</div><div class="dl">댓글</div></div><div class="dr-num"><div class="dv">${c.shares?c.shares.toLocaleString():'—'}</div><div class="dl">공유</div></div></div></div>`;});}
+  document.getElementById('dList').innerHTML=html;}
 
-// ═══ TAB 2 ═══
-function initR(){document.getElementById('rSel').innerHTML=P.filter(p=>p.status==='published').map(p=>`<option value="${p.id}">${p.title} (${p.date})</option>`).join('');renderResult();}
+// TAB 3
+function initR(){const s=document.getElementById('rSel');s.innerHTML=P.filter(p=>p.status==='published').map(p=>`<option value="${p.id}">${p.title} [${p.pkg}·${p.cost}]</option>`).join('');renderResult();}
 
-function renderResult(){
-  const p=P[parseInt(document.getElementById('rSel').value)||0];if(!p||!p.result)return;const r=p.result;
-  document.getElementById('rStats').innerHTML=`<div class="st"><div class="sl">총 조회수</div><div class="sv">${r.views}</div><div class="ss">순방문 ${r.uniq}</div></div><div class="st"><div class="sl">평균 체류</div><div class="sv" style="color:var(--primary)">${r.readTime}</div><div class="ss">이탈률 ${r.bounce}</div></div><div class="st"><div class="sl">댓글</div><div class="sv" style="color:var(--orange)">${r.comments}</div><div class="ss">전 채널</div></div><div class="st"><div class="sl">공유</div><div class="sv" style="color:var(--green)">${r.shares.toLocaleString()}</div><div class="ss">SNS+메신저</div></div>`;
-
-  // Line chart (SVG)
-  const h=r.hourly;const maxH=Math.max(...h);const W=500,H=140;
-  let pts=h.map((v,i)=>{const x=i/(h.length-1)*W;const y=H-(v/maxH)*H;return`${x},${y}`;}).join(' ');
-  let areaPts=`0,${H} ${pts} ${W},${H}`;
-  document.getElementById('rChart').innerHTML=`<div class="ct">📈 시간별 조회수 추이</div>
-    <div style="position:relative;padding:10px 0 0 36px">
-      <div style="position:absolute;left:0;top:10px;font-size:9px;color:var(--ink5);font-family:'JetBrains Mono'">${maxH>=1000?(maxH/1000).toFixed(0)+'K':maxH}</div>
-      <div style="position:absolute;left:0;bottom:22px;font-size:9px;color:var(--ink5);font-family:'JetBrains Mono'">0</div>
-      <svg viewBox="0 0 ${W} ${H+4}" style="width:100%;height:160px;display:block">
-        <defs><linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--primary)" stop-opacity=".15"/><stop offset="100%" stop-color="var(--primary)" stop-opacity="0"/></linearGradient></defs>
-        <polygon points="${areaPts}" fill="url(#areaGrad)"/>
-        <polyline points="${pts}" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-        <circle cx="${W}" cy="${H-(h[h.length-1]/maxH)*H}" r="4" fill="var(--primary)"/>
-      </svg>
-      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--ink5);font-family:'JetBrains Mono';margin-top:2px"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
-    </div>`;
-
-  // Sentiment
-  document.getElementById('rSent').innerHTML=`<div class="ct">💬 여론 분석</div>
-    <div style="display:flex;gap:10px;margin-bottom:14px">
-      <div style="flex:1;text-align:center;padding:16px;background:var(--gsoft);border-radius:8px"><div style="font-size:30px;font-weight:700;color:var(--green)">${r.sentiment.pos}%</div><div style="font-size:11px;color:var(--green);margin-top:2px">긍정</div></div>
-      <div style="flex:1;text-align:center;padding:16px;background:var(--bg3);border-radius:8px"><div style="font-size:30px;font-weight:700;color:var(--ink3)">${r.sentiment.neu}%</div><div style="font-size:11px;color:var(--ink3);margin-top:2px">중립</div></div>
-      <div style="flex:1;text-align:center;padding:16px;background:var(--rsoft);border-radius:8px"><div style="font-size:30px;font-weight:700;color:var(--red)">${r.sentiment.neg}%</div><div style="font-size:11px;color:var(--red);margin-top:2px">부정</div></div>
-    </div>
-    <div class="sent"><div class="sp" style="width:${r.sentiment.pos}%"></div><div class="sn" style="width:${r.sentiment.neu}%"></div><div class="sng" style="width:${r.sentiment.neg}%"></div></div>
-    <div class="sent-legend"><span class="sl-p">긍정 ${r.sentiment.pos}%</span><span class="sl-n">중립 ${r.sentiment.neu}%</span><span class="sl-ng">부정 ${r.sentiment.neg}%</span></div>
-    <div style="margin-top:14px;padding:12px 16px;background:var(--bg2);border-radius:8px"><div style="font-size:10px;color:var(--ink4);margin-bottom:4px">💬 대표 댓글</div><div style="font-size:13px;color:var(--ink2);line-height:1.6">"${r.topComment}"</div></div>`;
-
-  // Timeline
-  document.getElementById('rTimeline').innerHTML=`<div class="ct">⏱️ 타임라인</div>${r.timeline.map(t=>`<div class="tl"><div class="tl-t">${t.time}</div><div class="tl-d" style="background:${t.dot}"></div><div class="tl-c">${t.text}</div></div>`).join('')}`;
-
-  // AI Insight
-  document.getElementById('rInsight').innerHTML=`<div class="ct">✦ AI 인사이트</div>
-    <div style="padding:16px;background:var(--ppsoft);border:1px solid #ddd5f8;border-radius:8px;font-size:13px;color:var(--ink2);line-height:1.8;white-space:pre-line">${r.insight}</div>
-    <div style="margin-top:14px;display:flex;gap:8px"><button class="btn btn-p btn-s">📋 PDF 리포트 다운로드</button><button class="btn btn-o btn-s">📧 이메일로 전송</button></div>`;
-}
+function renderResult(){const p=P[parseInt(document.getElementById('rSel').value)||0];if(!p||!p.result)return;const r=p.result;
+  document.getElementById('rStats').innerHTML=`<div class="st"><div class="sl">총 조회수</div><div class="sv">${r.views}</div><div class="ss">순방문 ${r.uniq}</div></div><div class="st"><div class="sl">투자 대비 ROI</div><div class="sv" style="color:var(--green)">${r.roi}</div><div class="ss">투자: ${p.cost} → 도달: ${p.dist.reach}</div></div><div class="st"><div class="sl">댓글</div><div class="sv" style="color:var(--orange)">${r.comments}</div></div><div class="st"><div class="sl">공유</div><div class="sv" style="color:var(--primary)">${r.shares.toLocaleString()}</div></div>`;
+  const h=r.hourly;const mxH=Math.max(...h);const W=500,H=140;
+  let pts=h.map((v,i)=>`${i/(h.length-1)*W},${H-(v/mxH)*H}`).join(' ');
+  document.getElementById('rChart').innerHTML=`<div class="ct">📈 시간별 조회수</div><div style="position:relative;padding:8px 0 0 32px"><div style="position:absolute;left:0;top:8px;font-size:9px;color:var(--ink5);font-family:'JetBrains Mono'">${mxH>=1000?(mxH/1000).toFixed(0)+'K':mxH}</div><svg viewBox="0 0 ${W} ${H+4}" style="width:100%;height:155px;display:block"><defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--primary)" stop-opacity=".12"/><stop offset="100%" stop-color="var(--primary)" stop-opacity="0"/></linearGradient></defs><polygon points="0,${H} ${pts} ${W},${H}" fill="url(#ag)"/><polyline points="${pts}" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linejoin="round"/><circle cx="${W}" cy="${H-(h[h.length-1]/mxH)*H}" r="4" fill="var(--primary)"/></svg><div style="display:flex;justify-content:space-between;font-size:9px;color:var(--ink5);font-family:'JetBrains Mono'"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div></div>`;
+  document.getElementById('rSent').innerHTML=`<div class="ct">💬 여론 분석</div><div style="display:flex;gap:10px;margin-bottom:14px"><div style="flex:1;text-align:center;padding:14px;background:var(--gsoft);border-radius:8px"><div style="font-size:28px;font-weight:700;color:var(--green)">${r.sentiment.pos}%</div><div style="font-size:11px;color:var(--green)">긍정</div></div><div style="flex:1;text-align:center;padding:14px;background:var(--bg3);border-radius:8px"><div style="font-size:28px;font-weight:700;color:var(--ink3)">${r.sentiment.neu}%</div><div style="font-size:11px;color:var(--ink3)">중립</div></div><div style="flex:1;text-align:center;padding:14px;background:var(--rsoft);border-radius:8px"><div style="font-size:28px;font-weight:700;color:var(--red)">${r.sentiment.neg}%</div><div style="font-size:11px;color:var(--red)">부정</div></div></div><div class="sent"><div class="sp" style="width:${r.sentiment.pos}%"></div><div class="sn" style="width:${r.sentiment.neu}%"></div><div class="sng" style="width:${r.sentiment.neg}%"></div></div><div style="margin-top:14px;padding:12px;background:var(--bg2);border-radius:8px"><div style="font-size:10px;color:var(--ink4);margin-bottom:3px">💬 대표 댓글</div><div style="font-size:13px;color:var(--ink2)">"${r.topComment}"</div></div>`;
+  document.getElementById('rTl').innerHTML=`<div class="ct">⏱️ 타임라인</div>${r.timeline.map(t=>`<div class="tl"><div class="tl-t">${t.time}</div><div class="tl-d" style="background:${t.dot}"></div><div class="tl-c">${t.text}</div></div>`).join('')}`;
+  document.getElementById('rAi').innerHTML=`<div class="ct">✦ AI 인사이트</div><div style="padding:16px;background:var(--ppsoft);border:1px solid #ddd5f8;border-radius:8px;font-size:13px;color:var(--ink2);line-height:1.8;white-space:pre-line">${r.insight}</div><div style="margin-top:14px;display:flex;gap:8px"><button class="btn btn-p btn-s">📋 PDF 리포트</button><button class="btn btn-o btn-s">📧 이메일 전송</button></div>`;}
 </script>
 </body>
 </html>
