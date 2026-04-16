@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>livere — Eden Chat Monitor</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #101018;
+  --elev: #15151f;
+  --hover: #1a1a28;
+  --text: #ededf2;
+  --text-dim: #82829a;
+  --text-mute: #4f4f64;
+  --border: #1c1c2a;
+  --border-strong: #2a2a3a;
+  --accent: #8b5cf6;
+  --accent-soft: rgba(139,92,246,0.10);
+  --pos: #3ec78c;
+  --neg: #ef5b5b;
+  --neu: #d49b3f;
+  --warn: #f59e0b;
+  --arca: #4a9eff;
+  --dcinside: #3b82f6;
+  --naver-cafe: #4ab87b;
+  --twitter: #c8c8d2;
+  --appstore: #0ea5e9;
+  --eden-primary: #8b5cf6;
+  --eden-glow: rgba(139,92,246,0.15);
+  --churn: #ef5b5b;
+  --competitor: #f59e0b;
+  --satisfaction: #3ec78c;
+  --purity: #0ea5e9;
+  --transition: 160ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] {
+  --bg: #f8f8fc;
+  --surface: #ffffff;
+  --elev: #ffffff;
+  --hover: #f0f0f6;
+  --text: #18181f;
+  --text-dim: #67677d;
+  --text-mute: #a4a4b4;
+  --border: #e8e8f0;
+  --border-strong: #d4d4e0;
+  --accent: #7c3aed;
+  --accent-soft: rgba(124,58,237,0.07);
+  --twitter: #444;
+}
+
+html { font-size: 14px; }
+
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.tnum { font-variant-numeric: tabular-nums; }
+button { font-family: inherit; cursor: pointer; }
+input { font-family: inherit; }
+
+/* ── Top Bar ─────────────────────────────── */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; height: 52px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+}
+.topbar-left { display: flex; align-items: center; gap: 14px; }
+.brand {
+  font-size: 14px; font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  text-decoration: none;
+}
+.brand-mark {
+  display: inline-block;
+  width: 18px; height: 18px;
+  background: var(--accent);
+  border-radius: 5px;
+  margin-right: 6px;
+  vertical-align: -3px;
+}
+.topbar-divider { width: 1px; height: 18px; background: var(--border); }
+
+.ws-switch {
+  display: flex; align-items: center; gap: 10px;
+  padding: 5px 10px 5px 5px;
+  border-radius: 7px; cursor: pointer;
+  transition: background var(--transition);
+}
+.ws-switch:hover { background: var(--hover); }
+.ws-mark {
+  width: 22px; height: 22px; border-radius: 5px;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700; color: white;
+}
+.ws-name { font-size: 13px; font-weight: 600; }
+.ws-chev { color: var(--text-mute); display: inline-flex; }
+
+.topbar-right { display: flex; align-items: center; gap: 6px; }
+.search {
+  display: flex; align-items: center; gap: 8px;
+  width: 280px; height: 32px; padding: 0 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 7px; transition: border-color var(--transition);
+}
+.search:focus-within { border-color: var(--accent); }
+.search input { flex: 1; background: none; border: none; outline: none; color: var(--text); font-size: 12.5px; }
+.search input::placeholder { color: var(--text-mute); }
+.search .ic { color: var(--text-mute); }
+.kbd {
+  font-size: 10px; padding: 1px 5px; border-radius: 3px;
+  background: var(--elev); border: 1px solid var(--border);
+  color: var(--text-mute); font-family: ui-monospace, monospace;
+}
+.icon-btn {
+  width: 32px; height: 32px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent; border: 1px solid transparent;
+  border-radius: 7px; color: var(--text-dim);
+  position: relative; transition: var(--transition);
+}
+.icon-btn:hover { background: var(--hover); color: var(--text); }
+.icon-btn .dot {
+  position: absolute; top: 7px; right: 7px;
+  width: 7px; height: 7px;
+  background: var(--neg); border-radius: 50%;
+  border: 2px solid var(--bg);
+}
+.avatar-btn {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  border: none; font-size: 11px; font-weight: 700;
+  color: white; margin-left: 4px;
+}
+
+/* ── Layout ──────────────────────────────── */
+.layout { padding-top: 52px; }
+.sidebar-l, .sidebar-r {
+  position: fixed; top: 52px; bottom: 0;
+  background: var(--bg); overflow-y: auto; z-index: 5;
+}
+.sidebar-l { left: 0; width: 232px; padding: 18px 12px; border-right: 1px solid var(--border); }
+.sidebar-r { right: 0; width: 296px; padding: 18px 16px; border-left: 1px solid var(--border); }
+.main {
+  margin-left: 232px; margin-right: 296px;
+  padding: 28px 36px 80px; max-width: 100%;
+}
+@media (max-width: 1280px) { .sidebar-r { display: none; } .main { margin-right: 0; } }
+@media (max-width: 980px) { .sidebar-l { display: none; } .main { margin-left: 0; padding: 20px 16px; } }
+
+/* ── Sidebar Left ──────────────────────── */
+.side-section { margin-bottom: 22px; }
+.side-label {
+  font-size: 10.5px; font-weight: 600; color: var(--text-mute);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 0 8px; margin-bottom: 6px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.side-label .add { color: var(--text-mute); background: none; border: none; font-size: 14px; padding: 2px; border-radius: 4px; }
+.side-label .add:hover { color: var(--text); background: var(--hover); }
+
+.side-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 6px 8px; border-radius: 6px;
+  font-size: 12.5px; color: var(--text-dim);
+  cursor: pointer; transition: background var(--transition), color var(--transition);
+}
+.side-item:hover { background: var(--hover); color: var(--text); }
+.side-item.active { background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+.side-item .src-mark {
+  width: 14px; height: 14px; flex-shrink: 0; border-radius: 3px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 700; color: white;
+}
+.side-item .label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.side-item .meta { font-size: 10.5px; color: var(--text-mute); font-variant-numeric: tabular-nums; }
+.side-item.active .meta { color: var(--accent); opacity: 0.7; }
+.side-item .live { width: 6px; height: 6px; border-radius: 50%; background: var(--pos); }
+.side-item .paused { color: var(--text-mute); font-size: 10px; }
+
+.ws-status {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px; margin-bottom: 22px; font-size: 12px;
+}
+.ws-status-row { display: flex; align-items: center; justify-content: space-between; }
+.ws-status-row + .ws-status-row { margin-top: 8px; }
+.ws-status-row .key { color: var(--text-dim); font-size: 11.5px; }
+.ws-status-row .val { font-weight: 500; font-variant-numeric: tabular-nums; }
+.ws-status-row .live-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11.5px; color: var(--pos); font-weight: 500;
+}
+.ws-status-row .live-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--pos); }
+
+/* ── Page Header ─────────────────────────── */
+.page-head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border);
+}
+.page-eyebrow {
+  font-size: 11px; font-weight: 600; color: var(--text-mute);
+  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;
+}
+.page-title { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
+.page-meta { font-size: 12.5px; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.page-meta .sep { margin: 0 6px; color: var(--text-mute); }
+.page-meta .live-mini {
+  display: inline-flex; align-items: center; gap: 5px;
+  color: var(--pos); font-weight: 500;
+}
+.page-meta .live-mini::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--pos);
+  animation: pulse 2.4s infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+
+.page-actions { display: flex; gap: 6px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 30px; padding: 0 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 7px; color: var(--text-dim);
+  font-size: 12px; font-weight: 500; transition: var(--transition);
+}
+.btn:hover { color: var(--text); border-color: var(--border-strong); background: var(--elev); }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: white; font-weight: 600; }
+.btn-primary:hover { filter: brightness(1.1); }
+
+/* ── KPI Cards ───────────────────────────── */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px; margin-bottom: 28px;
+}
+@media (max-width: 1400px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 720px) { .kpi-grid { grid-template-columns: 1fr; } }
+
+.kpi {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px;
+  position: relative; overflow: hidden;
+  transition: border-color var(--transition);
+}
+.kpi:hover { border-color: var(--border-strong); }
+.kpi-status {
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.kpi-status.green { background: var(--pos); }
+.kpi-status.red { background: var(--neg); }
+.kpi-status.yellow { background: var(--warn); }
+.kpi-status.blue { background: var(--purity); }
+
+.kpi-label {
+  font-size: 10.5px; font-weight: 600; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  margin-bottom: 10px; margin-top: 4px;
+}
+.kpi-value {
+  font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums; margin-bottom: 4px;
+  display: flex; align-items: baseline; gap: 6px;
+}
+.kpi-value .unit { font-size: 13px; font-weight: 500; color: var(--text-mute); }
+.kpi-threshold { font-size: 11px; color: var(--text-mute); margin-bottom: 8px; }
+.kpi-bar { height: 4px; background: var(--hover); border-radius: 2px; overflow: hidden; }
+.kpi-bar-fill { height: 100%; border-radius: 2px; }
+
+/* ── Filter Bar ──────────────────────────── */
+.filters {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 28px; flex-wrap: wrap;
+}
+.seg {
+  display: inline-flex; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 7px; padding: 2px;
+}
+.seg button {
+  height: 26px; padding: 0 11px; background: transparent; border: none;
+  border-radius: 5px; color: var(--text-dim); font-size: 12px; font-weight: 500;
+  font-variant-numeric: tabular-nums; transition: var(--transition);
+}
+.seg button:hover { color: var(--text); }
+.seg button.active { background: var(--elev); color: var(--text); box-shadow: 0 1px 0 rgba(0,0,0,0.2); }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 30px; padding: 0 11px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 7px; color: var(--text-dim);
+  font-size: 12px; font-weight: 500; transition: var(--transition);
+}
+.chip:hover { color: var(--text); border-color: var(--border-strong); }
+.chip .chev { color: var(--text-mute); }
+.filter-spacer { flex: 1; }
+
+/* ── Section heading ─────────────────────── */
+.section-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.section-head h2 { font-size: 14px; font-weight: 600; letter-spacing: -0.005em; }
+.section-head .h-meta { font-size: 11.5px; color: var(--text-mute); font-variant-numeric: tabular-nums; }
+.section-head .link {
+  font-size: 12px; font-weight: 500; color: var(--accent);
+  background: none; border: none; padding: 4px 8px; border-radius: 6px;
+  display: inline-flex; align-items: center; gap: 4px; transition: background var(--transition);
+}
+.section-head .link:hover { background: var(--accent-soft); }
+
+/* ── Cluster Panels ──────────────────────── */
+.clusters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+@media (max-width: 1100px) { .clusters { grid-template-columns: 1fr; } }
+
+.cluster {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px;
+}
+.cluster-head {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+}
+.cluster-dot { width: 8px; height: 8px; border-radius: 50%; }
+.cluster-title { font-size: 13px; font-weight: 600; }
+.cluster-sub { font-size: 11px; color: var(--text-mute); margin-left: auto; }
+
+.cluster-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
+.ctag {
+  font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 5px;
+  background: var(--hover); color: var(--text-dim);
+  display: inline-flex; align-items: center; gap: 4px; font-variant-numeric: tabular-nums;
+}
+.ctag .freq { color: var(--text-mute); font-size: 10px; }
+.ctag.hot { color: var(--neg); background: rgba(239,91,91,0.10); }
+.ctag.rising { color: var(--warn); background: rgba(245,158,11,0.10); }
+.ctag.cool { color: var(--pos); background: rgba(62,199,140,0.10); }
+
+.cluster-gauge { display: flex; height: 6px; gap: 1px; border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+.cluster-gauge .seg-pos { background: var(--pos); }
+.cluster-gauge .seg-neu { background: var(--neu); }
+.cluster-gauge .seg-neg { background: var(--neg); }
+.gauge-legend {
+  display: flex; justify-content: space-between;
+  font-size: 10.5px; color: var(--text-mute); font-variant-numeric: tabular-nums;
+}
+.gauge-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.gauge-legend .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+
+/* ── Persona Cards ───────────────────────── */
+.personas { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+@media (max-width: 1100px) { .personas { grid-template-columns: 1fr; } }
+
+.persona {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px;
+}
+.persona-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.persona-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.persona-info { flex: 1; }
+.persona-name { font-size: 13px; font-weight: 600; }
+.persona-desc { font-size: 11px; color: var(--text-mute); }
+.persona-stats { display: flex; gap: 16px; margin-bottom: 12px; }
+.persona-stat { text-align: center; }
+.persona-stat-val { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.persona-stat-label { font-size: 10px; color: var(--text-mute); text-transform: uppercase; }
+
+.mini-bar-list { display: flex; flex-direction: column; gap: 6px; }
+.mini-bar-row {
+  display: grid; grid-template-columns: 80px 1fr 40px;
+  align-items: center; gap: 8px; font-size: 11px;
+}
+.mini-bar-row .name { color: var(--text-dim); font-weight: 500; }
+.mini-bar-row .track { height: 4px; background: var(--hover); border-radius: 2px; overflow: hidden; }
+.mini-bar-row .fill { height: 100%; border-radius: 2px; }
+.mini-bar-row .val { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* ── New banner ──────────────────────────── */
+.new-bar {
+  display: flex; align-items: center; gap: 8px;
+  height: 36px; padding: 0 14px;
+  background: var(--accent-soft); border: 1px solid rgba(139,92,246,0.18);
+  border-radius: 7px; font-size: 12px; font-weight: 500;
+  color: var(--accent); margin-bottom: 20px; cursor: pointer;
+  transition: background var(--transition);
+}
+.new-bar:hover { background: rgba(139,92,246,0.16); }
+.new-bar::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); animation: pulse 1.6s infinite;
+}
+
+/* ── Feed Cards ──────────────────────────── */
+.feed { columns: 3; column-gap: 14px; }
+@media (max-width: 1500px) { .feed { columns: 2; } }
+@media (max-width: 760px) { .feed { columns: 1; } }
+
+.card {
+  break-inside: avoid; margin-bottom: 14px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden; cursor: pointer;
+  transition: var(--transition); position: relative;
+}
+.card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+
+.card-actions {
+  position: absolute; top: 10px; right: 10px;
+  display: flex; gap: 4px;
+  opacity: 0; transform: translateY(-2px);
+  transition: var(--transition); z-index: 2;
+}
+.card:hover .card-actions { opacity: 1; transform: translateY(0); }
+.card-act {
+  width: 26px; height: 26px; border-radius: 6px;
+  background: rgba(10,10,15,0.7); backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.8); display: inline-flex;
+  align-items: center; justify-content: center;
+}
+.card-act:hover { color: white; background: rgba(10,10,15,0.85); }
+
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px 8px;
+}
+.card-source {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11px; font-weight: 500; color: var(--text-dim);
+}
+.src-mark-lg {
+  width: 16px; height: 16px; border-radius: 4px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 700; color: white; letter-spacing: -0.02em;
+}
+.card-time { font-size: 11px; color: var(--text-mute); font-variant-numeric: tabular-nums; }
+.card-sentiment { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 500; }
+.s-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+.s-pos { background: var(--pos); }
+.s-neg { background: var(--neg); }
+.s-neu { background: var(--neu); }
+
+.card-body { padding: 0 14px 14px; }
+.card-title {
+  font-size: 13.5px; font-weight: 600; line-height: 1.45; letter-spacing: -0.005em;
+  margin-bottom: 6px;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.card-text {
+  font-size: 12.5px; color: var(--text-dim); line-height: 1.55;
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+}
+.card-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; border-top: 1px solid var(--border);
+  font-size: 11px; color: var(--text-mute); font-variant-numeric: tabular-nums;
+}
+.card-foot .stats { display: flex; gap: 14px; align-items: center; }
+.card-foot .stats span { display: inline-flex; align-items: center; gap: 4px; }
+.card-foot .tag-label {
+  font-size: 10px; padding: 2px 6px; border-radius: 3px;
+  font-weight: 500;
+}
+.tag-churn { background: rgba(239,91,91,0.12); color: var(--neg); }
+.tag-competitor { background: rgba(245,158,11,0.12); color: var(--warn); }
+.tag-positive { background: rgba(62,199,140,0.12); color: var(--pos); }
+.tag-creator { background: rgba(139,92,246,0.12); color: var(--accent); }
+
+/* ── Action Plan ─────────────────────────── */
+.action-plan {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px; margin-bottom: 28px;
+}
+.action-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0; font-size: 12.5px;
+}
+.action-item + .action-item { border-top: 1px solid var(--border); }
+.action-check {
+  width: 18px; height: 18px; border-radius: 4px;
+  border: 1.5px solid var(--border-strong); background: transparent;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: transparent; flex-shrink: 0; transition: var(--transition);
+}
+.action-check.done { background: var(--pos); border-color: var(--pos); color: white; }
+.action-check:hover { border-color: var(--accent); }
+.action-dept {
+  font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 3px;
+  background: var(--hover); color: var(--text-dim); flex-shrink: 0;
+}
+.action-text { flex: 1; color: var(--text-dim); }
+.action-text.done-text { text-decoration: line-through; opacity: 0.5; }
+.action-status { font-size: 10.5px; font-weight: 500; }
+.status-progress { color: var(--warn); }
+.status-pending { color: var(--text-mute); }
+.status-done { color: var(--pos); }
+
+/* ── Right Sidebar ───────────────────────── */
+.r-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 9px; padding: 14px; margin-bottom: 14px;
+}
+.r-card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.r-card-title {
+  font-size: 11px; font-weight: 600; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.r-card-meta { font-size: 10.5px; color: var(--text-mute); font-variant-numeric: tabular-nums; }
+
+.alert {
+  display: flex; gap: 10px; padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+.alert:first-of-type { border-top: none; padding-top: 0; }
+.alert-mark { width: 4px; flex-shrink: 0; border-radius: 2px; background: var(--neg); }
+.alert.warn .alert-mark { background: var(--neu); }
+.alert.info .alert-mark { background: var(--accent); }
+.alert-body { flex: 1; min-width: 0; }
+.alert-title { font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+.alert-desc {
+  font-size: 11.5px; color: var(--text-dim); line-height: 1.45;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.alert-time { font-size: 10.5px; color: var(--text-mute); margin-top: 4px; font-variant-numeric: tabular-nums; }
+
+.filter-rule {
+  font-size: 11px; padding: 8px 0;
+  border-top: 1px solid var(--border);
+  color: var(--text-dim); line-height: 1.5;
+}
+.filter-rule:first-of-type { border-top: none; padding-top: 0; }
+.filter-rule .rule-label { font-weight: 600; color: var(--text); font-size: 10.5px; margin-bottom: 2px; }
+.filter-rule code {
+  font-family: ui-monospace, monospace; font-size: 10.5px;
+  background: var(--hover); padding: 1px 4px; border-radius: 3px;
+  color: var(--accent);
+}
+
+.proc {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 0; font-size: 12px;
+}
+.proc + .proc { border-top: 1px solid var(--border); }
+.proc-name { color: var(--text-dim); }
+.proc-name .check {
+  display: inline-block; width: 5px; height: 5px;
+  border-radius: 50%; background: var(--pos);
+  margin-right: 7px; vertical-align: middle;
+}
+.proc.warn .proc-name .check { background: var(--neu); }
+.proc.idle .proc-name .check { background: var(--text-mute); }
+.proc-rate { font-size: 11px; color: var(--text-mute); font-variant-numeric: tabular-nums; }
+
+/* ── Spark chart ─────────────────────────── */
+.spark { display: flex; align-items: flex-end; gap: 2px; height: 44px; }
+.spark .bar { flex: 1; min-height: 3px; border-radius: 1.5px; opacity: 0.4; }
+.spark .bar:nth-last-child(-n+3) { opacity: 0.85; }
+.spark .bar:last-child { opacity: 1; }
+
+</style>
+</head>
+<body>
+
+<!-- ── Top Bar ───────────────────────────── -->
+<header class="topbar">
+  <div class="topbar-left">
+    <a class="brand" href="#"><span class="brand-mark"></span>livere</a>
+    <div class="topbar-divider"></div>
+    <div class="ws-switch">
+      <span class="ws-mark">EC</span>
+      <span class="ws-name">Eden Chat</span>
+      <span class="ws-chev">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4">
+          <polyline points="3 4 5 6 7 4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="search">
+      <span class="ic"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="5.5" cy="5.5" r="3.8"/><line x1="8.4" y1="8.4" x2="11" y2="11" stroke-linecap="round"/></svg></span>
+      <input type="text" placeholder="키워드 검색…">
+      <span class="kbd">⌘K</span>
+    </div>
+    <button class="icon-btn" title="알림">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.4">
+        <path d="M3.5 6.2C3.5 4.2 5 2.5 7.5 2.5C10 2.5 11.5 4.2 11.5 6.2V10L12.5 11.5V12H2.5V11.5L3.5 10V6.2Z" stroke-linejoin="round"/>
+        <path d="M6 13H9" stroke-linecap="round"/>
+      </svg>
+      <span class="dot"></span>
+    </button>
+    <button class="icon-btn" id="themeBtn" title="테마">
+      <svg id="moonIcon" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4">
+        <path d="M11.5 8.3C11 9.6 9.6 10.8 7.7 10.8C5.1 10.8 3 8.7 3 6.1C3 4.2 4.2 2.8 5.5 2.3C5.1 3.5 5.5 5.2 6.7 6.4C7.9 7.6 9.6 8 10.8 7.6C10.8 7.6 11.5 8 11.5 8.3Z" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <button class="avatar-btn" title="Admin">AD</button>
+  </div>
+</header>
+
+<!-- ── Layout ────────────────────────────── -->
+<div class="layout">
+
+  <!-- ── Sidebar Left ─────────────────── -->
+  <aside class="sidebar-l">
+    <div class="ws-status">
+      <div class="ws-status-row">
+        <span class="key">상태</span>
+        <span class="live-tag">수집 중</span>
+      </div>
+      <div class="ws-status-row">
+        <span class="key">오늘 수집</span>
+        <span class="val">1,847</span>
+      </div>
+      <div class="ws-status-row">
+        <span class="key">Data Purity</span>
+        <span class="val" style="color:var(--purity);">67.3%</span>
+      </div>
+      <div class="ws-status-row">
+        <span class="key">마지막 동기화</span>
+        <span class="val" style="color:var(--text-dim);font-weight:400;">8초 전</span>
+      </div>
+    </div>
+
+    <div class="side-section">
+      <div class="side-label">수집 채널<button class="add" title="추가">+</button></div>
+      <div class="side-item active">
+        <span class="src-mark" style="background:var(--arca);">A</span>
+        <span class="label">아카라이브 (본진)</span>
+        <span class="live"></span>
+      </div>
+      <div class="side-item">
+        <span class="src-mark" style="background:var(--dcinside);">DC</span>
+        <span class="label">DC 바베챗 갤러리</span>
+        <span class="meta">312</span>
+      </div>
+      <div class="side-item">
+        <span class="src-mark" style="background:var(--naver-cafe);">N</span>
+        <span class="label">네이버 카페</span>
+        <span class="meta">156</span>
+      </div>
+      <div class="side-item">
+        <span class="src-mark" style="background:var(--twitter);color:#000;">X</span>
+        <span class="label">X / Twitter</span>
+        <span class="meta">89</span>
+      </div>
+      <div class="side-item" style="opacity:0.55;">
+        <span class="src-mark" style="background:var(--appstore);">AS</span>
+        <span class="label">앱스토어 리뷰</span>
+        <span class="paused">일시정지</span>
+      </div>
+    </div>
+
+    <div class="side-section">
+      <div class="side-label">이슈 클러스터<button class="add">+</button></div>
+      <div class="side-item active">
+        <span style="width:14px;color:var(--pos);text-align:center;font-size:10px;">●</span>
+        <span class="label">운영 및 생태계</span>
+        <span class="meta">기회</span>
+      </div>
+      <div class="side-item">
+        <span style="width:14px;color:var(--neg);text-align:center;font-size:10px;">●</span>
+        <span class="label">AI 퀄리티 및 시스템</span>
+        <span class="meta">위협</span>
+      </div>
+    </div>
+
+    <div class="side-section">
+      <div class="side-label">페르소나</div>
+      <div class="side-item">
+        <span style="width:14px;text-align:center;">🎨</span>
+        <span class="label">세계관 창조자</span>
+        <span class="meta">Creator</span>
+      </div>
+      <div class="side-item">
+        <span style="width:14px;text-align:center;">🎭</span>
+        <span class="label">과몰입 롤플레이어</span>
+        <span class="meta">RP</span>
+      </div>
+    </div>
+
+    <div class="side-section">
+      <div class="side-label">저장된 뷰</div>
+      <div class="side-item">
+        <span style="width:14px;color:var(--text-mute);">★</span>
+        <span class="label">이탈 위기 모니터</span>
+        <span class="meta">4</span>
+      </div>
+      <div class="side-item">
+        <span style="width:14px;color:var(--text-mute);">★</span>
+        <span class="label">경쟁사 언급 추적</span>
+        <span class="meta">2</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main Content ─────────────────── -->
+  <main class="main">
+
+    <!-- Page Header -->
+    <header class="page-head">
+      <div>
+        <div class="page-eyebrow">실시간 모니터링</div>
+        <h1 class="page-title">Eden Chat</h1>
+        <div class="page-meta">
+          <span class="tnum">1,847</span>건 언급
+          <span class="sep">·</span>최근 24시간
+          <span class="sep">·</span><span class="live-mini">실시간</span>
+        </div>
+      </div>
+      <div class="page-actions">
+        <button class="btn">뷰 저장</button>
+        <button class="btn">내보내기</button>
+        <button class="btn btn-primary">알림 만들기</button>
+      </div>
+    </header>
+
+    <!-- ── KPI Section ── -->
+    <section>
+      <div class="section-head">
+        <h2>핵심 지표 (KPI)</h2>
+        <span class="h-meta">데일리 트래킹</span>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-status red"></div>
+          <div class="kpi-label">Churn Risk Index (이탈 지수)</div>
+          <div class="kpi-value">11.2<span class="unit">%</span></div>
+          <div class="kpi-threshold">정상 &lt;5% · ⚠ 현재 10% 초과 (RED)</div>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="width:85%;background:var(--neg);"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-status yellow"></div>
+          <div class="kpi-label">Competitor Mention Rate</div>
+          <div class="kpi-value">22.8<span class="unit">%</span></div>
+          <div class="kpi-threshold">정상 &lt;15% · ⚠ 25% 근접 주의</div>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="width:68%;background:var(--warn);"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-status green"></div>
+          <div class="kpi-label">Price Satisfaction</div>
+          <div class="kpi-value">82.4<span class="unit">%</span></div>
+          <div class="kpi-threshold">정상 ≥80% · ✅ 양호</div>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="width:82%;background:var(--pos);"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-status blue"></div>
+          <div class="kpi-label">Data Purity Index</div>
+          <div class="kpi-value">67.3<span class="unit">%</span></div>
+          <div class="kpi-threshold">정상 ≥60% · ✅ 양호 (필터링 유효)</div>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="width:67%;background:var(--purity);"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filter Bar -->
+    <div class="filters">
+      <div class="seg">
+        <button>1h</button>
+        <button class="active">24h</button>
+        <button>7d</button>
+        <button>30d</button>
+      </div>
+      <button class="chip">모든 채널 <span class="chev"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4"><polyline points="3 4 5 6 7 4" stroke-linecap="round"/></svg></span></button>
+      <button class="chip">모든 감성 <span class="chev"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4"><polyline points="3 4 5 6 7 4" stroke-linecap="round"/></svg></span></button>
+      <button class="chip">클러스터 전체 <span class="chev"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4"><polyline points="3 4 5 6 7 4" stroke-linecap="round"/></svg></span></button>
+      <div class="filter-spacer"></div>
+      <button class="chip">최신순 <span class="chev"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4"><polyline points="3 4 5 6 7 4" stroke-linecap="round"/></svg></span></button>
+    </div>
+
+    <!-- ── Cluster Section ── -->
+    <section>
+      <div class="section-head">
+        <h2>이슈 클러스터</h2>
+        <button class="link">상세 분석 →</button>
+      </div>
+
+      <div class="clusters">
+        <!-- Cluster A -->
+        <div class="cluster">
+          <div class="cluster-head">
+            <span class="cluster-dot" style="background:var(--pos);"></span>
+            <span class="cluster-title">Cluster A: 운영 및 생태계</span>
+            <span class="cluster-sub">기회 요인</span>
+          </div>
+          <div class="cluster-tags">
+            <span class="ctag cool">종량제 <span class="freq">423</span></span>
+            <span class="ctag cool">덴사장 <span class="freq">287</span></span>
+            <span class="ctag">소통 <span class="freq">198</span></span>
+            <span class="ctag cool">갓패치 <span class="freq">145</span></span>
+            <span class="ctag">에셋 <span class="freq">112</span></span>
+            <span class="ctag">찐빵버전 <span class="freq">89</span></span>
+          </div>
+          <div class="cluster-gauge">
+            <div class="seg-pos" style="flex:62;"></div>
+            <div class="seg-neu" style="flex:25;"></div>
+            <div class="seg-neg" style="flex:13;"></div>
+          </div>
+          <div class="gauge-legend">
+            <span><span class="dot" style="background:var(--pos);"></span>긍정 62%</span>
+            <span><span class="dot" style="background:var(--neu);"></span>중립 25%</span>
+            <span><span class="dot" style="background:var(--neg);"></span>부정 13%</span>
+          </div>
+        </div>
+
+        <!-- Cluster B -->
+        <div class="cluster">
+          <div class="cluster-head">
+            <span class="cluster-dot" style="background:var(--neg);"></span>
+            <span class="cluster-title">Cluster B: AI 퀄리티 및 시스템</span>
+            <span class="cluster-sub">위협 요인</span>
+          </div>
+          <div class="cluster-tags">
+            <span class="ctag hot">캐붕 <span class="freq">567</span></span>
+            <span class="ctag hot">능지 처참 <span class="freq">412</span></span>
+            <span class="ctag hot">검열 <span class="freq">389</span></span>
+            <span class="ctag rising">필터링 <span class="freq">234</span></span>
+            <span class="ctag rising">UI 너프 <span class="freq">178</span></span>
+            <span class="ctag">롤백 <span class="freq">145</span></span>
+          </div>
+          <div class="cluster-gauge">
+            <div class="seg-pos" style="flex:12;"></div>
+            <div class="seg-neu" style="flex:18;"></div>
+            <div class="seg-neg" style="flex:70;"></div>
+          </div>
+          <div class="gauge-legend">
+            <span><span class="dot" style="background:var(--pos);"></span>긍정 12%</span>
+            <span><span class="dot" style="background:var(--neu);"></span>중립 18%</span>
+            <span><span class="dot" style="background:var(--neg);"></span>부정 70%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Persona Section ── -->
+    <section>
+      <div class="section-head">
+        <h2>페르소나 모니터링</h2>
+        <span class="h-meta">인게이지먼트 분리 추적</span>
+      </div>
+
+      <div class="personas">
+        <div class="persona">
+          <div class="persona-head">
+            <div class="persona-icon" style="background:rgba(139,92,246,0.15);">🎨</div>
+            <div class="persona-info">
+              <div class="persona-name">세계관 창조자 (Creator)</div>
+              <div class="persona-desc">네이버 카페 중심 · 에셋 제작/공유</div>
+            </div>
+          </div>
+          <div class="persona-stats">
+            <div class="persona-stat"><div class="persona-stat-val" style="color:var(--accent);">156</div><div class="persona-stat-label">활성 글</div></div>
+            <div class="persona-stat"><div class="persona-stat-val" style="color:var(--pos);">72%</div><div class="persona-stat-label">긍정률</div></div>
+            <div class="persona-stat"><div class="persona-stat-val" style="color:var(--warn);">↓3%</div><div class="persona-stat-label">주간 변동</div></div>
+          </div>
+          <div class="mini-bar-list">
+            <div class="mini-bar-row"><span class="name">에셋</span><div class="track"><div class="fill" style="width:72%;background:var(--accent);"></div></div><span class="val">72</span></div>
+            <div class="mini-bar-row"><span class="name">커스텀</span><div class="track"><div class="fill" style="width:58%;background:var(--accent);"></div></div><span class="val">58</span></div>
+            <div class="mini-bar-row"><span class="name">설정 붕괴</span><div class="track"><div class="fill" style="width:34%;background:var(--neg);"></div></div><span class="val">34</span></div>
+            <div class="mini-bar-row"><span class="name">노출도</span><div class="track"><div class="fill" style="width:22%;background:var(--neu);"></div></div><span class="val">22</span></div>
+          </div>
+        </div>
+
+        <div class="persona">
+          <div class="persona-head">
+            <div class="persona-icon" style="background:rgba(239,91,91,0.15);">🎭</div>
+            <div class="persona-info">
+              <div class="persona-name">과몰입 롤플레이어 (Roleplayer)</div>
+              <div class="persona-desc">디시/아카 중심 · 종량제 과금 주도층</div>
+            </div>
+          </div>
+          <div class="persona-stats">
+            <div class="persona-stat"><div class="persona-stat-val" style="color:var(--neg);">891</div><div class="persona-stat-label">활성 글</div></div>
+            <div class="persona-stat"><div class="persona-stat-val" style="color:var(--neg);">38%</div><div class="persona-stat-label">긍정률</div></div>
+            <div class="persona-stat"><div class="persona-stat-val" style="color:var(--neg);">↓12%</div><div class="persona-stat-label">주간 변동</div></div>
+          </div>
+          <div class="mini-bar-list">
+            <div class="mini-bar-row"><span class="name">능지</span><div class="track"><div class="fill" style="width:85%;background:var(--neg);"></div></div><span class="val">412</span></div>
+            <div class="mini-bar-row"><span class="name">대화 흐름</span><div class="track"><div class="fill" style="width:62%;background:var(--warn);"></div></div><span class="val">289</span></div>
+            <div class="mini-bar-row"><span class="name">검열 우회</span><div class="track"><div class="fill" style="width:48%;background:var(--neg);"></div></div><span class="val">178</span></div>
+            <div class="mini-bar-row"><span class="name">바베/엘린</span><div class="track"><div class="fill" style="width:42%;background:var(--warn);"></div></div><span class="val">156</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- New banner -->
+    <div class="new-bar">새 버즈 23건이 수집되었습니다 — 새로고침</div>
+
+    <!-- ── Stream Section ── -->
+    <section>
+      <div class="section-head">
+        <h2>스트림</h2>
+        <span class="h-meta">1,847건 · 페이지 1 / 92</span>
+      </div>
+
+      <div class="feed">
+
+        <!-- Card: 아카라이브 이탈 -->
+        <article class="card">
+          <div class="card-actions">
+            <button class="card-act" title="할당"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="4.5" r="2"/><path d="M3 11C3 9 4.5 7.5 6.5 7.5C8.5 7.5 10 9 10 11"/></svg></button>
+            <button class="card-act" title="저장"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2.5H10V11L6.5 8.5L3 11V2.5Z"/></svg></button>
+          </div>
+          <div class="card-head">
+            <span class="card-source">
+              <span class="src-mark-lg" style="background:var(--arca);">A</span>
+              아카라이브
+              <span class="card-sentiment" style="margin-left:6px;"><span class="s-dot s-neg"></span>부정</span>
+            </span>
+            <span class="card-time">12분 전</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">에덴 업데이트 이후 캐붕 심해져서 진짜 꼬접 고민 중</div>
+            <div class="card-text">어제 업뎃 이후로 캐릭터가 갑자기 문맥을 못 읽음. 능지가 처참해졌는데 이거 실화냐? 바베로 갈아탈까 진지하게 고민 중임…</div>
+          </div>
+          <div class="card-foot">
+            <div class="stats"><span>댓글 89</span><span>추천 234</span></div>
+            <span class="tag-label tag-churn">이탈 위험</span>
+          </div>
+        </article>
+
+        <!-- Card: DC 바베챗 경쟁 -->
+        <article class="card">
+          <div class="card-actions">
+            <button class="card-act"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="4.5" r="2"/><path d="M3 11C3 9 4.5 7.5 6.5 7.5C8.5 7.5 10 9 10 11"/></svg></button>
+            <button class="card-act"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2.5H10V11L6.5 8.5L3 11V2.5Z"/></svg></button>
+          </div>
+          <div class="card-head">
+            <span class="card-source">
+              <span class="src-mark-lg" style="background:var(--dcinside);">DC</span>
+              바베챗 갤러리
+              <span class="card-sentiment" style="margin-left:6px;"><span class="s-dot s-neg"></span></span>
+            </span>
+            <span class="card-time">28분 전</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">에덴에서 바베로 넘어온 사람 있음? 차이점 정리해봄</div>
+            <div class="card-text">에덴 1년 쓰다가 바베로 옮김. 능지는 바베가 확실히 나은데 에덴 종량제가 아쉬움. 엘린도 써봤는데 걔는 검열이…</div>
+          </div>
+          <div class="card-foot">
+            <div class="stats"><span>댓글 156</span><span>추천 67</span></div>
+            <span class="tag-label tag-competitor">경쟁사 비교</span>
+          </div>
+        </article>
+
+        <!-- Card: 아카 긍정 -->
+        <article class="card">
+          <div class="card-actions">
+            <button class="card-act"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="4.5" r="2"/><path d="M3 11C3 9 4.5 7.5 6.5 7.5C8.5 7.5 10 9 10 11"/></svg></button>
+            <button class="card-act"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2.5H10V11L6.5 8.5L3 11V2.5Z"/></svg></button>
+          </div>
+          <div class="card-head">
+            <span class="card-source">
+              <span class="src-mark-lg" style="background:var(--arca);">A</span>
+              아카라이브
+              <span class="card-sentiment" style="margin-left:6px;"><span class="s-dot s-pos"></span>긍정</span>
+            </span>
+            <span class="card-time">45분 전</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">종량제 진짜 혜자다… 바베 구독제랑 비교하면 가성비 미침</div>
+            <div class="card-text">바베 월 15,000원 내고 쓰는데 에덴은 종량제로 한 달에 8,000원도 안 씀. 덴사장 소통도 잘 하고 갓패치 계속 나오는 거 보면 아직은 에덴이 답</div>
+          </div>
+          <div class="card-foot">
+            <div class="stats"><span>댓글 45</span><span>추천 312</span></div>
+            <span class="tag-label tag-positive">가성비 옹호</span>
+          </div>
+        </article>
+
+        <!-- Card: 네이버 카페 크리에이터 -->
+        <article class="card">
+          <div class="card-actions">
+            <button class="card-act"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="4.5" r="2"/><path d="M3 11C3 9 4.5 7.5 6.5 7.5C8.5 7.5 10 9 10 11"/></svg></button>
+            <button class="card-act"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2.5H10V11L6.5 8.5L3 11V2.5Z"/></svg></button>
+          </div>
+          <div class="card-head">
+            <span class="card-source">
+              <span class="src-mark-lg" style="background:var(--naver-cafe);">N</span>
+              네이버 카페
+              <span class="card-sentiment" style="margin-left:6px;"><span class="s-dot s-pos"></span></span>
+            </span>
+            <span class="card-time">1시간 전</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">[에셋 공유] 판타지 세계관 캐릭터 에셋 10종 배포합니다</div>
+            <div class="card-text">요즘 만든 판타지 세계관 에셋이에요! 자유롭게 커스텀해서 쓰세요. 찐빵버전/인간버전 둘 다 만들었고 설정집도 같이 올립니다.</div>
+          </div>
+          <div class="card-foot">
+            <div class="stats"><span>댓글 34</span><span>추천 189</span></div>
+            <span class="tag-label tag-creator">크리에이터</span>
+          </div>
+        </article>
+
+        <!-- Card: 검열 불만 -->
+        <article class="card">
+          <div class="card-actions">
+            <button class="card-act"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="4.5" r="2"/><path d="M3 11C3 9 4.5 7.5 6.5 7.5C8.5 7.5 10 9 10 11"/></svg></button>
+            <button class="card-act"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2.5H10V11L6.5 8.5L3 11V2.5Z"/></svg></button>
+          </div>
+          <div class="card-head">
+            <span class="card-source">
+              <span class="src-mark-lg" style="background:var(--arca);">A</span>
+              아카라이브
+              <span class="card-sentiment" style="margin-left:6px;"><span class="s-dot s-neg"></span></span>
+            </span>
+            <span class="card-time">2시간 전</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">필터링 또 강화됨? 대화 흐름 끊기는 거 진짜 짜증남</div>
+            <div class="card-text">오늘 갑자기 필터링이 빡세져서 일반 대화도 잘림. UI도 너프된 느낌이고 롤백해줬으면… 검열 우회법 아시는 분?</div>
+          </div>
+          <div class="card-foot">
+            <div class="stats"><span>댓글 123</span><span>추천 178</span></div>
+            <span class="tag-label tag-churn">위협</span>
+          </div>
+        </article>
+
+        <!-- Card: 덴카데미 논란 -->
+        <article class="card">
+          <div class="card-actions">
+            <button class="card-act"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="4.5" r="2"/><path d="M3 11C3 9 4.5 7.5 6.5 7.5C8.5 7.5 10 9 10 11"/></svg></button>
+            <button class="card-act"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2.5H10V11L6.5 8.5L3 11V2.5Z"/></svg></button>
+          </div>
+          <div class="card-head">
+            <span class="card-source">
+              <span class="src-mark-lg" style="background:var(--arca);">A</span>
+              아카라이브
+              <span class="card-sentiment" style="margin-left:6px;"><span class="s-dot s-neu"></span>중립</span>
+            </span>
+            <span class="card-time">3시간 전</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">덴카데미 친목 논란 정리 — 소외감 느끼는 사람 많은 듯</div>
+            <div class="card-text">덴카데미가 좋은 취지인 건 알겠는데, 일부 유저들이 소외감 느낀다는 의견이 계속 나옴. 투명성 확보가 필요하다는 의견</div>
+          </div>
+          <div class="card-foot">
+            <div class="stats"><span>댓글 67</span><span>추천 98</span></div>
+          </div>
+        </article>
+
+        <!-- Card: X/Twitter -->
+        <article class="card">
+          <div class="card-actions">
+            <button class="card-act"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="4.5" r="2"/><path d="M3 11C3 9 4.5 7.5 6.5 7.5C8.5 7.5 10 9 10 11"/></svg></button>
+            <button class="card-act"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2.5H10V11L6.5 8.5L3 11V2.5Z"/></svg></button>
+          </div>
+          <div class="card-head">
+            <span class="card-source">
+              <span class="src-mark-lg" style="background:var(--twitter);color:#000;">X</span>
+              @ai_chat_review
+              <span class="card-sentiment" style="margin-left:6px;"><span class="s-dot s-neg"></span></span>
+            </span>
+            <span class="card-time">4시간 전</span>
+          </div>
+          <div class="card-body">
+            <div class="card-text">에덴챗 최근 업데이트 이후 능지가 확 떨어짐. AI 챗봇 중에서 제일 좋았는데 요즘 캐붕이 너무 심함 😢 #에덴챗 #AI챗봇</div>
+          </div>
+          <div class="card-foot">
+            <div class="stats"><span>리트윗 45</span><span>좋아요 123</span></div>
+            <span class="tag-label tag-churn">이탈 암시</span>
+          </div>
+        </article>
+
+        <!-- Card: 긍정 리뷰 -->
+        <article class="card">
+          <div class="card-actions">
+            <button class="card-act"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="4.5" r="2"/><path d="M3 11C3 9 4.5 7.5 6.5 7.5C8.5 7.5 10 9 10 11"/></svg></button>
+            <button class="card-act"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2.5H10V11L6.5 8.5L3 11V2.5Z"/></svg></button>
+          </div>
+          <div class="card-head">
+            <span class="card-source">
+              <span class="src-mark-lg" style="background:var(--naver-cafe);">N</span>
+              네이버 카페
+              <span class="card-sentiment" style="margin-left:6px;"><span class="s-dot s-pos"></span>긍정</span>
+            </span>
+            <span class="card-time">5시간 전</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">에덴챗으로 소설 쓰는 사람 모여라~ 세계관 공유</div>
+            <div class="card-text">에덴 캐릭터로 소설 쓰고 있는데 진짜 재밌어요. 에셋 만드는 재미도 있고 커뮤니티가 활발해서 좋아요. 미연시 좋아하는 분들 추천!</div>
+          </div>
+          <div class="card-foot">
+            <div class="stats"><span>댓글 23</span><span>추천 145</span></div>
+            <span class="tag-label tag-positive">생태계 활성</span>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ── Action Plan ── -->
+    <section>
+      <div class="section-head">
+        <h2>경영진 액션 플랜</h2>
+        <span class="h-meta">5개 항목 · 1 완료</span>
+      </div>
+
+      <div class="action-plan">
+        <div class="action-item">
+          <button class="action-check" onclick="this.classList.toggle('done');this.closest('.action-item').querySelector('.action-text').classList.toggle('done-text')">✓</button>
+          <span class="action-dept">Tech</span>
+          <span class="action-text">AI 컨텍스트 복구 및 필터링 완화 (능지/캐붕 해결)</span>
+          <span class="action-status status-progress">진행 중</span>
+        </div>
+        <div class="action-item">
+          <button class="action-check" onclick="this.classList.toggle('done');this.closest('.action-item').querySelector('.action-text').classList.toggle('done-text')">✓</button>
+          <span class="action-dept">UI/UX</span>
+          <span class="action-text">신규 UI 불만 해소 — '레거시 테마' 롤백 옵션 제공</span>
+          <span class="action-status status-pending">대기</span>
+        </div>
+        <div class="action-item">
+          <button class="action-check done" onclick="this.classList.toggle('done');this.closest('.action-item').querySelector('.action-text').classList.toggle('done-text')">✓</button>
+          <span class="action-dept">Biz</span>
+          <span class="action-text done-text">이탈 방어용 한시적 '종량제 크레딧 페이백' 프로모션 실행</span>
+          <span class="action-status status-done">완료</span>
+        </div>
+        <div class="action-item">
+          <button class="action-check" onclick="this.classList.toggle('done');this.closest('.action-item').querySelector('.action-text').classList.toggle('done-text')">✓</button>
+          <span class="action-dept">Eco</span>
+          <span class="action-text">크리에이터 '수익 쉐어' 시스템 및 덴카데미 투명성 확보</span>
+          <span class="action-status status-progress">진행 중</span>
+        </div>
+        <div class="action-item">
+          <button class="action-check" onclick="this.classList.toggle('done');this.closest('.action-item').querySelector('.action-text').classList.toggle('done-text')">✓</button>
+          <span class="action-dept">PR</span>
+          <span class="action-text">'에덴챗(Edenchat)' 브랜드명 통일 캠페인</span>
+          <span class="action-status status-pending">대기</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Sidebar Right ────────────────── -->
+  <aside class="sidebar-r">
+
+    <div class="r-card">
+      <div class="r-card-head">
+        <span class="r-card-title">실시간 알림</span>
+        <span class="r-card-meta">4 활성</span>
+      </div>
+      <div class="alert">
+        <div class="alert-mark"></div>
+        <div class="alert-body">
+          <div class="alert-title">Churn Risk 경보</div>
+          <div class="alert-desc">이탈 지수 11.2%로 RED 기준(10%) 초과. '꼬접', '접는다' 키워드 급증</div>
+          <div class="alert-time">12분 전</div>
+        </div>
+      </div>
+      <div class="alert warn">
+        <div class="alert-mark"></div>
+        <div class="alert-body">
+          <div class="alert-title">캐붕 VoC 급증</div>
+          <div class="alert-desc">업데이트 이후 '캐붕' 키워드 전일 대비 340% 증가</div>
+          <div class="alert-time">28분 전</div>
+        </div>
+      </div>
+      <div class="alert warn">
+        <div class="alert-mark"></div>
+        <div class="alert-body">
+          <div class="alert-title">경쟁사 비교 확산</div>
+          <div class="alert-desc">바베(Babe) 동시 언급 비율 22.8%로 경계 수준 접근</div>
+          <div class="alert-time">1시간 전</div>
+        </div>
+      </div>
+      <div class="alert info">
+        <div class="alert-mark"></div>
+        <div class="alert-body">
+          <div class="alert-title">크리에이터 활동 안정</div>
+          <div class="alert-desc">네이버 카페 에셋 공유 게시물 전주 대비 +12%</div>
+          <div class="alert-time">2시간 전</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="r-card">
+      <div class="r-card-head">
+        <span class="r-card-title">수집 쿼리 룰셋</span>
+        <span class="r-card-meta">필터 활성</span>
+      </div>
+      <div class="filter-rule">
+        <div class="rule-label">Target</div>
+        <code>에덴챗</code> OR <code>Edenchat</code>
+      </div>
+      <div class="filter-rule">
+        <div class="rule-label">Context</div>
+        <code>에덴</code> AND (<code>캐릭터</code> OR <code>AI</code> OR <code>채팅</code> OR <code>종량제</code> OR <code>미연시</code>)
+      </div>
+      <div class="filter-rule">
+        <div class="rule-label">Negative</div>
+        <code>동쪽</code> <code>종교</code> <code>성경</code> <code>가인</code> <code>아벨</code>
+      </div>
+    </div>
+
+    <div class="r-card">
+      <div class="r-card-head">
+        <span class="r-card-title">파이프라인</span>
+        <span class="r-card-meta">4 실행 중</span>
+      </div>
+      <div class="proc">
+        <span class="proc-name"><span class="check"></span>이탈 키워드 탐지</span>
+        <span class="proc-rate">189/min</span>
+      </div>
+      <div class="proc">
+        <span class="proc-name"><span class="check"></span>감성 분류</span>
+        <span class="proc-rate">156/min</span>
+      </div>
+      <div class="proc">
+        <span class="proc-name"><span class="check"></span>노이즈 필터링</span>
+        <span class="proc-rate">32.7% 제거</span>
+      </div>
+      <div class="proc warn">
+        <span class="proc-name"><span class="check"></span>경쟁사 동시언급</span>
+        <span class="proc-rate">4 trigger</span>
+      </div>
+      <div class="proc idle">
+        <span class="proc-name"><span class="check"></span>리포트 생성</span>
+        <span class="proc-rate">예약 06:00</span>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+<script>
+// Theme toggle
+const themeBtn = document.getElementById('themeBtn');
+const moonIcon = document.getElementById('moonIcon');
+let dark = true;
+const sunSvg = `<path d="M7 1.5V2.5M7 11.5V12.5M2.5 7H1.5M12.5 7H11.5M3.3 3.3L4 4M10 10L10.7 10.7M3.3 10.7L4 10M10 4L10.7 3.3" stroke-linecap="round"/><circle cx="7" cy="7" r="2.5"/>`;
+const moonSvg = `<path d="M11.5 8.3C11 9.6 9.6 10.8 7.7 10.8C5.1 10.8 3 8.7 3 6.1C3 4.2 4.2 2.8 5.5 2.3C5.1 3.5 5.5 5.2 6.7 6.4C7.9 7.6 9.6 8 10.8 7.6C10.8 7.6 11.5 8 11.5 8.3Z" stroke-linejoin="round"/>`;
+themeBtn.addEventListener('click', () => {
+  dark = !dark;
+  document.documentElement.setAttribute('data-theme', dark ? '' : 'light');
+  moonIcon.innerHTML = dark ? moonSvg : sunSvg;
+});
+
+// Filter segment toggles
+document.querySelectorAll('.seg').forEach(seg => {
+  seg.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      seg.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+});
+
+// New banner dismiss
+document.querySelector('.new-bar').addEventListener('click', e => {
+  e.currentTarget.style.opacity = '0';
+  setTimeout(() => e.currentTarget.style.display = 'none', 200);
+});
+
+// Sidebar item click
+document.querySelectorAll('.side-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const section = item.closest('.side-section');
+    section.querySelectorAll('.side-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+
+// Card hover effect
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('click', (e) => {
+    if (e.target.closest('.card-act')) return;
+    card.style.outline = '2px solid var(--accent)';
+    setTimeout(() => card.style.outline = 'none', 1500);
+  });
+});
+
+// KPI hover
+document.querySelectorAll('.kpi').forEach(kpi => {
+  kpi.addEventListener('mouseenter', () => {
+    kpi.style.borderColor = 'var(--accent)';
+  });
+  kpi.addEventListener('mouseleave', () => {
+    kpi.style.borderColor = '';
+  });
+});
+
+// Chip dropdown simulation
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    chip.style.borderColor = 'var(--accent)';
+    setTimeout(() => chip.style.borderColor = '', 800);
+  });
+});
+
+// Search focus
+const searchInput = document.querySelector('.search input');
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    searchInput.focus();
+  }
+});
+</script>
+</body>
+</html>
