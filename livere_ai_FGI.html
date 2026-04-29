@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>라이브리AI 라벨링</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
+    background: #f4f5f7;
+    color: #1a1a2e;
+    min-height: 100vh;
+  }
+
+  /* ── 헤더 ── */
+  .header {
+    background: #1c1c2e;
+    color: #fff;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header h1 { font-size: 15px; font-weight: 700; }
+  .badge {
+    background: #0f9d58;
+    color: #fff;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  /* ── 진행바 ── */
+  .progress-wrap { background: #ddd; height: 4px; }
+  .progress-bar  { height: 4px; background: #0f9d58; transition: width .4s; }
+
+  /* ── 컨테이너 ── */
+  .container { max-width: 600px; margin: 0 auto; padding: 20px 16px; }
+
+  /* ── 통계 바 ── */
+  .stats-bar {
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #555;
+  }
+  .stats-bar strong { color: #1a1a2e; }
+
+  /* ── 카드 ── */
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    margin-bottom: 16px;
+  }
+
+  /* ── 메타 태그 ── */
+  .meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .tag {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .tag-crw     { background: #f1f3f4; color: #333; }
+  .tag-keyword { background: #e8f0fe; color: #1967d2; }
+  .tag-channel { background: #fce8b2; color: #b06000; }
+  .tag-date    { background: #f1f3f4; color: #555; }
+
+  /* ── 제목 ── */
+  .title {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 6px;
+  }
+  .title a { color: #1a1a2e; text-decoration: none; }
+  .title a:hover { text-decoration: underline; }
+
+  /* ── 수치 정보 ── */
+  .post-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 16px;
+  }
+  .post-meta span { display: flex; align-items: center; gap: 3px; }
+
+  /* ── 구분선 ── */
+  .divider {
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    margin: 16px 0;
+  }
+
+  /* ── 스텝 라벨 ── */
+  .step-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 10px;
+  }
+
+  /* ── 노이즈 버튼 ── */
+  .btn-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .btn {
+    padding: 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    background: #fff;
+    transition: all .15s;
+    text-align: center;
+  }
+  .btn:hover            { border-color: #aaa; }
+  .btn.active-ok        { border-color: #0f9d58; background: #e6f4ea; color: #0f9d58; }
+  .btn.active-noise     { border-color: #d93025; background: #fce8e6; color: #d93025; }
+
+  /* ── 노이즈 사유 ── */
+  .reason-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 12px;
+    display: none;
+    background: #fff;
+  }
+  .reason-select.show { display: block; }
+
+  /* ── 감성 점수 ── */
+  .score-wrap { margin-bottom: 16px; }
+  .score-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .score-btn {
+    flex: 1;
+    padding: 12px 4px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    background: #fff;
+    text-align: center;
+    transition: all .15s;
+  }
+  .score-btn .emoji { font-size: 18px; display: block; margin-bottom: 4px; }
+  .score-btn .num   { font-size: 12px; color: #888; }
+  .score-btn:hover  { border-color: #aaa; }
+  .score-btn.selected { border-color: #1967d2; background: #e8f0fe; }
+  .score-btn.selected .num { color: #1967d2; }
+
+  .score-desc {
+    text-align: center;
+    font-size: 12px;
+    color: #555;
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    min-height: 34px;
+    font-weight: 600;
+  }
+
+  /* ── 제출 버튼 ── */
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: #1c1c2e;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity .15s;
+    margin-top: 4px;
+  }
+  .submit-btn:disabled { opacity: .4; cursor: default; }
+  .submit-btn:hover:not(:disabled) { opacity: .85; }
+
+  /* ── 건너뛰기 ── */
+  .skip-btn {
+    width: 100%;
+    padding: 10px;
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 13px;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  .skip-btn:hover { color: #666; }
+
+  /* ── 완료 / 로딩 ── */
+  .done-card {
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .done-card .icon { font-size: 56px; margin-bottom: 16px; }
+  .done-card h2    { font-size: 22px; margin-bottom: 8px; }
+  .done-card p     { color: #888; font-size: 14px; }
+
+  .loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: #888;
+    font-size: 14px;
+  }
+
+  /* ── 반응형 ── */
+  @media (max-width: 400px) {
+    .score-btn .emoji { font-size: 15px; }
+    .score-btn { padding: 10px 2px; }
+    .title { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📊 라이브리AI 라벨링</h1>
+  <span class="badge" id="badge">로딩 중</span>
+</div>
+<div class="progress-wrap">
+  <div class="progress-bar" id="progressBar" style="width:0%"></div>
+</div>
+
+<div class="container">
+  <div id="app"><div class="loading">⏳ 데이터 불러오는 중...</div></div>
+</div>
+
+<script>
+// ── 상태 ─────────────────────────────────────
+let posts   = [];
+let current = 0;
+let stats   = { total: 0, labeled: 0 };
+let state   = { isNoise: null, noiseReason: "", score: null };
+
+// ── 노이즈 사유 ──────────────────────────────
+const NOISE_REASONS = [
+  "동음이의어 (덴마크·하와이 등)",
+  "무관한 주제",
+  "광고 / 스팸",
+  "기타",
+];
+
+// ── 감성 점수 정의 ────────────────────────────
+const SCORE_EMOJI = ["😡","😞","😕","😐","🙂","😄"];
+const SCORE_DESC  = [
+  "0점 — 매우 부정 (위기·욕설·환불 요구)",
+  "1점 — 부정 (불만·실망·비판)",
+  "2점 — 약한 부정 (아쉬움·불편)",
+  "3점 — 중립 (단순 정보·질문)",
+  "4점 — 약한 긍정 (만족·추천)",
+  "5점 — 매우 긍정 (칭찬·극호평)",
+];
+
+// ── 초기화 ───────────────────────────────────
+function init() {
+  google.script.run
+    .withSuccessHandler(s => { stats = s; updateProgress(); })
+    .getStats();
+
+  google.script.run
+    .withSuccessHandler(onPostsLoaded)
+    .withFailureHandler(err => {
+      document.getElementById("app").innerHTML =
+        `<div class="card"><p style="color:red;font-size:14px;">❌ 오류: ${err.message}</p></div>`;
+    })
+    .getPendingPosts();
+}
+
+function onPostsLoaded(result) {
+  if (result.error) {
+    document.getElementById("app").innerHTML =
+      `<div class="card"><p style="color:red;font-size:14px;">❌ ${result.error}</p></div>`;
+    return;
+  }
+  posts   = result.posts || [];
+  current = 0;
+  render();
+}
+
+// ── 진행바 ───────────────────────────────────
+function updateProgress() {
+  const total   = stats.total   || 0;
+  const labeled = stats.labeled || 0;
+  const done    = labeled + current;
+  const pct     = total > 0 ? Math.round(done / total * 100) : 0;
+
+  document.getElementById("progressBar").style.width = pct + "%";
+  document.getElementById("badge").textContent =
+    total > 0 ? `${done}/${total}` : "대기 중";
+}
+
+// ── 렌더 ─────────────────────────────────────
+function render() {
+  const app = document.getElementById("app");
+
+  if (posts.length === 0 || current >= posts.length) {
+    app.innerHTML = `
+      <div class="card done-card">
+        <div class="icon">🎉</div>
+        <h2>라벨링 완료!</h2>
+        <p>모든 게시글을 검토했어요.<br>새 데이터가 업로드되면 다시 접속해주세요.</p>
+      </div>`;
+    return;
+  }
+
+  const post   = posts[current];
+  const remain = posts.length - current;
+  updateProgress();
+
+  // 조회수·추천 표시 (값 있을 때만)
+  let metaHtml = "";
+  if (post.like)    metaHtml += `<span>👍 ${post.like}</span>`;
+  if (post.view)    metaHtml += `<span>👁 ${post.view}</span>`;
+  if (post.author)  metaHtml += `<span>✍️ ${post.author}</span>`;
+  if (post.comment) metaHtml += `<span>💬 ${post.comment}</span>`;
+
+  app.innerHTML = `
+    <div class="stats-bar">
+      <span>남은 게시글 <strong>${remain}개</strong></span>
+      <span>진행률 <strong>${Math.round((stats.labeled + current) / (stats.total || 1) * 100)}%</strong></span>
+    </div>
+
+    <div class="card">
+
+      <!-- 메타 -->
+      <div class="meta">
+        <span class="tag tag-crw">${post.crwId}</span>
+        <span class="tag tag-keyword">#${post.keyword}</span>
+        <span class="tag tag-channel">${post.channel}</span>
+        <span class="tag tag-date">${String(post.date).substring(0, 16)}</span>
+      </div>
+
+      <!-- 제목 -->
+      <div class="title">
+        <a href="${post.url}" target="_blank" rel="noopener">${post.title || "(제목 없음)"}</a>
+      </div>
+
+      <!-- 수치 -->
+      ${metaHtml ? `<div class="post-meta">${metaHtml}</div>` : ""}
+
+      <hr class="divider">
+
+      <!-- STEP 1: 관련성 확인 -->
+      <div class="step-label">Step 1 — 관련성 확인</div>
+      <div class="btn-row">
+        <button class="btn" id="btnOk"    onclick="selectNoise(false)">✅ 관련 있음<br><small style="font-weight:400;font-size:11px">에덴챗 관련 게시글</small></button>
+        <button class="btn" id="btnNoise" onclick="selectNoise(true)">🚫 노이즈 제외<br><small style="font-weight:400;font-size:11px">무관한 게시글</small></button>
+      </div>
+      <select class="reason-select" id="reasonSelect">
+        <option value="">-- 노이즈 사유를 선택해주세요 --</option>
+        ${NOISE_REASONS.map(r => `<option value="${r}">${r}</option>`).join("")}
+      </select>
+
+      <!-- STEP 2: 감성 점수 -->
+      <div id="scoreSection" style="display:none">
+        <hr class="divider">
+        <div class="step-label">Step 2 — 감성 점수</div>
+        <div class="score-wrap">
+          <div class="score-row">
+            ${[0,1,2,3,4,5].map(n => `
+              <button class="score-btn" id="score${n}" onclick="selectScore(${n})">
+                <span class="emoji">${SCORE_EMOJI[n]}</span>
+                <span class="num">${n}점</span>
+              </button>`).join("")}
+          </div>
+          <div class="score-desc" id="scoreDesc">점수를 선택해주세요</div>
+        </div>
+      </div>
+
+      <!-- 제출 -->
+      <button class="submit-btn" id="submitBtn" disabled onclick="submit()">
+        저장 후 다음 →
+      </button>
+      <button class="skip-btn" onclick="skip()">이 게시글 건너뛰기</button>
+
+    </div>`;
+}
+
+// ── 관련성 선택 ──────────────────────────────
+function selectNoise(isNoise) {
+  state.isNoise     = isNoise;
+  state.score       = null;
+  state.noiseReason = "";
+
+  document.getElementById("btnOk").className    = "btn" + (!isNoise ? " active-ok"    : "");
+  document.getElementById("btnNoise").className = "btn" + ( isNoise ? " active-noise"  : "");
+
+  const reasonSel = document.getElementById("reasonSelect");
+  const scoreSec  = document.getElementById("scoreSection");
+
+  if (isNoise) {
+    reasonSel.classList.add("show");
+    scoreSec.style.display = "none";
+    reasonSel.value = "";
+    reasonSel.onchange = () => {
+      state.noiseReason = reasonSel.value;
+      checkSubmit();
+    };
+  } else {
+    reasonSel.classList.remove("show");
+    scoreSec.style.display = "block";
+  }
+  checkSubmit();
+}
+
+// ── 점수 선택 ────────────────────────────────
+function selectScore(n) {
+  state.score = n;
+  [0,1,2,3,4,5].forEach(i => {
+    document.getElementById(`score${i}`).className =
+      "score-btn" + (i === n ? " selected" : "");
+  });
+  document.getElementById("scoreDesc").textContent = SCORE_DESC[n];
+  checkSubmit();
+}
+
+// ── 제출 버튼 활성화 ─────────────────────────
+function checkSubmit() {
+  const ok =
+    (state.isNoise === true  && state.noiseReason !== "") ||
+    (state.isNoise === false && state.score !== null);
+  document.getElementById("submitBtn").disabled = !ok;
+}
+
+// ── 저장 ─────────────────────────────────────
+function submit() {
+  const post = posts[current];
+  const btn  = document.getElementById("submitBtn");
+  btn.disabled    = true;
+  btn.textContent = "저장 중...";
+
+  google.script.run
+    .withSuccessHandler(() => {
+      stats.labeled++;
+      current++;
+      state = { isNoise: null, noiseReason: "", score: null };
+      render();
+    })
+    .withFailureHandler(err => {
+      alert("저장 실패: " + err.message);
+      btn.disabled    = false;
+      btn.textContent = "저장 후 다음 →";
+    })
+    .saveLabel({
+      url:         post.url,
+      crwId:       post.crwId,
+      keyword:     post.keyword,
+      channel:     post.channel,
+      title:       post.title,
+      author:      post.author,
+      date:        post.date,
+      like:        post.like,
+      view:        post.view,
+      isNoise:     state.isNoise,
+      noiseReason: state.noiseReason,
+      score:       state.score,
+    });
+}
+
+// ── 건너뛰기 ─────────────────────────────────
+function skip() {
+  state = { isNoise: null, noiseReason: "", score: null };
+  current++;
+  render();
+}
+
+// ── 시작 ─────────────────────────────────────
+init();
+</script>
+</body>
+</html>
