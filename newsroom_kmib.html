@@ -1,0 +1,3049 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>국민일보 — AI 뉴스룸</title>
+<link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAFAF6;
+  --paper2:#F4F2EB;
+  --paper3:#EDEAE0;
+  --bg:#FFFFFF;
+  --ink:#0B1426;
+  --ink2:#1D2942;
+  --ink3:#3A4561;
+  --ink4:#6B7280;
+  --ink5:#9CA3AF;
+  --rule:#D6D3C7;
+  --rule2:#E8E5DA;
+  --rule3:#F0EDE3;
+  --navy:#1B2A4E;
+  --navy2:#2A3A66;
+  --navy-soft:#EEF1F7;
+  --gold:#B8860B;
+  --gold2:#D4A435;
+  --gold-soft:#FBF5E0;
+  --red:#8B0000;
+  --red-soft:#FBEFEF;
+  --green:#0B6E4F;
+  --green-soft:#EAF5EF;
+  --orange:#B85C00;
+  --orange-soft:#FBF1E5;
+  --serif:'Noto Serif KR','Nanum Myeongjo',serif;
+  --display:'Playfair Display',serif;
+  --sans:'Pretendard Variable',Pretendard,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:13px;line-height:1.5;display:flex;flex-direction:column}
+
+/* ─── MASTHEAD ─── */
+.masthead{
+  background:var(--bg);
+  border-bottom:3px double var(--ink);
+  padding:8px 28px 6px;
+  display:flex;align-items:center;gap:20px;
+  flex-shrink:0;
+}
+.mh-logo{
+  font-family:var(--serif);
+  font-weight:900;
+  font-size:28px;
+  color:var(--ink);
+  letter-spacing:-1px;
+  line-height:1;
+  position:relative;
+}
+.mh-logo::after{
+  content:'KUKMIN ILBO';
+  display:block;
+  font-family:var(--display);
+  font-size:8px;
+  font-weight:600;
+  letter-spacing:4px;
+  color:var(--gold);
+  margin-top:2px;
+}
+.mh-divider{width:1px;height:32px;background:var(--rule);margin:0 4px}
+.mh-section{
+  font-family:var(--serif);
+  font-weight:600;
+  font-size:12px;
+  color:var(--ink3);
+  letter-spacing:.5px;
+}
+.mh-section em{font-style:italic;color:var(--gold);font-weight:700}
+.mh-date{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--ink4);
+  margin-left:auto;
+  text-align:right;
+}
+.mh-date b{color:var(--ink);font-weight:600;display:block;font-size:11px;letter-spacing:.3px}
+
+/* ─── TOPBAR (UTILITY) ─── */
+.topbar{
+  background:var(--ink);
+  color:#fff;
+  padding:0 28px;
+  height:36px;
+  display:flex;align-items:center;gap:14px;
+  flex-shrink:0;
+  font-size:11px;
+}
+.tb-deadline{
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--mono);
+  font-weight:600;
+}
+.tb-deadline .tb-label{
+  color:var(--gold2);
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  font-family:var(--sans);
+}
+.tb-deadline .tb-count{font-size:13px;color:#fff}
+.tb-deadline .tb-warning{color:#FF6B6B;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.tb-pulse{width:6px;height:6px;border-radius:50%;background:#FF6B6B;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.3)}}
+.tb-divider{width:1px;height:16px;background:rgba(255,255,255,.18)}
+.tb-stat{display:flex;align-items:center;gap:5px;color:rgba(255,255,255,.85)}
+.tb-stat b{color:#fff;font-family:var(--mono);font-weight:600}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.tb-role{
+  background:rgba(184,134,11,.15);
+  border:1px solid rgba(184,134,11,.35);
+  color:var(--gold2);
+  padding:3px 10px;
+  border-radius:3px;
+  cursor:pointer;
+  font-weight:600;
+  letter-spacing:.3px;
+}
+.tb-role:hover{background:rgba(184,134,11,.25)}
+.tb-search{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);
+  color:#fff;
+  padding:4px 10px;
+  border-radius:3px;
+  font-size:11px;
+  width:200px;
+  font-family:var(--sans);
+  outline:none;
+}
+.tb-search::placeholder{color:rgba(255,255,255,.5)}
+.tb-avatar{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--gold);color:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;
+  cursor:pointer;
+}
+
+/* ─── LAYOUT ─── */
+.layout{flex:1;display:flex;overflow:hidden}
+
+/* ─── SIDEBAR (DEPARTMENTS) ─── */
+.sidebar{
+  width:220px;min-width:220px;
+  background:var(--bg);
+  border-right:1px solid var(--rule);
+  padding:14px 0;
+  display:flex;flex-direction:column;
+  overflow-y:auto;
+}
+.s-group{padding:0 12px;margin-bottom:18px}
+.s-label{
+  font-family:var(--serif);
+  font-size:10px;font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  color:var(--ink4);
+  padding:0 8px 6px;
+  border-bottom:1px solid var(--rule2);
+  margin-bottom:8px;
+}
+.s-item{
+  display:flex;align-items:center;gap:10px;
+  padding:7px 10px;
+  border-radius:3px;
+  cursor:pointer;
+  transition:all .12s;
+  font-size:12.5px;
+  color:var(--ink3);
+  margin-bottom:1px;
+  position:relative;
+}
+.s-item:hover{background:var(--paper2);color:var(--ink)}
+.s-item.on{
+  background:var(--navy-soft);
+  color:var(--navy);
+  font-weight:700;
+}
+.s-item.on::before{
+  content:'';position:absolute;left:0;top:6px;bottom:6px;
+  width:3px;background:var(--navy);
+  border-radius:0 2px 2px 0;
+}
+.s-icon{width:18px;text-align:center;font-size:13px;flex-shrink:0}
+.s-name{flex:1}
+.s-count{
+  font-family:var(--mono);
+  font-size:10px;font-weight:600;
+  color:var(--ink5);
+  background:var(--paper2);
+  padding:1px 6px;border-radius:8px;
+}
+.s-item.on .s-count{background:var(--navy);color:#fff}
+.s-mission{color:var(--gold)}
+.s-mission.on{background:var(--gold-soft);color:var(--gold)}
+.s-mission.on::before{background:var(--gold)}
+
+.s-divider{
+  margin:8px 20px;
+  border:none;
+  border-top:1px solid var(--rule);
+}
+.s-agent{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 10px;
+  font-size:11px;
+  color:var(--ink3);
+  border-left:2px solid transparent;
+  margin-bottom:2px;
+}
+.s-agent .ag-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.s-agent .ag-name{flex:1}
+.s-agent .ag-state{font-family:var(--mono);font-size:9px;color:var(--ink5)}
+
+/* ─── MAIN ─── */
+.main{flex:1;overflow-y:auto;background:var(--paper);padding:0}
+.page{display:none;padding:24px 32px 60px}
+.page.on{display:block}
+
+/* Page header */
+.ph{
+  margin-bottom:22px;
+  border-bottom:2px solid var(--ink);
+  padding-bottom:14px;
+  display:flex;align-items:flex-end;justify-content:space-between;
+}
+.ph-left h1{
+  font-family:var(--serif);
+  font-weight:900;
+  font-size:30px;
+  letter-spacing:-1px;
+  color:var(--ink);
+  line-height:1.1;
+}
+.ph-left .ph-sub{
+  font-family:var(--serif);
+  font-style:italic;
+  font-size:13px;
+  color:var(--ink4);
+  margin-top:6px;
+  font-weight:400;
+}
+.ph-right{
+  text-align:right;
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--ink4);
+}
+.ph-right b{color:var(--ink);font-size:11px}
+
+/* Generic */
+.btn{
+  padding:7px 16px;border-radius:3px;
+  font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .12s;
+  border:none;
+  font-family:var(--sans);
+}
+.btn-p{background:var(--navy);color:#fff}
+.btn-p:hover{background:var(--ink)}
+.btn-g{background:var(--gold);color:var(--ink)}
+.btn-g:hover{background:var(--gold2)}
+.btn-o{background:var(--bg);color:var(--ink3);border:1px solid var(--rule)}
+.btn-o:hover{border-color:var(--navy);color:var(--navy)}
+.btn-s{padding:4px 12px;font-size:10px}
+
+/* Cards */
+.card{
+  background:var(--bg);
+  border:1px solid var(--rule);
+  padding:18px 20px;
+  margin-bottom:14px;
+}
+.card-title{
+  font-family:var(--serif);
+  font-weight:700;
+  font-size:14px;
+  color:var(--ink);
+  display:flex;align-items:center;gap:8px;
+  padding-bottom:10px;
+  margin-bottom:14px;
+  border-bottom:1px solid var(--rule2);
+}
+.card-title .ct-icon{font-size:14px}
+.card-title .ct-meta{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink4);font-weight:400}
+
+/* Grids */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* Stat boxes */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.st{
+  background:var(--bg);
+  border:1px solid var(--rule);
+  padding:16px 18px;
+  position:relative;
+}
+.st::before{
+  content:'';position:absolute;top:0;left:0;
+  width:32px;height:2px;
+  background:var(--gold);
+}
+.st .sl{font-size:10px;color:var(--ink4);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
+.st .sv{font-family:var(--serif);font-size:28px;font-weight:900;color:var(--ink);margin-top:2px;line-height:1}
+.st .ss{font-size:10px;color:var(--ink4);margin-top:6px;font-family:var(--mono)}
+.st .sc{font-size:10px;font-weight:600;margin-top:4px;font-family:var(--mono)}
+.up{color:var(--green)}.dn{color:var(--red)}
+
+/* Tags */
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:600;font-family:var(--mono);letter-spacing:.3px}
+.t-navy{background:var(--navy-soft);color:var(--navy)}
+.t-gold{background:var(--gold-soft);color:var(--gold)}
+.t-red{background:var(--red-soft);color:var(--red)}
+.t-green{background:var(--green-soft);color:var(--green)}
+.t-orange{background:var(--orange-soft);color:var(--orange)}
+.t-gray{background:var(--paper3);color:var(--ink4)}
+
+/* ─── DASHBOARD ─── */
+/* Newspaper headline strip */
+.headline-strip{
+  background:var(--bg);
+  border:1px solid var(--rule);
+  padding:20px 24px;
+  margin-bottom:18px;
+  position:relative;
+}
+.headline-strip::before{
+  content:'TOP STORY · 편집장 추천';
+  position:absolute;top:-9px;left:20px;
+  background:var(--ink);
+  color:var(--gold2);
+  font-family:var(--display);
+  font-size:9px;font-weight:700;
+  letter-spacing:3px;
+  padding:3px 12px;
+}
+.hs-cat{
+  font-family:var(--serif);
+  font-size:11px;
+  color:var(--red);
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  margin-bottom:8px;
+}
+.hs-title{
+  font-family:var(--serif);
+  font-weight:900;
+  font-size:26px;
+  color:var(--ink);
+  line-height:1.25;
+  letter-spacing:-.5px;
+  margin-bottom:10px;
+}
+.hs-lead{
+  font-family:var(--serif);
+  font-size:13px;
+  color:var(--ink2);
+  line-height:1.7;
+  font-weight:400;
+}
+.hs-meta{
+  display:flex;align-items:center;gap:12px;
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid var(--rule2);
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--ink4);
+}
+.hs-ai{
+  background:var(--gold-soft);
+  padding:10px 14px;
+  margin-top:14px;
+  border-left:3px solid var(--gold);
+  font-size:12px;
+  color:var(--ink2);
+  line-height:1.6;
+}
+.hs-ai b{color:var(--gold);font-family:var(--serif);font-weight:700;font-size:11px;letter-spacing:.5px}
+
+/* Deadline articles */
+.deadline-list{display:flex;flex-direction:column;gap:0}
+.dl-item{
+  display:flex;align-items:center;gap:14px;
+  padding:11px 0;
+  border-bottom:1px solid var(--rule2);
+}
+.dl-item:last-child{border:none}
+.dl-time{
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:700;
+  width:50px;flex-shrink:0;
+  text-align:center;
+}
+.dl-time.tight{color:var(--red)}
+.dl-time.soon{color:var(--orange)}
+.dl-time.ok{color:var(--green)}
+.dl-dept{
+  font-family:var(--serif);
+  font-size:10px;
+  font-weight:700;
+  color:var(--ink4);
+  width:54px;flex-shrink:0;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+.dl-title{flex:1;font-size:13px;color:var(--ink);font-weight:500}
+.dl-author{font-size:10px;color:var(--ink4);width:70px;text-align:right;font-family:var(--mono)}
+.dl-status{width:60px;text-align:right}
+
+/* Department status grid */
+.dept-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.dept-card{
+  background:var(--bg);
+  border:1px solid var(--rule);
+  padding:12px 14px;
+  cursor:pointer;
+  transition:all .15s;
+}
+.dept-card:hover{border-color:var(--navy);box-shadow:0 1px 0 0 var(--navy)}
+.dc-head{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.dc-icon{font-size:14px}
+.dc-name{font-family:var(--serif);font-weight:700;font-size:13px;color:var(--ink);flex:1}
+.dc-status{width:6px;height:6px;border-radius:50%}
+.dc-status.green{background:var(--green)}
+.dc-status.orange{background:var(--orange)}
+.dc-status.red{background:var(--red)}
+.dc-row{display:flex;justify-content:space-between;font-size:11px;color:var(--ink4);margin-bottom:2px;font-family:var(--mono)}
+.dc-row b{color:var(--ink);font-weight:600}
+
+/* AI Brief box */
+.ai-brief{
+  background:var(--ink);
+  color:#fff;
+  padding:18px 22px;
+  margin-bottom:18px;
+  position:relative;
+}
+.ab-label{
+  font-family:var(--display);
+  font-size:9px;
+  letter-spacing:3px;
+  color:var(--gold2);
+  font-weight:700;
+}
+.ab-text{
+  font-family:var(--serif);
+  font-size:15px;
+  color:#fff;
+  line-height:1.7;
+  margin-top:8px;
+}
+.ab-text em{color:var(--gold2);font-style:italic;font-weight:600}
+.ab-meta{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.5);margin-top:10px;letter-spacing:.5px}
+
+/* ─── 1면 회의 ─── */
+.frontpage-meeting{
+  background:var(--bg);
+  border:2px solid var(--ink);
+  padding:24px;
+  margin-bottom:18px;
+}
+.fpm-head{
+  text-align:center;
+  border-bottom:2px solid var(--ink);
+  padding-bottom:14px;
+  margin-bottom:18px;
+}
+.fpm-head h2{
+  font-family:var(--serif);
+  font-weight:900;
+  font-size:24px;
+  letter-spacing:-.5px;
+  color:var(--ink);
+}
+.fpm-head .fpm-sub{
+  font-family:var(--display);
+  font-style:italic;
+  font-size:12px;
+  color:var(--ink4);
+  margin-top:4px;
+}
+.fpm-candidates{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fpc{
+  border:1px solid var(--rule);
+  padding:16px;
+  cursor:pointer;
+  transition:all .15s;
+  background:var(--paper);
+  position:relative;
+}
+.fpc:hover{border-color:var(--navy)}
+.fpc.fpc-top{
+  border:2px solid var(--gold);
+  background:var(--gold-soft);
+}
+.fpc-rank{
+  position:absolute;top:-10px;left:14px;
+  background:var(--ink);
+  color:var(--gold2);
+  padding:3px 10px;
+  font-family:var(--display);
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:2px;
+}
+.fpc.fpc-top .fpc-rank{background:var(--gold);color:var(--ink)}
+.fpc-dept{
+  font-family:var(--serif);
+  font-size:10px;
+  font-weight:700;
+  color:var(--red);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-top:4px;
+  margin-bottom:6px;
+}
+.fpc-title{
+  font-family:var(--serif);
+  font-weight:700;
+  font-size:15px;
+  color:var(--ink);
+  line-height:1.35;
+  margin-bottom:8px;
+}
+.fpc-meta{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--ink4);
+  margin-bottom:10px;
+}
+.fpc-score-bar{
+  display:flex;align-items:center;gap:8px;
+  font-size:10px;
+}
+.fpc-score-bar .sb-label{color:var(--ink4);font-family:var(--mono);width:60px}
+.fpc-score-bar .sb-track{flex:1;height:4px;background:var(--rule3);position:relative}
+.fpc-score-bar .sb-fill{height:100%;background:var(--navy)}
+.fpc-score-bar .sb-val{font-family:var(--mono);font-weight:700;color:var(--ink);width:30px;text-align:right}
+.fpc-actions{
+  display:flex;gap:6px;
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px dashed var(--rule);
+}
+
+/* Front page layout preview */
+.fp-preview{
+  background:var(--bg);
+  border:1px solid var(--rule);
+  padding:18px;
+  margin-top:18px;
+}
+.fp-mockup{
+  border:2px solid var(--ink);
+  background:var(--paper);
+  padding:14px;
+  font-family:var(--serif);
+  position:relative;
+}
+.fp-mockup-logo{
+  text-align:center;
+  border-bottom:2px solid var(--ink);
+  padding-bottom:8px;
+  margin-bottom:12px;
+}
+.fp-mockup-logo .fml-name{font-weight:900;font-size:24px;letter-spacing:-1px}
+.fp-mockup-logo .fml-date{font-size:9px;color:var(--ink4);font-family:var(--mono);margin-top:2px}
+.fp-mockup-top{
+  font-family:var(--serif);
+  font-size:13px;
+  font-weight:900;
+  color:var(--ink);
+  line-height:1.3;
+  margin-bottom:8px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--rule2);
+}
+.fp-mockup-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:10px;line-height:1.4}
+.fp-slot{
+  padding:6px 8px;
+  background:var(--paper2);
+  border:1px dashed var(--rule);
+  min-height:30px;
+}
+.fp-slot.filled{
+  background:var(--bg);
+  border:1px solid var(--rule);
+  border-left:2px solid var(--gold);
+}
+.fp-slot-label{
+  font-family:var(--display);
+  font-size:7px;
+  color:var(--ink4);
+  font-weight:700;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.fp-slot-title{font-weight:600;color:var(--ink);font-size:10px;margin-top:2px;line-height:1.3}
+
+/* ─── 통신사·메일룸 ─── */
+.wire-tabs{display:flex;gap:0;margin-bottom:14px;border-bottom:2px solid var(--rule)}
+.wt{
+  padding:10px 18px;
+  font-family:var(--serif);
+  font-size:13px;font-weight:700;
+  color:var(--ink4);
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  margin-bottom:-2px;
+}
+.wt.on{color:var(--navy);border-bottom-color:var(--navy)}
+.wt .wt-count{
+  background:var(--paper3);
+  color:var(--ink3);
+  padding:1px 7px;
+  border-radius:8px;
+  font-size:10px;
+  font-family:var(--mono);
+  margin-left:6px;
+  font-weight:600;
+}
+.wt.on .wt-count{background:var(--navy);color:#fff}
+
+.wire-item{
+  background:var(--bg);
+  border:1px solid var(--rule);
+  border-left:3px solid var(--ink5);
+  padding:14px 18px;
+  margin-bottom:8px;
+  display:flex;align-items:flex-start;gap:14px;
+}
+.wire-item.priority{border-left-color:var(--red)}
+.wire-item.recommended{border-left-color:var(--gold)}
+.wi-source{
+  font-family:var(--mono);
+  font-size:9px;
+  font-weight:700;
+  color:var(--ink4);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  background:var(--paper2);
+  padding:3px 8px;
+  width:auto;flex-shrink:0;
+  border:1px solid var(--rule);
+}
+.wi-body{flex:1}
+.wi-time{font-family:var(--mono);font-size:10px;color:var(--ink4);float:right}
+.wi-title{
+  font-family:var(--serif);
+  font-weight:700;
+  font-size:14px;
+  color:var(--ink);
+  line-height:1.4;
+  margin-bottom:6px;
+}
+.wi-lead{font-size:12px;color:var(--ink3);line-height:1.6;margin-bottom:8px}
+.wi-ai{
+  background:var(--paper2);
+  padding:8px 12px;
+  margin:8px 0;
+  border-left:2px solid var(--gold);
+  font-size:11px;
+  color:var(--ink3);
+  line-height:1.5;
+}
+.wi-ai b{color:var(--gold);font-weight:700}
+.wi-actions{display:flex;gap:6px;margin-top:8px}
+
+/* ─── 출입처 관리 ─── */
+.beat-tree{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.beat-card{
+  background:var(--bg);
+  border:1px solid var(--rule);
+  padding:18px;
+}
+.bc-head{
+  display:flex;align-items:center;gap:10px;
+  padding-bottom:10px;
+  margin-bottom:12px;
+  border-bottom:1px solid var(--rule2);
+}
+.bc-icon{font-size:18px}
+.bc-dept{
+  font-family:var(--serif);
+  font-weight:700;
+  font-size:15px;
+  color:var(--ink);
+  flex:1;
+}
+.bc-status{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--green);
+  font-weight:600;
+}
+.beat-row{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 0;
+  border-bottom:1px solid var(--rule3);
+  font-size:12px;
+}
+.beat-row:last-child{border:none}
+.br-place{
+  font-family:var(--serif);
+  font-weight:600;
+  color:var(--ink);
+  flex:1;
+}
+.br-reporter{font-size:11px;color:var(--ink3);font-family:var(--mono)}
+.br-pulse{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--ink4)}
+.br-pulse .br-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+
+/* ─── 정치 발언 검증 ─── */
+.statement-card{
+  background:var(--bg);
+  border:1px solid var(--rule);
+  padding:0;
+  margin-bottom:14px;
+  overflow:hidden;
+}
+.sc-head{
+  background:var(--ink);
+  color:#fff;
+  padding:12px 18px;
+  display:flex;align-items:center;gap:12px;
+}
+.sc-name{font-family:var(--serif);font-weight:700;font-size:14px}
+.sc-party{
+  font-family:var(--mono);
+  font-size:10px;
+  padding:2px 8px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+}
+.sc-time{margin-left:auto;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.6)}
+.sc-body{padding:18px}
+.sc-quote{
+  font-family:var(--serif);
+  font-size:14px;
+  line-height:1.7;
+  color:var(--ink2);
+  border-left:3px solid var(--navy);
+  padding-left:14px;
+  margin-bottom:14px;
+  font-style:italic;
+}
+.sc-quote::before{content:'"';font-family:var(--display);font-size:24px;color:var(--gold);line-height:0;vertical-align:-6px;margin-right:2px}
+.sc-vs{
+  background:var(--paper2);
+  padding:12px 14px;
+  border:1px solid var(--rule);
+  margin-bottom:10px;
+}
+.sc-vs-label{
+  font-family:var(--display);
+  font-size:9px;
+  color:var(--red);
+  letter-spacing:2px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+.sc-vs-text{font-family:var(--serif);font-size:12px;color:var(--ink2);line-height:1.6;font-style:italic}
+.sc-vs-meta{font-family:var(--mono);font-size:9px;color:var(--ink4);margin-top:4px}
+.sc-verdict{
+  display:flex;align-items:center;gap:12px;
+  padding-top:12px;
+  border-top:1px solid var(--rule2);
+}
+.sc-verdict-badge{
+  font-family:var(--serif);
+  font-weight:700;
+  font-size:13px;
+  padding:6px 14px;
+}
+.sc-verdict-badge.contradiction{background:var(--red);color:#fff}
+.sc-verdict-badge.partial{background:var(--orange);color:#fff}
+.sc-verdict-badge.consistent{background:var(--green);color:#fff}
+
+/* Balance monitor */
+.balance-bar{
+  display:flex;height:32px;
+  border:1px solid var(--rule);
+  overflow:hidden;
+  margin-top:12px;
+}
+.balance-seg{
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);
+  font-size:11px;font-weight:700;
+  color:#fff;
+}
+.bs-dem{background:#0066B3}
+.bs-ppp{background:#C00000}
+.bs-new{background:#5B9BD5}
+.bs-other{background:var(--ink4)}
+
+/* ─── 미션부 ─── */
+.mission-banner{
+  background:linear-gradient(135deg,var(--gold-soft) 0%,var(--bg) 100%);
+  border:1px solid var(--gold);
+  padding:18px 22px;
+  margin-bottom:18px;
+  position:relative;
+  overflow:hidden;
+}
+.mission-banner::before{
+  content:'✝';
+  position:absolute;
+  right:24px;top:50%;transform:translateY(-50%);
+  font-size:60px;
+  color:var(--gold);
+  opacity:.15;
+}
+.mb-label{
+  font-family:var(--display);
+  font-size:10px;
+  letter-spacing:3px;
+  color:var(--gold);
+  font-weight:700;
+}
+.mb-title{
+  font-family:var(--serif);
+  font-weight:900;
+  font-size:22px;
+  color:var(--ink);
+  margin-top:4px;
+  letter-spacing:-.5px;
+}
+.mb-sub{
+  font-family:var(--serif);
+  font-style:italic;
+  font-size:13px;
+  color:var(--ink3);
+  margin-top:6px;
+}
+
+.church-row{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 0;
+  border-bottom:1px solid var(--rule2);
+}
+.cr-icon{font-size:16px;width:24px;text-align:center}
+.cr-name{font-family:var(--serif);font-weight:600;font-size:13px;flex:1;color:var(--ink)}
+.cr-mem{font-family:var(--mono);font-size:10px;color:var(--ink4)}
+.cr-recent{font-size:11px;color:var(--ink3);width:140px}
+
+/* ─── 사설·칼럼 ─── */
+.editorial-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ed-card{
+  background:var(--bg);
+  border:1px solid var(--rule);
+  padding:14px;
+}
+.ed-type{
+  font-family:var(--display);
+  font-size:9px;
+  letter-spacing:2px;
+  color:var(--gold);
+  font-weight:700;
+  margin-bottom:6px;
+}
+.ed-title{
+  font-family:var(--serif);
+  font-weight:700;
+  font-size:14px;
+  color:var(--ink);
+  line-height:1.35;
+  margin-bottom:8px;
+}
+.ed-author{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--ink4);
+  border-top:1px solid var(--rule3);
+  padding-top:6px;
+  margin-top:8px;
+  display:flex;justify-content:space-between;
+}
+
+/* ─── 팀 현황 ─── */
+.org-tree{display:flex;flex-direction:column;gap:14px}
+.org-level{display:flex;align-items:flex-start;gap:14px}
+.org-card{
+  background:var(--bg);
+  border:1px solid var(--rule);
+  padding:12px 14px;
+  flex:1;
+  min-height:60px;
+}
+.oc-role{font-family:var(--display);font-size:9px;letter-spacing:2px;color:var(--gold);font-weight:700}
+.oc-name{font-family:var(--serif);font-weight:700;font-size:13px;color:var(--ink);margin-top:2px}
+.oc-status{font-family:var(--mono);font-size:9px;color:var(--ink4);margin-top:4px}
+
+/* ─── RIGHT PANEL ─── */
+.context{
+  width:280px;min-width:280px;
+  background:var(--bg);
+  border-left:1px solid var(--rule);
+  padding:18px 18px;
+  overflow-y:auto;
+}
+.cx-label{
+  font-family:var(--serif);
+  font-weight:700;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  color:var(--ink4);
+  padding-bottom:6px;
+  border-bottom:1px solid var(--rule2);
+  margin-bottom:10px;
+}
+.cx-section{margin-bottom:22px}
+
+.feed-item{
+  padding:8px 0;
+  border-bottom:1px solid var(--rule3);
+  font-size:11px;
+}
+.feed-item:last-child{border:none}
+.fi-time{font-family:var(--mono);font-size:9px;color:var(--ink5)}
+.fi-text{color:var(--ink2);line-height:1.5;margin-top:2px}
+.fi-text b{color:var(--navy);font-weight:600}
+
+.pulse-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:11px}
+.pr-name{flex:1;color:var(--ink3)}
+.pr-bar{width:80px;height:4px;background:var(--rule3);position:relative}
+.pr-fill{position:absolute;left:50%;height:100%;background:var(--navy)}
+.pr-fill.neg{background:var(--red);right:50%;left:auto}
+.pr-val{font-family:var(--mono);font-size:9px;color:var(--ink);width:30px;text-align:right;font-weight:600}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--ink5);border-radius:2px}
+@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ═══ 독자참여공간 (LiveRe Feed) ═══ */
+.aud-hero{
+  background:linear-gradient(135deg,#0F1729 0%,#1B2A4E 100%);
+  color:#fff;
+  padding:20px 24px;
+  margin-bottom:14px;
+  border:1px solid var(--ink);
+  position:relative;
+  overflow:hidden;
+}
+.aud-hero::before{
+  content:'';position:absolute;top:0;right:0;bottom:0;width:200px;
+  background:radial-gradient(circle at 100% 50%,rgba(184,134,11,.2),transparent 60%);
+}
+.aud-hero h3{font-family:var(--serif);font-weight:900;font-size:18px;letter-spacing:-.3px;margin-bottom:4px;position:relative}
+.aud-hero p{font-family:var(--serif);font-style:italic;color:rgba(255,255,255,.7);font-size:12px;position:relative}
+.aud-stat-bar{display:flex;gap:0;margin-top:14px;position:relative;flex-wrap:wrap}
+.asb-item{padding:8px 16px;border-right:1px solid rgba(255,255,255,.15)}
+.asb-item:last-child{border:none}
+.asb-label{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px}
+.asb-val{font-family:var(--serif);font-weight:900;font-size:18px;color:#fff;margin-top:1px}
+.asb-val small{font-size:11px;color:var(--gold2);font-weight:400;margin-left:2px}
+
+/* Embed Box */
+.embed-box{
+  background:var(--bg);
+  border:1px solid var(--rule);
+  margin-bottom:14px;
+  overflow:hidden;
+}
+.embed-tabs{display:flex;border-bottom:1px solid var(--rule)}
+.et-tab{padding:10px 18px;font-size:12px;font-weight:600;color:var(--ink4);cursor:pointer;border-right:1px solid var(--rule3)}
+.et-tab.on{color:var(--navy);background:var(--paper)}
+.et-info{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink4);padding:10px 18px}
+.embed-body{padding:16px 18px}
+.embed-code{
+  background:#0F1729;color:#A7B5D6;
+  font-family:var(--mono);font-size:11px;
+  padding:12px 14px;
+  border-radius:3px;
+  position:relative;
+  overflow-x:auto;
+  line-height:1.6;
+}
+.embed-code .ec-comment{color:#5B6A8D;font-style:italic}
+.embed-code .ec-tag{color:#F5A623}
+.embed-code .ec-attr{color:#4DC8E8}
+.embed-code .ec-string{color:#9DD89F}
+.copy-btn{
+  position:absolute;top:10px;right:10px;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.2);
+  padding:4px 10px;
+  font-size:10px;
+  cursor:pointer;
+  font-family:var(--sans);
+  border-radius:2px;
+}
+.copy-btn:hover{background:rgba(255,255,255,.15)}
+.embed-opts{display:flex;gap:14px;margin-top:12px;font-size:11px}
+.eo-group{display:flex;align-items:center;gap:6px;color:var(--ink3)}
+.eo-group select{font-family:var(--sans);font-size:11px;padding:3px 6px;border:1px solid var(--rule);background:var(--bg);color:var(--ink);border-radius:2px}
+
+/* Audience Layout */
+.audience-layout{display:grid;grid-template-columns:1fr 280px;gap:14px}
+
+/* Device toggle */
+.device-bar{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg);
+  border:1px solid var(--rule);
+  padding:8px 14px;
+  margin-bottom:10px;
+}
+.dt-label{font-family:var(--display);font-size:9px;letter-spacing:2px;color:var(--ink4);font-weight:700;text-transform:uppercase;margin-right:auto}
+.dt-btn{padding:5px 12px;font-size:11px;border:1px solid var(--rule);background:var(--bg);color:var(--ink3);cursor:pointer;font-family:var(--sans);border-radius:2px}
+.dt-btn.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* Feed Container */
+.feed-wrap{
+  background:var(--bg);
+  border:1px solid var(--rule);
+  padding:16px;
+  max-height:1400px;
+  overflow-y:auto;
+  position:relative;
+}
+.feed-wrap.mobile{max-width:380px;margin:0 auto}
+.feed-header{
+  display:flex;align-items:center;gap:8px;
+  padding-bottom:12px;
+  border-bottom:2px solid var(--ink);
+  margin-bottom:14px;
+}
+.fh-logo{font-family:var(--display);font-weight:900;font-size:14px;color:var(--ink)}
+.fh-logo em{font-style:italic;color:var(--gold);font-weight:600}
+.fh-status{margin-left:auto;display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--ink4)}
+.fh-status .fh-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulseDot 1.5s infinite}
+.fh-count{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+.fh-count b{color:var(--ink);font-weight:700}
+
+/* === FEED CARDS === */
+.fc{margin-bottom:10px;background:var(--bg);border:1px solid var(--rule);overflow:hidden;transition:all .15s}
+.fc:hover{border-color:var(--ink5)}
+
+/* Card: 댓글 (Comment) */
+.fc-comment{padding:14px 16px}
+.cc-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.cc-avatar{width:36px;height:36px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;font-family:var(--serif)}
+.cc-avatar.gold{background:var(--gold);color:var(--ink)}
+.cc-avatar.green{background:#0B6E4F}
+.cc-avatar.red{background:#8B0000}
+.cc-avatar.purple{background:#6c3aed}
+.cc-info{flex:1;min-width:0}
+.cc-name-line{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.cc-name{font-family:var(--serif);font-weight:700;font-size:13px;color:var(--ink)}
+.cc-handle{font-family:var(--mono);font-size:10px;color:var(--ink4)}
+.cc-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:8px;letter-spacing:.3px}
+.cc-badge.doctor{background:#dcfce7;color:#15803d}
+.cc-badge.lawyer{background:#dbeafe;color:#1d4ed8}
+.cc-badge.teacher{background:#fef3c7;color:#a16207}
+.cc-badge.pastor{background:var(--gold-soft);color:var(--gold)}
+.cc-badge.verified{background:var(--navy-soft);color:var(--navy)}
+.cc-time{font-family:var(--mono);font-size:10px;color:var(--ink4)}
+.cc-pin{margin-left:auto;font-size:10px;color:var(--gold);font-weight:700;display:flex;align-items:center;gap:3px}
+.cc-text{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:10px;word-break:break-word}
+.cc-reactions{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.reaction{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:14px;background:var(--paper);border:1px solid var(--rule);cursor:pointer;transition:all .12s;font-size:11px;color:var(--ink3)}
+.reaction:hover{border-color:var(--navy);background:var(--navy-soft)}
+.reaction.active{background:var(--navy-soft);border-color:var(--navy);color:var(--navy);font-weight:700}
+.reaction .rx-emoji{font-size:13px}
+.reaction .rx-count{font-family:var(--mono);font-weight:600;font-size:10px}
+.cc-actions{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:10px;color:var(--ink4)}
+.cc-action{cursor:pointer;display:flex;align-items:center;gap:3px}
+.cc-action:hover{color:var(--navy)}
+
+/* Reply Tree */
+.cc-replies{margin-top:10px;padding-top:10px;border-top:1px dashed var(--rule);padding-left:14px;border-left:2px solid var(--rule2)}
+.cc-reply{display:flex;gap:8px;margin-bottom:8px}
+.cc-reply:last-child{margin-bottom:0}
+.cc-reply .reply-avatar{width:24px;height:24px;border-radius:50%;background:var(--ink5);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--serif)}
+.cc-reply .reply-avatar.reporter{background:var(--gold);color:var(--ink)}
+.cc-reply .reply-body{flex:1;font-size:12px;line-height:1.5;color:var(--ink2)}
+.cc-reply .reply-name{font-family:var(--serif);font-weight:700;font-size:11px;color:var(--ink);margin-right:4px}
+.cc-reply .reply-reporter-badge{display:inline-flex;align-items:center;gap:2px;background:var(--gold);color:var(--ink);font-size:8px;font-weight:700;padding:1px 5px;border-radius:8px;margin-left:2px;letter-spacing:.3px}
+.cc-reply .reply-time{font-family:var(--mono);font-size:9px;color:var(--ink4);margin-left:4px}
+
+/* Card: 설문 (Survey) */
+.fc-survey{padding:0;border-left:3px solid var(--navy)}
+.sv-head{padding:12px 16px 0;display:flex;align-items:center;gap:8px}
+.sv-tag{font-family:var(--display);font-size:9px;letter-spacing:2px;color:var(--navy);font-weight:700}
+.sv-status{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--green)}
+.sv-status .sv-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:4px;animation:pulseDot 1.5s infinite;vertical-align:middle}
+.sv-body{padding:8px 16px 14px}
+.sv-q{font-family:var(--serif);font-weight:700;font-size:14px;color:var(--ink);line-height:1.4;margin-bottom:12px}
+.sv-options{display:flex;flex-direction:column;gap:6px}
+.sv-opt{position:relative;padding:8px 12px;background:var(--paper);border:1px solid var(--rule);font-size:12px;color:var(--ink);cursor:pointer;overflow:hidden;transition:all .12s}
+.sv-opt:hover{border-color:var(--navy)}
+.sv-opt.voted{border-color:var(--navy);color:var(--ink)}
+.sv-opt .sv-fill{position:absolute;left:0;top:0;bottom:0;background:var(--navy-soft)}
+.sv-opt.voted .sv-fill{background:linear-gradient(90deg,rgba(41,82,204,.15),rgba(41,82,204,.05))}
+.sv-opt-content{position:relative;display:flex;justify-content:space-between;align-items:center}
+.sv-opt-text{flex:1;font-weight:500}
+.sv-opt-pct{font-family:var(--mono);font-weight:700;color:var(--navy);font-size:11px}
+.sv-opt.voted .sv-opt-text::before{content:'✓ ';color:var(--green);font-weight:700}
+.sv-meta{margin-top:12px;display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:10px;color:var(--ink4);padding-top:8px;border-top:1px solid var(--rule3)}
+
+/* Card: 스폰서 (Sponsor) */
+.fc-sponsor{padding:0;background:linear-gradient(180deg,#FFFBF0,#FFF);border-color:var(--gold)}
+.sp-head{padding:6px 14px;background:var(--gold-soft);border-bottom:1px solid var(--gold);display:flex;align-items:center;gap:8px}
+.sp-label{font-family:var(--display);font-size:9px;color:var(--gold);font-weight:700;letter-spacing:2px}
+.sp-disclaimer{margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--ink4)}
+.sp-body{padding:14px 16px}
+.sp-brand{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.sp-logo{width:32px;height:32px;border-radius:6px;background:var(--ink);color:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;flex-shrink:0;font-family:var(--serif)}
+.sp-brand-info{flex:1}
+.sp-brand-name{font-family:var(--serif);font-weight:700;font-size:13px;color:var(--ink)}
+.sp-brand-handle{font-family:var(--mono);font-size:10px;color:var(--ink4)}
+.sp-content{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:10px}
+.sp-image{width:100%;height:120px;background:linear-gradient(135deg,#1B2A4E,#0F1729);border-radius:4px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--serif);font-weight:700;font-size:14px;text-align:center;padding:0 20px}
+.sp-cta{display:flex;align-items:center;gap:8px}
+.sp-btn{padding:6px 14px;background:var(--ink);color:#fff;border:none;font-size:11px;font-weight:700;cursor:pointer;border-radius:2px;font-family:var(--sans)}
+.sp-btn:hover{background:var(--navy)}
+.sp-stats{margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--ink4)}
+
+/* Card: 기자 질문 (Reporter Question) */
+.fc-question{padding:0;border:2px solid var(--navy);background:var(--navy-soft)}
+.q-head{padding:8px 16px;background:var(--navy);color:#fff;display:flex;align-items:center;gap:8px}
+.q-label{font-family:var(--display);font-size:9px;letter-spacing:2px;font-weight:700;color:var(--gold2)}
+.q-time{margin-left:auto;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.6)}
+.q-body{padding:14px 16px}
+.q-reporter{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.q-reporter .qr-avatar{width:32px;height:32px;border-radius:50%;background:var(--gold);color:var(--ink);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;font-family:var(--serif)}
+.q-reporter .qr-name{font-family:var(--serif);font-weight:700;font-size:12px}
+.q-reporter .qr-dept{font-family:var(--mono);font-size:10px;color:var(--ink4)}
+.q-text{font-family:var(--serif);font-weight:700;font-size:15px;line-height:1.5;color:var(--ink);margin-bottom:10px}
+.q-meta{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:10px;color:var(--ink4);padding-top:8px;border-top:1px solid var(--pborder,var(--rule))}
+
+/* Card: 팩트체크 (Fact-check) */
+.fc-factcheck{padding:0;border-left:3px solid #8B0000;background:#FFFBFB}
+.fk-head{padding:8px 16px;background:#fef2f2;border-bottom:1px solid #fecaca;display:flex;align-items:center;gap:8px}
+.fk-label{font-family:var(--display);font-size:9px;color:var(--red);font-weight:700;letter-spacing:2px}
+.fk-verdict{margin-left:auto;font-family:var(--mono);font-size:9px;padding:2px 8px;font-weight:700;border-radius:2px;letter-spacing:.3px}
+.fk-verdict.contradict{background:var(--red);color:#fff}
+.fk-verdict.partial{background:var(--orange);color:#fff}
+.fk-verdict.consistent{background:var(--green);color:#fff}
+.fk-body{padding:14px 16px}
+.fk-person{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.fk-name{font-family:var(--serif);font-weight:700;font-size:13px}
+.fk-party{font-family:var(--mono);font-size:10px;color:var(--ink4)}
+.fk-quote{font-family:var(--serif);font-size:13px;line-height:1.6;color:var(--ink2);font-style:italic;padding:8px 12px;background:var(--paper);border-left:3px solid var(--ink5);margin-bottom:8px}
+.fk-quote::before{content:'"';font-family:var(--display);font-size:18px;color:var(--gold);line-height:0;margin-right:2px;vertical-align:-4px}
+.fk-result{font-size:12px;line-height:1.6;color:var(--ink3);padding-top:8px;border-top:1px dashed var(--rule)}
+.fk-result b{color:var(--red);font-weight:700;font-family:var(--serif)}
+
+/* Card: 공식 입장 (Official Statement) */
+.fc-official{padding:0;border-left:3px solid var(--gold)}
+.of-head{padding:8px 16px;background:var(--gold-soft);border-bottom:1px solid var(--gold);display:flex;align-items:center;gap:8px}
+.of-label{font-family:var(--display);font-size:9px;color:var(--gold);font-weight:700;letter-spacing:2px}
+.of-verified{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--gold);display:flex;align-items:center;gap:3px}
+.of-body{padding:14px 16px}
+.of-org{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.of-logo{width:36px;height:36px;border-radius:8px;background:var(--ink);color:var(--gold);font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);flex-shrink:0}
+.of-org-name{font-family:var(--serif);font-weight:700;font-size:13px}
+.of-org-sub{font-family:var(--mono);font-size:10px;color:var(--ink4)}
+.of-statement{font-family:var(--serif);font-size:13px;line-height:1.6;color:var(--ink2);margin-bottom:8px}
+.of-meta{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:10px;color:var(--ink4);padding-top:8px;border-top:1px dashed var(--rule)}
+
+/* Card: 실시간 토론 (Live Discussion) */
+.fc-discussion{padding:0;border:2px solid var(--red);background:linear-gradient(135deg,#fef2f2,#fff)}
+.ld-head{padding:8px 16px;background:var(--red);color:#fff;display:flex;align-items:center;gap:8px}
+.ld-label{font-family:var(--display);font-size:9px;letter-spacing:2px;font-weight:700;color:#fff;display:flex;align-items:center;gap:5px}
+.ld-pulse{width:6px;height:6px;border-radius:50%;background:#fff;animation:pulseDot 1s infinite}
+.ld-count{margin-left:auto;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.9)}
+.ld-body{padding:14px 16px}
+.ld-topic{font-family:var(--serif);font-weight:900;font-size:15px;color:var(--ink);line-height:1.3;margin-bottom:8px}
+.ld-summary{font-size:11px;color:var(--ink3);line-height:1.6;margin-bottom:10px}
+.ld-participants{display:flex;align-items:center;gap:-6px;margin-bottom:10px}
+.ld-ava{width:24px;height:24px;border-radius:50%;border:2px solid var(--bg);background:var(--navy);color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-left:-6px;font-family:var(--serif)}
+.ld-ava:first-child{margin-left:0}
+.ld-ava.more{background:var(--ink4);font-family:var(--mono)}
+.ld-actions{display:flex;align-items:center;gap:8px}
+.ld-join{padding:7px 16px;background:var(--red);color:#fff;border:none;font-size:11px;font-weight:700;cursor:pointer;border-radius:2px;font-family:var(--sans)}
+.ld-join:hover{background:#a00000}
+.ld-stats{margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--ink4)}
+
+/* Right Configuration Panel */
+.aud-config{
+  background:var(--bg);
+  border:1px solid var(--rule);
+  padding:16px;
+  position:sticky;
+  top:0;
+  max-height:1400px;
+  overflow-y:auto;
+}
+.ac-section{margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--rule2)}
+.ac-section:last-child{border:none;margin-bottom:0}
+.ac-title{font-family:var(--serif);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink4);margin-bottom:12px}
+.ac-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:11px}
+.ac-name{flex:1;color:var(--ink3)}
+.ac-bar{flex:2;height:6px;background:var(--paper3);position:relative;border-radius:3px;overflow:hidden}
+.ac-bar-fill{height:100%;background:var(--navy);border-radius:3px}
+.ac-bar-fill.gold{background:var(--gold)}
+.ac-bar-fill.red{background:var(--red)}
+.ac-pct{font-family:var(--mono);font-weight:700;color:var(--ink);font-size:10px;width:32px;text-align:right}
+.ac-rule{font-size:11px;color:var(--ink3);padding:8px 10px;background:var(--paper2);border-left:2px solid var(--gold);margin-bottom:6px;line-height:1.5}
+.ac-rev{background:linear-gradient(135deg,var(--gold-soft),#fff);border:1px solid var(--gold);padding:12px;text-align:center;margin-bottom:10px}
+.ac-rev-val{font-family:var(--serif);font-weight:900;font-size:22px;color:var(--gold);line-height:1}
+.ac-rev-label{font-family:var(--display);font-size:9px;color:var(--ink4);letter-spacing:1.5px;margin-top:4px;text-transform:uppercase}
+.ac-rev-detail{font-family:var(--mono);font-size:10px;color:var(--ink4);margin-top:6px}
+
+@media(max-width:1200px){
+  .audience-layout{grid-template-columns:1fr}
+}
+
+.fade-in{animation:fadeIn .35s ease forwards;opacity:0}
+@keyframes fadeIn{to{opacity:1}}
+.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}
+
+.col-2{column-count:2;column-gap:16px}
+</style>
+</head>
+<body>
+
+<!-- ─── MASTHEAD ─── -->
+<header class="masthead">
+  <div class="mh-logo">국민일보</div>
+  <div class="mh-divider"></div>
+  <div class="mh-section">EDITORIAL <em>NEWSROOM</em> · 편집국 AI 운영 시스템</div>
+  <div class="mh-date">
+    <b id="mhDate"></b>
+    <span id="mhWeek"></span>
+  </div>
+</header>
+
+<!-- ─── TOPBAR ─── -->
+<div class="topbar">
+  <div class="tb-deadline">
+    <div class="tb-pulse"></div>
+    <span class="tb-label">조간 마감</span>
+    <span class="tb-count" id="ddCount">02:47:33</span>
+  </div>
+  <div class="tb-divider"></div>
+  <div class="tb-stat">금일 1면 후보 <b>14</b></div>
+  <div class="tb-divider"></div>
+  <div class="tb-stat">통신사 수신 <b>247</b></div>
+  <div class="tb-divider"></div>
+  <div class="tb-stat">발행 완료 <b>42</b></div>
+  <div class="tb-divider"></div>
+  <div class="tb-stat">AI 검수 대기 <b>8</b></div>
+  <div class="tb-right">
+    <input class="tb-search" placeholder="기사·인물·키워드 검색...">
+    <div class="tb-role" onclick="alert('권한 변경: 편집국장 → 부장 → 차장 → 기자')">🎖 편집국장 권한</div>
+    <div class="tb-avatar">국</div>
+  </div>
+</div>
+
+<!-- ─── LAYOUT ─── -->
+<div class="layout">
+
+  <!-- ─── SIDEBAR ─── -->
+  <aside class="sidebar">
+    <div class="s-group">
+      <div class="s-label">편집국</div>
+      <div class="s-item on" onclick="go('dashboard',this)"><span class="s-icon">📋</span><span class="s-name">대시보드</span></div>
+      <div class="s-item" onclick="go('frontpage',this)"><span class="s-icon">🗞️</span><span class="s-name">1면 회의</span><span class="s-count">14</span></div>
+      <div class="s-item" onclick="go('wire',this)"><span class="s-icon">📡</span><span class="s-name">통신사·메일룸</span><span class="s-count">247</span></div>
+      <div class="s-item" onclick="go('beats',this)"><span class="s-icon">🏛️</span><span class="s-name">출입처</span></div>
+      <div class="s-item" onclick="go('verify',this)"><span class="s-icon">⚖️</span><span class="s-name">발언 검증</span></div>
+      <div class="s-item" onclick="go('opinion',this)"><span class="s-icon">📊</span><span class="s-name">여론 인텔</span></div>
+      <div class="s-item" onclick="go('factcheck',this)"><span class="s-icon">✅</span><span class="s-name">팩트체크</span></div>
+      <div class="s-item" onclick="go('audience',this)"><span class="s-icon">💬</span><span class="s-name">독자참여공간</span><span class="s-count" style="background:#dc2626;color:#fff;animation:pulseDot 2s infinite">LIVE</span></div>
+    </div>
+
+    <div class="s-group">
+      <div class="s-label">부서</div>
+      <div class="s-item" onclick="go('dept',this)"><span class="s-icon">🏛</span><span class="s-name">정치부</span><span class="s-count">8</span></div>
+      <div class="s-item" onclick="go('dept',this)"><span class="s-icon">💼</span><span class="s-name">경제부</span><span class="s-count">6</span></div>
+      <div class="s-item" onclick="go('dept',this)"><span class="s-icon">⚖️</span><span class="s-name">사회부</span><span class="s-count">9</span></div>
+      <div class="s-item" onclick="go('dept',this)"><span class="s-icon">🌏</span><span class="s-name">국제부</span><span class="s-count">4</span></div>
+      <div class="s-item" onclick="go('dept',this)"><span class="s-icon">🎭</span><span class="s-name">문화부</span><span class="s-count">5</span></div>
+      <div class="s-item" onclick="go('dept',this)"><span class="s-icon">⚽</span><span class="s-name">체육부</span><span class="s-count">3</span></div>
+      <div class="s-item s-mission" onclick="go('mission',this)"><span class="s-icon">✝</span><span class="s-name">미션부</span><span class="s-count">5</span></div>
+      <div class="s-item" onclick="go('editorial',this)"><span class="s-icon">📝</span><span class="s-name">오피니언</span><span class="s-count">3</span></div>
+    </div>
+
+    <div class="s-group">
+      <div class="s-label">AI 에이전트</div>
+      <div class="s-agent"><div class="ag-dot"></div><div class="ag-name">편집장 AI</div><div class="ag-state">active</div></div>
+      <div class="s-agent"><div class="ag-dot"></div><div class="ag-name">데스크 AI</div><div class="ag-state">active</div></div>
+      <div class="s-agent"><div class="ag-dot"></div><div class="ag-name">통신사 AI</div><div class="ag-state">active</div></div>
+      <div class="s-agent"><div class="ag-dot"></div><div class="ag-name">팩트체크 AI</div><div class="ag-state">active</div></div>
+    </div>
+
+    <div class="s-group">
+      <div class="s-label">조직</div>
+      <div class="s-item" onclick="go('team',this)"><span class="s-icon">👥</span><span class="s-name">팀 현황</span></div>
+    </div>
+  </aside>
+
+  <!-- ─── MAIN ─── -->
+  <main class="main">
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <div class="page on" id="page-dashboard">
+      <div class="ph">
+        <div class="ph-left">
+          <h1>편집국 대시보드</h1>
+          <div class="ph-sub">오늘의 신문, 지금 만들어지고 있는 모든 것</div>
+        </div>
+        <div class="ph-right">
+          <b>2026년 5월 13일 (수) 조간</b>
+          마감까지 <span class="up">02시간 47분</span>
+        </div>
+      </div>
+
+      <!-- AI Brief -->
+      <div class="ai-brief fade-in">
+        <div class="ab-label">AI 편집장 모닝 브리핑</div>
+        <div class="ab-text">
+          오늘 1면 후보 14건 중 <em>"한·미 정상 통상협상 타결"</em>(정치부)이 종합 점수 1위입니다.
+          경쟁사 3곳 모두 톱 예정 — <em>차별화 앵글</em> 필요. 정치부 김기자에게 분석 기사 추가 발제 권고.
+          미션부 "한교총 정기총회 발표" 사회적 관심 확장 가능성 감지됨.
+        </div>
+        <div class="ab-meta">생성: 06:42 · 다음 업데이트: 09:00 · 데이터 기반: 통신사 247건 + 자체 취재 42건 + 경쟁 매체 6곳</div>
+      </div>
+
+      <!-- TOP STORY -->
+      <div class="headline-strip fade-in d1">
+        <div class="hs-cat">정치 · 1면 톱 후보</div>
+        <div class="hs-title">한·미, 무역협상 최종 타결… "철강·자동차 관세 추가 인하 합의"</div>
+        <div class="hs-lead">
+          한·미 양국이 12일(현지시간) 워싱턴에서 진행된 통상장관 회담에서 1년 9개월간 끌어온 무역협상을 최종 타결지었다.
+          핵심 쟁점이었던 철강·자동차 관세 인하에 합의했으며, 디지털 통상 분야 신규 협력도 포함됐다.
+        </div>
+        <div class="hs-ai">
+          <b>✦ AI 인사이트</b><br>
+          경쟁사 3곳(조선·중앙·동아) 모두 1면 톱 예정. 우리만의 차별화 앵글이 필요합니다.
+          제안: ① 협상 막후 비화 단독, ② 자동차업계 영향 심층, ③ 한·미·일 통상 삼각구도 분석.
+          정치부 김기자의 워싱턴 특파원 풀 활용 가능.
+        </div>
+        <div class="hs-meta">
+          <span>📍 정치부 김지호 기자</span>
+          <span>·</span>
+          <span>마감: 23:30</span>
+          <span>·</span>
+          <span>워싱턴 발신</span>
+          <span>·</span>
+          <span class="tag t-red">긴급</span>
+          <span class="tag t-gold">1면 톱 후보 #1</span>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats fade-in d2">
+        <div class="st"><div class="sl">금일 1면 후보</div><div class="sv">14</div><div class="ss">8개 부서 발제</div><div class="sc up">↑ 2 vs 전일</div></div>
+        <div class="st"><div class="sl">마감 임박 (1h 내)</div><div class="sv">5</div><div class="ss">정치 2, 사회 2, 경제 1</div><div class="sc">⚠ 주의</div></div>
+        <div class="st"><div class="sl">통신사 수신</div><div class="sv">247</div><div class="ss">자동 분류 215 · 검토 32</div></div>
+        <div class="st"><div class="sl">AI 발언 검증</div><div class="sv">23</div><div class="ss">모순 2 · 부분일치 5</div><div class="sc dn">2건 알림</div></div>
+      </div>
+
+      <div class="g2">
+        <!-- Department Status -->
+        <div class="card fade-in d3">
+          <div class="card-title"><span class="ct-icon">🏢</span>부서별 현황<span class="ct-meta">실시간</span></div>
+          <div class="dept-grid">
+            <div class="dept-card" onclick="go('dept')">
+              <div class="dc-head"><span class="dc-icon">🏛</span><span class="dc-name">정치부</span><span class="dc-status red"></span></div>
+              <div class="dc-row"><span>발제</span><b>8</b></div>
+              <div class="dc-row"><span>마감</span><b>2/8</b></div>
+              <div class="dc-row"><span>1면 후보</span><b style="color:var(--red)">3</b></div>
+            </div>
+            <div class="dept-card" onclick="go('dept')">
+              <div class="dc-head"><span class="dc-icon">💼</span><span class="dc-name">경제부</span><span class="dc-status orange"></span></div>
+              <div class="dc-row"><span>발제</span><b>6</b></div>
+              <div class="dc-row"><span>마감</span><b>3/6</b></div>
+              <div class="dc-row"><span>1면 후보</span><b>2</b></div>
+            </div>
+            <div class="dept-card" onclick="go('dept')">
+              <div class="dc-head"><span class="dc-icon">⚖️</span><span class="dc-name">사회부</span><span class="dc-status orange"></span></div>
+              <div class="dc-row"><span>발제</span><b>9</b></div>
+              <div class="dc-row"><span>마감</span><b>4/9</b></div>
+              <div class="dc-row"><span>1면 후보</span><b>3</b></div>
+            </div>
+            <div class="dept-card" onclick="go('dept')">
+              <div class="dc-head"><span class="dc-icon">🌏</span><span class="dc-name">국제부</span><span class="dc-status green"></span></div>
+              <div class="dc-row"><span>발제</span><b>4</b></div>
+              <div class="dc-row"><span>마감</span><b>4/4</b></div>
+              <div class="dc-row"><span>1면 후보</span><b>1</b></div>
+            </div>
+            <div class="dept-card" onclick="go('dept')">
+              <div class="dc-head"><span class="dc-icon">🎭</span><span class="dc-name">문화부</span><span class="dc-status green"></span></div>
+              <div class="dc-row"><span>발제</span><b>5</b></div>
+              <div class="dc-row"><span>마감</span><b>4/5</b></div>
+              <div class="dc-row"><span>1면 후보</span><b>1</b></div>
+            </div>
+            <div class="dept-card" onclick="go('dept')">
+              <div class="dc-head"><span class="dc-icon">⚽</span><span class="dc-name">체육부</span><span class="dc-status green"></span></div>
+              <div class="dc-row"><span>발제</span><b>3</b></div>
+              <div class="dc-row"><span>마감</span><b>3/3</b></div>
+              <div class="dc-row"><span>1면 후보</span><b>0</b></div>
+            </div>
+            <div class="dept-card" onclick="go('mission')">
+              <div class="dc-head"><span class="dc-icon">✝</span><span class="dc-name" style="color:var(--gold)">미션부</span><span class="dc-status green"></span></div>
+              <div class="dc-row"><span>발제</span><b>5</b></div>
+              <div class="dc-row"><span>마감</span><b>3/5</b></div>
+              <div class="dc-row"><span>1면 후보</span><b>2</b></div>
+            </div>
+            <div class="dept-card" onclick="go('editorial')">
+              <div class="dc-head"><span class="dc-icon">📝</span><span class="dc-name">오피니언</span><span class="dc-status green"></span></div>
+              <div class="dc-row"><span>사설</span><b>3</b></div>
+              <div class="dc-row"><span>칼럼</span><b>5</b></div>
+              <div class="dc-row"><span>외부필자</span><b>2</b></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deadline -->
+        <div class="card fade-in d3">
+          <div class="card-title"><span class="ct-icon">⏱️</span>마감 임박 기사<span class="ct-meta">조간 기준</span></div>
+          <div class="deadline-list">
+            <div class="dl-item">
+              <div class="dl-time tight">00:23</div>
+              <div class="dl-dept">정치</div>
+              <div class="dl-title">한·미 통상협상 타결 — 1면 톱 후보</div>
+              <div class="dl-author">김지호</div>
+              <div class="dl-status"><span class="tag t-red">긴급</span></div>
+            </div>
+            <div class="dl-item">
+              <div class="dl-time tight">00:41</div>
+              <div class="dl-dept">사회</div>
+              <div class="dl-title">검찰, 대장동 항소심 선고 임박… "오늘 결심"</div>
+              <div class="dl-author">박서연</div>
+              <div class="dl-status"><span class="tag t-orange">속보</span></div>
+            </div>
+            <div class="dl-item">
+              <div class="dl-time soon">01:15</div>
+              <div class="dl-dept">경제</div>
+              <div class="dl-title">한은, 기준금리 동결 결정 — 시장 영향 분석</div>
+              <div class="dl-author">이수진</div>
+              <div class="dl-status"><span class="tag t-navy">분석</span></div>
+            </div>
+            <div class="dl-item">
+              <div class="dl-time soon">01:32</div>
+              <div class="dl-dept">정치</div>
+              <div class="dl-title">"의대정원 협상 결렬"… 정부·의협 입장차 좁히지 못해</div>
+              <div class="dl-author">최민호</div>
+              <div class="dl-status"><span class="tag t-orange">속보</span></div>
+            </div>
+            <div class="dl-item">
+              <div class="dl-time ok">02:15</div>
+              <div class="dl-dept">미션</div>
+              <div class="dl-title">한교총 정기총회, "교회 공공성 회복" 결의문 채택</div>
+              <div class="dl-author">정혜원</div>
+              <div class="dl-status"><span class="tag t-gold">기획</span></div>
+            </div>
+            <div class="dl-item">
+              <div class="dl-time ok">02:47</div>
+              <div class="dl-dept">국제</div>
+              <div class="dl-title">미·중 기술 전쟁 새 국면 — 반도체 수출 통제 재정비</div>
+              <div class="dl-author">윤재훈</div>
+              <div class="dl-status"><span class="tag t-navy">분석</span></div>
+            </div>
+            <div class="dl-item">
+              <div class="dl-time ok">03:30</div>
+              <div class="dl-dept">문화</div>
+              <div class="dl-title">한강 작가 신작 발표 — 노벨문학상 이후 첫 장편</div>
+              <div class="dl-author">강은비</div>
+              <div class="dl-status"><span class="tag t-green">완료</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Front page preview -->
+      <div class="card fade-in d4" style="margin-top:14px">
+        <div class="card-title"><span class="ct-icon">📰</span>내일자 1면 미리보기<span class="ct-meta">AI 추천 배치</span></div>
+        <div class="fp-mockup">
+          <div class="fp-mockup-logo">
+            <div class="fml-name">국민일보</div>
+            <div class="fml-date">2026년 5월 14일 (목) 제○○○○○호</div>
+          </div>
+          <div class="fp-mockup-top">한·미 통상협상 최종 타결… "철강·자동차 관세 추가 인하 합의"</div>
+          <div class="fp-mockup-grid">
+            <div class="fp-slot filled">
+              <div class="fp-slot-label">LEFT TOP</div>
+              <div class="fp-slot-title">검찰, 대장동 항소심 결심… "당선 영향 불가피"</div>
+            </div>
+            <div class="fp-slot filled">
+              <div class="fp-slot-label">RIGHT TOP</div>
+              <div class="fp-slot-title">한은 기준금리 동결… 부동산 시장 영향 분석</div>
+            </div>
+            <div class="fp-slot filled">
+              <div class="fp-slot-label">CENTER</div>
+              <div class="fp-slot-title">의대정원 협상 결렬, 정부·의협 다음 라운드는?</div>
+            </div>
+            <div class="fp-slot filled">
+              <div class="fp-slot-label">BOTTOM</div>
+              <div class="fp-slot-title">한교총, "교회 공공성 회복" 결의… 사회적 의미</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 1면 회의 ═══ -->
+    <div class="page" id="page-frontpage">
+      <div class="ph">
+        <div class="ph-left">
+          <h1>1면 회의</h1>
+          <div class="ph-sub">Front Page Conference — 내일자 신문의 얼굴을 결정합니다</div>
+        </div>
+        <div class="ph-right">
+          <b>14건 후보</b>
+          편집국장 + 부장 8명 참여
+        </div>
+      </div>
+
+      <div class="frontpage-meeting fade-in">
+        <div class="fpm-head">
+          <h2>2026년 5월 14일자 1면</h2>
+          <div class="fpm-sub">AI 추천 순위 · 부장 보팅 결과 · 편집국장 최종 결정</div>
+        </div>
+
+        <div class="fpm-candidates">
+          <div class="fpc fpc-top">
+            <div class="fpc-rank">★ TOP</div>
+            <div class="fpc-dept">정치 · 통상</div>
+            <div class="fpc-title">한·미, 무역협상 최종 타결… 철강·자동차 관세 인하 합의</div>
+            <div class="fpc-meta">
+              <span>김지호</span><span>·</span><span>워싱턴</span><span>·</span><span class="tag t-red">긴급</span>
+            </div>
+            <div class="fpc-score-bar"><span class="sb-label">뉴스가치</span><span class="sb-track"><span class="sb-fill" style="width:94%"></span></span><span class="sb-val">94</span></div>
+            <div class="fpc-score-bar"><span class="sb-label">독자관심</span><span class="sb-track"><span class="sb-fill" style="width:88%"></span></span><span class="sb-val">88</span></div>
+            <div class="fpc-score-bar"><span class="sb-label">부장보팅</span><span class="sb-track"><span class="sb-fill" style="width:75%;background:var(--gold)"></span></span><span class="sb-val">6/8</span></div>
+            <div class="fpc-actions">
+              <button class="btn btn-s btn-g">★ 1면 톱 확정</button>
+              <button class="btn btn-s btn-o">미리보기</button>
+            </div>
+          </div>
+
+          <div class="fpc">
+            <div class="fpc-rank">#2</div>
+            <div class="fpc-dept">사회 · 사법</div>
+            <div class="fpc-title">검찰, 대장동 항소심 결심 공판 — 1심 유죄 유지 vs 일부 무죄</div>
+            <div class="fpc-meta">
+              <span>박서연</span><span>·</span><span>법원</span><span>·</span><span class="tag t-orange">속보</span>
+            </div>
+            <div class="fpc-score-bar"><span class="sb-label">뉴스가치</span><span class="sb-track"><span class="sb-fill" style="width:87%"></span></span><span class="sb-val">87</span></div>
+            <div class="fpc-score-bar"><span class="sb-label">독자관심</span><span class="sb-track"><span class="sb-fill" style="width:92%"></span></span><span class="sb-val">92</span></div>
+            <div class="fpc-score-bar"><span class="sb-label">부장보팅</span><span class="sb-track"><span class="sb-fill" style="width:62%;background:var(--gold)"></span></span><span class="sb-val">5/8</span></div>
+            <div class="fpc-actions">
+              <button class="btn btn-s btn-p">1면 배치</button>
+              <button class="btn btn-s btn-o">미리보기</button>
+            </div>
+          </div>
+
+          <div class="fpc">
+            <div class="fpc-rank">#3</div>
+            <div class="fpc-dept">경제 · 금융</div>
+            <div class="fpc-title">한은, 기준금리 3.5% 동결… "부동산 안정까지 신중"</div>
+            <div class="fpc-meta">
+              <span>이수진</span><span>·</span><span>한국은행</span><span>·</span><span class="tag t-navy">분석</span>
+            </div>
+            <div class="fpc-score-bar"><span class="sb-label">뉴스가치</span><span class="sb-track"><span class="sb-fill" style="width:82%"></span></span><span class="sb-val">82</span></div>
+            <div class="fpc-score-bar"><span class="sb-label">독자관심</span><span class="sb-track"><span class="sb-fill" style="width:78%"></span></span><span class="sb-val">78</span></div>
+            <div class="fpc-score-bar"><span class="sb-label">부장보팅</span><span class="sb-track"><span class="sb-fill" style="width:50%;background:var(--gold)"></span></span><span class="sb-val">4/8</span></div>
+            <div class="fpc-actions">
+              <button class="btn btn-s btn-p">1면 배치</button>
+              <button class="btn btn-s btn-o">미리보기</button>
+            </div>
+          </div>
+
+          <div class="fpc">
+            <div class="fpc-rank">#4</div>
+            <div class="fpc-dept">정치 · 의료</div>
+            <div class="fpc-title">의대정원 협상 결렬 — 정부 "원안 고수" vs 의협 "전면 재논의"</div>
+            <div class="fpc-meta">
+              <span>최민호</span><span>·</span><span>국회</span><span>·</span><span class="tag t-orange">속보</span>
+            </div>
+            <div class="fpc-score-bar"><span class="sb-label">뉴스가치</span><span class="sb-track"><span class="sb-fill" style="width:79%"></span></span><span class="sb-val">79</span></div>
+            <div class="fpc-score-bar"><span class="sb-label">독자관심</span><span class="sb-track"><span class="sb-fill" style="width:85%"></span></span><span class="sb-val">85</span></div>
+            <div class="fpc-score-bar"><span class="sb-label">부장보팅</span><span class="sb-track"><span class="sb-fill" style="width:38%;background:var(--gold)"></span></span><span class="sb-val">3/8</span></div>
+            <div class="fpc-actions">
+              <button class="btn btn-s btn-p">1면 배치</button>
+              <button class="btn btn-s btn-o">미리보기</button>
+            </div>
+          </div>
+
+          <div class="fpc">
+            <div class="fpc-rank">#5</div>
+            <div class="fpc-dept">미션 · 종교</div>
+            <div class="fpc-title">한교총 정기총회 "교회 공공성 회복" 결의문 채택</div>
+            <div class="fpc-meta">
+              <span>정혜원</span><span>·</span><span>한교총</span><span>·</span><span class="tag t-gold">단독</span>
+            </div>
+            <div class="fpc-score-bar"><span class="sb-label">뉴스가치</span><span class="sb-track"><span class="sb-fill" style="width:74%"></span></span><span class="sb-val">74</span></div>
+            <div class="fpc-score-bar"><span class="sb-label">독자관심</span><span class="sb-track"><span class="sb-fill" style="width:68%"></span></span><span class="sb-val">68</span></div>
+            <div class="fpc-score-bar"><span class="sb-label">부장보팅</span><span class="sb-track"><span class="sb-fill" style="width:25%;background:var(--gold)"></span></span><span class="sb-val">2/8</span></div>
+            <div class="fpc-actions">
+              <button class="btn btn-s btn-p">1면 배치</button>
+              <button class="btn btn-s btn-o">미리보기</button>
+            </div>
+          </div>
+
+          <div class="fpc">
+            <div class="fpc-rank">#6</div>
+            <div class="fpc-dept">국제 · 안보</div>
+            <div class="fpc-title">미·중 반도체 수출 통제 재정비… 한국 영향 분석</div>
+            <div class="fpc-meta">
+              <span>윤재훈</span><span>·</span><span>워싱턴</span><span>·</span><span class="tag t-navy">기획</span>
+            </div>
+            <div class="fpc-score-bar"><span class="sb-label">뉴스가치</span><span class="sb-track"><span class="sb-fill" style="width:71%"></span></span><span class="sb-val">71</span></div>
+            <div class="fpc-score-bar"><span class="sb-label">독자관심</span><span class="sb-track"><span class="sb-fill" style="width:64%"></span></span><span class="sb-val">64</span></div>
+            <div class="fpc-score-bar"><span class="sb-label">부장보팅</span><span class="sb-track"><span class="sb-fill" style="width:25%;background:var(--gold)"></span></span><span class="sb-val">2/8</span></div>
+            <div class="fpc-actions">
+              <button class="btn btn-s btn-p">1면 배치</button>
+              <button class="btn btn-s btn-o">미리보기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 통신사·메일룸 ═══ -->
+    <div class="page" id="page-wire">
+      <div class="ph">
+        <div class="ph-left">
+          <h1>통신사·메일룸</h1>
+          <div class="ph-sub">News Wire · Inbox — 외부 뉴스 소스의 AI 자동 분류</div>
+        </div>
+        <div class="ph-right">
+          <b>수신 247건 · 자동 분류 215 · 검토 대기 32</b>
+          오늘 06:00 ~ 현재
+        </div>
+      </div>
+
+      <div class="wire-tabs">
+        <div class="wt on">전체<span class="wt-count">247</span></div>
+        <div class="wt">연합뉴스<span class="wt-count">98</span></div>
+        <div class="wt">뉴시스<span class="wt-count">67</span></div>
+        <div class="wt">뉴스1<span class="wt-count">45</span></div>
+        <div class="wt">보도자료<span class="wt-count">37</span></div>
+        <div class="wt" style="color:var(--red);font-weight:700">⚠ 검토 필요<span class="wt-count" style="background:var(--red);color:#fff">32</span></div>
+      </div>
+
+      <div class="wire-item priority fade-in">
+        <div class="wi-source">연합</div>
+        <div class="wi-body">
+          <div class="wi-time">14:32</div>
+          <div class="wi-title">[속보] 한·미, 무역협상 최종 타결… 통상장관 공동발표</div>
+          <div class="wi-lead">한·미 양국이 12일(현지시간) 통상장관 회담에서 무역협상을 타결지었다고 발표했다. 양국은 철강·자동차 관세 추가 인하에 합의했으며…</div>
+          <div class="wi-ai">
+            <b>✦ AI 분석:</b> 1면 톱 후보. 정치부 김지호 기자 워싱턴 풀 활용 시 단독성 확보 가능.
+            경쟁 매체 3곳 모두 톱 예정 — <b>차별화 앵글</b> 추천: ① 막후 비화 / ② 자동차업계 영향 심층 / ③ 한·미·일 통상 구도
+          </div>
+          <div class="wi-actions">
+            <button class="btn btn-s btn-p">정치부 김기자 배정</button>
+            <button class="btn btn-s btn-g">★ 1면 후보</button>
+            <button class="btn btn-s btn-o">자체 취재 발전</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wire-item priority fade-in d1">
+        <div class="wi-source">뉴시스</div>
+        <div class="wi-body">
+          <div class="wi-time">14:18</div>
+          <div class="wi-title">대장동 항소심 결심 공판… 검찰 구형량 발표 임박</div>
+          <div class="wi-lead">서울고등법원 형사 ○○부는 13일 대장동 개발 비리 사건 항소심 결심 공판을 진행한다. 검찰은 1심 무죄를 받은 일부 피고인에 대한…</div>
+          <div class="wi-ai">
+            <b>✦ AI 분석:</b> 사회부 박서연 기자(법원 출입) 이미 취재 중. 통신사 자료와 자체 취재 비교하여 단독 포인트 확인 필요.
+          </div>
+          <div class="wi-actions">
+            <button class="btn btn-s btn-p">사회부 박기자 배정</button>
+            <button class="btn btn-s btn-o">관련 기사 보기</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wire-item recommended fade-in d2">
+        <div class="wi-source">한교총</div>
+        <div class="wi-body">
+          <div class="wi-time">13:45</div>
+          <div class="wi-title">[보도자료] 한국교회총연합 정기총회 결과 발표</div>
+          <div class="wi-lead">한국교회총연합(한교총)은 13일 정기총회에서 "교회 공공성 회복"을 위한 결의문을 채택했다고 밝혔다. 결의문은 ① 교회 재정 투명성 ② 사회적 책임 ③…</div>
+          <div class="wi-ai">
+            <b>✦ AI 분석:</b> 미션부 정혜원 기자에게 배정 권고. 보도자료 기반이나 사회적 의미 확장 가능 — 1면 후보로 추천.
+            팩트체크: 한교총 회원 교회 수 "약 12만" 표현 확인 필요 (직전 발표 11.8만)
+          </div>
+          <div class="wi-actions">
+            <button class="btn btn-s btn-p">미션부 정기자 배정</button>
+            <button class="btn btn-s btn-g">★ 1면 후보</button>
+            <button class="btn btn-s btn-o">기사 초안 보기</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wire-item fade-in d3">
+        <div class="wi-source">한은</div>
+        <div class="wi-body">
+          <div class="wi-time">13:00</div>
+          <div class="wi-title">[보도자료] 한국은행 금융통화위원회, 기준금리 3.50% 동결 결정</div>
+          <div class="wi-lead">한국은행 금융통화위원회는 13일 오전 회의를 열고 기준금리를 현재 수준인 연 3.50%로 동결하기로 결정했다고 밝혔다…</div>
+          <div class="wi-ai">
+            <b>✦ AI 분석:</b> 경제부 이수진 기자(한국은행 출입) 이미 분석 기사 작성 중. 통신사 자료 보완용으로 활용.
+          </div>
+          <div class="wi-actions">
+            <button class="btn btn-s btn-p">경제부 이기자 자료 전달</button>
+            <button class="btn btn-s btn-o">상세 보기</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wire-item fade-in d3">
+        <div class="wi-source">뉴스1</div>
+        <div class="wi-body">
+          <div class="wi-time">12:20</div>
+          <div class="wi-title">한강 작가 신작 발표회 개최 — 노벨문학상 이후 첫 장편</div>
+          <div class="wi-lead">노벨문학상 수상 작가 한강이 약 2년 만에 신작 장편소설을 발표한다. 출판사 ○○북스는 13일 오후 작가 직접 참여 발표회를 연다고 밝혔다…</div>
+          <div class="wi-actions">
+            <button class="btn btn-s btn-p">문화부 강기자 배정</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wire-item fade-in d3">
+        <div class="wi-source">연합</div>
+        <div class="wi-body">
+          <div class="wi-time">11:55</div>
+          <div class="wi-title">의협, 의대정원 협상 결렬 선언… "정부 일방통행 규탄"</div>
+          <div class="wi-lead">대한의사협회는 13일 오전 의대정원 증원 관련 정부와의 협상이 최종 결렬됐다고 발표했다…</div>
+          <div class="wi-ai">
+            <b>⚠ AI 알림:</b> 정치적 민감 이슈. 정부측 입장 별도 취재 필수 (편집 균형 가이드라인).
+          </div>
+          <div class="wi-actions">
+            <button class="btn btn-s btn-p">정치부 최기자 배정</button>
+            <button class="btn btn-s btn-o">정부측 입장 요청</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 출입처 ═══ -->
+    <div class="page" id="page-beats">
+      <div class="ph">
+        <div class="ph-left">
+          <h1>출입처 관리</h1>
+          <div class="ph-sub">Beats — 기자 배치, 출입처 이슈, 백업 체계</div>
+        </div>
+        <div class="ph-right">
+          <b>4개 부서 · 18개 출입처 · 기자 24명 배치</b>
+        </div>
+      </div>
+
+      <div class="beat-tree">
+
+        <div class="beat-card fade-in">
+          <div class="bc-head">
+            <div class="bc-icon">🏛</div>
+            <div class="bc-dept">정치부</div>
+            <div class="bc-status">● 활성 8명</div>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">🏛</span>
+            <span class="br-place">청와대</span>
+            <span class="br-reporter">김지호 · 이서영</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 3건</span>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">🏢</span>
+            <span class="br-place">국회 · 민주당</span>
+            <span class="br-reporter">박지훈</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 2건</span>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">🏢</span>
+            <span class="br-place">국회 · 국민의힘</span>
+            <span class="br-reporter">최민호</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 2건</span>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">🏢</span>
+            <span class="br-place">국회 · 조국혁신당</span>
+            <span class="br-reporter">정수민</span>
+            <span class="br-pulse"><span class="br-dot" style="background:var(--orange)"></span>오늘 1건</span>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">🏛</span>
+            <span class="br-place">총리실</span>
+            <span class="br-reporter">윤재훈</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 0건</span>
+          </div>
+        </div>
+
+        <div class="beat-card fade-in d1">
+          <div class="bc-head">
+            <div class="bc-icon">💼</div>
+            <div class="bc-dept">경제부</div>
+            <div class="bc-status">● 활성 6명</div>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">💰</span>
+            <span class="br-place">기획재정부</span>
+            <span class="br-reporter">조현우</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 1건</span>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">🏦</span>
+            <span class="br-place">한국은행</span>
+            <span class="br-reporter">이수진</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 2건</span>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">💱</span>
+            <span class="br-place">금융위 · 금감원</span>
+            <span class="br-reporter">한동희</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 1건</span>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">🏭</span>
+            <span class="br-place">산업통상자원부</span>
+            <span class="br-reporter">송예린</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 1건</span>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">📈</span>
+            <span class="br-place">증권 · 자본시장</span>
+            <span class="br-reporter">전민우 · 김도윤</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 2건</span>
+          </div>
+        </div>
+
+        <div class="beat-card fade-in d2">
+          <div class="bc-head">
+            <div class="bc-icon">⚖️</div>
+            <div class="bc-dept">사회부</div>
+            <div class="bc-status">● 활성 9명</div>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">🏛</span>
+            <span class="br-place">서울중앙지검</span>
+            <span class="br-reporter">박서연</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 3건</span>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">🚔</span>
+            <span class="br-place">경찰청</span>
+            <span class="br-reporter">강재호</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 2건</span>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">⚖️</span>
+            <span class="br-place">서울중앙지법</span>
+            <span class="br-reporter">홍민지</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 1건</span>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">🏥</span>
+            <span class="br-place">보건복지부</span>
+            <span class="br-reporter">류서희</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 1건</span>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">🎓</span>
+            <span class="br-place">교육부</span>
+            <span class="br-reporter">백선우</span>
+            <span class="br-pulse"><span class="br-dot" style="background:var(--orange)"></span>오늘 0건</span>
+          </div>
+        </div>
+
+        <div class="beat-card fade-in d2">
+          <div class="bc-head">
+            <div class="bc-icon">✝</div>
+            <div class="bc-dept" style="color:var(--gold)">미션부</div>
+            <div class="bc-status">● 활성 5명</div>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">⛪</span>
+            <span class="br-place">한국교회총연합</span>
+            <span class="br-reporter">정혜원</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 2건</span>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">⛪</span>
+            <span class="br-place">한국기독교총연합회</span>
+            <span class="br-reporter">서지수</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 1건</span>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">📖</span>
+            <span class="br-place">대한예수교장로회</span>
+            <span class="br-reporter">남승현</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 1건</span>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">📖</span>
+            <span class="br-place">기독교대한감리회</span>
+            <span class="br-reporter">오태경</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 1건</span>
+          </div>
+          <div class="beat-row">
+            <span class="cr-icon">🌍</span>
+            <span class="br-place">선교·국제기독교</span>
+            <span class="br-reporter">노채린</span>
+            <span class="br-pulse"><span class="br-dot"></span>오늘 0건</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══ 정치 발언 검증 ═══ -->
+    <div class="page" id="page-verify">
+      <div class="ph">
+        <div class="ph-left">
+          <h1>발언 검증</h1>
+          <div class="ph-sub">Statement Verification — 정치인 발언 vs 과거 발언 자동 대조</div>
+        </div>
+        <div class="ph-right">
+          <b>오늘 검증 23건 · 모순 2 · 부분일치 5</b>
+        </div>
+      </div>
+
+      <div class="card fade-in" style="margin-bottom:18px">
+        <div class="card-title"><span class="ct-icon">⚖️</span>편집 균형 모니터 (이번 주)</div>
+        <div class="balance-bar">
+          <div class="balance-seg bs-dem" style="width:34%">민주 34%</div>
+          <div class="balance-seg bs-ppp" style="width:36%">국힘 36%</div>
+          <div class="balance-seg bs-new" style="width:18%">혁신 18%</div>
+          <div class="balance-seg bs-other" style="width:12%">기타 12%</div>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:var(--ink4);line-height:1.6">
+          ✦ 이번 주 정당별 기사 비중 균형 양호 (편차 ±5% 이내). 직전 주 대비 조국혁신당 +3%p, 기타 정당 -2%p.
+        </div>
+      </div>
+
+      <div class="statement-card fade-in d1">
+        <div class="sc-head">
+          <div class="sc-name">○○○ 의원</div>
+          <div class="sc-party">국민의힘 / 4선</div>
+          <div class="sc-time">2026.05.13 오전 10:42 · 국회 본회의장</div>
+        </div>
+        <div class="sc-body">
+          <div class="sc-quote">
+            의대 정원 증원 문제에 대해서는 우리 당이 일관되게 점진적 확대를 주장해왔습니다. 갑작스러운 2,000명 증원은 정부가 처음부터 잘못 설계한 것입니다.
+          </div>
+          <div class="sc-vs">
+            <div class="sc-vs-label">⚠ 과거 발언과 모순</div>
+            <div class="sc-vs-text">
+              "의대 정원은 즉각적이고 대폭적인 증원이 필요하다. 점진적 확대로는 의료 공백을 해결할 수 없다."
+            </div>
+            <div class="sc-vs-meta">2024.02.18 · 당 정책 토론회 발언 · 영상 출처 보존됨</div>
+          </div>
+          <div class="sc-vs">
+            <div class="sc-vs-label">⚠ 당론과 차이</div>
+            <div class="sc-vs-text">
+              국민의힘 공식 입장: "필수 의료 인력 확충을 위한 조속한 증원이 필요하다" (2024년 정당 공식 논평)
+            </div>
+            <div class="sc-vs-meta">2024.03.05 · 국민의힘 공식 논평 · 정당 정책국</div>
+          </div>
+          <div class="sc-verdict">
+            <div class="sc-verdict-badge contradiction">발언 모순</div>
+            <span style="font-size:12px;color:var(--ink3);line-height:1.6">
+              과거 본인 발언 + 당 공식 입장 모두와 상반. 기사화 시 <b>균형 표기 필수</b> — 의원 측 해명 요청 권고.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="statement-card fade-in d2">
+        <div class="sc-head">
+          <div class="sc-name">△△△ 의원</div>
+          <div class="sc-party">더불어민주당 / 재선</div>
+          <div class="sc-time">2026.05.13 오전 11:15 · 정책간담회</div>
+        </div>
+        <div class="sc-body">
+          <div class="sc-quote">
+            우리 당은 부동산 시장 안정을 위해 일관되게 공급 확대와 수요 억제를 동시에 추진해왔습니다.
+          </div>
+          <div class="sc-vs">
+            <div class="sc-vs-label">△ 부분 일치</div>
+            <div class="sc-vs-text">
+              과거: "수요 억제 중심 정책 우선" 강조 (2024.06)<br>
+              현재: "공급 확대와 수요 억제 동시 추진" — 정책 강조점 변화 있으나 명백한 모순은 아님
+            </div>
+            <div class="sc-vs-meta">정책 기조 변화는 합리적 — 모순으로 단정 어려움</div>
+          </div>
+          <div class="sc-verdict">
+            <div class="sc-verdict-badge partial">부분 일치</div>
+            <span style="font-size:12px;color:var(--ink3);line-height:1.6">
+              정책 기조 변화로 해석 가능. 기사화 시 <b>"입장 변화" 맥락 함께 제시</b> 권고.
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 여론 인텔리전스 ═══ -->
+    <div class="page" id="page-opinion">
+      <div class="ph">
+        <div class="ph-left">
+          <h1>여론 인텔리전스</h1>
+          <div class="ph-sub">Public Opinion Intelligence — 이념·연령·지역별 다층 분석</div>
+        </div>
+        <div class="ph-right">
+          <b>분석 대상 14,800 댓글 · 6,400 SNS 멘션</b>
+          최근 24시간
+        </div>
+      </div>
+
+      <div class="card fade-in">
+        <div class="card-title"><span class="ct-icon">📊</span>주요 이슈별 여론 분포 — 한·미 무역협상 타결</div>
+        <div style="margin-bottom:14px">
+          <div style="font-family:var(--serif);font-weight:700;font-size:13px;margin-bottom:6px">이념 성향별</div>
+          <div class="pulse-row"><span class="pr-name">보수</span><span class="pr-bar"><span class="pr-fill" style="width:32%"></span></span><span class="pr-val">+64</span></div>
+          <div class="pulse-row"><span class="pr-name">중도</span><span class="pr-bar"><span class="pr-fill" style="width:18%"></span></span><span class="pr-val">+36</span></div>
+          <div class="pulse-row"><span class="pr-name">진보</span><span class="pr-bar"><span class="pr-fill neg" style="width:12%"></span></span><span class="pr-val">-24</span></div>
+        </div>
+
+        <div style="margin-bottom:14px">
+          <div style="font-family:var(--serif);font-weight:700;font-size:13px;margin-bottom:6px">연령별</div>
+          <div class="pulse-row"><span class="pr-name">20대</span><span class="pr-bar"><span class="pr-fill" style="width:8%"></span></span><span class="pr-val">+16</span></div>
+          <div class="pulse-row"><span class="pr-name">30대</span><span class="pr-bar"><span class="pr-fill" style="width:14%"></span></span><span class="pr-val">+28</span></div>
+          <div class="pulse-row"><span class="pr-name">40대</span><span class="pr-bar"><span class="pr-fill" style="width:22%"></span></span><span class="pr-val">+44</span></div>
+          <div class="pulse-row"><span class="pr-name">50대</span><span class="pr-bar"><span class="pr-fill" style="width:30%"></span></span><span class="pr-val">+60</span></div>
+          <div class="pulse-row"><span class="pr-name">60대+</span><span class="pr-bar"><span class="pr-fill" style="width:36%"></span></span><span class="pr-val">+72</span></div>
+        </div>
+
+        <div>
+          <div style="font-family:var(--serif);font-weight:700;font-size:13px;margin-bottom:6px">지역별</div>
+          <div class="pulse-row"><span class="pr-name">수도권</span><span class="pr-bar"><span class="pr-fill" style="width:20%"></span></span><span class="pr-val">+40</span></div>
+          <div class="pulse-row"><span class="pr-name">영남권</span><span class="pr-bar"><span class="pr-fill" style="width:34%"></span></span><span class="pr-val">+68</span></div>
+          <div class="pulse-row"><span class="pr-name">호남권</span><span class="pr-bar"><span class="pr-fill neg" style="width:5%"></span></span><span class="pr-val">-10</span></div>
+          <div class="pulse-row"><span class="pr-name">충청권</span><span class="pr-bar"><span class="pr-fill" style="width:18%"></span></span><span class="pr-val">+36</span></div>
+          <div class="pulse-row"><span class="pr-name">강원·제주</span><span class="pr-bar"><span class="pr-fill" style="width:22%"></span></span><span class="pr-val">+44</span></div>
+        </div>
+      </div>
+
+      <div class="g2 fade-in d2">
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">🔥</span>오늘의 핫이슈 TOP 5</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="padding:10px;background:var(--paper2);border-left:3px solid var(--red)">
+              <div style="font-family:var(--serif);font-weight:700;font-size:13px">1. 한·미 무역협상 타결</div>
+              <div style="font-family:var(--mono);font-size:10px;color:var(--ink4);margin-top:4px">멘션 4,820 · 감정 +44 · 트렌드 ↑↑↑</div>
+            </div>
+            <div style="padding:10px;background:var(--paper2);border-left:3px solid var(--red)">
+              <div style="font-family:var(--serif);font-weight:700;font-size:13px">2. 대장동 항소심 선고</div>
+              <div style="font-family:var(--mono);font-size:10px;color:var(--ink4);margin-top:4px">멘션 3,640 · 감정 -18 · 트렌드 ↑↑</div>
+            </div>
+            <div style="padding:10px;background:var(--paper2);border-left:3px solid var(--orange)">
+              <div style="font-family:var(--serif);font-weight:700;font-size:13px">3. 의대정원 협상 결렬</div>
+              <div style="font-family:var(--mono);font-size:10px;color:var(--ink4);margin-top:4px">멘션 2,890 · 감정 -32 · 트렌드 ↑</div>
+            </div>
+            <div style="padding:10px;background:var(--paper2);border-left:3px solid var(--navy)">
+              <div style="font-family:var(--serif);font-weight:700;font-size:13px">4. 한은 금리 동결</div>
+              <div style="font-family:var(--mono);font-size:10px;color:var(--ink4);margin-top:4px">멘션 1,820 · 감정 +8 · 트렌드 →</div>
+            </div>
+            <div style="padding:10px;background:var(--paper2);border-left:3px solid var(--gold)">
+              <div style="font-family:var(--serif);font-weight:700;font-size:13px">5. 한교총 공공성 결의</div>
+              <div style="font-family:var(--mono);font-size:10px;color:var(--ink4);margin-top:4px">멘션 940 · 감정 +28 · 트렌드 ↑</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">🎯</span>아젠다 발굴 — 우리가 안 쓴 주제</div>
+          <div style="display:flex;flex-direction:column;gap:10px;font-size:12px">
+            <div style="padding:10px;background:var(--gold-soft);border-left:3px solid var(--gold)">
+              <div style="font-family:var(--serif);font-weight:700;font-size:13px">#청년 주거 불안</div>
+              <div style="color:var(--ink3);margin-top:4px;line-height:1.6">SNS 멘션 +217%. 우리 매체 보도 7일째 0건. 경쟁사 3곳은 이미 기획 시작.</div>
+            </div>
+            <div style="padding:10px;background:var(--gold-soft);border-left:3px solid var(--gold)">
+              <div style="font-family:var(--serif);font-weight:700;font-size:13px">#노인 빈곤 통계</div>
+              <div style="color:var(--ink3);margin-top:4px;line-height:1.6">통계청 12일 발표 후 50대 이상 댓글 급증. 사회·정책 앵글 가능.</div>
+            </div>
+            <div style="padding:10px;background:var(--gold-soft);border-left:3px solid var(--gold)">
+              <div style="font-family:var(--serif);font-weight:700;font-size:13px">#기독교 청년 이탈</div>
+              <div style="color:var(--ink3);margin-top:4px;line-height:1.6">미션부 단독 가능 영역. 한교총 결의문과 연계 분석 권고.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 팩트체크 ═══ -->
+    <div class="page" id="page-factcheck">
+      <div class="ph">
+        <div class="ph-left">
+          <h1>팩트체크 어시스턴트</h1>
+          <div class="ph-sub">AI 선별 → 기자 클릭 → AI 검증 → 최종 확인</div>
+        </div>
+        <div class="ph-right">
+          <b>오늘 검증 47건 · 검증 완료 38 · 진행 6 · 이의 3</b>
+        </div>
+      </div>
+
+      <div class="g4 fade-in" style="margin-bottom:18px">
+        <div class="st"><div class="sl">AI 선별</div><div class="sv">6</div><div class="ss">검증 필요 문장</div></div>
+        <div class="st"><div class="sl">검증 완료</div><div class="sv up">38</div><div class="ss">출처 확인됨</div></div>
+        <div class="st"><div class="sl">이의 제기</div><div class="sv dn">3</div><div class="ss">기자 확인 필요</div></div>
+        <div class="st"><div class="sl">평균 소요</div><div class="sv">12<small style="font-size:14px">분</small></div><div class="ss">기사당 (기존 40분)</div></div>
+      </div>
+
+      <div class="card fade-in d1">
+        <div class="card-title"><span class="ct-icon">🔍</span>검증 진행 중</div>
+
+        <div style="padding:14px;background:var(--paper2);border:1px solid var(--rule);margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <span class="tag t-orange">검증 중</span>
+            <span style="font-family:var(--serif);font-weight:700;font-size:14px">한·미 통상협상 — 자동차 관세 인하 폭 확인</span>
+            <span style="margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink4)">정치부 김지호</span>
+          </div>
+          <div style="font-family:var(--serif);font-size:13px;line-height:1.7;color:var(--ink2);padding-left:14px;border-left:3px solid var(--orange);font-style:italic">
+            "양국은 자동차 관세를 <span style="background:var(--orange-soft);font-weight:700;padding:0 4px">기존 25%에서 12.5%로 인하</span>하는 데 합의했다"
+          </div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:10px;line-height:1.6">
+            <b style="color:var(--orange)">⚠ AI 검증 결과:</b> 통상장관 공동발표문 원문은 "관세 인하"만 명시, 구체 인하폭 미공개.
+            연합뉴스 기사는 "관세 50% 인하" 표현 사용. <b>출처 확인 또는 표현 수정 필요.</b>
+          </div>
+        </div>
+
+        <div style="padding:14px;background:var(--paper2);border:1px solid var(--rule);margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <span class="tag t-green">검증 완료</span>
+            <span style="font-family:var(--serif);font-weight:700;font-size:14px">대장동 항소심 — 1심 형량 정확 확인</span>
+            <span style="margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink4)">사회부 박서연</span>
+          </div>
+          <div style="font-family:var(--serif);font-size:13px;line-height:1.7;color:var(--ink2);padding-left:14px;border-left:3px solid var(--green);font-style:italic">
+            "○○ 피고인은 1심에서 <span style="background:var(--green-soft);font-weight:700;padding:0 4px">징역 5년 6개월</span>을 선고받았다"
+          </div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:10px;line-height:1.6">
+            <b style="color:var(--green)">✓ AI 검증 결과:</b> 서울중앙지법 1심 판결문(2024.10.12) 일치 확인. 형량 정확.
+          </div>
+        </div>
+
+        <div style="padding:14px;background:var(--paper2);border:1px solid var(--rule)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <span class="tag t-red">이의 제기</span>
+            <span style="font-family:var(--serif);font-weight:700;font-size:14px">한교총 결의문 — 회원 교회 수 표현</span>
+            <span style="margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink4)">미션부 정혜원</span>
+          </div>
+          <div style="font-family:var(--serif);font-size:13px;line-height:1.7;color:var(--ink2);padding-left:14px;border-left:3px solid var(--red);font-style:italic">
+            "한교총 회원 <span style="background:var(--red-soft);font-weight:700;padding:0 4px">약 12만 교회</span>가 결의문에 동참했다"
+          </div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:10px;line-height:1.6">
+            <b style="color:var(--red)">✗ AI 검증 결과:</b> 한교총 직전 공식 발표(2025.12) "약 11.8만 교회". 보도자료는 "약 12만" 표현.
+            <b>반올림 표현 vs 정확 수치</b> 판단 필요. 기자 최종 확인 요청.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 실시간 독자참여공간 (LiveRe Feed) ═══ -->
+    <div class="page" id="page-audience">
+      <div class="ph">
+        <div class="ph-left">
+          <h1>실시간 독자참여공간</h1>
+          <div class="ph-sub">LiveRe Feed · 댓글 + 설문 + 광고가 통합된 차세대 독자 참여 위젯</div>
+        </div>
+        <div class="ph-right">
+          <b>오늘 활성 독자 8,420명</b>
+          참여율 24.3%
+        </div>
+      </div>
+
+      <!-- Hero with Live Stats -->
+      <div class="aud-hero fade-in">
+        <h3>📡 실시간 독자 참여 — 한·미 통상협상 타결 기사</h3>
+        <p>독자들이 만드는 살아있는 뉴스룸, 라이브리 피드가 한 줄 스크립트로 시작합니다</p>
+        <div class="aud-stat-bar">
+          <div class="asb-item">
+            <div class="asb-label">참여 댓글</div>
+            <div class="asb-val">3,420<small>건</small></div>
+          </div>
+          <div class="asb-item">
+            <div class="asb-label">설문 응답</div>
+            <div class="asb-val">12,400<small>회</small></div>
+          </div>
+          <div class="asb-item">
+            <div class="asb-label">리액션</div>
+            <div class="asb-val">28,200<small>개</small></div>
+          </div>
+          <div class="asb-item">
+            <div class="asb-label">광고 노출</div>
+            <div class="asb-val">142,800</div>
+          </div>
+          <div class="asb-item">
+            <div class="asb-label">오늘 광고 수익</div>
+            <div class="asb-val" style="color:var(--gold2)">₩4,280,000</div>
+          </div>
+          <div class="asb-item">
+            <div class="asb-label">평균 체류</div>
+            <div class="asb-val">4:32<small>분</small></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Embed Script Box -->
+      <div class="embed-box fade-in d1">
+        <div class="embed-tabs">
+          <div class="et-tab on">📋 설치 스크립트</div>
+          <div class="et-tab">⚙️ 위젯 설정</div>
+          <div class="et-tab">👁 미리보기</div>
+          <div class="et-info">국민일보 페이지에 이 한 줄만 삽입하면 됩니다</div>
+        </div>
+        <div class="embed-body">
+          <div class="embed-code">
+<span class="ec-comment">&lt;!-- 국민일보 기사 페이지에 삽입 --&gt;</span><br>
+<span class="ec-tag">&lt;div</span> <span class="ec-attr">data-livere-feed</span>=<span class="ec-string">"article-12345"</span> <span class="ec-attr">data-position</span>=<span class="ec-string">"bottom"</span> <span class="ec-attr">data-theme</span>=<span class="ec-string">"auto"</span><span class="ec-tag">&gt;&lt;/div&gt;</span><br>
+<span class="ec-tag">&lt;script</span> <span class="ec-attr">src</span>=<span class="ec-string">"https://livere.com/feed/v2/embed.js"</span> <span class="ec-attr">async</span><span class="ec-tag">&gt;&lt;/script&gt;</span>
+            <button class="copy-btn" onclick="alert('클립보드에 복사되었습니다')">📋 복사</button>
+          </div>
+          <div class="embed-opts">
+            <div class="eo-group">
+              <span>설치 위치:</span>
+              <select>
+                <option>기사 하단</option>
+                <option>우측 사이드바</option>
+                <option>본문 중간 삽입</option>
+              </select>
+            </div>
+            <div class="eo-group">
+              <span>테마:</span>
+              <select>
+                <option>자동 (사이트 테마 매칭)</option>
+                <option>라이트</option>
+                <option>다크</option>
+              </select>
+            </div>
+            <div class="eo-group">
+              <span>광고 포함:</span>
+              <select>
+                <option>예 (수익 분배 50:50)</option>
+                <option>아니오 (광고 미노출)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Layout: Feed + Config -->
+      <div class="audience-layout">
+
+        <!-- LEFT: Feed Preview -->
+        <div>
+          <div class="device-bar fade-in d2">
+            <span class="dt-label">실시간 미리보기</span>
+            <button class="dt-btn on" onclick="this.classList.add('on');this.nextElementSibling.classList.remove('on');document.getElementById('feedWrap').classList.remove('mobile')">🖥️ 데스크탑</button>
+            <button class="dt-btn" onclick="this.classList.add('on');this.previousElementSibling.classList.remove('on');document.getElementById('feedWrap').classList.add('mobile')">📱 모바일</button>
+          </div>
+
+          <div class="feed-wrap fade-in d3" id="feedWrap">
+            <div class="feed-header">
+              <div class="fh-logo">LiveRe <em>Feed</em></div>
+              <div class="fh-count">독자 <b>8,420</b>명 참여 중</div>
+              <div class="fh-status"><span class="fh-dot"></span>LIVE</div>
+            </div>
+
+            <!-- CARD 1: 기자 질문 -->
+            <div class="fc fc-question">
+              <div class="q-head">
+                <span class="q-label">REPORTER QUESTION</span>
+                <span class="q-time">2분 전</span>
+              </div>
+              <div class="q-body">
+                <div class="q-reporter">
+                  <div class="qr-avatar">김</div>
+                  <div>
+                    <div class="qr-name">김지호 기자</div>
+                    <div class="qr-dept">정치부 · 통상 출입</div>
+                  </div>
+                </div>
+                <div class="q-text">한·미 통상협상이 타결됐습니다. 자동차 관세 인하가 한국 경제에 도움이 될 것이라 보십니까?</div>
+                <div class="q-meta">
+                  <span>💬 답글 247</span>
+                  <span>·</span>
+                  <span>♥ 좋아요 1,840</span>
+                  <span>·</span>
+                  <span>↗ 공유 89</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 2: 댓글 (의사 인증) -->
+            <div class="fc fc-comment">
+              <div class="cc-head">
+                <div class="cc-avatar green">박</div>
+                <div class="cc-info">
+                  <div class="cc-name-line">
+                    <span class="cc-name">박○○</span>
+                    <span class="cc-badge doctor">✓ 의사</span>
+                    <span class="cc-handle">@parkmd_seoul</span>
+                  </div>
+                  <div class="cc-time">12분 전</div>
+                </div>
+                <div class="cc-pin">📌 편집국 핀</div>
+              </div>
+              <div class="cc-text">자동차 관세 인하는 좋지만, 의료기기 수입 관세는 그대로네요. 국내 병원들 진료 단가 부담은 변함이 없을 것 같습니다. 의료기기 산업도 협상 대상에 포함됐어야 했습니다.</div>
+              <div class="cc-reactions">
+                <div class="reaction active"><span class="rx-emoji">👍</span><span class="rx-count">340</span></div>
+                <div class="reaction"><span class="rx-emoji">😡</span><span class="rx-count">42</span></div>
+                <div class="reaction"><span class="rx-emoji">🤔</span><span class="rx-count">128</span></div>
+                <div class="reaction"><span class="rx-emoji">💯</span><span class="rx-count">89</span></div>
+                <div class="cc-actions">
+                  <span class="cc-action">💬 답글 12</span>
+                  <span class="cc-action">↗ 공유</span>
+                </div>
+              </div>
+              <div class="cc-replies">
+                <div class="cc-reply">
+                  <div class="reply-avatar reporter">김</div>
+                  <div class="reply-body">
+                    <span class="reply-name">김지호 기자</span>
+                    <span class="reply-reporter-badge">✓ 기자</span>
+                    <span class="reply-time">5분 전</span><br>
+                    좋은 지적입니다. 의료기기 부분은 차기 협상에 포함될 가능성에 대해 추가 취재해 보겠습니다.
+                  </div>
+                </div>
+                <div class="cc-reply">
+                  <div class="reply-avatar">최</div>
+                  <div class="reply-body">
+                    <span class="reply-name">최○○</span>
+                    <span class="reply-time">3분 전</span><br>
+                    저도 같은 생각입니다. 정부가 의료 분야는 양보한 것 같네요.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 3: 댓글 (변호사 인증) -->
+            <div class="fc fc-comment">
+              <div class="cc-head">
+                <div class="cc-avatar">이</div>
+                <div class="cc-info">
+                  <div class="cc-name-line">
+                    <span class="cc-name">이○○</span>
+                    <span class="cc-badge lawyer">✓ 변호사</span>
+                    <span class="cc-handle">@law_lee</span>
+                  </div>
+                  <div class="cc-time">28분 전</div>
+                </div>
+              </div>
+              <div class="cc-text">국제통상법 관점에서 이번 협정문이 WTO 규정과 충돌하는지 검토가 필요해 보입니다. 특히 디지털 통상 조항 부분은 기존 한·EU FTA와 다른 접근법이라 흥미롭습니다.</div>
+              <div class="cc-reactions">
+                <div class="reaction"><span class="rx-emoji">👍</span><span class="rx-count">156</span></div>
+                <div class="reaction"><span class="rx-emoji">🤔</span><span class="rx-count">203</span></div>
+                <div class="reaction"><span class="rx-emoji">💯</span><span class="rx-count">67</span></div>
+                <div class="cc-actions">
+                  <span class="cc-action">💬 답글 8</span>
+                  <span class="cc-action">↗ 공유</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 4: 설문 -->
+            <div class="fc fc-survey">
+              <div class="sv-head">
+                <span class="sv-tag">📊 POLL · 국민일보</span>
+                <span class="sv-status"><span class="sv-dot"></span>진행 중 · 종료까지 14:23:42</span>
+              </div>
+              <div class="sv-body">
+                <div class="sv-q">한·미 통상협상 타결, 한국 경제에 어떤 영향을 미칠까요?</div>
+                <div class="sv-options">
+                  <div class="sv-opt voted">
+                    <div class="sv-fill" style="width:42%"></div>
+                    <div class="sv-opt-content">
+                      <span class="sv-opt-text">긍정적 — 수출 활성화 기대</span>
+                      <span class="sv-opt-pct">42%</span>
+                    </div>
+                  </div>
+                  <div class="sv-opt">
+                    <div class="sv-fill" style="width:31%"></div>
+                    <div class="sv-opt-content">
+                      <span class="sv-opt-text">제한적 — 단기 효과에 그칠 것</span>
+                      <span class="sv-opt-pct">31%</span>
+                    </div>
+                  </div>
+                  <div class="sv-opt">
+                    <div class="sv-fill" style="width:18%"></div>
+                    <div class="sv-opt-content">
+                      <span class="sv-opt-text">부정적 — 미국 의존도 심화</span>
+                      <span class="sv-opt-pct">18%</span>
+                    </div>
+                  </div>
+                  <div class="sv-opt">
+                    <div class="sv-fill" style="width:9%"></div>
+                    <div class="sv-opt-content">
+                      <span class="sv-opt-text">잘 모르겠다</span>
+                      <span class="sv-opt-pct">9%</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="sv-meta">
+                  <span>👥 12,420명 응답</span>
+                  <span>·</span>
+                  <span>📊 결과 실시간</span>
+                  <span>·</span>
+                  <span>기사 인용 가능</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 5: 스폰서 광고 -->
+            <div class="fc fc-sponsor">
+              <div class="sp-head">
+                <span class="sp-label">SPONSORED · 광고</span>
+                <span class="sp-disclaimer">국민일보 광고센터 제공</span>
+              </div>
+              <div class="sp-body">
+                <div class="sp-brand">
+                  <div class="sp-logo">현</div>
+                  <div class="sp-brand-info">
+                    <div class="sp-brand-name">현대자동차</div>
+                    <div class="sp-brand-handle">@hyundai_official · 광고</div>
+                  </div>
+                </div>
+                <div class="sp-content">한·미 무역협상 타결, 현대차는 미국 시장 점유율 확대를 위한 친환경차 라인업을 강화합니다. 새로운 IONIQ 9 사전 예약을 시작합니다.</div>
+                <div class="sp-image">IONIQ 9 — 미국 시장 정조준</div>
+                <div class="sp-cta">
+                  <button class="sp-btn">자세히 보기 →</button>
+                  <span class="sp-stats">노출 4,820 · 클릭 142 (CTR 2.9%)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 6: 댓글 (일반) -->
+            <div class="fc fc-comment">
+              <div class="cc-head">
+                <div class="cc-avatar red">정</div>
+                <div class="cc-info">
+                  <div class="cc-name-line">
+                    <span class="cc-name">정○○</span>
+                    <span class="cc-handle">@chung_seoul</span>
+                  </div>
+                  <div class="cc-time">42분 전</div>
+                </div>
+              </div>
+              <div class="cc-text">자동차 만들어 미국 수출하는 거 잘 됐는데, 농산물은요? 한·미 FTA 때처럼 또 농민들이 피해보는 거 아닌가요?</div>
+              <div class="cc-reactions">
+                <div class="reaction"><span class="rx-emoji">👍</span><span class="rx-count">218</span></div>
+                <div class="reaction active"><span class="rx-emoji">😡</span><span class="rx-count">94</span></div>
+                <div class="reaction"><span class="rx-emoji">😢</span><span class="rx-count">156</span></div>
+                <div class="reaction"><span class="rx-emoji">💯</span><span class="rx-count">38</span></div>
+                <div class="cc-actions">
+                  <span class="cc-action">💬 답글 24</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 7: 공식 입장 (의협) -->
+            <div class="fc fc-official">
+              <div class="of-head">
+                <span class="of-label">🏛️ OFFICIAL STATEMENT · 공식 입장</span>
+                <span class="of-verified">✓ 인증된 기관</span>
+              </div>
+              <div class="of-body">
+                <div class="of-org">
+                  <div class="of-logo">의</div>
+                  <div>
+                    <div class="of-org-name">대한의사협회</div>
+                    <div class="of-org-sub">@kma_official · 의료 단체</div>
+                  </div>
+                </div>
+                <div class="of-statement">대한의사협회는 이번 한·미 통상협상에서 의료기기·의약품 관련 사항이 충분히 다뤄지지 않은 점에 유감을 표합니다. 국민 의료비 부담 완화를 위해 차기 협상에는 의료 분야가 포함되어야 합니다.</div>
+                <div class="of-meta">
+                  <span>📅 2026.05.13 14:20 발표</span>
+                  <span>·</span>
+                  <span>👁 조회 8,420</span>
+                  <span>·</span>
+                  <span>💬 댓글 247</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 8: 팩트체크 결과 -->
+            <div class="fc fc-factcheck">
+              <div class="fk-head">
+                <span class="fk-label">✓ FACT-CHECK · AI 자동 검증</span>
+                <span class="fk-verdict contradict">발언 모순</span>
+              </div>
+              <div class="fk-body">
+                <div class="fk-person">
+                  <div class="cc-avatar">○</div>
+                  <div>
+                    <div class="fk-name">○○○ 의원</div>
+                    <div class="fk-party">국민의힘 · 4선</div>
+                  </div>
+                </div>
+                <div class="fk-quote">의대 정원 증원은 우리 당이 일관되게 점진적 확대를 주장해왔습니다.</div>
+                <div class="fk-result">
+                  <b>⚠ AI 검증 결과:</b> 2024년 2월 본인 발언 "즉각적이고 대폭적인 증원 필요"와 모순. 당시 당론 또한 "필수 의료 인력 조속한 증원 필요"였음. 
+                  <span style="color:var(--ink4);font-family:var(--mono);font-size:10px">출처: 정당 정책 토론회 영상 (보존됨), 국민의힘 공식 논평 2024.03.05</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 9: 실시간 토론 -->
+            <div class="fc fc-discussion">
+              <div class="ld-head">
+                <span class="ld-label"><span class="ld-pulse"></span>LIVE DEBATE · 실시간 토론</span>
+                <span class="ld-count">🔥 1,247명 참여 중</span>
+              </div>
+              <div class="ld-body">
+                <div class="ld-topic">의대 증원 협상 결렬 — 정부 vs 의협, 누가 양보해야 하는가?</div>
+                <div class="ld-summary">정치부 최민호 기자가 진행 중인 라이브 토론. 의사·환자·정책 전문가가 참여하고 있습니다.</div>
+                <div class="ld-participants">
+                  <div class="ld-ava green">의</div>
+                  <div class="ld-ava">환</div>
+                  <div class="ld-ava gold">전</div>
+                  <div class="ld-ava red">정</div>
+                  <div class="ld-ava">시</div>
+                  <div class="ld-ava more">+1.2K</div>
+                </div>
+                <div class="ld-actions">
+                  <button class="ld-join">🎤 토론 참여하기</button>
+                  <span class="ld-stats">시작 12분 전 · 평균 의견 교환 320건/분</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 10: 스폰서 광고 #2 (설문형) -->
+            <div class="fc fc-sponsor">
+              <div class="sp-head">
+                <span class="sp-label">SPONSORED POLL · 스폰서 설문</span>
+                <span class="sp-disclaimer">SK텔레콤 제공</span>
+              </div>
+              <div class="sp-body">
+                <div class="sp-brand">
+                  <div class="sp-logo" style="background:#EA002C;color:#fff">S</div>
+                  <div class="sp-brand-info">
+                    <div class="sp-brand-name">SK텔레콤이 묻습니다</div>
+                    <div class="sp-brand-handle">스폰서 설문 · 응답 시 데이터 5GB 적립</div>
+                  </div>
+                </div>
+                <div class="sv-q" style="font-size:13px;margin-top:4px;margin-bottom:10px">5G 다음 세대 통신, 어떤 서비스를 가장 기대하시나요?</div>
+                <div class="sv-options" style="margin-bottom:10px">
+                  <div class="sv-opt">
+                    <div class="sv-opt-content">
+                      <span class="sv-opt-text">초고속 자율주행</span>
+                      <span class="sv-opt-pct">📊</span>
+                    </div>
+                  </div>
+                  <div class="sv-opt">
+                    <div class="sv-opt-content">
+                      <span class="sv-opt-text">실시간 홀로그램 통화</span>
+                      <span class="sv-opt-pct">📊</span>
+                    </div>
+                  </div>
+                  <div class="sv-opt">
+                    <div class="sv-opt-content">
+                      <span class="sv-opt-text">AI 비서 24시간 연동</span>
+                      <span class="sv-opt-pct">📊</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="sp-cta">
+                  <button class="sp-btn">응답하고 5GB 받기</button>
+                  <span class="sp-stats">노출 8,400 · 응답률 12.4%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 11: 댓글 (목사 인증) -->
+            <div class="fc fc-comment">
+              <div class="cc-head">
+                <div class="cc-avatar gold">윤</div>
+                <div class="cc-info">
+                  <div class="cc-name-line">
+                    <span class="cc-name">윤○○</span>
+                    <span class="cc-badge pastor">✓ 목사</span>
+                  </div>
+                  <div class="cc-time">1시간 전</div>
+                </div>
+              </div>
+              <div class="cc-text">통상협상이 경제 성장만이 아니라 공동체 가치도 고려했으면 합니다. 농민, 자영업자, 의료진 모두 보호받아야 할 우리 이웃입니다.</div>
+              <div class="cc-reactions">
+                <div class="reaction"><span class="rx-emoji">👍</span><span class="rx-count">412</span></div>
+                <div class="reaction"><span class="rx-emoji">💯</span><span class="rx-count">189</span></div>
+                <div class="reaction"><span class="rx-emoji">😢</span><span class="rx-count">42</span></div>
+                <div class="cc-actions">
+                  <span class="cc-action">💬 답글 18</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- RIGHT: Config Panel -->
+        <aside class="aud-config fade-in d3">
+
+          <div class="ac-section">
+            <div class="ac-title">💰 오늘의 광고 수익</div>
+            <div class="ac-rev">
+              <div class="ac-rev-val">₩4,280,000</div>
+              <div class="ac-rev-label">TODAY · 5월 13일</div>
+              <div class="ac-rev-detail">국민일보 50% · 시지온 50%</div>
+            </div>
+            <div class="ac-row">
+              <span class="ac-name">CPM (1천회 노출당)</span>
+              <span class="ac-pct">₩2,400</span>
+            </div>
+            <div class="ac-row">
+              <span class="ac-name">CTR (클릭률)</span>
+              <span class="ac-pct">2.9%</span>
+            </div>
+            <div class="ac-row">
+              <span class="ac-name">월 누적 (예상)</span>
+              <span class="ac-pct">₩128M</span>
+            </div>
+          </div>
+
+          <div class="ac-section">
+            <div class="ac-title">📊 카드 종류별 비율</div>
+            <div class="ac-row">
+              <span class="ac-name">💬 댓글</span>
+              <span class="ac-bar"><span class="ac-bar-fill" style="width:65%"></span></span>
+              <span class="ac-pct">65%</span>
+            </div>
+            <div class="ac-row">
+              <span class="ac-name">📊 설문</span>
+              <span class="ac-bar"><span class="ac-bar-fill" style="width:12%"></span></span>
+              <span class="ac-pct">12%</span>
+            </div>
+            <div class="ac-row">
+              <span class="ac-name">📢 광고</span>
+              <span class="ac-bar"><span class="ac-bar-fill gold" style="width:10%"></span></span>
+              <span class="ac-pct">10%</span>
+            </div>
+            <div class="ac-row">
+              <span class="ac-name">❓ 기자질문</span>
+              <span class="ac-bar"><span class="ac-bar-fill" style="width:5%"></span></span>
+              <span class="ac-pct">5%</span>
+            </div>
+            <div class="ac-row">
+              <span class="ac-name">✅ 팩트체크</span>
+              <span class="ac-bar"><span class="ac-bar-fill" style="width:4%"></span></span>
+              <span class="ac-pct">4%</span>
+            </div>
+            <div class="ac-row">
+              <span class="ac-name">🏛️ 공식입장</span>
+              <span class="ac-bar"><span class="ac-bar-fill" style="width:3%"></span></span>
+              <span class="ac-pct">3%</span>
+            </div>
+            <div class="ac-row">
+              <span class="ac-name">🔥 라이브토론</span>
+              <span class="ac-bar"><span class="ac-bar-fill red" style="width:1%"></span></span>
+              <span class="ac-pct">1%</span>
+            </div>
+          </div>
+
+          <div class="ac-section">
+            <div class="ac-title">🛡️ AI 운영 룰</div>
+            <div class="ac-rule">✓ 욕설·스팸 자동 차단 (실시간)</div>
+            <div class="ac-rule">✓ 인증 독자 우선 노출</div>
+            <div class="ac-rule">✓ 정치 기사 → 정치 광고 자동 제외</div>
+            <div class="ac-rule">✓ 종교 기사 → 타종교 광고 제외</div>
+            <div class="ac-rule">✓ 미성년자 대상 광고 차단</div>
+          </div>
+
+          <div class="ac-section">
+            <div class="ac-title">📈 인게이지먼트</div>
+            <div class="ac-row">
+              <span class="ac-name">참여율</span>
+              <span class="ac-bar"><span class="ac-bar-fill" style="width:24%"></span></span>
+              <span class="ac-pct">24.3%</span>
+            </div>
+            <div class="ac-row">
+              <span class="ac-name">평균 체류</span>
+              <span class="ac-pct">4:32</span>
+            </div>
+            <div class="ac-row">
+              <span class="ac-name">재방문율</span>
+              <span class="ac-bar"><span class="ac-bar-fill" style="width:58%"></span></span>
+              <span class="ac-pct">58%</span>
+            </div>
+            <div class="ac-row">
+              <span class="ac-name">기자 답글 수</span>
+              <span class="ac-pct">42회</span>
+            </div>
+          </div>
+
+          <div class="ac-section">
+            <div class="ac-title">🔗 여론 인텔과 연동</div>
+            <div style="font-size:11px;color:var(--ink3);line-height:1.6">
+              피드 데이터는 <b style="color:var(--navy)">여론 인텔리전스</b>에 실시간 자동 수집되어, 편집국 의사결정에 활용됩니다.
+            </div>
+            <button class="btn btn-o btn-s" style="margin-top:8px;width:100%" onclick="document.querySelector('[onclick*=opinion]').click()">여론 인텔로 이동 →</button>
+          </div>
+
+        </aside>
+
+      </div>
+    </div>
+
+    <div class="page" id="page-mission">
+      <div class="mission-banner fade-in">
+        <div class="mb-label">MISSION DESK · 국민일보 특화 섹션</div>
+        <div class="mb-title">미션부 워크스페이스</div>
+        <div class="mb-sub">기독교 보도의 깊이와 균형을 위한 전용 운영 시스템</div>
+      </div>
+
+      <div class="stats fade-in d1">
+        <div class="st"><div class="sl">금일 발제</div><div class="sv">5</div><div class="ss">기획 2 · 단독 1 · 일반 2</div></div>
+        <div class="st"><div class="sl">교회·단체 출입</div><div class="sv">12</div><div class="ss">교단 5 · 연합기구 4 · 선교 3</div></div>
+        <div class="st"><div class="sl">교계 보도자료</div><div class="sv">23</div><div class="ss">자동 분류 19 · 검토 4</div></div>
+        <div class="st"><div class="sl">1면 후보</div><div class="sv" style="color:var(--gold)">2</div><div class="ss">한교총 결의문 외</div></div>
+      </div>
+
+      <div class="g2 fade-in d2">
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">⛪</span>주요 교단·연합기구 출입</div>
+          <div class="church-row">
+            <span class="cr-icon">⛪</span>
+            <span class="cr-name">한국교회총연합 (한교총)</span>
+            <span class="cr-mem">12만 교회</span>
+            <span class="cr-recent">결의문 발표 (오늘)</span>
+          </div>
+          <div class="church-row">
+            <span class="cr-icon">⛪</span>
+            <span class="cr-name">한국기독교총연합회 (한기총)</span>
+            <span class="cr-mem">8만 교회</span>
+            <span class="cr-recent">정기총회 예정</span>
+          </div>
+          <div class="church-row">
+            <span class="cr-icon">📖</span>
+            <span class="cr-name">대한예수교장로회</span>
+            <span class="cr-mem">9천 교회</span>
+            <span class="cr-recent">총회 D-14</span>
+          </div>
+          <div class="church-row">
+            <span class="cr-icon">📖</span>
+            <span class="cr-name">기독교대한감리회</span>
+            <span class="cr-mem">6천 교회</span>
+            <span class="cr-recent">청년대회 종료</span>
+          </div>
+          <div class="church-row">
+            <span class="cr-icon">📖</span>
+            <span class="cr-name">기독교대한성결교회</span>
+            <span class="cr-mem">3천 교회</span>
+            <span class="cr-recent">— </span>
+          </div>
+          <div class="church-row">
+            <span class="cr-icon">🌍</span>
+            <span class="cr-name">한국세계선교협의회 (KWMA)</span>
+            <span class="cr-mem">3.2만 선교사</span>
+            <span class="cr-recent">선교한국대회</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">📋</span>오늘 미션부 발제 현황</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="padding:12px;background:var(--gold-soft);border:1px solid var(--gold);border-left-width:4px">
+              <div style="font-family:var(--serif);font-weight:700;font-size:13px;color:var(--ink)">한교총 정기총회, "교회 공공성 회복" 결의문 채택</div>
+              <div style="font-family:var(--mono);font-size:10px;color:var(--ink4);margin-top:4px">정혜원 · 14:00 마감 · ★ 1면 후보</div>
+            </div>
+            <div style="padding:12px;background:var(--paper2);border-left:3px solid var(--navy)">
+              <div style="font-family:var(--serif);font-weight:700;font-size:13px;color:var(--ink)">[단독] 한국교회 청년 이탈 통계 — 10년 만에 절반 감소</div>
+              <div style="font-family:var(--mono);font-size:10px;color:var(--ink4);margin-top:4px">서지수 · 18:00 마감 · 기획 시리즈 1</div>
+            </div>
+            <div style="padding:12px;background:var(--paper2);border-left:3px solid var(--ink5)">
+              <div style="font-family:var(--serif);font-weight:700;font-size:13px;color:var(--ink)">대한예수교장로회 총회 D-14, 주요 안건 분석</div>
+              <div style="font-family:var(--mono);font-size:10px;color:var(--ink4);margin-top:4px">남승현 · 16:00 마감 · 분석</div>
+            </div>
+            <div style="padding:12px;background:var(--paper2);border-left:3px solid var(--ink5)">
+              <div style="font-family:var(--serif);font-weight:700;font-size:13px;color:var(--ink)">한국세계선교협의회 신임 회장 인터뷰</div>
+              <div style="font-family:var(--mono);font-size:10px;color:var(--ink4);margin-top:4px">노채린 · 17:00 마감 · 인터뷰</div>
+            </div>
+            <div style="padding:12px;background:var(--paper2);border-left:3px solid var(--ink5)">
+              <div style="font-family:var(--serif);font-weight:700;font-size:13px;color:var(--ink)">기독교 윤리 — AI 시대 영성에 대한 신학적 성찰</div>
+              <div style="font-family:var(--mono);font-size:10px;color:var(--ink4);margin-top:4px">오태경 · 20:00 마감 · 칼럼</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card fade-in d3" style="margin-top:14px">
+        <div class="card-title"><span class="ct-icon">⚖️</span>종교 보도 윤리 가이드 — AI 자동 점검</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;font-size:12px">
+          <div style="padding:12px;background:var(--green-soft);border:1px solid var(--green)">
+            <div style="font-family:var(--serif);font-weight:700;color:var(--green);font-size:12px">✓ 교단 균형</div>
+            <div style="color:var(--ink3);margin-top:6px;line-height:1.6">금주 보도 균형 양호 — 장로교 38%, 감리교 22%, 성결교 16%, 기타 24%</div>
+          </div>
+          <div style="padding:12px;background:var(--green-soft);border:1px solid var(--green)">
+            <div style="font-family:var(--serif);font-weight:700;color:var(--green);font-size:12px">✓ 종교 일반 분리</div>
+            <div style="color:var(--ink3);margin-top:6px;line-height:1.6">기독교 단독 보도 vs 종교 일반 비교 보도 비율 적정 (3:1)</div>
+          </div>
+          <div style="padding:12px;background:var(--orange-soft);border:1px solid var(--orange)">
+            <div style="font-family:var(--serif);font-weight:700;color:var(--orange);font-size:12px">△ 비판적 시각</div>
+            <div style="color:var(--ink3);margin-top:6px;line-height:1.6">금주 교계 비판/감시 기사 2건 — 신앙 옹호 16건 대비 비율 점검 권고</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 오피니언 ═══ -->
+    <div class="page" id="page-editorial">
+      <div class="ph">
+        <div class="ph-left">
+          <h1>오피니언</h1>
+          <div class="ph-sub">Editorial Desk — 사설·칼럼·논설위원실</div>
+        </div>
+        <div class="ph-right">
+          <b>사설 3 · 칼럼 5 · 외부 필자 2</b>
+          금일 발행 예정
+        </div>
+      </div>
+
+      <div class="card fade-in" style="margin-bottom:18px">
+        <div class="card-title"><span class="ct-icon">📜</span>오늘의 사설</div>
+        <div class="editorial-grid">
+          <div class="ed-card" style="border-left:3px solid var(--red)">
+            <div class="ed-type">EDITORIAL ★</div>
+            <div class="ed-title">한·미 통상협상 타결, 'WIN-WIN' 향한 실질적 후속 조치 필요하다</div>
+            <div style="font-size:11px;color:var(--ink3);line-height:1.6">철강·자동차 분야 관세 인하는 환영할 만하다. 그러나 실질적 무역 증진을 위해서는…</div>
+            <div class="ed-author"><span>논설위원실 / 김OO</span><span class="up">초고 완료</span></div>
+          </div>
+          <div class="ed-card" style="border-left:3px solid var(--navy)">
+            <div class="ed-type">EDITORIAL</div>
+            <div class="ed-title">의대정원 협상 결렬, 환자가 우선이라는 사실 잊지 말아야</div>
+            <div style="font-size:11px;color:var(--ink3);line-height:1.6">정부와 의협 모두 협상 결렬의 책임을 상대에게 돌리고 있다. 그러나 진정한 피해자는…</div>
+            <div class="ed-author"><span>논설위원실 / 박OO</span><span class="up">초고 완료</span></div>
+          </div>
+          <div class="ed-card" style="border-left:3px solid var(--gold)">
+            <div class="ed-type">EDITORIAL</div>
+            <div class="ed-title">한국교회 공공성 회복, 말이 아닌 실천으로 보여야</div>
+            <div style="font-size:11px;color:var(--ink3);line-height:1.6">한교총의 결의문은 의미 있는 출발점이다. 그러나 결의문 자체가 목적이 아니다. 한국교회가…</div>
+            <div class="ed-author"><span>논설위원실 / 이OO</span><span style="color:var(--orange)">검토 중</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card fade-in d1">
+        <div class="card-title"><span class="ct-icon">✒</span>오늘의 칼럼</div>
+        <div class="editorial-grid">
+          <div class="ed-card">
+            <div class="ed-type">COLUMN</div>
+            <div class="ed-title">AI 시대, 인간 노동의 가치를 다시 묻다</div>
+            <div class="ed-author"><span>외부 / 정OO (서울대 교수)</span><span>2,400자</span></div>
+          </div>
+          <div class="ed-card">
+            <div class="ed-type">COLUMN</div>
+            <div class="ed-title">청년 세대의 정치 무관심, 그 진짜 이유</div>
+            <div class="ed-author"><span>내부 / 최OO 논설위원</span><span>2,000자</span></div>
+          </div>
+          <div class="ed-card">
+            <div class="ed-type">COLUMN</div>
+            <div class="ed-title">미·중 기술 패권 경쟁, 한국의 전략적 선택지</div>
+            <div class="ed-author"><span>외부 / 김OO (KIEP)</span><span>2,800자</span></div>
+          </div>
+          <div class="ed-card">
+            <div class="ed-type">COLUMN</div>
+            <div class="ed-title">신앙 공동체와 디지털 사회의 만남</div>
+            <div class="ed-author"><span>외부 / 윤OO 목사</span><span>2,200자</span></div>
+          </div>
+          <div class="ed-card">
+            <div class="ed-type">COLUMN</div>
+            <div class="ed-title">한국 영화의 새로운 황금기, 어디서 왔나</div>
+            <div class="ed-author"><span>내부 / 강OO 논설위원</span><span>2,400자</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 부서별 워크스페이스 ═══ -->
+    <div class="page" id="page-dept">
+      <div class="ph">
+        <div class="ph-left">
+          <h1>정치부</h1>
+          <div class="ph-sub">Politics Desk — 출입처 8개 · 기자 8명</div>
+        </div>
+        <div class="ph-right">
+          <b>발제 8 · 마감 2/8 · 1면 후보 3</b>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-icon">📋</span>정치부 오늘의 아젠다</div>
+        <div class="deadline-list">
+          <div class="dl-item">
+            <div class="dl-time tight">00:23</div>
+            <div class="dl-dept">통상</div>
+            <div class="dl-title">한·미 통상협상 타결 — 1면 톱 후보</div>
+            <div class="dl-author">김지호</div>
+            <div class="dl-status"><span class="tag t-red">긴급</span></div>
+          </div>
+          <div class="dl-item">
+            <div class="dl-time soon">01:32</div>
+            <div class="dl-dept">의료</div>
+            <div class="dl-title">의대정원 협상 결렬 — 정부·의협 입장차</div>
+            <div class="dl-author">최민호</div>
+            <div class="dl-status"><span class="tag t-orange">속보</span></div>
+          </div>
+          <div class="dl-item">
+            <div class="dl-time ok">02:15</div>
+            <div class="dl-dept">국회</div>
+            <div class="dl-title">민주당 청년 정책 패키지 발표</div>
+            <div class="dl-author">박지훈</div>
+            <div class="dl-status"><span class="tag t-navy">분석</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px;text-align:center;font-size:12px;color:var(--ink4);padding:20px">
+        ※ 다른 부서(경제·사회·국제·문화·체육)도 동일한 구조로 운영됩니다
+      </div>
+    </div>
+
+    <!-- ═══ 팀 ═══ -->
+    <div class="page" id="page-team">
+      <div class="ph">
+        <div class="ph-left">
+          <h1>편집국 조직</h1>
+          <div class="ph-sub">Organization — 4단계 위계 · 100여명 기자단</div>
+        </div>
+      </div>
+      <div class="org-tree">
+        <div class="org-level">
+          <div class="org-card" style="background:var(--ink);color:#fff;border:none">
+            <div class="oc-role" style="color:var(--gold2)">EDITOR-IN-CHIEF</div>
+            <div class="oc-name" style="color:#fff;font-size:15px">편집국장</div>
+            <div class="oc-status" style="color:rgba(255,255,255,.5)">전사 권한</div>
+          </div>
+        </div>
+        <div class="org-level">
+          <div class="org-card"><div class="oc-role">DEPT HEAD</div><div class="oc-name">정치부장</div><div class="oc-status">기자 8명</div></div>
+          <div class="org-card"><div class="oc-role">DEPT HEAD</div><div class="oc-name">경제부장</div><div class="oc-status">기자 6명</div></div>
+          <div class="org-card"><div class="oc-role">DEPT HEAD</div><div class="oc-name">사회부장</div><div class="oc-status">기자 9명</div></div>
+          <div class="org-card"><div class="oc-role">DEPT HEAD</div><div class="oc-name">국제부장</div><div class="oc-status">기자 4명</div></div>
+        </div>
+        <div class="org-level">
+          <div class="org-card"><div class="oc-role">DEPT HEAD</div><div class="oc-name">문화부장</div><div class="oc-status">기자 5명</div></div>
+          <div class="org-card"><div class="oc-role">DEPT HEAD</div><div class="oc-name">체육부장</div><div class="oc-status">기자 3명</div></div>
+          <div class="org-card" style="border-color:var(--gold);background:var(--gold-soft)"><div class="oc-role" style="color:var(--gold)">DEPT HEAD</div><div class="oc-name">미션부장</div><div class="oc-status">기자 5명</div></div>
+          <div class="org-card"><div class="oc-role">DEPT HEAD</div><div class="oc-name">오피니언부장</div><div class="oc-status">논설위원 6명</div></div>
+        </div>
+        <div class="org-level" style="margin-top:14px">
+          <div class="org-card" style="background:var(--paper2)">
+            <div class="oc-role">REPORTING TEAM</div>
+            <div style="font-family:var(--serif);font-weight:600;font-size:12px;color:var(--ink2);margin-top:4px;line-height:1.6">
+              각 부서 차장(Sub-editor) → 기자(Reporter) → 인턴(Intern) 구조<br>
+              총 기자 100여명 · 출입처 약 60개 · 해외 특파원 5명 (워싱턴·도쿄·베이징·런던·파리)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ─── RIGHT PANEL ─── -->
+  <aside class="context">
+    <div class="cx-section">
+      <div class="cx-label">⚡ 실시간 피드</div>
+      <div class="feed-item"><div class="fi-time">14:52</div><div class="fi-text"><b>정치부</b> 한·미 통상협상 1면 톱 확정</div></div>
+      <div class="feed-item"><div class="fi-time">14:48</div><div class="fi-text"><b>통신사 AI</b> 연합뉴스 속보 32건 자동 분류 완료</div></div>
+      <div class="feed-item"><div class="fi-time">14:40</div><div class="fi-text"><b>발언 검증 AI</b> ○○○ 의원 모순 발언 감지 (의대정원)</div></div>
+      <div class="feed-item"><div class="fi-time">14:35</div><div class="fi-text"><b>미션부</b> 한교총 결의문 1면 후보로 승격</div></div>
+      <div class="feed-item"><div class="fi-time">14:30</div><div class="fi-text"><b>여론 AI</b> 청년 주거 불안 키워드 +217% 급등 감지</div></div>
+      <div class="feed-item"><div class="fi-time">14:18</div><div class="fi-text"><b>팩트체크 AI</b> 자동차 관세 인하폭 출처 확인 요청</div></div>
+      <div class="feed-item"><div class="fi-time">14:12</div><div class="fi-text"><b>경제부</b> 한은 금리 동결 분석 기사 마감</div></div>
+    </div>
+
+    <div class="cx-section">
+      <div class="cx-label">📊 경쟁사 1면 톱 예상</div>
+      <div style="padding:8px 0;border-bottom:1px solid var(--rule3)">
+        <div style="font-family:var(--serif);font-weight:700;font-size:11px">조선일보</div>
+        <div style="font-size:10px;color:var(--ink3);margin-top:2px;line-height:1.4">한·미 통상협상 타결 (예상 90%)</div>
+      </div>
+      <div style="padding:8px 0;border-bottom:1px solid var(--rule3)">
+        <div style="font-family:var(--serif);font-weight:700;font-size:11px">중앙일보</div>
+        <div style="font-size:10px;color:var(--ink3);margin-top:2px;line-height:1.4">한·미 통상협상 + 자동차 (예상 85%)</div>
+      </div>
+      <div style="padding:8px 0;border-bottom:1px solid var(--rule3)">
+        <div style="font-family:var(--serif);font-weight:700;font-size:11px">동아일보</div>
+        <div style="font-size:10px;color:var(--ink3);margin-top:2px;line-height:1.4">대장동 항소심 (예상 70%)</div>
+      </div>
+      <div style="padding:8px 0">
+        <div style="font-family:var(--serif);font-weight:700;font-size:11px">한겨레</div>
+        <div style="font-size:10px;color:var(--ink3);margin-top:2px;line-height:1.4">의대정원 협상 결렬 (예상 80%)</div>
+      </div>
+      <div style="margin-top:10px;padding:8px;background:var(--gold-soft);font-size:10px;color:var(--ink2);line-height:1.5">
+        <b style="color:var(--gold);font-family:var(--serif)">✦ AI 차별화 권고</b><br>
+        한교총 결의문 단독성 활용 + 청년 주거 불안 기획 = 우리만의 1면 구성
+      </div>
+    </div>
+
+    <div class="cx-section">
+      <div class="cx-label">🎯 AI 임팩트 (오늘)</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:11px">
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--ink3)">시간 절약</span><b class="up" style="font-family:var(--mono)">24.8h</b></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--ink3)">통신사 자동분류</span><b style="font-family:var(--mono)">215/247</b></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--ink3)">발언 검증</span><b style="font-family:var(--mono)">23건</b></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--ink3)">팩트체크</span><b style="font-family:var(--mono)">47건</b></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--ink3)">1면 추천 적중</span><b class="up" style="font-family:var(--mono)">78%</b></div>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+// Date
+const d = new Date();
+document.getElementById('mhDate').textContent = d.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+document.getElementById('mhWeek').textContent = d.toLocaleDateString('ko-KR',{weekday:'long'}) + ' · ' + d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+
+// Page switch
+function go(id, el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.getElementById('page-'+id).classList.add('on');
+  if(el){
+    document.querySelectorAll('.s-item').forEach(i=>i.classList.remove('on'));
+    el.classList.add('on');
+  }
+}
+
+// Countdown timer
+let seconds = 2*3600 + 47*60 + 33;
+function updateCountdown(){
+  if(seconds<=0)seconds = 2*3600 + 47*60 + 33;
+  const h = Math.floor(seconds/3600);
+  const m = Math.floor((seconds%3600)/60);
+  const s = seconds%60;
+  document.getElementById('ddCount').textContent = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  seconds--;
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+</script>
+</body>
+</html>
