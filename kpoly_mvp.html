@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>예측소 — K-Polymarket</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ── 토큰 ── */
+:root{
+  --navy:#0D1B3E;--blue:#1A5FA3;--blue2:#2272C3;
+  --teal:#0BB89E;--gold:#E8A020;--red:#E24B4A;
+  --green:#1D9E75;--purple:#7B2D8B;
+  --bg:#F2F4F8;--card:#fff;--border:rgba(0,0,0,.08);
+  --text:#1A1A2E;--sub:#6B7A99;--dim:#A0AABC;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+input,select,textarea,button{font-family:'Noto Sans KR',sans-serif}
+button{cursor:pointer}
+
+/* ── 페이지 ── */
+.page{display:none}
+.page.active{display:flex;min-height:100vh}
+
+/* ══ 로그인 ══ */
+#page-login{background:var(--navy);align-items:center;justify-content:center;flex-direction:column}
+.lw{width:100%;max-width:420px;padding:24px 16px}
+.l-logo{text-align:center;margin-bottom:32px}
+.l-logo .mark{font-family:'Bebas Neue',sans-serif;font-size:52px;color:#fff;letter-spacing:3px;line-height:1}
+.l-logo .sub{font-size:11px;color:rgba(255,255,255,.38);letter-spacing:2px;margin-top:2px}
+.l-logo .tag{font-size:13px;color:rgba(255,255,255,.5);margin-top:8px}
+.a-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.11);border-radius:16px;padding:26px 22px}
+.a-tabs{display:flex;gap:0;margin-bottom:22px;background:rgba(255,255,255,.07);border-radius:8px;padding:3px}
+.a-tab{flex:1;padding:8px;border-radius:6px;font-size:13px;font-weight:700;color:rgba(255,255,255,.45);background:transparent;border:none;transition:all .15s}
+.a-tab.on{background:var(--blue);color:#fff}
+.soc-col{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.soc-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:12px;border-radius:10px;border:none;font-size:14px;font-weight:700;transition:opacity .15s}
+.soc-btn:hover{opacity:.88}
+.soc-btn:active{transform:scale(.98)}
+.kakao{background:#FEE500;color:#1A1A1A}
+.naver{background:#03C75A;color:#fff}
+.google{background:#fff;color:#3C4043;border:1px solid rgba(0,0,0,.15)}
+.soc-ico{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex-shrink:0}
+.or-r{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.or-line{flex:1;height:1px;background:rgba(255,255,255,.1)}
+.or-txt{font-size:11px;color:rgba(255,255,255,.3)}
+.ai{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:9px;padding:11px 13px;font-size:14px;color:#fff;outline:none;margin-bottom:9px;transition:border-color .15s}
+.ai::placeholder{color:rgba(255,255,255,.28)}
+.ai:focus{border-color:var(--blue)}
+.a-sub{width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;margin-top:4px;transition:all .15s}
+.a-sub:hover{background:var(--blue2)}
+.ph-row{display:flex;gap:7px;margin-bottom:9px}
+.ph-row .ai{margin-bottom:0;flex:1}
+.vbtn{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:9px;padding:0 14px;font-size:13px;font-weight:700;transition:all .15s}
+.vbtn:hover{background:rgba(255,255,255,.2)}
+/* Keycloak 배지 */
+.kc{display:inline-flex;align-items:center;gap:5px;background:rgba(179,38,30,.7);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;letter-spacing:.3px}
+.kc-dot{width:6px;height:6px;border-radius:50%;background:#4CAF50;display:inline-block;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.kc-note{text-align:center;margin-top:14px;font-size:11px;color:rgba(255,255,255,.28)}
+.bonus-box{background:rgba(232,160,32,.13);border:1px solid rgba(232,160,32,.28);border-radius:10px;padding:11px 14px;margin-top:14px;display:flex;align-items:center;gap:10px}
+.bonus-box .ico{font-size:20px}
+.bonus-box .txt{font-size:12px;color:rgba(255,255,255,.65);line-height:1.5}
+.bonus-box .pts{color:var(--gold);font-weight:700}
+/* Keycloak 플로우 상태 표시 */
+.kc-flow{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px;margin-top:12px;display:none}
+.kc-flow.show{display:block}
+.kc-step{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12px;color:rgba(255,255,255,.5)}
+.kc-step.done{color:rgba(255,255,255,.8)}
+.kc-step .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);flex-shrink:0;transition:background .3s}
+.kc-step.done .dot{background:var(--green)}
+.kc-step.active .dot{background:var(--gold);animation:pulse 1s infinite}
+.kc-step.active{color:var(--gold)}
+
+/* ══ 메인 앱 레이아웃 ══ */
+#page-app{flex-direction:row}
+.sb{width:220px;background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;height:100vh;position:sticky;top:0}
+.sb-logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.07)}
+.sb-mark{font-family:'Bebas Neue',sans-serif;font-size:26px;color:#fff;letter-spacing:2px;line-height:1}
+.sb-sub{font-size:10px;color:rgba(255,255,255,.3);letter-spacing:1.2px;margin-top:1px}
+.sb-nav{flex:1;padding:12px 10px;overflow-y:auto}
+.sb-sec{font-size:10px;color:rgba(255,255,255,.25);letter-spacing:1.4px;font-weight:700;padding:0 8px;margin:12px 0 4px}
+.si{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,.45);font-size:13px;font-weight:500;transition:all .15s;margin-bottom:1px;border:none;background:transparent;width:100%;text-align:left}
+.si svg{width:15px;height:15px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2}
+.si:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.8)}
+.si.active{background:var(--blue);color:#fff}
+.si .bdg{margin-left:auto;background:var(--gold);color:var(--navy);font-size:10px;font-weight:900;padding:1px 6px;border-radius:10px}
+.sb-user{padding:12px 14px;border-top:1px solid rgba(255,255,255,.07)}
+.sb-urow{display:flex;align-items:center;gap:9px}
+.sb-av{width:32px;height:32px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.sb-nm{font-size:12px;font-weight:700;color:#fff}
+.sb-pt{font-family:'DM Mono',monospace;font-size:11px;color:var(--gold)}
+.sb-out{font-size:11px;cursor:pointer;background:none;border:none;color:rgba(255,255,255,.28);padding:2px 0 0;display:block}
+.sb-out:hover{color:rgba(255,255,255,.6)}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;height:100vh}
+.tb{background:var(--card);border-bottom:1px solid var(--border);padding:0 20px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.tb-l{display:flex;align-items:center;gap:8px}
+.tb-title{font-size:16px;font-weight:700}
+.tb-live{background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;letter-spacing:.3px;display:none}
+.tb-r{display:flex;align-items:center;gap:8px}
+.pt-chip{background:var(--navy);color:var(--gold);font-family:'DM Mono',monospace;font-size:12px;font-weight:500;padding:5px 12px;border-radius:18px;display:flex;align-items:center;gap:5px}
+.chg-btn{background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;transition:opacity .15s}
+.chg-btn:hover{opacity:.85}
+.scroll{flex:1;overflow-y:auto;padding:18px 20px}
+.scroll::-webkit-scrollbar{width:4px}
+.scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* ── 서브탭 ── */
+.stbar{display:flex;gap:3px;margin-bottom:16px;background:var(--card);border-radius:10px;padding:4px;width:fit-content;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.st{padding:6px 15px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--sub);transition:all .15s}
+.st.on{background:var(--navy);color:#fff}
+
+/* ── 통계 카드 ── */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.sc{background:var(--card);border-radius:12px;padding:14px 15px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.sc-lbl{font-size:11px;color:var(--sub);font-weight:500;margin-bottom:4px}
+.sc-val{font-size:20px;font-weight:700;font-family:'DM Mono',monospace;line-height:1.1}
+.sc-delta{font-size:11px;margin-top:3px;color:var(--sub)}
+.sc-delta.up{color:var(--green)}
+
+/* ── 포인트몰 배너 ── */
+.mall-banner{background:var(--navy);border-radius:14px;padding:15px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:opacity .15s}
+.mall-banner:hover{opacity:.92}
+.mb-lbl{font-size:10px;color:rgba(255,255,255,.38);letter-spacing:1px;font-weight:700}
+.mb-ttl{font-size:15px;font-weight:700;color:#fff;margin:3px 0 2px}
+.mb-sub{font-size:11px;color:rgba(255,255,255,.45)}
+.mb-btn{background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;margin-top:9px;display:block}
+.mb-pts{font-family:'DM Mono',monospace;font-size:26px;font-weight:700;color:var(--gold);text-align:right;line-height:1}
+.mb-pl{font-size:11px;color:rgba(255,255,255,.38);margin-top:2px;text-align:right}
+
+/* ── 섹션 헤더 ── */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sh-t{font-size:14px;font-weight:700}
+.sh-more{font-size:12px;color:var(--blue);cursor:pointer;font-weight:500}
+
+/* ── 마켓 카드 ── */
+.mc{background:var(--card);border-radius:14px;padding:15px 17px;box-shadow:0 1px 3px rgba(0,0,0,.05);border:1.5px solid transparent;transition:all .18s;cursor:pointer;margin-bottom:9px}
+.mc:hover{border-color:rgba(26,95,163,.2);box-shadow:0 4px 14px rgba(26,95,163,.09)}
+.mc.sel{border-color:var(--blue)}
+.mc-meta{display:flex;align-items:center;gap:7px;margin-bottom:7px;flex-wrap:wrap}
+.cat{font-size:11px;font-weight:700;padding:3px 8px;border-radius:5px}
+.cp{background:#EEF2FF;color:#3730A3}
+.ce{background:#FDF4FF;color:#7E22CE}
+.cs{background:#ECFDF5;color:#065F46}
+.ck{background:#FFFBEB;color:#92400E}
+.mc-ttl{font-size:14px;font-weight:700;line-height:1.4;margin-bottom:11px}
+.pi{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.pl{font-size:12px;font-weight:700;width:28px;flex-shrink:0}
+.pl.y{color:var(--blue)}
+.pl.n{color:var(--red)}
+.pt{flex:1;height:6px;background:#F1F4F9;border-radius:3px;overflow:hidden}
+.pf{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.fy{background:var(--blue)}
+.fn{background:var(--red)}
+.pp{font-size:12px;font-weight:700;font-family:'DM Mono',monospace;min-width:34px;text-align:right}
+.pp.y{color:var(--blue)}
+.pp.n{color:var(--red)}
+.mc-ft{display:flex;align-items:center;justify-content:space-between;margin-top:9px}
+.mvol{font-size:11px;color:var(--sub)}
+.bbtns{display:flex;gap:5px}
+.bb{padding:6px 13px;border-radius:8px;font-size:12px;font-weight:700;border:1.5px solid;transition:all .15s}
+.bby{background:#EBF4FF;color:#1D4ED8;border-color:#93C5FD}
+.bby:hover{background:#DBEAFE}
+.bbn{background:#FEF2F2;color:#B91C1C;border-color:#FCA5A5}
+.bbn:hover{background:#FEE2E2}
+
+/* ── AMM 베팅 패널 ── */
+.bpanel{background:var(--card);border-radius:14px;padding:17px;box-shadow:0 4px 18px rgba(26,95,163,.12);border:1.5px solid var(--blue);margin:2px 0 6px;animation:sd .2s ease}
+@keyframes sd{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.bp-ttl{font-size:13px;font-weight:700;margin-bottom:11px;display:flex;align-items:center;justify-content:space-between}
+.bp-close{background:none;border:none;font-size:16px;color:var(--sub);cursor:pointer;padding:0;line-height:1}
+.stabs2{display:flex;gap:5px;margin-bottom:11px}
+.st2{flex:1;padding:9px;border-radius:9px;text-align:center;cursor:pointer;font-size:13px;font-weight:700;border:1.5px solid transparent;transition:all .15s}
+.st2.yon{background:#EBF4FF;color:#1D4ED8;border-color:#93C5FD}
+.st2.non{background:#FEF2F2;color:#B91C1C;border-color:#FCA5A5}
+.st2.off{background:#F1F4F9;color:var(--sub)}
+.bp-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.bp-lbl{font-size:12px;color:var(--sub);min-width:68px}
+.amt-i{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:8px 11px;font-size:16px;font-weight:700;font-family:'DM Mono',monospace;color:var(--text);background:#FAFBFD;outline:none;transition:border-color .15s}
+.amt-i:focus{border-color:var(--blue)}
+.qrow{display:flex;gap:5px;margin-bottom:11px}
+.qb{flex:1;background:#F1F4F9;border:1.5px solid var(--border);border-radius:7px;padding:5px 0;font-size:11px;font-weight:600;color:var(--sub);transition:all .15s}
+.qb:hover{background:#E8F1FB;border-color:#93C5FD;color:var(--blue)}
+/* AMM 예상 수익 박스 */
+.amm-box{background:#F6F8FB;border-radius:10px;padding:11px 13px;margin-bottom:11px;font-size:12px}
+.amm-row{display:flex;justify-content:space-between;padding:2px 0;color:var(--sub)}
+.amm-row.hl{color:var(--text);font-weight:700;font-size:13px;border-top:1px solid var(--border);margin-top:5px;padding-top:7px}
+.amm-row.warn{color:var(--red);font-size:11px}
+.confirm-btn{width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;transition:all .15s}
+.confirm-btn:hover{background:var(--blue)}
+.confirm-btn:active{transform:scale(.98)}
+
+/* ── 마켓 상세 페이지 ── */
+#page-detail{flex-direction:column}
+.d-scroll{flex:1;overflow-y:auto;padding:20px}
+.d-back{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--blue);cursor:pointer;margin-bottom:15px;background:none;border:none;padding:0}
+.d-back:hover{opacity:.75}
+.d-hdr{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:12px}
+.d-meta{display:flex;align-items:center;gap:7px;margin-bottom:9px;flex-wrap:wrap}
+.d-ttl{font-size:17px;font-weight:700;line-height:1.4;margin-bottom:13px}
+.prob-big{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+.pb{background:#F6F8FB;border-radius:10px;padding:12px 14px;text-align:center}
+.pb-side{font-size:11px;font-weight:700;margin-bottom:4px}
+.pb-side.y{color:var(--blue)}
+.pb-side.n{color:var(--red)}
+.pb-pct{font-family:'DM Mono',monospace;font-size:30px;font-weight:700;line-height:1}
+.pb-pct.y{color:var(--blue)}
+.pb-pct.n{color:var(--red)}
+.pb-trk{height:7px;background:#E8EDF5;border-radius:4px;overflow:hidden;margin-top:7px}
+.pb-fill{height:100%;border-radius:4px;transition:width .5s}
+.d-stats{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
+.ds{font-size:12px;color:var(--sub)}
+.ds span{color:var(--text);font-weight:700}
+/* 차트 카드 */
+.chart-card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:12px}
+.chart-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.chart-ttl{font-size:13px;font-weight:700}
+.chart-period{display:flex;gap:3px}
+.cp-btn{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid var(--border);background:var(--card);color:var(--sub);cursor:pointer;transition:all .15s}
+.cp-btn.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chart-wrap{position:relative;height:190px}
+/* 포지션 요약 카드 */
+.my-pos-card{background:#EBF4FF;border:1px solid #93C5FD;border-radius:10px;padding:11px 14px;margin-bottom:11px;display:flex;align-items:center;gap:10px}
+.mpc-side{font-size:12px;font-weight:700;color:#1D4ED8;background:#DBEAFE;padding:3px 8px;border-radius:5px;flex-shrink:0}
+.mpc-info{flex:1;font-size:12px;color:var(--sub)}
+.mpc-pnl{font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:var(--green)}
+/* 상세 베팅 영역 */
+.det-bet{background:var(--card);border-radius:14px;padding:17px;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:12px}
+/* 댓글 */
+.cmt-card{background:var(--card);border-radius:14px;padding:17px;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:12px}
+.cmt-item{padding:10px 0;border-bottom:1px solid var(--border)}
+.cmt-item:last-child{border-bottom:none}
+.cmt-top{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.cmt-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.cmt-nm{font-size:12px;font-weight:700}
+.cmt-time{font-size:11px;color:var(--sub)}
+.cmt-side-badge{font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px}
+.cmt-txt{font-size:13px;line-height:1.55;padding-left:33px;color:var(--text)}
+.cmt-like{font-size:11px;color:var(--sub);padding-left:33px;margin-top:3px;cursor:pointer;transition:color .15s}
+.cmt-like:hover{color:var(--red)}
+.cmt-inp-row{display:flex;gap:7px;margin-top:12px}
+.cmt-inp{flex:1;border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;font-size:13px;outline:none;background:#FAFBFD;transition:border-color .15s}
+.cmt-inp:focus{border-color:var(--blue)}
+.cmt-send{background:var(--blue);color:#fff;border:none;border-radius:9px;padding:0 16px;font-size:13px;font-weight:700;transition:all .15s}
+.cmt-send:hover{background:var(--blue2)}
+/* 공유 */
+.share-bar{background:var(--card);border-radius:12px;padding:13px 15px;box-shadow:0 1px 3px rgba(0,0,0,.05);display:flex;align-items:center;gap:10px}
+.share-btns{display:flex;gap:6px}
+.share-btn{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1.5px solid var(--border);background:var(--card);cursor:pointer;transition:all .15s;color:var(--sub)}
+.share-btn:hover{background:#F1F4F9}
+.share-btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* ── 내 예측 ── */
+.pos-card{background:var(--card);border-radius:12px;padding:13px 15px;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:8px;display:flex;align-items:center;gap:11px}
+.pos-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.pos-inf{flex:1}
+.pos-nm{font-size:13px;font-weight:700;margin-bottom:2px;cursor:pointer}
+.pos-nm:hover{color:var(--blue)}
+.pos-mt{font-size:11px;color:var(--sub)}
+.pos-res{text-align:right;flex-shrink:0}
+.pos-pnl{font-size:15px;font-weight:700;font-family:'DM Mono',monospace}
+.pnl-win{color:var(--green)}
+.pnl-lose{color:var(--red)}
+.pnl-hold{color:var(--gold)}
+.pos-st{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-top:3px;display:inline-block}
+.st-live{background:#ECFDF5;color:#065F46}
+.st-win{background:#ECFDF5;color:#065F46}
+.st-lose{background:#FEF2F2;color:#991B1B}
+
+/* ── 리더보드 ── */
+.lb-row{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--card);border-radius:12px;margin-bottom:7px;box-shadow:0 1px 3px rgba(0,0,0,.04);transition:box-shadow .15s}
+.lb-row:hover{box-shadow:0 4px 12px rgba(0,0,0,.07)}
+.lb-row.me{border:1.5px solid var(--gold);background:#FFFCF0}
+.lb-rk{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--sub);min-width:28px;text-align:center}
+.lb-rk.g{color:var(--gold)}
+.lb-rk.s{color:#94A3B8}
+.lb-rk.b{color:#B45309}
+.lb-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.lb-inf{flex:1}
+.lb-nm{font-size:13px;font-weight:700}
+.lb-st{font-size:11px;color:var(--sub);margin-top:1px}
+.lb-sc{font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:var(--green)}
+.lb-bar-wrap{width:100%;height:4px;background:#F1F4F9;border-radius:2px;margin-top:4px;overflow:hidden}
+.lb-bar{height:100%;background:var(--green);border-radius:2px;transition:width .6s ease}
+
+/* ── 알림 ── */
+.ni{background:var(--card);border-radius:12px;padding:13px 15px;margin-bottom:7px;display:flex;align-items:flex-start;gap:11px;box-shadow:0 1px 3px rgba(0,0,0,.05);cursor:pointer;transition:all .15s;border-left:3px solid transparent}
+.ni.unread{border-left-color:var(--blue);background:#FAFCFF}
+.ni:hover{box-shadow:0 3px 10px rgba(0,0,0,.08)}
+.ni-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ni-b{flex:1}
+.ni-ttl{font-size:13px;font-weight:700;margin-bottom:2px}
+.ni-desc{font-size:12px;color:var(--sub);line-height:1.4}
+.ni-time{font-size:11px;color:var(--dim);margin-top:2px}
+.ni-dot{width:8px;height:8px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:3px}
+
+/* ── 결제 ── */
+.chg-wrap{max-width:480px;margin:0 auto}
+.pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:18px}
+.pkg{background:var(--card);border-radius:12px;padding:16px;text-align:center;border:1.5px solid var(--border);cursor:pointer;transition:all .15s;position:relative}
+.pkg:hover{border-color:var(--blue)}
+.pkg.sel{border-color:var(--blue);background:#EBF4FF}
+.pkg.best::before{content:'BEST';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--navy);font-size:10px;font-weight:900;padding:2px 10px;border-radius:10px}
+.pkg-pts{font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--navy);line-height:1;margin-bottom:3px}
+.pkg-lbl{font-size:11px;color:var(--sub);margin-bottom:7px}
+.pkg-price{font-size:14px;font-weight:700;color:var(--blue)}
+.pkg-bonus{font-size:10px;color:var(--green);font-weight:700;margin-top:2px}
+.pay-box{background:var(--card);border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.pay-box h3{font-size:13px;font-weight:700;margin-bottom:11px}
+.pm-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.pm{padding:10px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);font-size:12px;font-weight:700;color:var(--sub);display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all .15s}
+.pm.sel{border-color:var(--blue);color:var(--blue);background:#EBF4FF}
+.toss-btn{width:100%;padding:14px;background:#0064FF;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;margin-top:4px;transition:opacity .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.toss-btn:hover{opacity:.88}
+.toss-btn:disabled{opacity:.5;cursor:not-allowed}
+.chg-note{font-size:11px;color:var(--sub);text-align:center;margin-top:10px;line-height:1.6}
+/* 결제 진행 상태 */
+.pay-progress{background:var(--card);border-radius:12px;padding:20px;text-align:center;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.05);display:none}
+.pay-progress.show{display:block}
+.pay-progress-icon{font-size:40px;margin-bottom:10px}
+.pay-progress-title{font-size:15px;font-weight:700;margin-bottom:4px}
+.pay-progress-desc{font-size:13px;color:var(--sub)}
+.pay-step-row{display:flex;align-items:center;gap:6px;padding:6px 0;font-size:12px;color:var(--sub);justify-content:center}
+.pay-step-row.done{color:var(--green)}
+
+/* ── 어드민 ── */
+.adm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.adm-sc{background:var(--card);border-radius:12px;padding:13px 15px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.adm-lbl{font-size:11px;color:var(--sub);margin-bottom:4px}
+.adm-val{font-size:22px;font-weight:700;font-family:'DM Mono',monospace}
+.adm-tbl{background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:12px}
+.adm-th{display:flex;background:#F6F8FB;padding:9px 15px;font-size:11px;font-weight:700;color:var(--sub);letter-spacing:.3px}
+.adm-tr{display:flex;padding:11px 15px;border-top:1px solid var(--border);align-items:center;transition:background .15s}
+.adm-tr:hover{background:#FAFBFD}
+.tc0{flex:2;font-size:13px;font-weight:500}
+.tc1{flex:1;font-size:12px;color:var(--sub);text-align:center}
+.tc2{flex:1;text-align:center}
+.tc3{flex:1;text-align:right;display:flex;gap:5px;justify-content:flex-end}
+.st-pend{background:#FFF7E6;color:#92400E;font-size:11px;font-weight:700;padding:3px 7px;border-radius:5px}
+.st-live2{background:#ECFDF5;color:#065F46;font-size:11px;font-weight:700;padding:3px 7px;border-radius:5px}
+.st-end{background:#F1F5F9;color:var(--sub);font-size:11px;font-weight:700;padding:3px 7px;border-radius:5px}
+.adm-ab{font-size:11px;font-weight:700;padding:4px 9px;border-radius:6px;border:none;cursor:pointer;transition:all .15s}
+.ab-app{background:#ECFDF5;color:#065F46}
+.ab-app:hover{background:#D1FAE5}
+.ab-rej{background:#FEF2F2;color:#991B1B}
+.ab-rej:hover{background:#FEE2E2}
+.ab-set{background:#EEF2FF;color:#3730A3}
+.ab-set:hover{background:#E0E7FF}
+/* 정산 폼 */
+.settle-form{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:12px}
+.settle-form h3{font-size:14px;font-weight:700;margin-bottom:12px}
+.sf-row{display:flex;gap:9px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px}
+.sf-sel{flex:2;min-width:160px;border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;font-size:13px;outline:none;background:#FAFBFD}
+.sf-sel:focus{border-color:var(--blue)}
+.sf-out{display:flex;gap:5px}
+.out-btn{flex:1;min-width:60px;padding:9px;border-radius:9px;font-size:13px;font-weight:700;border:1.5px solid var(--border);background:var(--card);cursor:pointer;transition:all .15s;color:var(--sub)}
+.out-btn.yon{background:#EBF4FF;color:#1D4ED8;border-color:#93C5FD}
+.out-btn.non{background:#FEF2F2;color:#B91C1C;border-color:#FCA5A5}
+.sf-submit{padding:9px 18px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700;transition:all .15s}
+.sf-submit:hover{background:var(--blue)}
+/* 정산 결과 미리보기 */
+.settle-preview{background:#F6F8FB;border-radius:9px;padding:12px;font-size:12px}
+.sp-row{display:flex;justify-content:space-between;padding:2px 0;color:var(--sub)}
+.sp-row.hl{color:var(--green);font-weight:700;border-top:1px solid var(--border);margin-top:5px;padding-top:6px;font-size:13px}
+
+/* ── 설정 ── */
+.set-grp{background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:12px}
+.set-row{display:flex;align-items:center;padding:13px 15px;border-bottom:1px solid var(--border)}
+.set-row:last-child{border-bottom:none}
+.set-lbl{flex:1;font-size:13px;font-weight:500}
+.set-sub{font-size:11px;color:var(--sub);margin-top:1px}
+.toggle{position:relative;width:42px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.tslider{position:absolute;inset:0;background:#CBD5E1;border-radius:24px;transition:.2s;cursor:pointer}
+.toggle input:checked+.tslider{background:var(--blue)}
+.tslider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.toggle input:checked+.tslider::before{transform:translateX(18px)}
+
+/* ── 토스트 ── */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--navy);color:#fff;padding:10px 22px;border-radius:50px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:9999;box-shadow:0 8px 28px rgba(13,27,62,.3);white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── 모달 ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);border-radius:16px;padding:24px;max-width:380px;width:90%;animation:sd .2s ease}
+.modal h3{font-size:16px;font-weight:700;margin-bottom:7px}
+.modal p{font-size:13px;color:var(--sub);margin-bottom:18px;line-height:1.6}
+.modal-btns{display:flex;gap:8px}
+.m-cancel{flex:1;padding:10px;border:1.5px solid var(--border);border-radius:9px;background:var(--card);font-size:13px;font-weight:700;cursor:pointer}
+.m-cancel:hover{background:#F1F4F9}
+.m-ok{flex:1;padding:10px;border:none;border-radius:9px;background:var(--blue);color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
+.m-ok:hover{background:var(--blue2)}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════
+     PAGE: 로그인
+══════════════════════════ -->
+<div id="page-login" class="page active">
+<div class="lw">
+  <div class="l-logo">
+    <div class="mark">예측소</div>
+    <div class="sub">K-POLYMARKET BETA</div>
+    <div class="tag">당신의 판단이 시장이 된다</div>
+  </div>
+  <div class="a-card">
+    <div class="a-tabs">
+      <button class="a-tab on" onclick="authTab('login')">로그인</button>
+      <button class="a-tab" onclick="authTab('signup')">회원가입</button>
+    </div>
+
+    <!-- 소셜 -->
+    <div class="soc-col">
+      <button class="soc-btn kakao" onclick="socialLogin('카카오','#FEE500','#1A1A1A')">
+        <div class="soc-ico" style="background:#3C1E1E;color:#FEE500">K</div>카카오로 시작하기
+      </button>
+      <button class="soc-btn naver" onclick="socialLogin('네이버','#03C75A','#fff')">
+        <div class="soc-ico" style="background:rgba(0,0,0,.2);color:#fff">N</div>네이버로 시작하기
+      </button>
+      <button class="soc-btn google" onclick="socialLogin('구글','#fff','#3C4043')">
+        <div class="soc-ico" style="background:#EA4335;color:#fff;font-size:11px">G</div>Google로 시작하기
+      </button>
+    </div>
+
+    <div class="or-r"><div class="or-line"></div><span class="or-txt">또는 이메일</span><div class="or-line"></div></div>
+
+    <!-- 로그인 폼 -->
+    <div id="f-login">
+      <input class="ai" type="email" placeholder="이메일 주소" id="inp-em">
+      <input class="ai" type="password" placeholder="비밀번호" id="inp-pw">
+      <button class="a-sub" onclick="emailLogin()">로그인</button>
+    </div>
+
+    <!-- 회원가입 폼 -->
+    <div id="f-signup" style="display:none">
+      <input class="ai" type="text" placeholder="닉네임" id="inp-nick">
+      <input class="ai" type="email" placeholder="이메일 주소">
+      <div class="ph-row">
+        <input class="ai" type="tel" placeholder="010-0000-0000" id="inp-phone">
+        <button class="vbtn" onclick="sendVerify()">인증번호</button>
+      </div>
+      <input class="ai" id="inp-code" placeholder="인증번호 6자리" style="display:none">
+      <input class="ai" type="password" placeholder="비밀번호 (8자 이상)">
+      <button class="a-sub" onclick="doSignup()">회원가입 &amp; 500P 받기</button>
+    </div>
+
+    <!-- Keycloak PKCE 플로우 상태 -->
+    <div class="kc-flow" id="kc-flow">
+      <div class="kc-step" id="ks1"><div class="dot"></div>PKCE code_verifier 생성</div>
+      <div class="kc-step" id="ks2"><div class="dot"></div>Keycloak Authorization 요청</div>
+      <div class="kc-step" id="ks3"><div class="dot"></div>소셜 IdP 인증 완료</div>
+      <div class="kc-step" id="ks4"><div class="dot"></div>JWT 토큰 발급</div>
+      <div class="kc-step" id="ks5"><div class="dot"></div>세션 생성 · 입장</div>
+    </div>
+
+    <div class="kc-note">
+      <span class="kc"><span class="kc-dot"></span>Keycloak 26 · PKCE</span>
+      &nbsp;시지온 패스포트 연동 · OpenID Connect
+    </div>
+    <div class="bonus-box">
+      <div class="ico">🎁</div>
+      <div class="txt">신규 가입 시 <span class="pts">500P</span> 즉시 지급<br>첫 베팅 성공 시 추가 <span class="pts">200P</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════
+     PAGE: 메인 앱
+══════════════════════════ -->
+<div id="page-app" class="page">
+  <nav class="sb">
+    <div class="sb-logo">
+      <div class="sb-mark">예측소</div>
+      <div class="sb-sub">K-POLYMARKET</div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-sec">마켓</div>
+      <button class="si active" onclick="nav('home',this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>홈 &amp; 인기 마켓</button>
+      <button class="si" onclick="nav('search',this)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>마켓 탐색</button>
+      <div class="sb-sec">나의 활동</div>
+      <button class="si" onclick="nav('my',this)"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>내 예측<span class="bdg">3</span></button>
+      <button class="si" onclick="nav('leader',this)"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>리더보드</button>
+      <button class="si" onclick="nav('notif',this)"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>알림<span class="bdg">2</span></button>
+      <div class="sb-sec">수익화</div>
+      <button class="si" onclick="nav('charge',this)"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>포인트 충전</button>
+      <div class="sb-sec">운영</div>
+      <button class="si" onclick="nav('create',this)"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>마켓 만들기</button>
+      <button class="si" onclick="nav('admin',this)"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>어드민</button>
+      <button class="si" onclick="nav('settings',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>설정</button>
+    </div>
+    <div class="sb-user">
+      <div class="sb-urow">
+        <div class="sb-av" id="sb-av">홍</div>
+        <div>
+          <div class="sb-nm" id="sb-nm">홍길동</div>
+          <div class="sb-pt" id="sb-pt">5,000 P</div>
+        </div>
+      </div>
+      <button class="sb-out" onclick="doLogout()">로그아웃</button>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="tb">
+      <div class="tb-l">
+        <span class="tb-title" id="tb-title">인기 마켓</span>
+        <span class="tb-live" id="tb-live">LIVE</span>
+        <span class="kc"><span class="kc-dot"></span>Keycloak</span>
+      </div>
+      <div class="tb-r">
+        <div class="pt-chip">🪙 <span id="top-pts">5,000</span> P</div>
+        <button class="chg-btn" onclick="nav('charge',null)">+ 충전</button>
+      </div>
+    </div>
+
+    <div class="scroll" id="scroll">
+
+      <!-- HOME -->
+      <div id="v-home">
+        <div class="stat-row">
+          <div class="sc"><div class="sc-lbl">보유 포인트</div><div class="sc-val" style="color:var(--gold)" id="sc-pts">5,000</div><div class="sc-delta">포인트몰 교환 가능</div></div>
+          <div class="sc"><div class="sc-lbl">참여중 마켓</div><div class="sc-val" style="color:var(--blue)" id="sc-mkt">3</div><div class="sc-delta up">이번주 2개 추가</div></div>
+          <div class="sc"><div class="sc-lbl">누적 수익률</div><div class="sc-val" style="color:var(--green)" id="sc-roi">+23%</div><div class="sc-delta up">상위 8%</div></div>
+          <div class="sc"><div class="sc-lbl">예측 적중률</div><div class="sc-val" style="color:var(--navy)">71%</div><div class="sc-delta">5승 2패</div></div>
+        </div>
+        <div class="mall-banner" onclick="nav('charge',null)">
+          <div>
+            <div class="mb-lbl">POINT CHARGE</div>
+            <div class="mb-ttl">토스페이먼츠로 충전</div>
+            <div class="mb-sub">신용카드 · 카카오페이 · 계좌이체</div>
+            <button class="mb-btn" onclick="event.stopPropagation();nav('charge',null)">충전하러 가기 →</button>
+          </div>
+          <div>
+            <div class="mb-pts" id="mb-pts">5,000</div>
+            <div class="mb-pl">보유 포인트</div>
+          </div>
+        </div>
+        <div class="stbar">
+          <button class="st on" onclick="filterMkt('all',this)">전체</button>
+          <button class="st" onclick="filterMkt('pol',this)">🏛 정치</button>
+          <button class="st" onclick="filterMkt('eco',this)">📈 경제</button>
+          <button class="st" onclick="filterMkt('ent',this)">🎬 연예</button>
+          <button class="st" onclick="filterMkt('spo',this)">⚽ 스포츠</button>
+        </div>
+        <div class="sh"><div class="sh-t">🔥 인기 예측 마켓</div><div class="sh-more" onclick="nav('search',null)">전체보기 →</div></div>
+        <div id="mkt-list"></div>
+      </div>
+
+      <!-- SEARCH -->
+      <div id="v-search" style="display:none">
+        <div style="margin-bottom:12px;display:flex;gap:8px">
+          <input id="search-q" style="flex:1;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:14px;outline:none;background:var(--card)" placeholder="마켓 검색..." oninput="doSearch(this.value)">
+        </div>
+        <div class="stbar">
+          <button class="st on" onclick="searchCat('all',this)">전체</button>
+          <button class="st" onclick="searchCat('pol',this)">정치</button>
+          <button class="st" onclick="searchCat('eco',this)">경제</button>
+          <button class="st" onclick="searchCat('ent',this)">연예</button>
+          <button class="st" onclick="searchCat('spo',this)">스포츠</button>
+        </div>
+        <div id="search-list"></div>
+      </div>
+
+      <!-- MY -->
+      <div id="v-my" style="display:none">
+        <div class="sh"><div class="sh-t">진행중인 예측</div></div>
+        <div id="my-live"></div>
+        <div class="sh" style="margin-top:18px"><div class="sh-t">완료된 예측</div></div>
+        <div id="my-done"></div>
+        <div style="background:var(--card);border-radius:12px;padding:13px 15px;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-top:12px;display:flex;align-items:center;gap:10px">
+          <div style="font-size:22px">📤</div>
+          <div style="flex:1"><div style="font-size:13px;font-weight:700">예측 결과 공유</div><div style="font-size:11px;color:var(--sub)">SNS 공유 시 친구 초대 200P 추가</div></div>
+          <button onclick="toast('공유 링크가 복사되었습니다!')" style="background:var(--blue);color:#fff;border:none;border-radius:8px;padding:7px 13px;font-size:12px;font-weight:700">공유 →</button>
+        </div>
+      </div>
+
+      <!-- LEADER -->
+      <div id="v-leader" style="display:none">
+        <div class="sh"><div class="sh-t">🏆 이번달 예측왕</div></div>
+        <div id="leader-list"></div>
+      </div>
+
+      <!-- NOTIF -->
+      <div id="v-notif" style="display:none">
+        <div class="sh"><div class="sh-t">🔔 알림</div><button onclick="markAll()" style="font-size:12px;color:var(--blue);background:none;border:none;font-weight:500">모두 읽음</button></div>
+        <div id="notif-list"></div>
+      </div>
+
+      <!-- CHARGE -->
+      <div id="v-charge" style="display:none">
+        <div class="chg-wrap">
+          <div style="margin-bottom:16px">
+            <div style="font-size:17px;font-weight:700;margin-bottom:3px">포인트 충전</div>
+            <div style="font-size:13px;color:var(--sub)">토스페이먼츠 SDK로 안전하게 결제</div>
+          </div>
+          <!-- 토스페이먼츠 SDK 연동 안내 -->
+          <div style="background:#EBF4FF;border:1px solid #93C5FD;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#1D4ED8">
+            <strong>실제 연동 시</strong>: <code style="background:#DBEAFE;padding:1px 5px;border-radius:4px;font-size:11px">loadTossPayments(clientKey)</code> → <code style="background:#DBEAFE;padding:1px 5px;border-radius:4px;font-size:11px">tossPayments.requestPayment()</code> 순서로 연동합니다.
+          </div>
+          <div class="pkg-grid">
+            <div class="pkg" onclick="selPkg(this,1000,1000)"><div class="pkg-pts">1,000</div><div class="pkg-lbl">포인트</div><div class="pkg-price">₩1,000</div></div>
+            <div class="pkg best" onclick="selPkg(this,5500,5000)"><div class="pkg-pts">5,500</div><div class="pkg-lbl">포인트</div><div class="pkg-price">₩5,000</div><div class="pkg-bonus">+500P 보너스!</div></div>
+            <div class="pkg" onclick="selPkg(this,12000,10000)"><div class="pkg-pts">12,000</div><div class="pkg-lbl">포인트</div><div class="pkg-price">₩10,000</div><div class="pkg-bonus">+2,000P 보너스!</div></div>
+          </div>
+          <div class="pay-box">
+            <h3>결제 수단</h3>
+            <div class="pm-grid">
+              <button class="pm sel" onclick="selPay(this)">💳 신용카드</button>
+              <button class="pm" onclick="selPay(this)">📱 카카오페이</button>
+              <button class="pm" onclick="selPay(this)">🏦 계좌이체</button>
+              <button class="pm" onclick="selPay(this)">📲 네이버페이</button>
+            </div>
+          </div>
+          <!-- 결제 진행 표시 -->
+          <div class="pay-progress" id="pay-progress">
+            <div class="pay-progress-icon" id="pp-icon">💳</div>
+            <div class="pay-progress-title" id="pp-title">결제 처리 중...</div>
+            <div class="pay-progress-desc" id="pp-desc">토스페이먼츠 서버와 통신 중입니다</div>
+            <div id="pp-steps"></div>
+          </div>
+          <button class="toss-btn" id="toss-btn" onclick="doPay()">
+            <span style="font-size:18px">💙</span> 토스페이먼츠로 결제하기
+          </button>
+          <div class="chg-note">포인트는 현금으로 환급되지 않습니다<br>미사용 포인트: 결제 7일 이내 취소 가능</div>
+        </div>
+      </div>
+
+      <!-- CREATE -->
+      <div id="v-create" style="display:none">
+        <div style="background:var(--card);border-radius:14px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.05)">
+          <div class="sh" style="margin-bottom:14px"><div class="sh-t">새 예측 마켓 만들기</div></div>
+          <div style="margin-bottom:11px">
+            <label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px">마켓 제목 *</label>
+            <input id="new-title" style="width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:14px;outline:none;background:#FAFBFD" placeholder="예) 2026년 4분기 코스피 3,000p 돌파 여부">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px">
+            <div>
+              <label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px">카테고리</label>
+              <select id="new-cat" style="width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:13px;outline:none;background:#FAFBFD">
+                <option>정치</option><option>경제</option><option>연예</option><option>스포츠</option><option>기타</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px">종료일 *</label>
+              <input type="date" style="width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:13px;outline:none;background:#FAFBFD">
+            </div>
+          </div>
+          <div style="margin-bottom:11px">
+            <label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px">초기 유동성 풀 (P)</label>
+            <input id="new-liq" type="number" style="width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:14px;outline:none;background:#FAFBFD" placeholder="1000 (CPMM 초기 풀)">
+          </div>
+          <div style="margin-bottom:11px">
+            <label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px">결과 판정 기준 *</label>
+            <textarea rows="2" style="width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:13px;outline:none;background:#FAFBFD;resize:none;line-height:1.6" placeholder="예) 종료일 기준 코스피 종가 ≥ 3,000pt이면 YES"></textarea>
+          </div>
+          <div style="margin-bottom:14px">
+            <label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px">언론사 기사 URL (Livere 위젯 연동)</label>
+            <input type="url" style="width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:14px;outline:none;background:#FAFBFD" placeholder="https://news.example.com/article/12345">
+          </div>
+          <button onclick="submitMkt()" style="width:100%;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;transition:all .15s">마켓 생성 신청</button>
+          <p style="font-size:11px;color:var(--sub);text-align:center;margin-top:9px">어드민 검토 후 24시간 내 승인 · 부적합 마켓은 반려됩니다</p>
+        </div>
+      </div>
+
+      <!-- ADMIN -->
+      <div id="v-admin" style="display:none">
+        <div class="adm-grid">
+          <div class="adm-sc"><div class="adm-lbl">전체 마켓</div><div class="adm-val" style="color:var(--blue)">24</div></div>
+          <div class="adm-sc"><div class="adm-lbl">승인 대기</div><div class="adm-val" style="color:var(--gold)">3</div></div>
+          <div class="adm-sc"><div class="adm-lbl">전체 이용자</div><div class="adm-val" style="color:var(--navy)" id="adm-users">1,247</div></div>
+          <div class="adm-sc"><div class="adm-lbl">오늘 거래량</div><div class="adm-val" style="color:var(--green)">2.4M P</div></div>
+        </div>
+
+        <!-- 정산 폼 — CPMM 비례 계산 -->
+        <div class="settle-form">
+          <h3>마켓 정산 (CPMM 비례 배분)</h3>
+          <div class="sf-row">
+            <select class="sf-sel" id="settle-mkt" onchange="previewSettle()">
+              <option value="">정산할 마켓 선택...</option>
+              <option value="0">이재명 대선 당선 여부 (YES 58%)</option>
+              <option value="2">한국은행 금리 인하 (YES 44%)</option>
+              <option value="3">손흥민 월드컵 엔트리 (YES 87%)</option>
+            </select>
+            <div class="sf-out">
+              <button class="out-btn" id="out-yes" onclick="selOutcome('YES')">YES</button>
+              <button class="out-btn" id="out-no" onclick="selOutcome('NO')">NO</button>
+            </div>
+            <button class="sf-submit" onclick="doSettle()">정산 실행</button>
+          </div>
+          <!-- 정산 미리보기 -->
+          <div class="settle-preview" id="settle-preview" style="display:none">
+            <div class="sp-row"><span>참여자 수</span><span id="sp-users">—</span></div>
+            <div class="sp-row"><span>총 베팅 풀</span><span id="sp-pool">—</span></div>
+            <div class="sp-row"><span>승자 풀 비중</span><span id="sp-win-ratio">—</span></div>
+            <div class="sp-row"><span>패자 풀 → 승자 배분</span><span id="sp-loser">—</span></div>
+            <div class="sp-row hl"><span>승자 1P당 수익</span><span id="sp-per-pt">—</span></div>
+          </div>
+        </div>
+
+        <div class="sh"><div class="sh-t">마켓 관리</div></div>
+        <div class="adm-tbl">
+          <div class="adm-th">
+            <span class="tc0">마켓명</span><span class="tc1">참여자</span><span class="tc2">상태</span><span class="tc3">액션</span>
+          </div>
+          <div class="adm-tr">
+            <span class="tc0">이재명 대선 당선</span><span class="tc1">2,841</span>
+            <span class="tc2"><span class="st-live2">진행중</span></span>
+            <span class="tc3"><button class="adm-ab ab-set" onclick="nav('admin',null);toast('정산 폼에서 처리하세요')">정산</button></span>
+          </div>
+          <div class="adm-tr">
+            <span class="tc0">BTS 완전체 컴백</span><span class="tc1">5,112</span>
+            <span class="tc2"><span class="st-live2">진행중</span></span>
+            <span class="tc3"><button class="adm-ab ab-set" onclick="toast('정산 폼에서 처리하세요')">정산</button></span>
+          </div>
+          <div class="adm-tr" id="atr-hand">
+            <span class="tc0">한국은행 금리 인하</span><span class="tc1">1,203</span>
+            <span class="tc2"><span class="st-pend">승인대기</span></span>
+            <span class="tc3"><button class="adm-ab ab-app" onclick="approveMkt(this,'atr-hand')">승인</button><button class="adm-ab ab-rej" onclick="rejectMkt(this,'atr-hand')">반려</button></span>
+          </div>
+          <div class="adm-tr" id="atr-son">
+            <span class="tc0">손흥민 월드컵 엔트리</span><span class="tc1">3,440</span>
+            <span class="tc2"><span class="st-pend">승인대기</span></span>
+            <span class="tc3"><button class="adm-ab ab-app" onclick="approveMkt(this,'atr-son')">승인</button><button class="adm-ab ab-rej" onclick="rejectMkt(this,'atr-son')">반려</button></span>
+          </div>
+          <div class="adm-tr">
+            <span class="tc0">삼성전자 7만원 돌파</span><span class="tc1">897</span>
+            <span class="tc2"><span class="st-end">종료</span></span>
+            <span class="tc3"><button class="adm-ab ab-set" style="opacity:.4;cursor:default">완료</button></span>
+          </div>
+        </div>
+
+        <div class="sh"><div class="sh-t">이용자 포인트 관리</div></div>
+        <div style="background:var(--card);border-radius:12px;padding:15px;box-shadow:0 1px 3px rgba(0,0,0,.05);display:flex;gap:9px;flex-wrap:wrap">
+          <input id="adm-user-q" style="flex:2;min-width:150px;border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;font-size:13px;outline:none" placeholder="이메일 또는 닉네임">
+          <input id="adm-pts-amt" type="number" style="flex:1;min-width:90px;border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;font-size:13px;outline:none" placeholder="포인트">
+          <button onclick="grantPts()" style="padding:9px 16px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700">지급</button>
+          <button onclick="revokePts()" style="padding:9px 16px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700">회수</button>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div id="v-settings" style="display:none">
+        <div class="sh"><div class="sh-t">알림 설정</div></div>
+        <div class="set-grp">
+          <div class="set-row"><div><div class="set-lbl">마켓 종료 D-1 알림</div><div class="set-sub">베팅한 마켓 종료 하루 전</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+          <div class="set-row"><div><div class="set-lbl">확률 급변 알림</div><div class="set-sub">내 포지션 ±10% 이상 변동 시</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+          <div class="set-row"><div><div class="set-lbl">정산 완료 알림</div><div class="set-sub">포인트 지급 시 즉시</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+          <div class="set-row"><div><div class="set-lbl">주간 뉴스레터</div><div class="set-sub">매주 월요일 인기 마켓 TOP 5</div></div><label class="toggle"><input type="checkbox"><span class="tslider"></span></label></div>
+          <div class="set-row"><div><div class="set-lbl">카카오 알림톡</div><div class="set-sub">카카오 계정 연동 필요</div></div><label class="toggle"><input type="checkbox"><span class="tslider"></span></label></div>
+        </div>
+        <div class="sh"><div class="sh-t">계정</div></div>
+        <div class="set-grp">
+          <div class="set-row"><div><div class="set-lbl">닉네임</div><div class="set-sub" id="settings-nick">홍길동</div></div><button onclick="toast('닉네임 변경 준비중')" style="font-size:12px;color:var(--blue);background:none;border:none;font-weight:500">변경</button></div>
+          <div class="set-row"><div><div class="set-lbl">연동 계정</div><div class="set-sub">카카오 · Keycloak SSO</div></div><span class="kc"><span class="kc-dot"></span>연결됨</span></div>
+          <div class="set-row"><div><div class="set-lbl" style="color:var(--red)">계정 탈퇴</div><div class="set-sub">탈퇴 시 포인트 소멸</div></div><button onclick="openModal('m-withdraw')" style="font-size:12px;color:var(--red);background:none;border:none;font-weight:500">탈퇴</button></div>
+        </div>
+      </div>
+
+    </div><!-- /scroll -->
+  </div><!-- /main -->
+</div><!-- /page-app -->
+
+<!-- ══════════════════════════
+     PAGE: 마켓 상세
+══════════════════════════ -->
+<div id="page-detail" class="page">
+  <div class="tb">
+    <div class="tb-l">
+      <span class="tb-title">마켓 상세</span>
+      <span class="tb-live" style="display:inline;background:var(--green)">LIVE</span>
+    </div>
+    <div class="tb-r">
+      <div class="pt-chip">🪙 <span id="d-top-pts">5,000</span> P</div>
+    </div>
+  </div>
+  <div class="d-scroll">
+    <button class="d-back" onclick="goBack()">← 목록으로</button>
+
+    <div class="d-hdr">
+      <div class="d-meta" id="d-meta"></div>
+      <div class="d-ttl" id="d-title"></div>
+      <div class="prob-big" id="d-prob"></div>
+      <div class="d-stats" id="d-stats"></div>
+    </div>
+
+    <!-- 확률 추이 차트 -->
+    <div class="chart-card">
+      <div class="chart-hdr">
+        <div class="chart-ttl">📈 확률 변동 추이</div>
+        <div class="chart-period">
+          <button class="cp-btn on" onclick="setPeriod(7,this)">7일</button>
+          <button class="cp-btn" onclick="setPeriod(14,this)">14일</button>
+          <button class="cp-btn" onclick="setPeriod(30,this)">30일</button>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="prob-chart"></canvas></div>
+    </div>
+
+    <!-- 내 포지션 요약 (베팅 후 표시) -->
+    <div id="my-pos-area"></div>
+
+    <!-- 베팅 영역 -->
+    <div class="det-bet">
+      <div style="font-size:14px;font-weight:700;margin-bottom:12px">💰 AMM 베팅 (CPMM 방식)</div>
+      <div id="det-bet-inner"></div>
+    </div>
+
+    <!-- 댓글 -->
+    <div class="cmt-card">
+      <div style="font-size:14px;font-weight:700;margin-bottom:12px">💬 토론 (<span id="cmt-cnt">4</span>)</div>
+      <div id="cmt-list"></div>
+      <div class="cmt-inp-row">
+        <input class="cmt-inp" id="cmt-inp" placeholder="의견을 남겨보세요..." onkeydown="if(event.key==='Enter')addCmt()">
+        <button class="cmt-send" onclick="addCmt()">전송</button>
+      </div>
+    </div>
+
+    <!-- 공유 -->
+    <div class="share-bar">
+      <div style="font-size:20px">📤</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:700">이 마켓 공유</div><div style="font-size:11px;color:var(--sub)">링크 공유 시 유입 보너스</div></div>
+      <div class="share-btns">
+        <button class="share-btn" onclick="toast('카카오 공유 — 준비중')">카카오</button>
+        <button class="share-btn" onclick="toast('트위터 공유 — 준비중')">트위터</button>
+        <button class="share-btn primary" onclick="toast('링크가 복사되었습니다!')">링크 복사</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 모달 -->
+<div class="modal-bg" id="m-withdraw">
+  <div class="modal">
+    <h3>정말 탈퇴하시겠어요?</h3>
+    <p>탈퇴 시 보유 포인트 <strong id="mw-pts"></strong>가 소멸되며 복구할 수 없습니다.</p>
+    <div class="modal-btns">
+      <button class="m-cancel" onclick="closeModal('m-withdraw')">취소</button>
+      <button class="m-ok" style="background:var(--red)" onclick="closeModal('m-withdraw');toast('탈퇴 처리됨')">탈퇴 확인</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════
+// 전역 상태
+// ════════════════════════════════════
+let G = {
+  pts: 5000,
+  nick: '홍길동',
+  provider: '',
+  curMkt: null,
+  activePanel: null,
+  activeSide: {},
+  detailSide: 'YES',
+  selectedOutcome: null,
+  selectedPkg: null,
+  searchCat: 'all',
+  chartInst: null,
+  chartPeriod: 7,
+  // 마켓별 포지션 (베팅 내역)
+  positions: {},
+  // 마켓별 가격 히스토리
+  history: {},
+};
+
+// CPMM 초기 풀 설정 — yes + no = 총 유동성
+const MARKETS = [
+  {id:0,cat:'pol',cl:'cp',lbl:'정치',title:'2027년 대선 — 이재명 후보 당선 여부',yPool:11600,nPool:8400,users:2841,vol:4820000,days:347},
+  {id:1,cat:'ent',cl:'ce',lbl:'연예',title:'BTS 완전체 컴백 — 2026년 내 실현 여부',yPool:14200,nPool:5800,users:5112,vol:7340000,days:214},
+  {id:2,cat:'eco',cl:'ck',lbl:'경제',title:'한국은행 기준금리 — 2026년 3분기 인하',yPool:8800,nPool:11200,users:1203,vol:2100000,days:58},
+  {id:3,cat:'spo',cl:'cs',lbl:'스포츠',title:'손흥민 — 2026 월드컵 최종 엔트리 포함',yPool:17400,nPool:2600,users:3440,vol:5920000,days:28},
+  {id:4,cat:'eco',cl:'ck',lbl:'경제',title:'삼성전자 — 4분기 주가 70,000원 돌파',yPool:7800,nPool:12200,users:897,vol:1890000,days:182},
+  {id:5,cat:'pol',cl:'cp',lbl:'정치',title:'국민의힘 차기 대표 — 비명계 인사 당선',yPool:6600,nPool:13400,users:621,vol:980000,days:41},
+];
+
+// CPMM 헬퍼
+function yesProb(m){return Math.round(m.yPool/(m.yPool+m.nPool)*100)}
+function noProb(m){return 100-yesProb(m)}
+
+// CPMM AMM: side='YES'로 amt 포인트 베팅 시 받을 수 있는 shares 계산
+// k = yPool * nPool (constant product)
+// 실제 예상 수익(shares) 반환
+function ammCalc(m, side, amt){
+  const k = m.yPool * m.nPool;
+  let newBuyPool, newSellPool;
+  if(side==='YES'){
+    newBuyPool = m.yPool + amt;
+    newSellPool = k / newBuyPool;
+    const shares = m.nPool - newSellPool;
+    const payout = amt + shares;          // 이긴다면 돌려받는 금액
+    const profit = Math.max(0, shares);
+    return {shares: Math.round(shares), profit: Math.round(profit), payout: Math.round(payout)};
+  } else {
+    newBuyPool = m.nPool + amt;
+    newSellPool = k / newBuyPool;
+    const shares = m.yPool - newSellPool;
+    const profit = Math.max(0, shares);
+    return {shares: Math.round(shares), profit: Math.round(profit), payout: Math.round(amt+profit)};
+  }
+}
+
+// CPMM AMM: 베팅 실행 → 풀 업데이트
+function ammBet(m, side, amt){
+  const k = m.yPool * m.nPool;
+  if(side==='YES'){
+    m.yPool += amt;
+    m.nPool = k / m.yPool;
+  } else {
+    m.nPool += amt;
+    m.yPool = k / m.nPool;
+  }
+  m.vol += amt;
+  m.users += 1;
+}
+
+const LEADERS = [
+  {n:'김예측왕',s:'+284%',b:47,sc:284,bg:'#EEF2FF',tc:'#3730A3'},
+  {n:'박분석가',s:'+221%',b:31,sc:221,bg:'#ECFDF5',tc:'#065F46'},
+  {n:'이투자자',s:'+198%',b:52,sc:198,bg:'#FDF4FF',tc:'#7E22CE'},
+  {n:'최정확도',s:'+156%',b:28,sc:156,bg:'#FFFBEB',tc:'#92400E'},
+  {n:'정예언가',s:'+134%',b:19,sc:134,bg:'#EEF2FF',tc:'#3730A3'},
+  {n:'한미래씨',s:'+119%',b:44,sc:119,bg:'#FEF2F2',tc:'#991B1B'},
+  {n:'오승부사',s:'+97%', b:37,sc:97, bg:'#ECFDF5',tc:'#065F46'},
+  {n:'신예측러',s:'+82%', b:23,sc:82, bg:'#FDF4FF',tc:'#7E22CE'},
+  {n:'황분석왕',s:'+71%', b:15,sc:71, bg:'#FFFBEB',tc:'#92400E'},
+  {n:'나(홍길동)',s:'+23%',b:3, sc:23, bg:'#ECFDF5',tc:'#065F46',me:true},
+];
+
+const NOTIFS = [
+  {ico:'🏁',bg:'#ECFDF5',ttl:'BTS 마켓 정산 완료',desc:'YES 적중 · +352P 지급됐습니다',time:'5분 전',unread:true},
+  {ico:'📊',bg:'#EEF2FF',ttl:'대선 마켓 확률 변동',desc:'이재명 YES 58% → 63%로 상승',time:'1시간 전',unread:true},
+  {ico:'🔔',bg:'#FFFBEB',ttl:'손흥민 마켓 D-1',desc:'내일 오후 6시 종료됩니다',time:'3시간 전',unread:false},
+  {ico:'🎁',bg:'#FDF4FF',ttl:'가입 보너스 지급',desc:'회원가입 축하! 500P 지급됨',time:'어제',unread:false},
+];
+
+const CMTS = [
+  {nick:'박분석',bg:'#EEF2FF',tc:'#3730A3',side:'YES',sidec:'#1D4ED8',sidebg:'#EBF4FF',time:'2분 전',text:'대선 지지율 추이 보면 YES 쪽이 맞다고 봄. 경제지표가 관건이지',likes:12},
+  {nick:'이예측',bg:'#ECFDF5',tc:'#065F46',side:'NO',sidec:'#B91C1C',sidebg:'#FEF2F2',time:'15분 전',text:'NO에 걸었는데 리스크 관리 차원에서... 변수가 너무 많아요',likes:5},
+  {nick:'최분석',bg:'#FDF4FF',tc:'#7E22CE',side:'YES',sidec:'#1D4ED8',sidebg:'#EBF4FF',time:'1시간 전',text:'현재 63% 확률이면 충분히 베팅 가치 있다고 생각합니다',likes:8},
+  {nick:'정예측',bg:'#FFFBEB',tc:'#92400E',side:'NO',sidec:'#B91C1C',sidebg:'#FEF2F2',time:'3시간 전',text:'역대 대선 패턴 보면 여론조사보다 실제 결과 보수적으로 나오는 경향',likes:3},
+];
+
+// 마켓별 가격 히스토리 생성
+function genHistory(m, days){
+  const base = yesProb(m);
+  const pts = [];
+  const lbls = [];
+  for(let i=days; i>=0; i--){
+    const noise = (Math.random()-0.48)*4;
+    const drift = (days-i)/days*(base-50);
+    pts.push(Math.min(95,Math.max(5,Math.round(50+drift+noise))));
+    lbls.push(i===0?'지금':`${i}일전`);
+  }
+  pts[pts.length-1] = base;
+  return {pts, lbls};
+}
+
+// ════════════════════════════════════
+// 유틸
+// ════════════════════════════════════
+function fmt(n){return Math.round(n).toLocaleString()}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2600);
+}
+function openModal(id){
+  document.getElementById('m-withdraw').querySelector('strong').textContent=fmt(G.pts)+'P';
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function updateAllPts(){
+  const v=fmt(G.pts);
+  ['top-pts','sc-pts','mb-pts','sb-pt','d-top-pts'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.textContent = id==='sb-pt' ? v+' P' : v;
+  });
+}
+
+// ════════════════════════════════════
+// Keycloak PKCE 플로우 시뮬레이션
+// ════════════════════════════════════
+function runKcFlow(cb){
+  const flow = document.getElementById('kc-flow');
+  flow.classList.add('show');
+  const steps = ['ks1','ks2','ks3','ks4','ks5'];
+  const descs = [
+    'PKCE code_verifier 생성',
+    'Keycloak Authorization 요청',
+    '소셜 IdP 인증 완료',
+    'JWT 토큰 발급 (access + refresh)',
+    '세션 생성 · 입장',
+  ];
+  steps.forEach(id=>{ const el=document.getElementById(id); el.className='kc-step'; });
+  let i=0;
+  function step(){
+    if(i>0) document.getElementById(steps[i-1]).classList.add('done');
+    if(i<steps.length){
+      document.getElementById(steps[i]).classList.add('active');
+      i++;
+      setTimeout(step, 380);
+    } else {
+      setTimeout(()=>{ flow.classList.remove('show'); cb(); }, 300);
+    }
+  }
+  step();
+}
+
+// ════════════════════════════════════
+// Auth
+// ════════════════════════════════════
+function authTab(mode){
+  document.querySelectorAll('.a-tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.a-tab')[mode==='login'?0:1].classList.add('on');
+  document.getElementById('f-login').style.display=mode==='login'?'block':'none';
+  document.getElementById('f-signup').style.display=mode==='signup'?'block':'none';
+}
+function socialLogin(provider){
+  G.provider=provider;
+  toast(`${provider} 인증 시작...`);
+  runKcFlow(()=>{ enterApp(provider[0]+'길동'); });
+}
+function emailLogin(){
+  const e=document.getElementById('inp-em').value;
+  const p=document.getElementById('inp-pw').value;
+  if(!e||!p){toast('이메일과 비밀번호를 입력하세요');return;}
+  toast('Keycloak PKCE 인증 중...');
+  runKcFlow(()=>enterApp('홍길동'));
+}
+function sendVerify(){
+  if(!document.getElementById('inp-phone').value){toast('휴대폰 번호를 입력하세요');return;}
+  document.getElementById('inp-code').style.display='block';
+  toast('인증번호 발송 (데모: 000000)');
+}
+function doSignup(){
+  const nick=document.getElementById('inp-nick').value||'신규유저';
+  toast('Keycloak 계정 생성 중...');
+  G.pts=500;
+  runKcFlow(()=>{ toast('✓ 가입 완료! 500P 지급'); enterApp(nick); });
+}
+function enterApp(nick){
+  G.nick=nick;
+  document.getElementById('sb-nm').textContent=nick;
+  document.getElementById('sb-av').textContent=nick[0];
+  document.getElementById('settings-nick').textContent=nick;
+  document.getElementById('page-login').classList.remove('active');
+  document.getElementById('page-app').classList.add('active');
+  updateAllPts();
+  renderAll();
+}
+function doLogout(){
+  document.getElementById('page-app').classList.remove('active');
+  document.getElementById('page-detail').classList.remove('active');
+  document.getElementById('page-login').classList.add('active');
+  G.pts=5000; G.positions={};
+  updateAllPts();
+  toast('로그아웃되었습니다');
+}
+
+// ════════════════════════════════════
+// 네비
+// ════════════════════════════════════
+const TITLES={home:'인기 마켓',search:'마켓 탐색',my:'내 예측',leader:'리더보드',notif:'알림',charge:'포인트 충전',create:'마켓 만들기',admin:'어드민 패널',settings:'설정'};
+function nav(id, el){
+  document.querySelectorAll('[id^="v-"]').forEach(v=>v.style.display='none');
+  const v=document.getElementById('v-'+id);
+  if(v) v.style.display='block';
+  document.querySelectorAll('.si').forEach(i=>i.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('tb-title').textContent=TITLES[id]||id;
+  document.getElementById('tb-live').style.display=id==='home'?'inline':'none';
+  document.getElementById('scroll').scrollTop=0;
+}
+
+// ════════════════════════════════════
+// 마켓 카드 렌더
+// ════════════════════════════════════
+function mktHTML(list){
+  return list.map(m=>{
+    const yp=yesProb(m), np=noProb(m);
+    return `
+    <div class="mc" id="mc-${m.id}" onclick="openDetail(${m.id})">
+      <div class="mc-meta">
+        <span class="cat ${m.cl}">${m.lbl}</span>
+        <span style="font-size:11px;color:var(--sub)">▸ ${m.days}일 후 종료</span>
+      </div>
+      <div class="mc-ttl">${m.title}</div>
+      <div class="pi"><span class="pl y">YES</span><div class="pt"><div class="pf fy" id="fy-${m.id}" style="width:${yp}%"></div></div><span class="pp y" id="py-${m.id}">${yp}%</span></div>
+      <div class="pi"><span class="pl n">NO</span><div class="pt"><div class="pf fn" id="fn-${m.id}" style="width:${np}%"></div></div><span class="pp n" id="pn-${m.id}">${np}%</span></div>
+      <div class="mc-ft">
+        <div class="mvol">👥 ${fmt(m.users)}명 · ${fmt(m.vol)}P</div>
+        <div class="bbtns">
+          <button class="bb bby" onclick="event.stopPropagation();quickBet(${m.id},'YES')">↑ YES</button>
+          <button class="bb bbn" onclick="event.stopPropagation();quickBet(${m.id},'NO')">↓ NO</button>
+        </div>
+      </div>
+    </div>
+    <div id="qbp-${m.id}" style="display:none"></div>`;
+  }).join('');
+}
+
+function renderMkts(filter){
+  const src=filter==='all'?MARKETS:MARKETS.filter(m=>m.cat===filter);
+  document.getElementById('mkt-list').innerHTML=mktHTML(src);
+}
+function filterMkt(cat,el){
+  document.querySelectorAll('#v-home .st').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  renderMkts(cat);
+}
+function doSearch(q){
+  const src=MARKETS.filter(m=>{
+    const catOk=G.searchCat==='all'||m.cat===G.searchCat;
+    const txtOk=!q||m.title.toLowerCase().includes(q.toLowerCase());
+    return catOk&&txtOk;
+  });
+  document.getElementById('search-list').innerHTML=mktHTML(src);
+}
+function searchCat(cat,el){
+  G.searchCat=cat;
+  document.querySelectorAll('#v-search .st').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  doSearch(document.getElementById('search-q').value);
+}
+
+// ════════════════════════════════════
+// 퀵 베팅 패널 (홈 카드)
+// ════════════════════════════════════
+function quickBet(id, side){
+  if(G.activePanel!==null&&G.activePanel!==id){
+    const prev=document.getElementById('qbp-'+G.activePanel);
+    if(prev) prev.style.display='none';
+  }
+  const panel=document.getElementById('qbp-'+id);
+  if(!panel)return;
+  if(G.activeSide[id]===side&&panel.style.display!=='none'){
+    panel.style.display='none'; G.activePanel=null; delete G.activeSide[id]; return;
+  }
+  G.activeSide[id]=side; G.activePanel=id;
+  panel.innerHTML=betPanelHTML(id, side, 'q');
+  panel.style.display='block';
+}
+
+function betPanelHTML(id, side, prefix){
+  const m=MARKETS.find(x=>x.id===id);
+  const isY=side==='YES';
+  const calc=ammCalc(m,side,500);
+  const yp=yesProb(m), np=noProb(m);
+  return `<div class="bpanel">
+    <div class="bp-ttl">💰 AMM 베팅 <button class="bp-close" onclick="closeBetPanel(${id},'${prefix}')">×</button></div>
+    <div class="stabs2">
+      <div class="st2 ${isY?'yon':'off'}" onclick="switchSide_${prefix}(${id},'YES')">↑ YES · ${yp}%</div>
+      <div class="st2 ${!isY?'non':'off'}" onclick="switchSide_${prefix}(${id},'NO')">↓ NO · ${np}%</div>
+    </div>
+    <div class="bp-row"><span class="bp-lbl">베팅 금액</span>
+      <input class="amt-i" type="number" id="${prefix}a-${id}" value="500" min="100" step="100" oninput="calcAmm_${prefix}(${id},'${side}')">
+      <span style="font-size:13px;color:var(--sub)">P</span>
+    </div>
+    <div class="qrow">
+      <button class="qb" onclick="setAmt_${prefix}(${id},100,'${side}')">+100</button>
+      <button class="qb" onclick="setAmt_${prefix}(${id},500,'${side}')">+500</button>
+      <button class="qb" onclick="setAmt_${prefix}(${id},1000,'${side}')">+1,000</button>
+      <button class="qb" onclick="setAmt_${prefix}(${id},G.pts,'${side}')">MAX</button>
+    </div>
+    <div class="amm-box" id="${prefix}amm-${id}">
+      <div class="amm-row"><span>선택</span><span style="color:${isY?'#1D4ED8':'#B91C1C'};font-weight:700">${side}</span></div>
+      <div class="amm-row"><span>현재 확률</span><span>${isY?yp:np}%</span></div>
+      <div class="amm-row"><span>베팅 포인트</span><span id="${prefix}sa-${id}">500P</span></div>
+      <div class="amm-row"><span>예상 shares</span><span id="${prefix}sh-${id}">${calc.shares}주</span></div>
+      <div class="amm-row hl"><span>적중 시 수령</span><span id="${prefix}ret-${id}" style="color:var(--green)">${fmt(calc.payout)}P (+${fmt(calc.profit)}P)</span></div>
+      <div class="amm-row warn" id="${prefix}warn-${id}" style="display:none">⚠ 베팅 후 확률 변동: YES ${yp}% →</div>
+    </div>
+    <button class="confirm-btn" onclick="confirmBet_${prefix}(${id},'${side}')">베팅 확인</button>
+  </div>`;
+}
+
+// 퀵 베팅 함수들 (동적으로 이름 달라야 해서 window에 직접 등록)
+window.switchSide_q = (id, side)=>{ G.activeSide[id]=side; document.getElementById('qbp-'+id).innerHTML=betPanelHTML(id,side,'q'); };
+window.setAmt_q = (id, v, side)=>{ const i=document.getElementById('qa-'+id); if(i){i.value=Math.min(v,G.pts); calcAmm_q(id,side);} };
+window.calcAmm_q = (id, side)=>{
+  const m=MARKETS.find(x=>x.id===id);
+  const amt=parseInt(document.getElementById('qa-'+id)?.value)||0;
+  const calc=ammCalc(m,side,amt);
+  const yp=yesProb(m);
+  setIfEl('qsa-'+id, fmt(amt)+'P');
+  setIfEl('qsh-'+id, fmt(calc.shares)+'주');
+  setIfEl('qret-'+id, `${fmt(calc.payout)}P (+${fmt(calc.profit)}P)`);
+  // 슬리피지 경고
+  const newM={...m}; ammBet(newM,side,amt);
+  const newYp=yesProb(newM);
+  const slip=Math.abs(yp-newYp);
+  const warn=document.getElementById('qwarn-'+id);
+  if(warn){ warn.style.display=slip>3?'flex':'none'; if(slip>3)warn.textContent=`⚠ 베팅 후 확률 변동: YES ${yp}% → ${newYp}%`; }
+};
+window.confirmBet_q = (id, side)=>{
+  const amt=parseInt(document.getElementById('qa-'+id)?.value)||0;
+  if(amt<=0){toast('베팅 금액을 입력하세요');return;}
+  if(amt>G.pts){toast('포인트가 부족합니다');return;}
+  const m=MARKETS.find(x=>x.id===id);
+  const calc=ammCalc(m,side,amt);
+  ammBet(m,side,amt);
+  G.pts-=amt; updateAllPts();
+  // 포지션 기록
+  if(!G.positions[id]) G.positions[id]={side,amt,shares:calc.shares,avgProb:side==='YES'?yesProb(m):noProb(m)};
+  else { G.positions[id].amt+=amt; G.positions[id].shares+=calc.shares; }
+  // 히스토리에 새 데이터 포인트 추가
+  if(G.history[id]) G.history[id].pts.push(yesProb(m));
+  // 카드 업데이트
+  updateMktCard(m);
+  document.getElementById('qbp-'+id).style.display='none';
+  G.activePanel=null; delete G.activeSide[id];
+  toast(`✓ ${side} ${fmt(amt)}P 베팅! 예상수익 +${fmt(calc.profit)}P`);
+};
+window.closeBetPanel = (id, prefix)=>{
+  const panel=document.getElementById((prefix==='q'?'qbp':'dbp')+'-'+id);
+  if(panel) panel.style.display='none';
+  G.activePanel=null; delete G.activeSide[id];
+};
+
+function setIfEl(id, val){ const el=document.getElementById(id); if(el) el.textContent=val; }
+
+function updateMktCard(m){
+  const yp=yesProb(m), np=noProb(m);
+  setIfEl('fy-'+m.id, null); const fyEl=document.getElementById('fy-'+m.id); if(fyEl)fyEl.style.width=yp+'%';
+  const fnEl=document.getElementById('fn-'+m.id); if(fnEl)fnEl.style.width=np+'%';
+  setIfEl('py-'+m.id, yp+'%');
+  setIfEl('pn-'+m.id, np+'%');
+}
+
+// ════════════════════════════════════
+// 마켓 상세 페이지
+// ════════════════════════════════════
+function openDetail(id){
+  const m=MARKETS.find(x=>x.id===id);
+  if(!m)return;
+  G.curMkt=id; G.detailSide='YES';
+  // 히스토리 생성 (첫 방문 시)
+  if(!G.history[id]) G.history[id]=genHistory(m,30);
+
+  document.getElementById('page-app').classList.remove('active');
+  document.getElementById('page-detail').classList.add('active');
+  setIfEl('d-top-pts', fmt(G.pts));
+
+  const yp=yesProb(m), np=noProb(m);
+  document.getElementById('d-meta').innerHTML=`
+    <span class="cat ${m.cl}">${m.lbl}</span>
+    <span style="font-size:12px;color:var(--sub)">종료까지 ${m.days}일</span>
+    <span style="font-size:12px;color:var(--sub)">· ${fmt(m.users)}명 참여</span>`;
+  document.getElementById('d-title').textContent=m.title;
+  document.getElementById('d-prob').innerHTML=`
+    <div class="pb">
+      <div class="pb-side y">YES</div>
+      <div class="pb-pct y" id="dp-yes">${yp}%</div>
+      <div class="pb-trk"><div class="pb-fill fy" id="dp-fy" style="width:${yp}%"></div></div>
+    </div>
+    <div class="pb">
+      <div class="pb-side n">NO</div>
+      <div class="pb-pct n" id="dp-no">${np}%</div>
+      <div class="pb-trk"><div class="pb-fill fn" id="dp-fn" style="width:${np}%"></div></div>
+    </div>`;
+  document.getElementById('d-stats').innerHTML=`
+    <div class="ds">총 거래량 <span>${fmt(m.vol)}P</span></div>
+    <div class="ds">참여자 <span>${fmt(m.users)}명</span></div>
+    <div class="ds">풀 규모 <span>${fmt(m.yPool+m.nPool)}P</span></div>
+    <div class="ds">k 상수 <span>${fmt(m.yPool*m.nPool/1000000)}M</span></div>`;
+
+  renderDetailBet(m);
+  renderMyPos(m);
+  renderDetailChart(m, G.chartPeriod);
+  renderCmts();
+  window.scrollTo(0,0);
+}
+
+function renderDetailBet(m){
+  const yp=yesProb(m), np=noProb(m);
+  const calc=ammCalc(m,'YES',500);
+  document.getElementById('det-bet-inner').innerHTML=`
+    <div class="stabs2" style="margin-bottom:11px">
+      <div class="st2 yon" id="ds-yes" onclick="detSide('YES',${m.id})">↑ YES · ${yp}%</div>
+      <div class="st2 off" id="ds-no" onclick="detSide('NO',${m.id})">↓ NO · ${np}%</div>
+    </div>
+    <div class="bp-row"><span class="bp-lbl">베팅 금액</span>
+      <input class="amt-i" id="da-inp" type="number" value="500" min="100" step="100" oninput="detCalc()">
+      <span style="font-size:13px;color:var(--sub)">P</span>
+    </div>
+    <div class="qrow">
+      <button class="qb" onclick="detAmt(100)">+100</button>
+      <button class="qb" onclick="detAmt(500)">+500</button>
+      <button class="qb" onclick="detAmt(1000)">+1,000</button>
+      <button class="qb" onclick="detAmt(G.pts)">MAX</button>
+    </div>
+    <div class="amm-box" id="det-amm">
+      <div class="amm-row"><span>선택</span><span id="da-side-lbl" style="color:#1D4ED8;font-weight:700">YES</span></div>
+      <div class="amm-row"><span>현재 확률</span><span id="da-prob">${yp}%</span></div>
+      <div class="amm-row"><span>베팅 포인트</span><span id="da-amt">500P</span></div>
+      <div class="amm-row"><span>예상 shares</span><span id="da-shares">${calc.shares}주</span></div>
+      <div class="amm-row hl"><span>적중 시 수령</span><span id="da-ret" style="color:var(--green)">${fmt(calc.payout)}P (+${fmt(calc.profit)}P)</span></div>
+      <div class="amm-row warn" id="da-warn" style="display:none"></div>
+    </div>
+    <button class="confirm-btn" onclick="detConfirm(${m.id})">베팅 확인</button>`;
+}
+
+function detSide(side, id){
+  G.detailSide=side;
+  document.getElementById('ds-yes').className='st2 '+(side==='YES'?'yon':'off');
+  document.getElementById('ds-no').className='st2 '+(side==='NO'?'non':'off');
+  const m=MARKETS.find(x=>x.id===id);
+  const prob=side==='YES'?yesProb(m):noProb(m);
+  const lbl=document.getElementById('da-side-lbl');
+  if(lbl){lbl.textContent=side; lbl.style.color=side==='YES'?'#1D4ED8':'#B91C1C';}
+  setIfEl('da-prob', prob+'%');
+  detCalc();
+}
+function detAmt(v){const i=document.getElementById('da-inp');if(i){i.value=Math.min(v,G.pts);detCalc();}}
+function detCalc(){
+  const m=MARKETS.find(x=>x.id===G.curMkt);
+  if(!m)return;
+  const amt=parseInt(document.getElementById('da-inp')?.value)||0;
+  const side=G.detailSide;
+  const calc=ammCalc(m,side,amt);
+  const yp=yesProb(m);
+  setIfEl('da-amt', fmt(amt)+'P');
+  setIfEl('da-shares', fmt(calc.shares)+'주');
+  setIfEl('da-ret', `${fmt(calc.payout)}P (+${fmt(calc.profit)}P)`);
+  // 슬리피지 경고
+  const newM={...m}; ammBet(newM,side,amt);
+  const newYp=yesProb(newM);
+  const slip=Math.abs(yp-newYp);
+  const warn=document.getElementById('da-warn');
+  if(warn){ warn.style.display=slip>3?'flex':'none'; if(slip>3)warn.textContent=`⚠ 슬리피지: YES ${yp}% → ${newYp}% (${slip}%p 변동)`; }
+}
+function detConfirm(id){
+  const amt=parseInt(document.getElementById('da-inp')?.value)||0;
+  if(amt<=0){toast('베팅 금액을 입력하세요');return;}
+  if(amt>G.pts){toast('포인트가 부족합니다');return;}
+  const m=MARKETS.find(x=>x.id===id);
+  const side=G.detailSide;
+  const calc=ammCalc(m,side,amt);
+  ammBet(m,side,amt);
+  G.pts-=amt; updateAllPts();
+  setIfEl('d-top-pts', fmt(G.pts));
+  // 포지션 기록
+  if(!G.positions[id]) G.positions[id]={side,amt,shares:calc.shares};
+  else { G.positions[id].amt+=amt; G.positions[id].shares+=calc.shares; }
+  // 확률 UI 업데이트
+  const yp=yesProb(m), np=noProb(m);
+  setIfEl('dp-yes',yp+'%'); setIfEl('dp-no',np+'%');
+  const dpfy=document.getElementById('dp-fy'); if(dpfy)dpfy.style.width=yp+'%';
+  const dpfn=document.getElementById('dp-fn'); if(dpfn)dpfn.style.width=np+'%';
+  // 히스토리에 추가
+  if(G.history[id]){
+    G.history[id].pts.push(yp);
+    G.history[id].lbls.push('지금');
+    updateChart(m);
+  }
+  updateMktCard(m);
+  renderMyPos(m);
+  toast(`✓ ${side} ${fmt(amt)}P 베팅! 예상수익 +${fmt(calc.profit)}P`);
+}
+
+// ── 내 포지션 요약 ──
+function renderMyPos(m){
+  const pos=G.positions[m.id];
+  const area=document.getElementById('my-pos-area');
+  if(!area)return;
+  if(!pos){area.innerHTML='';return;}
+  const yp=yesProb(m), np=noProb(m);
+  const curProb=pos.side==='YES'?yp:np;
+  const expectedPayout=Math.round(pos.shares*(100/curProb));
+  const expectedProfit=expectedPayout-pos.amt;
+  area.innerHTML=`
+    <div class="my-pos-card" style="margin-bottom:12px">
+      <span class="mpc-side">${pos.side}</span>
+      <div class="mpc-info">${fmt(pos.amt)}P 베팅 · ${fmt(pos.shares)}주 보유 · 현재 ${curProb}%</div>
+      <div class="mpc-pnl" style="color:${expectedProfit>=0?'var(--green)':'var(--red)'}">
+        ${expectedProfit>=0?'+':''}${fmt(expectedProfit)}P
+      </div>
+    </div>`;
+}
+
+// ── 차트 ──
+function renderDetailChart(m, days){
+  const h=G.history[m.id];
+  const len=Math.min(days+1, h.pts.length);
+  const pts=h.pts.slice(-len);
+  const lbls=h.lbls.slice(-len);
+  if(G.chartInst){G.chartInst.destroy();G.chartInst=null;}
+  const ctx=document.getElementById('prob-chart').getContext('2d');
+  G.chartInst=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:lbls,
+      datasets:[
+        {label:'YES %',data:pts,borderColor:'#1A5FA3',backgroundColor:'rgba(26,95,163,.07)',tension:.4,fill:true,pointRadius:3,pointBackgroundColor:'#1A5FA3',borderWidth:2},
+        {label:'NO %',data:pts.map(v=>100-v),borderColor:'#E24B4A',backgroundColor:'rgba(226,75,74,.05)',tension:.4,fill:true,pointRadius:3,pointBackgroundColor:'#E24B4A',borderWidth:2},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{position:'top',labels:{font:{size:12},boxWidth:12,padding:12}},
+        tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y}%`}}
+      },
+      scales:{
+        y:{min:0,max:100,grid:{color:'rgba(0,0,0,.04)'},ticks:{callback:v=>v+'%',font:{size:11}}},
+        x:{grid:{display:false},ticks:{font:{size:10},maxTicksLimit:8}}
+      }
+    }
+  });
+}
+function updateChart(m){
+  const h=G.history[m.id];
+  if(!G.chartInst||!h)return;
+  const len=Math.min(G.chartPeriod+1, h.pts.length);
+  G.chartInst.data.labels=h.lbls.slice(-len);
+  G.chartInst.data.datasets[0].data=h.pts.slice(-len);
+  G.chartInst.data.datasets[1].data=h.pts.slice(-len).map(v=>100-v);
+  G.chartInst.update('active');
+}
+function setPeriod(days, el){
+  G.chartPeriod=days;
+  document.querySelectorAll('.cp-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  const m=MARKETS.find(x=>x.id===G.curMkt);
+  if(m) renderDetailChart(m, days);
+}
+function goBack(){
+  document.getElementById('page-detail').classList.remove('active');
+  document.getElementById('page-app').classList.add('active');
+}
+
+// ── 댓글 ──
+function renderCmts(){
+  document.getElementById('cmt-list').innerHTML=CMTS.map((c,i)=>`
+    <div class="cmt-item">
+      <div class="cmt-top">
+        <div class="cmt-av" style="background:${c.bg};color:${c.tc}">${c.nick[0]}</div>
+        <span class="cmt-nm">${c.nick}</span>
+        <span class="cmt-side-badge" style="background:${c.sidebg};color:${c.sidec}">${c.side}</span>
+        <span class="cmt-time">${c.time}</span>
+      </div>
+      <div class="cmt-txt">${c.text}</div>
+      <div class="cmt-like" onclick="likeCmt(${i},this)">♡ ${c.likes}</div>
+    </div>`).join('');
+}
+function likeCmt(i, el){CMTS[i].likes++;el.textContent='♥ '+CMTS[i].likes;el.style.color='var(--red)';}
+function addCmt(){
+  const inp=document.getElementById('cmt-inp');
+  const txt=inp.value.trim();
+  if(!txt){toast('내용을 입력하세요');return;}
+  const m=MARKETS.find(x=>x.id===G.curMkt);
+  CMTS.unshift({
+    nick:G.nick,bg:'#ECFDF5',tc:'#065F46',
+    side:G.detailSide,
+    sidec:G.detailSide==='YES'?'#1D4ED8':'#B91C1C',
+    sidebg:G.detailSide==='YES'?'#EBF4FF':'#FEF2F2',
+    time:'방금',text:txt,likes:0
+  });
+  inp.value='';
+  renderCmts();
+  setIfEl('cmt-cnt', CMTS.length);
+  toast('댓글 등록됨');
+}
+
+// ════════════════════════════════════
+// 내 예측
+// ════════════════════════════════════
+function renderMy(){
+  document.getElementById('my-live').innerHTML=`
+    ${posCard('🎵','EEF2FF',1,'BTS 완전체 컴백 여부','YES 500P · 현재 71%','+352P','pnl-hold','진행중','st-live')}
+    ${posCard('⚽','ECFDF5',3,'손흥민 월드컵 엔트리','YES 1,000P · 현재 87%','+149P','pnl-hold','진행중','st-live')}
+    ${posCard('🏛','F3EBF9',0,'이재명 대선 당선','YES 300P · 현재 58%','+217P','pnl-hold','진행중','st-live')}`;
+  document.getElementById('my-done').innerHTML=`
+    ${posCard('📊','E1F5EE',4,'삼성전자 5조 영업이익','YES 500P · 확률 78%','+641P','pnl-win','적중 ✓','st-win')}
+    ${posCard('🏛','FCEBEB',5,'국민의힘 원내대표','NO 300P · 확률 34%','-300P','pnl-lose','틀림 ✗','st-lose')}`;
+}
+function posCard(ico,bg,mktId,name,meta,pnl,pnlCls,stTxt,stCls){
+  return `<div class="pos-card">
+    <div class="pos-ico" style="background:#${bg}">${ico}</div>
+    <div class="pos-inf">
+      <div class="pos-nm" onclick="openDetail(${mktId})">${name}</div>
+      <div class="pos-mt">${meta}</div>
+    </div>
+    <div class="pos-res">
+      <div class="pos-pnl ${pnlCls}">${pnl}</div>
+      <span class="pos-st ${stCls}">${stTxt}</span>
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════
+// 리더보드
+// ════════════════════════════════════
+function renderLeader(){
+  const max=LEADERS[0].sc;
+  const medals=['🥇','🥈','🥉'];
+  document.getElementById('leader-list').innerHTML=LEADERS.map((p,i)=>`
+    <div class="lb-row ${p.me?'me':''}">
+      <div class="lb-rk ${i===0?'g':i===1?'s':i===2?'b':''}">${medals[i]||i+1}</div>
+      <div class="lb-av" style="background:${p.bg};color:${p.tc}">${p.n[0]}</div>
+      <div class="lb-inf">
+        <div class="lb-nm">${p.n}${p.me?' 👈':''}</div>
+        <div class="lb-st">${p.b}회 예측</div>
+        <div class="lb-bar-wrap"><div class="lb-bar" style="width:${Math.round(p.sc/max*100)}%"></div></div>
+      </div>
+      <div class="lb-sc">${p.s}</div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════
+// 알림
+// ════════════════════════════════════
+function renderNotif(){
+  document.getElementById('notif-list').innerHTML=NOTIFS.map((n,i)=>`
+    <div class="ni ${n.unread?'unread':''}" onclick="readNotif(${i})">
+      <div class="ni-ico" style="background:${n.bg}">${n.ico}</div>
+      <div class="ni-b">
+        <div class="ni-ttl">${n.ttl}</div>
+        <div class="ni-desc">${n.desc}</div>
+        <div class="ni-time">${n.time}</div>
+      </div>
+      ${n.unread?'<div class="ni-dot"></div>':''}
+    </div>`).join('');
+}
+function readNotif(i){NOTIFS[i].unread=false;renderNotif();}
+function markAll(){NOTIFS.forEach(n=>n.unread=false);renderNotif();toast('모두 읽음 처리됨');}
+
+// ════════════════════════════════════
+// 결제 — 토스페이먼츠 SDK 시뮬레이션
+// ════════════════════════════════════
+function selPkg(el, pts, price){
+  document.querySelectorAll('.pkg').forEach(p=>p.classList.remove('sel'));
+  el.classList.add('sel');
+  G.selectedPkg={pts,price};
+}
+function selPay(el){
+  document.querySelectorAll('.pm').forEach(p=>p.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function doPay(){
+  if(!G.selectedPkg){toast('패키지를 선택하세요');return;}
+  const btn=document.getElementById('toss-btn');
+  const prog=document.getElementById('pay-progress');
+  btn.disabled=true;
+  prog.classList.add('show');
+
+  // 토스페이먼츠 SDK 플로우 시뮬레이션
+  const steps=[
+    {icon:'💙',title:'토스페이먼츠 SDK 초기화',desc:'loadTossPayments(clientKey) 호출 중...'},
+    {icon:'🔐',title:'결제 요청 전송',desc:`requestPayment('카드', {amount: ${G.selectedPkg.price}, orderId: ...})`},
+    {icon:'🔄',title:'결제창 열기 / 인증',desc:'카드사 본인인증 중...'},
+    {icon:'✅',title:'결제 승인 요청',desc:'서버 → 토스페이먼츠 /v1/payments/confirm'},
+    {icon:'🪙',title:'포인트 지급',desc:`${fmt(G.selectedPkg.pts)}P 즉시 적립`},
+  ];
+
+  let i=0;
+  const icon=document.getElementById('pp-icon');
+  const title=document.getElementById('pp-title');
+  const desc=document.getElementById('pp-desc');
+  const stepsEl=document.getElementById('pp-steps');
+  stepsEl.innerHTML='';
+
+  function nextStep(){
+    if(i<steps.length){
+      const s=steps[i];
+      icon.textContent=s.icon;
+      title.textContent=s.title;
+      desc.textContent=s.desc;
+      stepsEl.innerHTML+=`<div class="pay-step-row ${i>0?'done':''}">${i===0?'⏳':'✓'} ${s.title}</div>`;
+      i++;
+      setTimeout(nextStep, i<steps.length?600:0);
+    } else {
+      // 완료
+      G.pts+=G.selectedPkg.pts;
+      updateAllPts();
+      setTimeout(()=>{
+        prog.classList.remove('show');
+        btn.disabled=false;
+        toast(`✓ ${fmt(G.selectedPkg.pts)}P 충전 완료!`);
+        G.selectedPkg=null;
+        document.querySelectorAll('.pkg').forEach(p=>p.classList.remove('sel'));
+      }, 400);
+    }
+  }
+  nextStep();
+}
+
+// ════════════════════════════════════
+// 어드민 — CPMM 정산 미리보기
+// ════════════════════════════════════
+function selOutcome(s){
+  G.selectedOutcome=s;
+  document.getElementById('out-yes').className='out-btn '+(s==='YES'?'yon':'');
+  document.getElementById('out-no').className='out-btn '+(s==='NO'?'non':'');
+  previewSettle();
+}
+function previewSettle(){
+  const mktId=document.getElementById('settle-mkt').value;
+  const outcome=G.selectedOutcome;
+  const preview=document.getElementById('settle-preview');
+  if(!mktId||!outcome){preview.style.display='none';return;}
+  const m=MARKETS.find(x=>x.id===parseInt(mktId));
+  if(!m){preview.style.display='none';return;}
+  const totalPool=m.yPool+m.nPool;
+  const winPool=outcome==='YES'?m.yPool:m.nPool;
+  const losePool=outcome==='YES'?m.nPool:m.yPool;
+  const winRatio=Math.round(winPool/totalPool*100);
+  // 패자 풀의 90%를 승자에게 배분 (10% 플랫폼 수수료)
+  const platformFee=Math.round(losePool*0.1);
+  const distribute=losePool-platformFee;
+  const perPt=(winPool+distribute)/winPool;
+  preview.style.display='block';
+  setIfEl('sp-users', fmt(m.users)+'명');
+  setIfEl('sp-pool', fmt(totalPool)+'P');
+  setIfEl('sp-win-ratio', `${winRatio}% (${fmt(winPool)}P)`);
+  setIfEl('sp-loser', `${fmt(distribute)}P 배분 (수수료 ${fmt(platformFee)}P)`);
+  setIfEl('sp-per-pt', perPt.toFixed(3)+'배 수령');
+}
+function doSettle(){
+  const mktId=document.getElementById('settle-mkt').value;
+  if(!mktId){toast('마켓을 선택하세요');return;}
+  if(!G.selectedOutcome){toast('결과(YES/NO)를 선택하세요');return;}
+  const m=MARKETS.find(x=>x.id===parseInt(mktId));
+  toast(`✓ "${m.title.substring(0,20)}..." ${G.selectedOutcome} 정산 완료! 참여자 포인트 지급 중`);
+  G.selectedOutcome=null;
+  document.getElementById('out-yes').className='out-btn';
+  document.getElementById('out-no').className='out-btn';
+  document.getElementById('settle-mkt').value='';
+  document.getElementById('settle-preview').style.display='none';
+}
+function approveMkt(btn, rowId){
+  const row=document.getElementById(rowId);
+  row.querySelector('.tc2').innerHTML='<span class="st-live2">진행중</span>';
+  row.querySelector('.tc3').innerHTML='<button class="adm-ab ab-set" onclick="toast(\'정산 폼에서 처리하세요\')">정산</button>';
+  toast('마켓이 승인되어 오픈됩니다');
+}
+function rejectMkt(btn, rowId){
+  const row=document.getElementById(rowId);
+  row.querySelector('.tc2').innerHTML='<span class="st-end">반려</span>';
+  row.querySelector('.tc3').innerHTML='';
+  toast('마켓이 반려되었습니다');
+}
+function grantPts(){
+  const u=document.getElementById('adm-user-q').value;
+  const p=parseInt(document.getElementById('adm-pts-amt').value)||0;
+  if(!u){toast('이용자를 입력하세요');return;}
+  if(!p){toast('포인트를 입력하세요');return;}
+  toast(`✓ ${u}에게 ${fmt(p)}P 지급 완료`);
+}
+function revokePts(){
+  const u=document.getElementById('adm-user-q').value;
+  const p=parseInt(document.getElementById('adm-pts-amt').value)||0;
+  if(!u||!p){toast('이용자와 포인트를 입력하세요');return;}
+  toast(`${u}에서 ${fmt(p)}P 회수 완료`);
+}
+function submitMkt(){
+  const t=document.getElementById('new-title')?.value;
+  if(!t){toast('마켓 제목을 입력하세요');return;}
+  toast('✓ 마켓 생성 신청 완료! 어드민 검토 후 승인됩니다');
+  document.getElementById('new-title').value='';
+}
+
+// ════════════════════════════════════
+// 전체 렌더
+// ════════════════════════════════════
+function renderAll(){
+  renderMkts('all');
+  document.getElementById('search-list').innerHTML=mktHTML(MARKETS);
+  renderMy();
+  renderLeader();
+  renderNotif();
+  updateAllPts();
+}
+</script>
+</body>
+</html>
