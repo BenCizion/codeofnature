@@ -193,7 +193,8 @@ button{cursor:pointer}
 .confirm-btn:active{transform:scale(.98)}
 
 /* ── 마켓 상세 페이지 ── */
-#page-detail{flex-direction:column}
+#page-detail{flex-direction:row}
+.d-detail-main{flex:1;display:flex;flex-direction:column;overflow:hidden;height:100vh}
 .d-scroll{flex:1;overflow-y:auto;padding:20px}
 .d-back{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--blue);cursor:pointer;margin-bottom:15px;background:none;border:none;padding:0}
 .d-back:hover{opacity:.75}
@@ -251,6 +252,24 @@ button{cursor:pointer}
 .share-btn{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1.5px solid var(--border);background:var(--card);cursor:pointer;transition:all .15s;color:var(--sub)}
 .share-btn:hover{background:#F1F4F9}
 .share-btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+/* ── 관련 뉴스 ── */
+.news-card{background:var(--card);border-radius:14px;padding:17px;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:12px}
+.news-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.news-ttl-main{font-size:14px;font-weight:700}
+.news-partner{font-size:11px;color:var(--sub);display:flex;align-items:center;gap:4px}
+.news-partner-dot{width:6px;height:6px;border-radius:50%;background:#CBD5E1;display:inline-block}
+.news-item{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;border-radius:8px;margin:0 -6px;padding:11px 6px}
+.news-item:last-child{border-bottom:none}
+.news-item:hover{background:#F6F8FB}
+.news-thumb{width:72px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden}
+.news-body{flex:1;min-width:0}
+.news-headline{font-size:13px;font-weight:600;line-height:1.45;color:var(--text);margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.news-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.news-source{font-size:11px;font-weight:600;color:var(--blue)}
+.news-time{font-size:11px;color:var(--sub)}
+.news-relevance{font-size:10px;font-weight:700;background:#E6F1FB;color:#0C447C;padding:2px 7px;border-radius:4px}
+.news-livere-badge{display:flex;align-items:center;gap:5px;background:#FFF7E6;border:1px solid #FDE68A;border-radius:8px;padding:9px 12px;margin-top:10px;font-size:12px;color:#92400E}
+.news-livere-badge strong{color:#D97706}
 
 /* ── 내 예측 ── */
 .pos-card{background:var(--card);border-radius:12px;padding:13px 15px;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:8px;display:flex;align-items:center;gap:11px}
@@ -769,6 +788,38 @@ button{cursor:pointer}
      PAGE: 마켓 상세
 ══════════════════════════ -->
 <div id="page-detail" class="page">
+  <!-- 사이드바: page-app과 동일한 내용을 복제해 LNB 유지 -->
+  <nav class="sb" id="sb-detail">
+    <div class="sb-logo">
+      <div class="sb-mark">예측소</div>
+      <div class="sb-sub">K-POLYMARKET</div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-sec">마켓</div>
+      <button class="si active" onclick="goBack();nav('home',this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>홈 &amp; 인기 마켓</button>
+      <button class="si" onclick="goBack();nav('search',this)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>마켓 탐색</button>
+      <div class="sb-sec">나의 활동</div>
+      <button class="si" onclick="goBack();nav('my',this)"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>내 예측<span class="bdg">3</span></button>
+      <button class="si" onclick="goBack();nav('leader',this)"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>리더보드</button>
+      <button class="si" onclick="goBack();nav('notif',this)"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>알림<span class="bdg">2</span></button>
+      <div class="sb-sec">수익화</div>
+      <button class="si" onclick="goBack();nav('charge',this)"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>포인트 충전</button>
+      <div class="sb-sec">운영</div>
+      <button class="si" onclick="goBack();nav('create',this)"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>마켓 만들기</button>
+      <button class="si" onclick="goBack();nav('admin',this)"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>어드민</button>
+    </div>
+    <div class="sb-user">
+      <div class="sb-urow">
+        <div class="sb-av" id="d-sb-av">홍</div>
+        <div>
+          <div class="sb-nm" id="d-sb-nm">홍길동</div>
+          <div class="sb-pt" id="d-sb-pt">5,000 P</div>
+        </div>
+      </div>
+      <button class="sb-out" onclick="doLogout()">로그아웃</button>
+    </div>
+  </nav>
+  <div class="d-detail-main">
   <div class="tb">
     <div class="tb-l">
       <span class="tb-title">마켓 상세</span>
@@ -820,6 +871,22 @@ button{cursor:pointer}
       </div>
     </div>
 
+
+    <!-- 관련 뉴스 -->
+    <div class="news-card">
+      <div class="news-hdr">
+        <div class="news-ttl-main">📰 관련 뉴스</div>
+        <div class="news-partner">
+          <span class="news-partner-dot"></span>
+          추후 제휴 언론사 연동 예정
+        </div>
+      </div>
+      <div id="news-list"></div>
+      <div class="news-livere-badge">
+        <span style="font-size:16px">🔗</span>
+        <span><strong>시지온 라이브리</strong> 파트너 언론사와 뉴스 자동 연동 준비 중 — 관련 기사 클릭 시 해당 언론사 원문으로 이동합니다</span>
+      </div>
+    </div>
     <!-- 공유 -->
     <div class="share-bar">
       <div style="font-size:20px">📤</div>
@@ -831,6 +898,7 @@ button{cursor:pointer}
       </div>
     </div>
   </div>
+  </div><!-- /d-detail-main -->
 </div>
 
 <!-- 모달 -->
@@ -848,6 +916,60 @@ button{cursor:pointer}
 <div class="toast" id="toast"></div>
 
 <script>
+
+// ════════════════════════════════════
+// 관련 뉴스 데이터 (샘플 — 추후 API 연동)
+// ════════════════════════════════════
+const NEWS_BY_CAT = {
+  pol: [
+    {emoji:'🏛',headline:'이재명 대표 "2027 대선 출마 기정사실화"…지지율 격차 좁혀져',source:'한겨레',time:'23분 전',rel:'대선 관련'},
+    {emoji:'📊',headline:'리얼미터 여론조사: 이재명 지지율 38% vs 국민의힘 후보군 합산 42%',source:'연합뉴스',time:'1시간 전',rel:'여론조사'},
+    {emoji:'🗳',headline:'민주당 경선 일정 확정…본경선 9월 시작 전망',source:'경향신문',time:'3시간 전',rel:'경선 일정'},
+    {emoji:'💬',headline:'전문가들 "2027년 대선, 경제·민생 이슈가 당락 결정"',source:'중앙일보',time:'5시간 전',rel:'전문가 분석'},
+    {emoji:'📰',headline:'[사설] 예측 시장이 보는 2027 대선 구도, 여론보다 정확한가',source:'동아일보',time:'어제',rel:'오피니언'},
+  ],
+  ent: [
+    {emoji:'🎵',headline:'BTS 진·제이홉 전역 완료…완전체 컴백 카운트다운 시작',source:'스포츠서울',time:'11분 전',rel:'전역 소식'},
+    {emoji:'🌏',headline:'BTS 소속사 하이브 "2026년 완전체 활동 구체적 논의 중"',source:'엑스포츠뉴스',time:'2시간 전',rel:'소속사 공식'},
+    {emoji:'🎤',headline:'빌보드 "BTS 완전체 복귀, 글로벌 팝 시장 최대 이벤트 될 것"',source:'빌보드 Korea',time:'4시간 전',rel:'해외 반응'},
+    {emoji:'💿',headline:'ARMYs 전세계 팬 "완전체 컴백 응원" 캠페인 SNS 트렌딩',source:'뉴시스',time:'7시간 전',rel:'팬덤 반응'},
+    {emoji:'📅',headline:'하이브 2분기 실적발표서 BTS 활동 계획 일부 공개 예정',source:'한국경제',time:'어제',rel:'실적 연동'},
+  ],
+  eco: [
+    {emoji:'🏦',headline:'한국은행 금통위, 이달 기준금리 동결…시장 예상 부합',source:'연합뉴스',time:'35분 전',rel:'금통위 결정'},
+    {emoji:'📉',headline:'물가 둔화에도 가계부채 증가세…금리 인하 불확실성 지속',source:'한국경제',time:'2시간 전',rel:'거시경제'},
+    {emoji:'🌐',headline:'Fed 9월 인하 시사…한은 3분기 인하 가능성 다시 주목',source:'매일경제',time:'4시간 전',rel:'글로벌 연동'},
+    {emoji:'📊',headline:'채권시장, 3분기 금리 인하 확률 48%→61%로 상향',source:'이데일리',time:'6시간 전',rel:'채권 시장'},
+    {emoji:'💼',headline:'[금통위 프리뷰] 전문가 10명 중 6명 "올해 1회 인하" 전망',source:'서울경제',time:'어제',rel:'전문가 전망'},
+  ],
+  spo: [
+    {emoji:'⚽',headline:'손흥민, 2026 북중미 월드컵 최종 23인 명단 발표 D-30',source:'스포츠조선',time:'15분 전',rel:'대표팀 소식'},
+    {emoji:'🏃',headline:'클린스만 후임 홍명보 감독 "손흥민은 무조건 선발"…명단 윤곽',source:'연합뉴스',time:'1시간 전',rel:'감독 발언'},
+    {emoji:'🎯',headline:'손흥민 토트넘 시즌 종료 후 부상 회복 완료…컨디션 최상',source:'축구전문 골닷컴',time:'3시간 전',rel:'컨디션 체크'},
+    {emoji:'🌍',headline:'FIFA 월드컵 조추첨 완료…한국, H조 배정 (포르투갈·우루과이 동반)',source:'MBC스포츠',time:'5시간 전',rel:'조편성'},
+    {emoji:'📺',headline:'2026 월드컵 국내 중계권, KBS·MBC·SBS 공동 확보 합의',source:'스포츠한국',time:'어제',rel:'중계권'},
+  ],
+};
+// 기본 뉴스 (카테고리 미매칭 시)
+NEWS_BY_CAT.default = NEWS_BY_CAT.eco;
+
+function renderNews(mkt) {
+  const list = document.getElementById('news-list');
+  if (!list) return;
+  const items = NEWS_BY_CAT[mkt.cat] || NEWS_BY_CAT.default;
+  list.innerHTML = items.map(n => `
+    <div class="news-item" onclick="toast('${n.source} 원문으로 이동합니다 (데모)')">
+      <div class="news-thumb">${n.emoji}</div>
+      <div class="news-body">
+        <div class="news-headline">${n.headline}</div>
+        <div class="news-meta">
+          <span class="news-source">${n.source}</span>
+          <span class="news-time">${n.time}</span>
+          <span class="news-relevance">${n.rel}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
 // ════════════════════════════════════
 // 전역 상태
 // ════════════════════════════════════
@@ -978,7 +1100,7 @@ function openModal(id){
 function closeModal(id){document.getElementById(id).classList.remove('open')}
 function updateAllPts(){
   const v=fmt(G.pts);
-  ['top-pts','sc-pts','mb-pts','sb-pt','d-top-pts'].forEach(id=>{
+  ['top-pts','sc-pts','mb-pts','sb-pt','d-top-pts','d-sb-pt'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.textContent = id==='sb-pt' ? v+' P' : v;
   });
@@ -1050,6 +1172,8 @@ function enterApp(nick){
   document.getElementById('sb-nm').textContent=nick;
   document.getElementById('sb-av').textContent=nick[0];
   document.getElementById('settings-nick').textContent=nick;
+  const dsbNm=document.getElementById('d-sb-nm'); if(dsbNm)dsbNm.textContent=nick;
+  const dsbAv=document.getElementById('d-sb-av'); if(dsbAv)dsbAv.textContent=nick[0];
   document.getElementById('page-login').classList.remove('active');
   document.getElementById('page-app').classList.add('active');
   updateAllPts();
@@ -1274,6 +1398,7 @@ function openDetail(id){
   renderDetailBet(m);
   renderMyPos(m);
   renderDetailChart(m, G.chartPeriod);
+  renderNews(m);
   renderCmts();
   window.scrollTo(0,0);
 }
@@ -1435,6 +1560,10 @@ function setPeriod(days, el){
 function goBack(){
   document.getElementById('page-detail').classList.remove('active');
   document.getElementById('page-app').classList.add('active');
+  // 메인 앱 사이드바 home 버튼 active 복원
+  document.querySelectorAll('#page-app .si').forEach(i=>i.classList.remove('active'));
+  const homeBtn=document.querySelector('#page-app .si');
+  if(homeBtn) homeBtn.classList.add('active');
 }
 
 // ── 댓글 ──
