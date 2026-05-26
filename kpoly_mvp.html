@@ -397,6 +397,82 @@ button{cursor:pointer}
 .tslider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
 .toggle input:checked+.tslider::before{transform:translateX(18px)}
 
+
+/* ── 마켓 생성 고도화 ── */
+.create-wrap{display:grid;grid-template-columns:1fr 380px;gap:16px;align-items:start}
+.create-form-card{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.create-preview-col{position:sticky;top:0}
+.sample-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.sample-chip{padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--sub);transition:all .15s;white-space:nowrap}
+.sample-chip:hover{border-color:var(--blue);color:var(--blue);background:#EBF4FF}
+.sample-chip.active{border-color:var(--blue);background:var(--blue);color:#fff}
+.cf-label{font-size:12px;font-weight:700;display:block;margin-bottom:5px;color:var(--text)}
+.cf-req{color:var(--red);margin-left:2px}
+.cf-input{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:14px;outline:none;background:#FAFBFD;transition:border-color .15s;color:var(--text)}
+.cf-input:focus{border-color:var(--blue)}
+.cf-input.filled{border-color:var(--green);background:#F0FDF4}
+.cf-textarea{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:13px;outline:none;background:#FAFBFD;resize:none;line-height:1.6;transition:border-color .15s;color:var(--text)}
+.cf-textarea:focus{border-color:var(--blue)}
+.cf-textarea.filled{border-color:var(--green);background:#F0FDF4}
+.cf-select{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:13px;outline:none;background:#FAFBFD;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7A99' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-color:#FAFBFD;transition:border-color .15s;color:var(--text)}
+.cf-select:focus{border-color:var(--blue)}
+.cf-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cf-mb{margin-bottom:13px}
+.cf-hint{font-size:11px;color:var(--sub);margin-top:4px}
+.cf-url-row{display:flex;gap:7px}
+.cf-url-row .cf-input{flex:1}
+.cf-fetch-btn{padding:0 14px;background:var(--card);border:1.5px solid var(--border);border-radius:9px;font-size:12px;font-weight:700;color:var(--sub);cursor:pointer;transition:all .15s;white-space:nowrap}
+.cf-fetch-btn:hover{border-color:var(--blue);color:var(--blue)}
+.create-submit-btn{width:100%;padding:13px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;transition:all .15s;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px}
+.create-submit-btn:hover{background:var(--blue)}
+.create-submit-btn:disabled{opacity:.5;cursor:not-allowed}
+.create-submit-btn:active{transform:scale(.98)}
+/* 미리보기 카드 */
+.preview-card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.05);border:1.5px solid var(--border)}
+.preview-label{font-size:11px;font-weight:700;color:var(--sub);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.preview-label-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
+.prev-cat{font-size:11px;font-weight:700;padding:3px 8px;border-radius:5px;display:inline-block;margin-bottom:7px}
+.prev-title{font-size:14px;font-weight:700;line-height:1.45;color:var(--text);margin-bottom:12px;min-height:42px}
+.prev-prob-row{display:flex;gap:8px;margin-bottom:8px}
+.prev-pb{flex:1;background:#F6F8FB;border-radius:8px;padding:10px;text-align:center}
+.prev-pb-side{font-size:10px;font-weight:700;margin-bottom:3px}
+.prev-pb-side.y{color:var(--blue)}
+.prev-pb-side.n{color:var(--red)}
+.prev-pb-pct{font-family:'DM Mono',monospace;font-size:22px;font-weight:700}
+.prev-pb-pct.y{color:var(--blue)}
+.prev-pb-pct.n{color:var(--red)}
+.prev-track{height:5px;background:#E8EDF5;border-radius:3px;overflow:hidden;margin-top:6px}
+.prev-fill{height:100%;border-radius:3px;transition:width .4s}
+.prev-info{font-size:11px;color:var(--sub);display:flex;flex-direction:column;gap:3px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.prev-info-row{display:flex;justify-content:space-between}
+.prev-info-row span:last-child{color:var(--text);font-weight:500}
+.prev-thumb{width:100%;height:80px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:10px;overflow:hidden}
+/* 생성 진행 상태 */
+.create-progress{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.05);display:none}
+.create-progress.show{display:block}
+.cp-step-list{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.cp-step{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;background:#F6F8FB;transition:all .3s}
+.cp-step.done{background:#ECFDF5}
+.cp-step.active{background:#EBF4FF;border:1px solid #93C5FD}
+.cp-step-ico{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;background:#E2E8F0;transition:all .3s}
+.cp-step.done .cp-step-ico{background:#ECFDF5}
+.cp-step.active .cp-step-ico{background:#EBF4FF;animation:pulse 1s infinite}
+.cp-step-txt{font-size:13px;font-weight:500;color:var(--sub);transition:color .3s}
+.cp-step.done .cp-step-txt{color:var(--green);font-weight:600}
+.cp-step.active .cp-step-txt{color:var(--blue);font-weight:600}
+/* 생성 완료 배너 */
+.create-done{background:var(--navy);border-radius:14px;padding:20px;text-align:center;display:none;margin-bottom:14px}
+.create-done.show{display:block}
+.create-done-icon{font-size:40px;margin-bottom:10px}
+.create-done-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px}
+.create-done-desc{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:14px}
+.create-done-btns{display:flex;gap:8px;justify-content:center}
+.cdb-primary{padding:9px 20px;background:var(--gold);color:var(--navy);border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer}
+.cdb-secondary{padding:9px 20px;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:9px;font-size:13px;font-weight:700;cursor:pointer}
+/* 진행 바 */
+.create-progressbar{height:3px;background:var(--border);border-radius:2px;margin-bottom:16px;overflow:hidden}
+.create-progressbar-fill{height:100%;background:var(--blue);border-radius:2px;transition:width .5s ease;width:0}
+@media(max-width:900px){.create-wrap{grid-template-columns:1fr}.create-preview-col{display:none}}
 /* ── 토스트 ── */
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--navy);color:#fff;padding:10px 22px;border-radius:50px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:9999;box-shadow:0 8px 28px rgba(13,27,62,.3);white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -651,41 +727,159 @@ button{cursor:pointer}
 
       <!-- CREATE -->
       <div id="v-create" style="display:none">
-        <div style="background:var(--card);border-radius:14px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.05)">
-          <div class="sh" style="margin-bottom:14px"><div class="sh-t">새 예측 마켓 만들기</div></div>
-          <div style="margin-bottom:11px">
-            <label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px">마켓 제목 *</label>
-            <input id="new-title" style="width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:14px;outline:none;background:#FAFBFD" placeholder="예) 2026년 4분기 코스피 3,000p 돌파 여부">
+
+        <!-- 완료 배너 (생성 후 표시) -->
+        <div class="create-done" id="create-done">
+          <div class="create-done-icon">🎉</div>
+          <div class="create-done-title" id="done-title-text">마켓이 생성되었습니다!</div>
+          <div class="create-done-desc" id="done-desc-text">어드민 승인 후 홈 마켓 목록에 자동으로 추가됩니다</div>
+          <div class="create-done-btns">
+            <button class="cdb-primary" onclick="goToNewMarket()">생성된 마켓 보기 →</button>
+            <button class="cdb-secondary" onclick="resetCreateForm()">새 마켓 만들기</button>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px">
-            <div>
-              <label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px">카테고리</label>
-              <select id="new-cat" style="width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:13px;outline:none;background:#FAFBFD">
-                <option>정치</option><option>경제</option><option>연예</option><option>스포츠</option><option>기타</option>
-              </select>
-            </div>
-            <div>
-              <label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px">종료일 *</label>
-              <input type="date" style="width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:13px;outline:none;background:#FAFBFD">
-            </div>
-          </div>
-          <div style="margin-bottom:11px">
-            <label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px">초기 유동성 풀 (P)</label>
-            <input id="new-liq" type="number" style="width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:14px;outline:none;background:#FAFBFD" placeholder="1000 (CPMM 초기 풀)">
-          </div>
-          <div style="margin-bottom:11px">
-            <label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px">결과 판정 기준 *</label>
-            <textarea rows="2" style="width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:13px;outline:none;background:#FAFBFD;resize:none;line-height:1.6" placeholder="예) 종료일 기준 코스피 종가 ≥ 3,000pt이면 YES"></textarea>
-          </div>
-          <div style="margin-bottom:14px">
-            <label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px">언론사 기사 URL (Livere 위젯 연동)</label>
-            <input type="url" style="width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:14px;outline:none;background:#FAFBFD" placeholder="https://news.example.com/article/12345">
-          </div>
-          <button onclick="submitMkt()" style="width:100%;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;transition:all .15s">마켓 생성 신청</button>
-          <p style="font-size:11px;color:var(--sub);text-align:center;margin-top:9px">어드민 검토 후 24시간 내 승인 · 부적합 마켓은 반려됩니다</p>
         </div>
+
+        <!-- 진행 상태 (생성 중 표시) -->
+        <div class="create-progress" id="create-progress">
+          <div style="font-size:14px;font-weight:700;margin-bottom:4px">마켓 생성 중...</div>
+          <div style="font-size:12px;color:var(--sub);margin-bottom:12px">잠시만 기다려주세요</div>
+          <div class="create-progressbar"><div class="create-progressbar-fill" id="cpbar"></div></div>
+          <div class="cp-step-list" id="cp-steps"></div>
+        </div>
+
+        <!-- 메인 폼 -->
+        <div id="create-main">
+          <!-- 샘플 선택 칩 -->
+          <div style="background:var(--card);border-radius:14px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:14px">
+            <div style="font-size:13px;font-weight:700;margin-bottom:10px">💡 샘플 마켓으로 빠르게 시작</div>
+            <div class="sample-chips" id="sample-chips">
+              <button class="sample-chip" onclick="loadSample(0)">🏛 대선 관련</button>
+              <button class="sample-chip" onclick="loadSample(1)">📈 금리 결정</button>
+              <button class="sample-chip" onclick="loadSample(2)">🎵 K팝 컴백</button>
+              <button class="sample-chip" onclick="loadSample(3)">⚽ 스포츠 기록</button>
+              <button class="sample-chip" onclick="loadSample(4)">📱 기업 신제품</button>
+            </div>
+          </div>
+
+          <div class="create-wrap">
+            <!-- 좌: 폼 -->
+            <div class="create-form-card">
+              <div class="sh" style="margin-bottom:14px"><div class="sh-t">마켓 정보 입력</div></div>
+
+              <div class="cf-mb">
+                <label class="cf-label">마켓 제목<span class="cf-req">*</span></label>
+                <input id="new-title" class="cf-input" placeholder="예) 2027년 대선 — 이재명 후보 당선 여부" oninput="updatePreview()">
+                <div class="cf-hint">YES/NO로 판별 가능한 구체적인 질문으로 작성하세요</div>
+              </div>
+
+              <div class="cf-grid2 cf-mb">
+                <div>
+                  <label class="cf-label">카테고리<span class="cf-req">*</span></label>
+                  <select id="new-cat" class="cf-select" onchange="updatePreview()">
+                    <option value="pol">🏛 정치</option>
+                    <option value="eco">📈 경제</option>
+                    <option value="ent">🎬 연예</option>
+                    <option value="spo">⚽ 스포츠</option>
+                    <option value="etc">💡 기타</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="cf-label">종료일<span class="cf-req">*</span></label>
+                  <input id="new-date" type="date" class="cf-input" onchange="updatePreview()">
+                </div>
+              </div>
+
+              <div class="cf-mb">
+                <label class="cf-label">초기 유동성 풀 (P)<span class="cf-req">*</span></label>
+                <input id="new-liq" type="number" class="cf-input" placeholder="1000" min="500" step="500" oninput="updatePreview()">
+                <div class="cf-hint">CPMM 초기 풀 — 최소 500P. 클수록 초기 확률 안정성 높아짐</div>
+              </div>
+
+              <div class="cf-mb">
+                <label class="cf-label">결과 판정 기준<span class="cf-req">*</span></label>
+                <textarea id="new-rule" class="cf-textarea" rows="3" placeholder="예) 2027년 3월 대선 최종 개표 결과, 이재명 후보가 당선되면 YES로 정산합니다." oninput="updatePreview()"></textarea>
+                <div class="cf-hint">명확할수록 분쟁을 방지할 수 있습니다</div>
+              </div>
+
+              <div class="cf-mb">
+                <label class="cf-label">관련 언론사 기사 URL</label>
+                <div class="cf-url-row">
+                  <input id="new-url" type="url" class="cf-input" placeholder="https://news.example.com/article/12345" oninput="updatePreview()">
+                  <button class="cf-fetch-btn" onclick="fetchArticleMeta()">미리보기</button>
+                </div>
+                <div class="cf-hint">입력 시 라이브리 위젯 자동 연동 · 관련 뉴스 섹션에 노출</div>
+              </div>
+
+              <div class="cf-mb">
+                <label class="cf-label">베팅 한도 설정</label>
+                <div class="cf-grid2">
+                  <div>
+                    <input id="new-minbet" type="number" class="cf-input" placeholder="최소 100P" min="100" step="100">
+                    <div class="cf-hint">1회 최소 베팅</div>
+                  </div>
+                  <div>
+                    <input id="new-maxbet" type="number" class="cf-input" placeholder="최대 10,000P" min="1000" step="1000">
+                    <div class="cf-hint">1회 최대 베팅</div>
+                  </div>
+                </div>
+              </div>
+
+              <button class="create-submit-btn" id="create-submit-btn" onclick="submitMkt()">
+                <span style="font-size:16px">🚀</span> 마켓 생성 신청
+              </button>
+              <p style="font-size:11px;color:var(--sub);text-align:center;margin-top:9px">
+                어드민 검토 후 자동 승인 · 부적합 마켓은 반려 · 결과 판정 기준이 모호하면 수정 요청
+              </p>
+            </div>
+
+            <!-- 우: 실시간 미리보기 -->
+            <div class="create-preview-col">
+              <div class="preview-card">
+                <div class="preview-label">
+                  <span class="preview-label-dot"></span>
+                  실시간 미리보기
+                </div>
+                <!-- 썸네일 -->
+                <div class="prev-thumb" id="prev-thumb">🎯</div>
+                <!-- 카테고리 배지 -->
+                <span class="prev-cat cp" id="prev-cat-badge">정치</span>
+                <!-- 제목 -->
+                <div class="prev-title" id="prev-title-text" style="color:var(--sub)">마켓 제목을 입력하면 미리보기가 나타납니다</div>
+                <!-- 확률 바 -->
+                <div class="prev-prob-row">
+                  <div class="prev-pb">
+                    <div class="prev-pb-side y">YES</div>
+                    <div class="prev-pb-pct y">50%</div>
+                    <div class="prev-track"><div class="prev-fill fy" style="width:50%"></div></div>
+                  </div>
+                  <div class="prev-pb">
+                    <div class="prev-pb-side n">NO</div>
+                    <div class="prev-pb-pct n">50%</div>
+                    <div class="prev-track"><div class="prev-fill fn" style="width:50%"></div></div>
+                  </div>
+                </div>
+                <!-- 상세 정보 -->
+                <div class="prev-info">
+                  <div class="prev-info-row"><span>종료일</span><span id="prev-date">미설정</span></div>
+                  <div class="prev-info-row"><span>초기 풀</span><span id="prev-liq">— P</span></div>
+                  <div class="prev-info-row"><span>k 상수</span><span id="prev-k">—</span></div>
+                  <div class="prev-info-row"><span>뉴스 연동</span><span id="prev-url-status">없음</span></div>
+                  <div class="prev-info-row"><span>베팅 범위</span><span id="prev-bet-range">100P ~ 10,000P</span></div>
+                </div>
+              </div>
+
+              <!-- 체크리스트 -->
+              <div style="background:var(--card);border-radius:12px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-top:12px">
+                <div style="font-size:12px;font-weight:700;margin-bottom:9px">생성 체크리스트</div>
+                <div style="display:flex;flex-direction:column;gap:5px" id="checklist"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
+      <!-- ADMIN -->
       <!-- ADMIN -->
       <div id="v-admin" style="display:none">
         <div class="adm-grid">
@@ -1790,11 +1984,306 @@ function revokePts(){
   if(!u||!p){toast('이용자와 포인트를 입력하세요');return;}
   toast(`${u}에서 ${fmt(p)}P 회수 완료`);
 }
-function submitMkt(){
-  const t=document.getElementById('new-title')?.value;
-  if(!t){toast('마켓 제목을 입력하세요');return;}
-  toast('✓ 마켓 생성 신청 완료! 어드민 검토 후 승인됩니다');
-  document.getElementById('new-title').value='';
+// ════════════════════════════════════
+// 마켓 생성 — 샘플 데이터
+// ════════════════════════════════════
+const SAMPLES = [
+  {
+    title:'2027년 대선 — 이재명 후보 당선 여부',
+    cat:'pol', catLabel:'정치', catCls:'cp', emoji:'🏛',
+    date:'2027-03-15',
+    liq:5000, minbet:100, maxbet:10000,
+    rule:'2027년 3월 대선 최종 개표 결과, 이재명 후보가 당선되면 YES로 정산합니다. 판정 기준: 중앙선거관리위원회 공식 발표 기준.',
+    url:'https://www.yna.co.kr/view/AKR20260527001234',
+  },
+  {
+    title:'한국은행 — 2026년 3분기 기준금리 0.25%p 인하 여부',
+    cat:'eco', catLabel:'경제', catCls:'ck', emoji:'🏦',
+    date:'2026-08-28',
+    liq:3000, minbet:100, maxbet:5000,
+    rule:'한국은행 금융통화위원회 2026년 3분기(7~9월) 통화정책방향 회의에서 기준금리를 0.25%p 이상 인하 결정하면 YES. 판정 기준: 한국은행 공식 보도자료.',
+    url:'https://www.mk.co.kr/news/economy/2026/05/금리인하전망',
+  },
+  {
+    title:'BTS 완전체 컴백 — 2026년 내 새 앨범 발매 여부',
+    cat:'ent', catLabel:'연예', catCls:'ce', emoji:'🎵',
+    date:'2026-12-31',
+    liq:8000, minbet:100, maxbet:20000,
+    rule:'2026년 12월 31일 이전, BTS 7명 전원이 참여한 정규 또는 미니앨범이 발매되면 YES. 단독 활동·유닛 활동은 해당 없음. 판정 기준: HYBE 공식 발표.',
+    url:'https://entertain.naver.com/read?oid=311&aid=0001234567',
+  },
+  {
+    title:'손흥민 — 2026 북중미 월드컵 득점왕 수상 여부',
+    cat:'spo', catLabel:'스포츠', catCls:'cs', emoji:'⚽',
+    date:'2026-07-20',
+    liq:4000, minbet:100, maxbet:8000,
+    rule:'2026 FIFA 북중미 월드컵에서 손흥민 선수가 골든부트(득점왕)를 수상하면 YES. 판정 기준: FIFA 공식 시상식 발표.',
+    url:'https://sports.naver.com/wc/news/read.nhn?oid=109&aid=0005678',
+  },
+  {
+    title:'삼성전자 — 갤럭시 AI 폴더블폰 2026년 하반기 출시 여부',
+    cat:'eco', catLabel:'경제', catCls:'ck', emoji:'📱',
+    date:'2026-12-31',
+    liq:2000, minbet:100, maxbet:5000,
+    rule:'삼성전자가 2026년 7월 1일 ~ 12월 31일 사이 AI 기능이 탑재된 폴더블 스마트폰 신제품을 국내 공식 출시하면 YES. 판정 기준: 삼성전자 공식 프레스 릴리즈.',
+    url:'https://news.samsung.com/kr/갤럭시폴더블',
+  },
+];
+
+let G_newMarketId = null;
+
+// 샘플 로드
+function loadSample(idx) {
+  const s = SAMPLES[idx];
+  document.querySelectorAll('.sample-chip').forEach((c,i) => {
+    c.classList.toggle('active', i === idx);
+  });
+  setVal('new-title',  s.title);
+  setVal('new-date',   s.date);
+  setVal('new-liq',    s.liq);
+  setVal('new-rule',   s.rule);
+  setVal('new-url',    s.url);
+  setVal('new-minbet', s.minbet);
+  setVal('new-maxbet', s.maxbet);
+  // 카테고리 select
+  const sel = document.getElementById('new-cat');
+  if (sel) {
+    for (let opt of sel.options) {
+      if (opt.value === s.cat) { opt.selected = true; break; }
+    }
+  }
+  // filled 스타일
+  ['new-title','new-date','new-liq','new-rule','new-url'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.value) el.classList.add('filled');
+  });
+  updatePreview();
+  toast('샘플 데이터가 입력되었습니다 ✓');
+}
+
+function setVal(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.value = val;
+}
+
+// 카테고리 메타
+const CAT_META = {
+  pol: {label:'정치', cls:'cp', emoji:'🏛'},
+  eco: {label:'경제', cls:'ck', emoji:'📈'},
+  ent: {label:'연예', cls:'ce', emoji:'🎬'},
+  spo: {label:'스포츠', cls:'cs', emoji:'⚽'},
+  etc: {label:'기타',  cls:'cp', emoji:'💡'},
+};
+
+// 실시간 미리보기 업데이트
+function updatePreview() {
+  const title  = document.getElementById('new-title')?.value || '';
+  const catVal = document.getElementById('new-cat')?.value   || 'pol';
+  const date   = document.getElementById('new-date')?.value  || '';
+  const liq    = parseInt(document.getElementById('new-liq')?.value)  || 0;
+  const url    = document.getElementById('new-url')?.value   || '';
+  const minbet = parseInt(document.getElementById('new-minbet')?.value) || 100;
+  const maxbet = parseInt(document.getElementById('new-maxbet')?.value) || 10000;
+  const meta   = CAT_META[catVal] || CAT_META.pol;
+
+  // 썸네일
+  const thumb = document.getElementById('prev-thumb');
+  if (thumb) thumb.textContent = meta.emoji;
+
+  // 카테고리 배지
+  const badge = document.getElementById('prev-cat-badge');
+  if (badge) {
+    badge.textContent = meta.label;
+    badge.className = 'prev-cat ' + meta.cls;
+  }
+
+  // 제목
+  const titleEl = document.getElementById('prev-title-text');
+  if (titleEl) {
+    titleEl.textContent = title || '마켓 제목을 입력하면 미리보기가 나타납니다';
+    titleEl.style.color = title ? 'var(--text)' : 'var(--sub)';
+  }
+
+  // 날짜
+  const dateEl = document.getElementById('prev-date');
+  if (dateEl) {
+    if (date) {
+      const d = new Date(date);
+      const today = new Date();
+      const diff = Math.ceil((d - today) / 86400000);
+      dateEl.textContent = date + (diff > 0 ? ` (${diff}일 후)` : ' (이미 지남)');
+      dateEl.style.color = diff > 0 ? 'var(--text)' : 'var(--red)';
+    } else {
+      dateEl.textContent = '미설정';
+    }
+  }
+
+  // 풀 & k 상수
+  const liqEl = document.getElementById('prev-liq');
+  const kEl   = document.getElementById('prev-k');
+  if (liqEl) liqEl.textContent = liq ? liq.toLocaleString() + 'P' : '— P';
+  if (kEl)   kEl.textContent   = liq ? (liq/2 * liq/2 / 1000000).toFixed(3) + 'M' : '—';
+
+  // URL 연동 상태
+  const urlEl = document.getElementById('prev-url-status');
+  if (urlEl) {
+    urlEl.textContent = url ? '✓ 연동됨' : '없음';
+    urlEl.style.color = url ? 'var(--green)' : 'var(--sub)';
+  }
+
+  // 베팅 범위
+  const rangeEl = document.getElementById('prev-bet-range');
+  if (rangeEl) rangeEl.textContent = (minbet || 100).toLocaleString() + 'P ~ ' + (maxbet || 10000).toLocaleString() + 'P';
+
+  // 체크리스트
+  updateChecklist(title, date, liq, url);
+}
+
+function updateChecklist(title, date, liq, url) {
+  const items = [
+    {label:'마켓 제목 입력', ok: title.length >= 10},
+    {label:'종료일 설정',   ok: !!date && new Date(date) > new Date()},
+    {label:'유동성 풀 500P 이상', ok: liq >= 500},
+    {label:'결과 판정 기준 작성', ok: (document.getElementById('new-rule')?.value||'').length >= 20},
+    {label:'언론사 URL 연동 (선택)', ok: url.startsWith('http'), optional: true},
+  ];
+  const el = document.getElementById('checklist');
+  if (!el) return;
+  el.innerHTML = items.map(it => `
+    <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:${it.ok ? 'var(--green)' : it.optional ? 'var(--dim)' : 'var(--sub)'}">
+      <span style="font-size:14px">${it.ok ? '✅' : it.optional ? '☑' : '⬜'}</span>
+      ${it.label}${it.optional ? ' <span style=\'font-size:10px;color:var(--dim);\'>(선택)</span>' : ''}
+    </div>`).join('');
+}
+
+// 기사 URL 미리보기 시뮬레이션
+function fetchArticleMeta() {
+  const url = document.getElementById('new-url')?.value || '';
+  if (!url) { toast('URL을 입력하세요'); return; }
+  toast('기사 메타데이터 불러오는 중...');
+  setTimeout(() => {
+    // og:image, 제목 가상 크롤링 시뮬레이션
+    const thumb = document.getElementById('prev-thumb');
+    if (thumb) { thumb.textContent = '🗞️'; }
+    const urlStatus = document.getElementById('prev-url-status');
+    if (urlStatus) { urlStatus.textContent = '✓ 연동됨'; urlStatus.style.color = 'var(--green)'; }
+    toast('✓ 언론사 기사 연동 완료 (썸네일·제목 가져옴)');
+  }, 900);
+}
+
+// 생성 프로세스 실행
+function submitMkt() {
+  const title = document.getElementById('new-title')?.value || '';
+  const date  = document.getElementById('new-date')?.value  || '';
+  const liq   = parseInt(document.getElementById('new-liq')?.value)  || 0;
+  const rule  = document.getElementById('new-rule')?.value  || '';
+  const catVal= document.getElementById('new-cat')?.value   || 'pol';
+  const url   = document.getElementById('new-url')?.value   || '';
+  const minbet= parseInt(document.getElementById('new-minbet')?.value) || 100;
+  const maxbet= parseInt(document.getElementById('new-maxbet')?.value) || 10000;
+
+  // 유효성 검사
+  if (title.length < 5)     { toast('마켓 제목을 입력하세요 (5자 이상)'); return; }
+  if (!date)                { toast('종료일을 설정하세요'); return; }
+  if (new Date(date) <= new Date()) { toast('종료일이 오늘 이전입니다'); return; }
+  if (liq < 500)            { toast('초기 유동성 풀은 500P 이상이어야 합니다'); return; }
+  if (rule.length < 10)     { toast('결과 판정 기준을 작성하세요'); return; }
+  if (G.pts < liq)          { toast('포인트가 부족합니다 (초기 풀: ' + liq.toLocaleString() + 'P 필요)'); return; }
+
+  const meta = CAT_META[catVal] || CAT_META.pol;
+
+  // UI 전환: 폼 숨기고 진행 상태 표시
+  document.getElementById('create-main').style.display    = 'none';
+  document.getElementById('create-progress').classList.add('show');
+
+  const steps = [
+    {ico:'📝', txt:'마켓 데이터 검증 중...'},
+    {ico:'🔐', txt:'생성자 신원 확인 (Keycloak)'},
+    {ico:'💧', txt:'CPMM 초기 유동성 풀 설정 중...'},
+    {ico:'📰', txt:'언론사 기사 URL 라이브리 연동 중...'},
+    {ico:'✅', txt:'어드민 자동 검토 통과'},
+    {ico:'🚀', txt:'마켓 오픈 — 홈 목록에 추가됨'},
+  ];
+
+  const stepsEl = document.getElementById('cp-steps');
+  const barEl   = document.getElementById('cpbar');
+  stepsEl.innerHTML = steps.map(s =>
+    `<div class="cp-step"><div class="cp-step-ico">${s.ico}</div><div class="cp-step-txt">${s.txt}</div></div>`
+  ).join('');
+  const stepEls = stepsEl.querySelectorAll('.cp-step');
+
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i > 0) {
+      stepEls[i-1].classList.remove('active');
+      stepEls[i-1].classList.add('done');
+      stepEls[i-1].querySelector('.cp-step-ico').textContent = '✓';
+    }
+    if (i < steps.length) {
+      stepEls[i].classList.add('active');
+      barEl.style.width = Math.round((i+1) / steps.length * 100) + '%';
+      i++;
+    } else {
+      clearInterval(interval);
+      // 포인트 차감 (초기 풀)
+      G.pts -= liq;
+      updateAllPts();
+
+      // MARKETS 배열에 실제 추가
+      const newId = MARKETS.length;
+      const yPool = liq / 2, nPool = liq / 2;
+      const today = new Date();
+      const endDate = new Date(date);
+      const daysLeft = Math.ceil((endDate - today) / 86400000);
+      MARKETS.push({
+        id: newId, cat: catVal, cl: meta.cls, lbl: meta.label,
+        title: title,
+        yPool: yPool, nPool: nPool,
+        users: 1, vol: liq, days: daysLeft,
+        _new: true,
+      });
+      G_newMarketId = newId;
+
+      // 히스토리 초기화
+      G.history[newId] = { pts: [50], lbls: ['지금'] };
+
+      // 홈 마켓 목록 갱신
+      renderMkts('all');
+
+      // 진행 → 완료 전환
+      setTimeout(() => {
+        document.getElementById('create-progress').classList.remove('show');
+        document.getElementById('create-done').classList.add('show');
+        document.getElementById('done-title-text').textContent = `"${title.substring(0,25)}${title.length>25?'…':''}" 마켓 생성 완료!`;
+        document.getElementById('done-desc-text').textContent =
+          `초기 풀 ${liq.toLocaleString()}P 차감 · 홈 마켓 목록에 추가됨`;
+        // 어드민 통계 업데이트
+        const admUsers = document.getElementById('adm-users');
+        if (admUsers) admUsers.textContent = (1248).toLocaleString();
+      }, 400);
+    }
+  }, 520);
+}
+
+function goToNewMarket() {
+  if (G_newMarketId === null) return;
+  resetCreateForm();
+  // 잠깐 홈으로 이동 후 상세 오픈
+  nav('home', document.querySelector('.si'));
+  setTimeout(() => openDetail(G_newMarketId), 200);
+}
+
+function resetCreateForm() {
+  document.getElementById('create-done').classList.remove('show');
+  document.getElementById('create-progress').classList.remove('show');
+  document.getElementById('create-main').style.display = 'block';
+  document.getElementById('cpbar').style.width = '0';
+  document.querySelectorAll('.sample-chip').forEach(c => c.classList.remove('active'));
+  ['new-title','new-date','new-liq','new-rule','new-url','new-minbet','new-maxbet'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = ''; el.classList.remove('filled'); }
+  });
+  updatePreview();
 }
 
 // ════════════════════════════════════
