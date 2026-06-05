@@ -40,6 +40,19 @@ sev_bar() {  # 1~10 → 직관적 막대 + 라벨
   echo "심각도 *$s/10* [$bar] $label"
 }
 
+# ── 알림 게이트: 심각도 임계 + 재알림 쿨다운 (노이즈 억제) ──────────────────
+should_notify() {  # alarm sev → 0=알림 / 1=억제(로그만). 기본: sev<6 또는 동일심각도 쿨다운 중이면 억제.
+  local alarm="$1" sev="${2:-0}" min="${SLACK_MIN_SEV:-6}" cd="${NOTIFY_COOLDOWN_SEC:-1800}"
+  [ "$sev" -lt "$min" ] && return 1                       # 임계 미만 = 로그만
+  local f="$STATE_DIR/notify_$(printf '%s' "$alarm" | tr -c 'A-Za-z0-9' '_')"
+  local now=$(date -u +%s) last_ts=0 last_sev=0
+  [ -f "$f" ] && read -r last_ts last_sev < "$f" 2>/dev/null
+  # 쿨다운 창 안 + 악화 아님 → 억제. 심각도 상승 시엔 즉시 알림.
+  if [ $((now - ${last_ts:-0})) -lt "$cd" ] && [ "$sev" -le "${last_sev:-0}" ]; then return 1; fi
+  printf '%s %s\n' "$now" "$sev" > "$f"
+  return 0
+}
+
 # ── 서킷브레이커 ──────────────────────────────────────────────────────────
 breaker_ok() {
   local f="$STATE_DIR/breaker_$1" now cutoff count
@@ -81,9 +94,16 @@ $alarm
 $diag" --allowedTools "" 2>>"$STATE_DIR/watch.log")" \
     || report="(Claude 해석 실패 — 로그 확인. 원본: $STATE_DIR/last_diag.txt)"
 
-  slack ":mag: *진단* (\`$alarm\`) — $(sev_bar "$sev")${NL}${report}"
   decision="$(grep -oE 'DECISION:.+' <<<"$report" | tail -1 | sed 's/^DECISION://')"
   log "DECISION($alarm)=${decision:-none} sev=$sev"
+
+  # 노이즈 억제: 심각도 < SLACK_MIN_SEV(기본 6) 또는 쿨다운 중이면 Slack 생략(로그만). 심각도 상승 시엔 즉시 알림.
+  if ! should_notify "$alarm" "$sev"; then
+    log "[notify-suppressed] $alarm sev=$sev (min=${SLACK_MIN_SEV:-6} cooldown=${NOTIFY_COOLDOWN_SEC:-1800}s)"
+    return
+  fi
+
+  slack ":mag: *진단* (\`$alarm\`) — $(sev_bar "$sev")${NL}${report}"
 
   if [ "${AUTONOMY:-observe}" != "safe" ] && [ "${AUTONOMY:-observe}" != "aggressive" ]; then
     case "$decision" in
