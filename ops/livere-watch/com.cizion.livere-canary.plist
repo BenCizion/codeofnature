@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- 1시간 주기 위젯 캐너리. install.sh 가 __INSTALL_DIR__/__STATE_DIR__ 치환 -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.cizion.livere-canary</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>__INSTALL_DIR__/canary.sh</string>
+  </array>
+  <key>StartInterval</key><integer>3600</integer>
+  <key>RunAtLoad</key><true/>
+  <key>StandardOutPath</key><string>__STATE_DIR__/canary.out.log</string>
+  <key>StandardErrorPath</key><string>__STATE_DIR__/canary.err.log</string>
+  <key>EnvironmentVariables</key>
+  <dict><key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string></dict>
+</dict>
+</plist>

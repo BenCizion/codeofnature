@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-# livere-watch 공통 함수 — watch.sh 에서 source
+# livere-watch 공통 함수 — watch.sh / canary.sh / email_poll.sh 에서 source
 
 json_str() { python3 -c 'import json,sys; print(json.dumps(sys.argv[1]))' "$1"; }
-
 log() { echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) $*" >> "$STATE_DIR/watch.log"; }
 
 slack() {
@@ -13,7 +12,34 @@ slack() {
     || log "SLACK-FAIL: $text"
 }
 
-# 서킷브레이커: 같은 조치가 15분 내 2회 이상이면 차단
+# ── 심각도 1~10 (결정적·잠정 기준, 추후 검토) ──────────────────────────────
+awk_ge() { awk -v a="${1:-0}" -v b="$2" 'BEGIN{exit !(a+0>=b+0)}'; }
+compute_severity() {  # api healthy cpu x5 lat canary
+  local api="$1" healthy="${2:-1}" cpu="${3:-0}" x5="${4:-0}" lat="${5:-0}" canary="${6:-ok}" s=1
+  if   awk_ge "$cpu" 95; then s=7
+  elif awk_ge "$cpu" 85; then s=5
+  elif awk_ge "$cpu" 70; then s=3; fi
+  if   awk_ge "$x5" 1000; then [ "$s" -lt 8 ] && s=8
+  elif awk_ge "$x5" 100;  then [ "$s" -lt 6 ] && s=6; fi
+  if   awk_ge "$lat" 3000; then [ "$s" -lt 7 ] && s=7
+  elif awk_ge "$lat" 1000; then [ "$s" -lt 4 ] && s=4; fi
+  [ "$api" = inactive ] && [ "$s" -lt 9 ] && s=9
+  [ "$canary" = fail ]  && [ "$s" -lt 9 ] && s=9
+  [ "$healthy" = 0 ] && s=10
+  [ "$s" -gt 10 ] && s=10
+  echo "$s"
+}
+sev_bar() {  # 1~10 → 직관적 막대 + 라벨
+  local s="$1" i bar="" label
+  for i in $(seq 1 10); do [ "$i" -le "$s" ] && bar+="█" || bar+="░"; done
+  if   [ "$s" -ge 9 ]; then label="🟥 치명 (서비스 다운/사용량 초과)"
+  elif [ "$s" -ge 6 ]; then label="🟧 심각"
+  elif [ "$s" -ge 3 ]; then label="🟨 주의"
+  else                     label="🟩 정상"; fi
+  echo "심각도 *$s/10* [$bar] $label"
+}
+
+# ── 서킷브레이커 ──────────────────────────────────────────────────────────
 breaker_ok() {
   local f="$STATE_DIR/breaker_$1" now cutoff count
   now=$(date -u +%s); cutoff=$((now - 900))
@@ -22,7 +48,7 @@ breaker_ok() {
 }
 breaker_record() { echo "$(date -u +%s)" >> "$STATE_DIR/breaker_$1"; }
 
-# 유일하게 프로덕션을 바꾸는 경로(결정적·고정 명령·감사로그). AUTONOMY=safe 일 때만 호출됨.
+# ── 유일하게 프로덕션을 바꾸는 경로 (AUTONOMY=safe 일 때만 호출) ───────────
 remediate_restart_api() {
   local out
   out="$(ssh -o BatchMode=yes -o ConnectTimeout=15 "$SSH_HOST" \
@@ -31,15 +57,20 @@ remediate_restart_api() {
   slack ":arrows_counterclockwise: *재기동 결과* (\`$SSH_HOST\`)\n\`\`\`\n$out\n\`\`\`"
 }
 
-# 알람 1건 처리: 결정적 수집 → 도구없는 Claude 해석 → 가드레일
+# ── 알람 1건 처리: 결정적 수집 → 심각도 → 도구없는 Claude 해석 → 가드레일 ──
 handle_alarm() {
-  local alarm="$1" diag report decision
+  local alarm="$1" diag report decision sig api healthy cpu sev
 
-  # 1) 결정적 읽기전용 수집 (Claude가 아니라 셸이 함)
   diag="$(bash "$SCRIPT_DIR/collect.sh" 2>&1)"
-  printf '%s\n' "$diag" > "$STATE_DIR/last_diag.txt"   # 감사용 원본 보관
+  printf '%s\n' "$diag" > "$STATE_DIR/last_diag.txt"
 
-  # 2) Claude = 도구 없는 해석기 (prod 실행 불가). 수집 텍스트만 근거.
+  sig="$(grep -m1 '^SIGNALS ' <<<"$diag" || true)"
+  api="$(sed -n 's/.*api=\([^ ]*\).*/\1/p' <<<"$sig")"
+  healthy="$(sed -n 's/.*healthy=\([^ ]*\).*/\1/p' <<<"$sig")"
+  cpu="$(sed -n 's/.*cpu=\([^ ]*\).*/\1/p' <<<"$sig")"
+  sev="$(compute_severity "${api:-unknown}" "${healthy:-1}" "${cpu:-0}" "" "" ok)"
+
+  # Claude = 도구 없는 해석기(prod 실행 불가). 수집 텍스트만 근거.
   report="$("$CLAUDE_BIN" -p "$(cat "$SCRIPT_DIR/diagnose.prompt.md")
 
 # 트리거된 알람
@@ -47,29 +78,26 @@ $alarm
 
 # 수집된 읽기전용 진단 (이것만 근거로 판단. 너는 도구가 없다)
 $diag" --allowedTools "" 2>>"$STATE_DIR/watch.log")" \
-    || report="(Claude 해석 실패 — 로그 확인. 원본 진단: $STATE_DIR/last_diag.txt)"
+    || report="(Claude 해석 실패 — 로그 확인. 원본: $STATE_DIR/last_diag.txt)"
 
-  slack ":mag: *진단 리포트* (\`$alarm\`)\n$report"
+  slack ":mag: *진단* (\`$alarm\`) — $(sev_bar "$sev")\n$report"
   decision="$(grep -oE 'DECISION:[A-Za-z_:0-9 -]+' <<<"$report" | tail -1 | sed 's/^DECISION://')"
-  log "DECISION($alarm)=${decision:-none}"
+  log "DECISION($alarm)=${decision:-none} sev=$sev"
 
-  # 3) 가드레일. 기본 observe = 자동 prod-write 안 함(승인 요청만).
   if [ "${AUTONOMY:-observe}" != "safe" ] && [ "${AUTONOMY:-observe}" != "aggressive" ]; then
     case "$decision" in
-      SAFE_RESTART_API*) slack ":raising_hand: *권고: api 재기동 필요* (observe 모드 — 자동 실행 안 함)\n승인 시: \`ssh $SSH_HOST 'sudo systemctl start livere-api-prod livere-scheduler-prod'\`" ;;
-      NEEDS_APPROVAL*)   slack ":raising_hand: *승인 필요* — ${decision#NEEDS_APPROVAL:} (런북 §2/§3)" ;;
+      SAFE_RESTART_API*) slack ":raising_hand: *권고: api 재기동 필요* (observe — 자동 실행 안 함)\n승인 시: \`ssh $SSH_HOST 'sudo systemctl start livere-api-prod livere-scheduler-prod'\`" ;;
+      NEEDS_APPROVAL*)   slack ":raising_hand: *승인 필요* — ${decision#NEEDS_APPROVAL:}" ;;
     esac
     return
   fi
-
-  # safe/aggressive: 단 하나의 화이트리스트 자동조치만
   case "$decision" in
     SAFE_RESTART_API*)
       if breaker_ok restart_api; then
         slack ":wrench: *[자동 안전조치]* api 비활성 → systemctl start"
         remediate_restart_api; breaker_record restart_api
       else
-        slack ":no_entry: *[서킷브레이커]* 15분 내 재시작 반복 → 자동 중단. *사람 개입 필요.*"
+        slack ":no_entry: *[서킷브레이커]* 재시작 반복 → 자동 중단. *사람 개입 필요.*"
       fi ;;
     NEEDS_APPROVAL*) slack ":raising_hand: *승인 필요* — ${decision#NEEDS_APPROVAL:} (위험조치는 항상 수동)" ;;
     *) slack ":information_source: 자동 조치 없음 (DECISION=${decision:-NONE})" ;;

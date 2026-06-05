@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- 3분 주기 이메일 알람 수신(선택). install.sh 가 __INSTALL_DIR__/__STATE_DIR__ 치환 -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.cizion.livere-email</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>__INSTALL_DIR__/email_poll.sh</string>
+  </array>
+  <key>StartInterval</key><integer>180</integer>
+  <key>RunAtLoad</key><true/>
+  <key>StandardOutPath</key><string>__STATE_DIR__/email.out.log</string>
+  <key>StandardErrorPath</key><string>__STATE_DIR__/email.err.log</string>
+  <key>EnvironmentVariables</key>
+  <dict><key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string></dict>
+</dict>
+</plist>

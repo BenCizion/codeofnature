@@ -69,7 +69,22 @@ AWS=(aws --profile "$AWS_PROFILE" --region "$AWS_REGION")
 - **읽기전용 SSH**: bastion `authorized_keys` 의 `command=`(forced-command)로 진단 명령만 허용하는 별도 키. 재기동(`safe`)은 분리된 명시 경로.
 - `config.env` 는 `.gitignore` 처리(웹훅/토큰 커밋 금지). 모든 조치는 `~/.livere-watch/watch.log` 에 감사 기록.
 
+## 모듈 (launchd 작업)
+| 작업 | 주기 | 역할 |
+|---|---|---|
+| `watch.sh` | 60초 | CloudWatch 알람 폴링 → 진단/심각도/가드레일 |
+| `canary.sh` | 1시간 | 위젯/댓글 API 실제 호출 → 정상출력·응답시간 → 심각도 Slack |
+| `email_poll.sh` | 3분(선택) | dev@cizion.com CloudWatch ALARM 이메일 독립 수신 → 같은 파이프라인 |
+| `caffeinate` | 상주 | 맥 잠자기 억제(전력설정 보험) |
+
+## 심각도 1~10 (Slack)
+모든 알림 헤더에 직관적 막대 표시 — 예: `심각도 8/10 [████████░░] 🟧 심각`.
+사용량(EC2 CPU)·지연·5XX·캐너리 실패가 높을수록 ↑, **서비스 다운/사용량 초과 = 9~10**. 기준값은 `lib.sh:compute_severity` / `canary.sh` 에 있으며 **잠정(추후 검토)**.
+
+## 상시 맥 설치·전력설정·인계
+→ [`HANDOFF.md`](HANDOFF.md) 참조 (pmset 전력설정 + 다른 맥 Claude 킥오프 프롬프트).
+
 ## 확장 로드맵
-- ALB 지연 알람 + **CloudWatch Synthetics 캐너리**(실 위젯 URL 1분 로드)로 사용자보다 먼저 감지
+- ALB 지연 알람 + CloudWatch Synthetics 캐너리(브라우저 렌더 검증)
 - 승인형 조치를 Slack 인터랙티브 버튼으로
 - 인시던트 자동 기록 → 런북 §6 커밋
