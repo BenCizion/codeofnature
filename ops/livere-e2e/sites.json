@@ -1,0 +1,29 @@
+{
+  "_comment": "테스트 대상·셀렉터 설정. URL은 실제 댓글 달린 기사 페이지로 채우고, 셀렉터는 맥에서 DOM 확인 후 보강.",
+
+  "widgetSelectors": [
+    "#lv-container",
+    "[id^=lv-]",
+    "live-re",
+    "livere-widget",
+    ".livere",
+    "[class*=livere]",
+    "iframe[src*=livere]"
+  ],
+
+  "loginButtonText": ["로그인", "로그인하기", "Login", "Sign in", "登录"],
+
+  "_authDomains": "로그인 클릭 후 이 도메인 중 하나로 진입하면 'OK'(인증 IdP 도달)",
+  "authDomains": [
+    "livere", "keycloak", "vault", "iam",
+    "accounts.google", "nid.naver", "kauth.kakao",
+    "facebook.com", "twitter.com", "x.com", "appleid.apple.com"
+  ],
+
+  "_sites": "name=라벨, url=댓글 위젯이 있는 실제 기사 URL(채우기). 현장 검증된 3곳 우선.",
+  "sites": [
+    { "name": "ohmynews",     "url": "PASTE_ARTICLE_URL", "expect": "ok" },
+    { "name": "seoulshinmun", "url": "PASTE_ARTICLE_URL", "expect": "login-broken" },
+    { "name": "kmib",         "url": "PASTE_ARTICLE_URL", "expect": "login-broken" }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "livere-e2e",
+  "private": true,
+  "type": "module",
+  "description": "LiveRe 댓글위젯/로그인 크로스-브라우저·디바이스 E2E 테스터",
+  "scripts": {
+    "test": "playwright test",
+    "report:slack": "node report.mjs",
+    "run": "bash run.sh",
+    "install:browsers": "playwright install --with-deps"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.47.0",
+    "typescript": "^5.5.4"
+  }
+}
