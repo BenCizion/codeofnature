@@ -115,7 +115,9 @@ $diag" --allowedTools "" 2>>"$STATE_DIR/watch.log")" \
 
   # 노이즈 억제: 심각도 < SLACK_MIN_SEV(기본 6) 또는 쿨다운 중이면 Slack 생략(로그만). 심각도 상승 시엔 즉시 알림.
   if ! should_notify "$alarm" "$sev"; then
-    log "[notify-suppressed] $alarm sev=$sev (min=${SLACK_MIN_SEV:-6} cooldown=${NOTIFY_COOLDOWN_SEC:-1800}s)"
+    # 억제(임계 미만/쿨다운)여도 "진단 시작"과 일관되게 한 줄 요약은 발송(침묵 방지).
+    log "[notify-brief] $alarm sev=$sev (min=${SLACK_MIN_SEV:-6} cooldown=${NOTIFY_COOLDOWN_SEC:-1800}s)"
+    slack ":speech_balloon: \`$alarm\` — $(sev_bar "$sev") · 상세 생략(직전과 동일/쿨다운). DECISION=\`${decision:-NONE}\`"
     return
   fi
 
