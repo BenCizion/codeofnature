@@ -8,6 +8,18 @@ source "$SCRIPT_DIR/config.env"
 source "$SCRIPT_DIR/lib.sh"
 mkdir -p "$STATE_DIR"
 
+# 동시 실행 방지(중복 알림·진단 겹침 방지). Claude 진단이 60초 넘으면 다음 틱은 skip.
+LOCK="$STATE_DIR/watch.lock"
+if ! mkdir "$LOCK" 2>/dev/null; then
+  # 10분 넘은 스테일 락은 회수
+  if find "$LOCK" -maxdepth 0 -mmin +10 2>/dev/null | grep -q .; then
+    rmdir "$LOCK" 2>/dev/null; mkdir "$LOCK" 2>/dev/null || exit 0
+  else
+    exit 0
+  fi
+fi
+trap 'rmdir "$LOCK" 2>/dev/null' EXIT
+
 AWS=("$AWS_BIN" --profile "$AWS_PROFILE" --region "$AWS_REGION")
 
 # 0) 하트비트(워처 생존) → CloudWatch 커스텀 지표 + 로컬 타임스탬프
@@ -32,7 +44,8 @@ for a in $prev; do
   fi
 done
 
-# 3) 신규 ALARM 처리
+# 3) 신규 ALARM 처리 (먼저 상태 저장 → 진단 중 다음 틱이 중복 발사하지 않게)
+printf '%s\n' $current > "$prev_file"
 for a in $current; do
   if ! grep -qw -- "$a" <<<"$prev"; then
     log "NEW ALARM $a"
@@ -40,6 +53,3 @@ for a in $current; do
     handle_alarm "$a"
   fi
 done
-
-# 4) 상태 저장
-printf '%s\n' $current > "$prev_file"

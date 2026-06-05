@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # livere-watch 공통 함수 — watch.sh / canary.sh / email_poll.sh 에서 source
+NL=$'\n'
 
 json_str() { python3 -c 'import json,sys; print(json.dumps(sys.argv[1]))' "$1"; }
 log() { echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) $*" >> "$STATE_DIR/watch.log"; }
@@ -54,7 +55,7 @@ remediate_restart_api() {
   out="$(ssh -o BatchMode=yes -o ConnectTimeout=15 "$SSH_HOST" \
     'sudo systemctl start livere-api-prod livere-scheduler-prod; sleep 3; systemctl is-active livere-api-prod livere-scheduler-prod' 2>&1)" || true
   log "REMEDIATE restart_api -> $out"
-  slack ":arrows_counterclockwise: *재기동 결과* (\`$SSH_HOST\`)\n\`\`\`\n$out\n\`\`\`"
+  slack ":arrows_counterclockwise: *재기동 결과* (\`$SSH_HOST\`)${NL}\`\`\`${NL}${out}${NL}\`\`\`"
 }
 
 # ── 알람 1건 처리: 결정적 수집 → 심각도 → 도구없는 Claude 해석 → 가드레일 ──
@@ -80,13 +81,13 @@ $alarm
 $diag" --allowedTools "" 2>>"$STATE_DIR/watch.log")" \
     || report="(Claude 해석 실패 — 로그 확인. 원본: $STATE_DIR/last_diag.txt)"
 
-  slack ":mag: *진단* (\`$alarm\`) — $(sev_bar "$sev")\n$report"
-  decision="$(grep -oE 'DECISION:[A-Za-z_:0-9 -]+' <<<"$report" | tail -1 | sed 's/^DECISION://')"
+  slack ":mag: *진단* (\`$alarm\`) — $(sev_bar "$sev")${NL}${report}"
+  decision="$(grep -oE 'DECISION:.+' <<<"$report" | tail -1 | sed 's/^DECISION://')"
   log "DECISION($alarm)=${decision:-none} sev=$sev"
 
   if [ "${AUTONOMY:-observe}" != "safe" ] && [ "${AUTONOMY:-observe}" != "aggressive" ]; then
     case "$decision" in
-      SAFE_RESTART_API*) slack ":raising_hand: *권고: api 재기동 필요* (observe — 자동 실행 안 함)\n승인 시: \`ssh $SSH_HOST 'sudo systemctl start livere-api-prod livere-scheduler-prod'\`" ;;
+      SAFE_RESTART_API*) slack ":raising_hand: *권고: api 재기동 필요* (observe — 자동 실행 안 함)${NL}승인 시: \`ssh $SSH_HOST 'sudo systemctl start livere-api-prod livere-scheduler-prod'\`" ;;
       NEEDS_APPROVAL*)   slack ":raising_hand: *승인 필요* — ${decision#NEEDS_APPROVAL:}" ;;
     esac
     return
