@@ -103,6 +103,10 @@ ssh livere-prod 'sudo systemctl enable livere-api-prod livere-scheduler-prod'
 - [ ] **배치 작업을 운영 백엔드와 분리** 또는 저트래픽 시간대 + CPU 제한(nice/cgroup). 배치 CPU 폭주가 2026-06-04 장애 원인.
 - [ ] 운영 매뉴얼의 "원인 = DB 부하" 가정 수정 → "EC2 CPU 우선 확인".
 - [ ] 백엔드 CPU/load 알람(CloudWatch) 임계치 설정.
+- [ ] **마이그레이션/배치의 prod 공개 API 고속호출 금지** — 스로틀(워커 1~2/초당 수 건)+야간, 또는 DB직접/전용 경로. (2026-06-05 client 대량생성이 FD/CPU 고갈로 전면장애)
+- [ ] **client 생성/체크 엔드포인트 rate-limit** (`CheckPropsAvailability`, `POST /api/v1/clients`).
+- [ ] **`LimitNOFILE=1,000,000` 영구 유지** (drop-in 적용됨 — FD 고갈로 인한 사망/크래시루프 방지).
+- [ ] **FD·CLOSE-WAIT 알람** 추가 (api 프로세스 FD 수 / :8000 CLOSE-WAIT 적체).
 
 ## 5. 인프라 레퍼런스
 | 항목 | 값 |
@@ -129,3 +133,19 @@ ssh livere-prod 'sudo systemctl enable livere-api-prod livere-scheduler-prod'
 
 > [!warning] 오늘 저녁 주의 (2026-06-04 저녁)
 > 배치 작업 재개 예정 → **CPU 재폭주 가능.** 1-3 / 1-4 로 EC2 CPU 선제 모니터링.
+
+### 2026-06-05 — 운영 전면 장애 (v9→v11 마이그레이션이 client 대량생성)
+- **증상**: 위젯·로그인·`/clients/{id}/profile`·`/clients/articles/stats` 504/CORS. ~10:00~11:15(KST, UTC 01:00~02:13) 반복 다운·재시작.
+- **근본 원인 (확정)**: **v9→v11 사이트 마이그레이션 배치가 prod client 생성 API(`POST /api/v1/clients`)를 고속·고동시성으로 호출**. = 2026-06-04 "배치 CPU 폭주"의 정체이자 연속.
+  - 증거: `livere_prod_clients` 중 `email='dev@cizion.com'` 소유 client가 **4 → 5,914 (수 분)**, 전부 실제 v9 사이트(tistory/google sites 등), create_at이 장애시각과 일치.
+  - **인과 확정**: 배치 **중지→prod 즉시 회복**(동시연결 32k→~300, FD 47k→194, 응답 0.05s), **재개→재다운**. RDS는 한가(CPU<6%, latency~0) → **DB 아님, api 측 동시성 병목.**
+- **메커니즘 (FD 고갈)**: 생성 폭주로 DB 풀(100) 포화 → 후속 핸들러가 빈 커넥션 대기로 블록 → ALB가 끊은 연결이 **CLOSE-WAIT로 적체 → 프로세스 FD 폭증** → 원래 상한 49,152 도달 시 **RDS 소켓·DNS조차 못 열어** 전면 실패(`too many open files`) → `FATAL context deadline exceeded` → (이전엔)크래시루프/인스턴스 리부트. ※ FD = api가 붙들고 있는 연결/파일 수, 평시 ~70~300 / 폭주 시 47,000.
+- **조치**:
+  1. systemd drop-in **`LimitNOFILE` 49,152 → 1,000,000** (`/etc/systemd/system/livere-api-prod.service.d/override.conf`) → FD 천장 도달로 **죽는 크래시루프 차단**(degraded는 되나 사망·리부트 방지). **유지할 것.**
+  2. api `models/base.go` **`findPage()` 고루틴 누수 패치**(병렬 Find/Count → 순차) staging→prod 배포(빌드ID `b3dea9d`). 부수 개선(이 건의 주원인은 아님). prod 바이너리 백업 `api.bak.findpage.*`.
+  3. **배치 중지**(이정대 CTO) → prod 회복. = 유일한 실질 해결.
+- **교훈 / 재발방지**:
+  - 마이그레이션은 **스로틀**(워커 1~2개, 초당 수 건) + **야간**에만. prod 공개 API 고속호출 대신 DB 직접/전용 배치 경로 검토.
+  - api 내성: **client 생성/체크 엔드포인트 rate-limit**(생성 버스트에 운영이 무너지면 안 됨).
+  - 진단 시 **FD·CLOSE-WAIT 수**를 1차 지표로(아래 1-4에 추가): `sudo ls /proc/$(pgrep -f /home/ubuntu/livere/api/api|head -1)/fd | wc -l`, `ss -tan | awk '$4~/:8000$/{print $1}' | sort | uniq -c`.
+  - "already registered" 로그 0이라도 **신규 생성은 성공(무에러)** 이라 폭주가 숨음 → `SELECT count(*) ... WHERE create_at > now-60s` 로 생성률 확인.
