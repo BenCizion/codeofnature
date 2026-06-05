@@ -40,6 +40,19 @@ sev_bar() {  # 1~10 → 직관적 막대 + 라벨
   echo "심각도 *$s/10* [$bar] $label"
 }
 
+# ── 알람 이름별 최소 심각도 (CloudWatch 알람 자체가 고객영향 신호 → 수집모델 과소평가 보정) ──
+alarm_floor_sev() {
+  case "$1" in
+    *Backend_UnHealthy*)        echo 9 ;;  # ALB 타깃 unhealthy = 고객 페이지 다운
+    *5XX*|*HTTPCode_5*)         echo 8 ;;  # 5XX 급증 = 실패 응답
+    *Target_5XX*)              echo 7 ;;
+    *RequestCount_Above*)      echo 6 ;;
+    *RDB_CPU*|*DBLoad*|*Higher*) echo 6 ;;
+    *NetworkPackets*)          echo 5 ;;
+    *)                         echo 0 ;;
+  esac
+}
+
 # ── 알림 게이트: 심각도 임계 + 재알림 쿨다운 (노이즈 억제) ──────────────────
 should_notify() {  # alarm sev → 0=알림 / 1=억제(로그만). 기본: sev<6 또는 동일심각도 쿨다운 중이면 억제.
   local alarm="$1" sev="${2:-0}" min="${SLACK_MIN_SEV:-6}" cd="${NOTIFY_COOLDOWN_SEC:-1800}"
@@ -83,6 +96,9 @@ handle_alarm() {
   healthy="$(sed -n 's/.*healthy=\([^ ]*\).*/\1/p' <<<"$sig")"
   cpu="$(sed -n 's/.*cpu=\([^ ]*\).*/\1/p' <<<"$sig")"
   sev="$(compute_severity "${api:-unknown}" "${healthy:-1}" "${cpu:-0}" "" "" ok)"
+  # CloudWatch 알람 자체가 고객영향 신호 → 알람 이름 기반 최소 심각도로 상향(과소평가 보정).
+  local floor; floor="$(alarm_floor_sev "$alarm")"
+  [ "${floor:-0}" -gt "${sev:-0}" ] && sev="$floor"
 
   # Claude = 도구 없는 해석기(prod 실행 불가). 수집 텍스트만 근거.
   report="$("$CLAUDE_BIN" -p "$(cat "$SCRIPT_DIR/diagnose.prompt.md")
