@@ -119,6 +119,8 @@ $diag" --allowedTools "" 2>>"$STATE_DIR/watch.log")" \
     return
   fi
 
+  # Markdown(**볼드**) → Slack mrkdwn(*볼드*) 정규화 (Claude가 Markdown으로 출력해도 Slack에서 볼드 처리되도록)
+  report="$(printf '%s' "$report" | sed -E 's/\*{2,}([^*]+)\*{2,}/*\1*/g')"
   slack ":mag: *진단* (\`$alarm\`) — $(sev_bar "$sev")${NL}${report}"
 
   if [ "${AUTONOMY:-observe}" != "safe" ] && [ "${AUTONOMY:-observe}" != "aggressive" ]; then
