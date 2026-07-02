@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Northwest Restaurant — Review Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:     #F0F4F8;
+    --white:  #FFFFFF;
+    --border: #DDE3EC;
+    --navy:   #1A3A5C;
+    --blue:   #2563EB;
+    --teal:   #0D9488;
+    --orange: #F26419;
+    --green:  #16A34A;
+    --red:    #DC2626;
+    --amber:  #D97706;
+    --purple: #7C3AED;
+    --text:   #0F172A;
+    --text2:  #334155;
+    --muted:  #64748B;
+    --muted2: #94A3B8;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #C8D4E0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  /* ── Landscape A5: 794 × 559 ── */
+  .device {
+    width: 794px;
+    height: 559px;
+    background: var(--bg);
+    border-radius: 16px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    grid-template-rows: 1fr;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.07),
+      0 20px 60px rgba(0,0,0,0.18);
+  }
+
+  /* ═══ LEFT SIDEBAR ═══ */
+  .sidebar {
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Restaurant info */
+  .rest-info {
+    padding: 18px 16px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+  .rest-logo {
+    width: 42px; height: 42px; border-radius: 12px;
+    background: linear-gradient(135deg, #3B82F6, #6366F1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin-bottom: 10px;
+    box-shadow: 0 4px 12px rgba(59,130,246,0.4);
+  }
+  .rest-name {
+    font-size: 15px; font-weight: 800; color: white;
+    letter-spacing: -0.3px; line-height: 1.2; margin-bottom: 4px;
+  }
+  .rest-loc {
+    font-size: 11.5px; color: rgba(255,255,255,0.5); font-weight: 500; line-height: 1.4;
+  }
+  .live-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(22,163,74,0.18); border: 1px solid rgba(22,163,74,0.4);
+    border-radius: 20px; padding: 3px 9px; margin-top: 8px;
+    font-size: 10.5px; font-weight: 700; color: #4ADE80;
+    letter-spacing: 0.6px; text-transform: uppercase;
+  }
+  .live-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #4ADE80; animation: blink 1.5s ease infinite;
+  }
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+
+  /* Platform scores in sidebar */
+  .pl-scores {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+  .pl-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .pl-row:last-child { border-bottom: none; }
+  .pl-name {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.7);
+  }
+  .pl-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .pl-score {
+    font-size: 15.5px; font-weight: 800;
+    font-family: 'DM Mono', monospace;
+  }
+  .pl-score.g{color:#60A5FA} .pl-score.y{color:#F87171} .pl-score.i{color:#F9A8D4}
+
+  /* Sentiment mini */
+  .sent-mini {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+  .sent-bar { display:flex; height:6px; border-radius:4px; overflow:hidden; margin-bottom:6px; }
+  .s-g{background:#16A34A}.s-y{background:#D97706}.s-r{background:#DC2626}
+  .sent-leg { display:flex; gap:8px; }
+  .sl { display:flex; align-items:center; gap:3px; font-size:10.5px; color:rgba(255,255,255,0.55); }
+  .sd { width:7px; height:7px; border-radius:2px; }
+
+  /* Date */
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 10px 14px;
+    font-size: 9.5px; color: rgba(255,255,255,0.3);
+    font-family: 'DM Mono', monospace;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* ═══ RIGHT MAIN AREA ═══ */
+  .main {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  /* Tabs */
+  .tabs-bar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 4px;
+    display: flex;
+    align-items: flex-end;
+    flex-shrink: 0;
+    gap: 0;
+    overflow-x: hidden;
+  }
+
+  .tab {
+    flex: 1;
+    min-width: 0;
+    padding: 0 2px;
+    height: 42px;
+    font-size: 11px; font-weight: 600;
+    color: var(--muted);
+    background: transparent; border: none; cursor: pointer;
+    border-bottom: 2.5px solid transparent;
+    transition: all 0.18s;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex; align-items: center; gap: 5px;
+    white-space: nowrap; letter-spacing: 0.1px;
+  }
+  .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+  .tab:hover:not(.active) { color: var(--text2); }
+  .tab-icon { font-size: 12px; }
+
+  /* ── TODAY'S BUZZ badge on tab ── */
+  .buzz-badge {
+    background: #FEF3C7; color: #D97706;
+    font-size: 7.5px; font-weight: 700;
+    padding: 1px 4px; border-radius: 8px;
+    letter-spacing: 0.2px;
+  }
+
+  /* Content area */
+  .content {
+    flex: 1; overflow: hidden; position: relative;
+  }
+
+  .tab-pane {
+    position: absolute; inset: 0;
+    overflow-y: auto; overflow-x: hidden;
+    padding: 14px 16px 16px;
+    display: none;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .tab-pane.active { display: block; }
+  .tab-pane::-webkit-scrollbar { width: 4px; }
+  .tab-pane::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── Shared components ── */
+  .sec-label {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 9px; margin-top: 14px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .sec-label::after { content:''; flex:1; height:1px; background:var(--border); }
+  .sec-label:first-child { margin-top: 0; }
+
+  .card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px; margin-bottom: 9px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .card-title {
+    font-size: 11.5px; font-weight: 700; color: var(--muted);
+    letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 10px;
+  }
+
+  /* ── OVERVIEW: review stream ── */
+  .stream-box {
+    height: 370px; overflow: hidden; position: relative;
+    border-radius: 10px; background: var(--white);
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .stream-box::after {
+    content:''; position:absolute; bottom:0;left:0;right:0;height:70px;
+    background:linear-gradient(transparent, var(--white));
+    pointer-events:none; z-index:2;
+  }
+  .stream-inner {
+    padding: 12px;
+    animation: scroll 40s linear infinite;
+  }
+  @keyframes scroll{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
+
+  .rv {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 12px; margin-bottom: 8px;
+  }
+  .rv-hdr { display:flex; align-items:center; gap:7px; margin-bottom:6px; }
+  .rv-av {
+    width: 26px; height: 26px; border-radius: 50%;
+    font-size:11px; font-weight:800; color:white;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .rv-name { font-size: 12.5px; font-weight: 700; color: var(--text2); }
+  .rv-stars { color:#F59E0B; font-size:11px; letter-spacing:1px; }
+  .rv-src {
+    margin-left:auto; font-size:10px; font-weight:600;
+    padding:2px 7px; border-radius:10px;
+  }
+  .rv-src.g{background:#EFF6FF;color:#2563EB}
+  .rv-src.y{background:#FEF2F2;color:#DC2626}
+  .rv-src.i{background:#FDF2F8;color:#DB2777}
+
+  .rv-imgs { display:flex; gap:5px; margin-bottom:6px; }
+  .rv-img {
+    width:58px; height:44px; border-radius:7px; overflow:hidden; flex-shrink:0;
+  }
+  .rv-img-inner {
+    width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center; font-size:20px;
+  }
+  .rv-text { font-size:11.5px; color:var(--text2); line-height:1.6; margin-bottom:6px; }
+  .rv-tags { display:flex; flex-wrap:wrap; gap:4px; }
+  .rt { font-size:10px; font-weight:600; padding:2px 8px; border-radius:10px; }
+  .rt.pos{background:#DCFCE7;color:#16A34A}
+  .rt.neg{background:#FEE2E2;color:#DC2626}
+  .rt.neu{background:#FEF3C7;color:#D97706}
+
+  /* ── HALL ── */
+  .bar-bg { height:7px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border);margin-top:4px; }
+  .bar-fill { height:100%;border-radius:4px;background:linear-gradient(90deg,#EF4444,#F97316);
+    animation:bw 1.2s ease forwards;transform-origin:left; }
+  @keyframes bw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  .il { display:flex;justify-content:space-between;align-items:center; }
+  .il-label { font-size:12.5px;color:var(--text2);font-weight:500; }
+  .il-count { font-size:11px;font-family:'DM Mono',monospace;color:var(--red);font-weight:600; }
+
+  .hmap { display:grid;grid-template-columns:34px repeat(7,1fr);gap:3px;font-size:9.5px; }
+  .hm-lbl { color:var(--muted);display:flex;align-items:center;font-size:10px; }
+  .hm-hdr { text-align:center;font-weight:700;color:var(--muted);padding:2px 0;font-size:10px; }
+  .hm-c { border-radius:4px;height:17px;display:flex;align-items:center;justify-content:center;font-size:9px; }
+
+  .cta-box {
+    background:linear-gradient(135deg,#EFF6FF,#F0FDF9);
+    border:1px solid #BAE6FD; border-radius:10px; padding:13px;
+  }
+  .cta-hdr { display:flex;align-items:center;gap:8px;margin-bottom:9px; }
+  .cta-icon { font-size:22px; }
+  .cta-ttl { font-size:14px;font-weight:800;color:var(--blue); }
+  .cta-sub { font-size:10.5px;color:var(--muted);margin-top:1px; }
+  .cta-items { display:flex;flex-direction:column;gap:7px; }
+  .cta-item { display:flex;align-items:flex-start;gap:8px; }
+  .cta-chk {
+    width:19px;height:19px;border-radius:5px;flex-shrink:0;margin-top:1px;
+    background:#DBEAFE;border:1px solid #93C5FD;
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;color:var(--blue);font-weight:700;
+  }
+  .cta-txt { font-size:11.5px;color:var(--text2);line-height:1.5; }
+
+  /* ── MENU ── */
+  .menu-grid { display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px; }
+  .menu-card {
+    background:var(--white);border:1px solid var(--border);
+    border-radius:9px;padding:11px 12px;
+    box-shadow:0 1px 4px rgba(0,0,0,0.04);
+  }
+  .menu-emoji { font-size:20px;margin-bottom:5px; }
+  .menu-name { font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px; }
+  .menu-cnt { font-size:10.5px;color:var(--muted);margin-bottom:6px; }
+  .mbar-bg { height:5px;background:var(--bg);border-radius:3px;overflow:hidden; }
+  .mbar { height:100%;border-radius:3px; }
+
+  .pcgrid { display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px; }
+  .pros,.cons {
+    background:var(--white);border:1px solid var(--border);
+    border-radius:9px;padding:10px 12px;
+    box-shadow:0 1px 4px rgba(0,0,0,0.04);
+  }
+  .pc-ttl { font-size:11.5px;font-weight:700;margin-bottom:7px; }
+  .pros .pc-ttl{color:var(--green)} .cons .pc-ttl{color:var(--red)}
+  .pc-item { font-size:10.5px;color:var(--muted);line-height:1.5;margin-bottom:3px;display:flex;align-items:flex-start;gap:5px; }
+  .pc-dot { width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px; }
+
+  .ai-box { background:var(--white);border:1px solid var(--border);border-radius:9px;padding:11px 13px; }
+  .ai-item { display:flex;align-items:flex-start;gap:8px;margin-bottom:7px; }
+  .ai-item:last-child { margin-bottom:0; }
+  .ai-chk {
+    width:18px;height:18px;border-radius:5px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;
+  }
+  .ai-txt { font-size:11px;color:var(--text2);line-height:1.5; }
+
+  /* ── MARKETING ── */
+  .slogan-card { border-radius:10px;padding:13px;margin-bottom:9px; }
+  .sl-badge { font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px; }
+  .sl-text { font-size:15px;font-weight:800;color:var(--text);line-height:1.35;margin-bottom:6px;letter-spacing:-0.3px; }
+  .sl-sub { font-size:10.5px;color:var(--muted);line-height:1.5; }
+
+  .tg-grid { display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px; }
+  .tg-card { background:var(--white);border:1px solid var(--border);border-radius:9px;padding:10px 12px; }
+  .tg-ttl { font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px; }
+  .tg-row { display:flex;align-items:center;gap:6px;margin-bottom:5px; }
+  .tg-lbl { font-size:10.5px;color:var(--text2);width:40px;flex-shrink:0; }
+  .tg-bg { flex:1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden;border:1px solid var(--border); }
+  .tg-fill { height:100%;border-radius:3px; }
+  .tg-pct { font-size:10.5px;color:var(--muted);width:22px;text-align:right; }
+
+  .lf-wrap { display:flex;flex-wrap:wrap;gap:6px; }
+  .lf-tag { padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600; }
+
+  /* ── T.ORDER ── */
+  .urgency-banner {
+    background:linear-gradient(135deg,#1A3A5C,#2563EB);
+    border-radius:10px;padding:14px;margin-bottom:9px;
+    display:flex;align-items:center;gap:12px;
+  }
+  .ub-ring {
+    width:58px;height:58px;border-radius:50%;
+    background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.25);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .ub-num { font-size:22px;font-weight:900;color:white;font-family:'DM Mono',monospace;line-height:1; }
+  .ub-of { font-size:9px;color:rgba(255,255,255,0.55); }
+  .ub-ttl { font-size:14px;font-weight:800;color:white;margin-bottom:3px; }
+  .ub-sub { font-size:10.5px;color:rgba(255,255,255,0.7);line-height:1.5; }
+  .ub-tags { display:flex;gap:6px;margin-top:7px;flex-wrap:wrap; }
+  .ub-tag { font-size:9.5px;padding:2px 8px;border-radius:10px;font-weight:600; }
+  .ub-tag.r{background:rgba(239,68,68,0.22);color:#FCA5A5}
+  .ub-tag.a{background:rgba(245,158,11,0.22);color:#FCD34D}
+
+  .benefit-grid { display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px; }
+  .bc {
+    background:var(--white);border:1px solid var(--border);
+    border-radius:10px;padding:12px;position:relative;overflow:hidden;
+    box-shadow:0 1px 4px rgba(0,0,0,0.04);
+  }
+  .bc::before { content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:10px 10px 0 0; }
+  .bc-1::before{background:linear-gradient(90deg,#16A34A,#4ADE80)}
+  .bc-2::before{background:linear-gradient(90deg,#2563EB,#60A5FA)}
+  .bc-3::before{background:linear-gradient(90deg,#D97706,#FBBF24)}
+  .bc-4::before{background:linear-gradient(90deg,#7C3AED,#A78BFA)}
+  .bc-ico { font-size:22px;margin-bottom:6px; }
+  .bc-ttl { font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:3px; }
+  .bc-val { font-size:24px;font-weight:900;font-family:'DM Mono',monospace;line-height:1.1;margin-bottom:4px; }
+  .bc-1 .bc-val{color:#16A34A} .bc-2 .bc-val{color:#2563EB}
+  .bc-3 .bc-val{color:#D97706} .bc-4 .bc-val{color:#7C3AED}
+  .bc-desc { font-size:10.5px;color:var(--muted);line-height:1.45; }
+
+  .comp-row { display:flex;flex-direction:column;gap:6px; }
+  .comp-item { display:flex;align-items:center;gap:9px; }
+  .comp-nm { font-size:11px;color:var(--text2);width:100px;flex-shrink:0; }
+  .comp-bg { flex:1;height:7px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border); }
+  .comp-fill { height:100%;border-radius:4px; }
+  .comp-sc { font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);width:24px;text-align:right; }
+  .comp-item.hl .comp-nm{color:var(--blue);font-weight:700}
+  .comp-item.hl .comp-sc{color:var(--blue);font-weight:700}
+
+  /* ══════════════════════════════
+     TODAY'S BUZZ TAB
+  ══════════════════════════════ */
+
+  /* Live ticker at top */
+  .buzz-ticker {
+    background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+    border: 1px solid #FDE68A;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+  }
+  .bt-flame { font-size: 20px; flex-shrink: 0; }
+  .bt-label { font-size: 12px; font-weight: 700; color: #92400E; white-space: nowrap; flex-shrink: 0; }
+  .bt-ticker-wrap { flex: 1; overflow: hidden; }
+  .bt-ticker-inner {
+    display: flex;
+    gap: 0;
+    animation: ticker 18s linear infinite;
+    white-space: nowrap;
+  }
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .bt-item {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600; color: #78350F;
+    margin-right: 28px; white-space: nowrap;
+  }
+  .bt-up { color: #16A34A; font-size: 11px; }
+  .bt-dn { color: #DC2626; font-size: 11px; }
+
+  /* Today's keyword cards */
+  .buzz-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
+  .buzz-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 10px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    position: relative; overflow: hidden;
+  }
+  .buzz-card::before {
+    content:''; position:absolute; top:0;left:0;right:0;height:3px;border-radius:10px 10px 0 0;
+  }
+  .bc-galbi::before  { background:linear-gradient(90deg,#D97706,#F59E0B); }
+  .bc-wait::before   { background:linear-gradient(90deg,#DC2626,#EF4444); }
+  .bc-night::before  { background:linear-gradient(90deg,#6366F1,#8B5CF6); }
+  .bc-kfc::before    { background:linear-gradient(90deg,#16A34A,#4ADE80); }
+  .bc-group::before  { background:linear-gradient(90deg,#0D9488,#14B8A6); }
+  .bc-staff::before  { background:linear-gradient(90deg,#F97316,#FB923C); }
+
+  .buzz-emoji { font-size: 24px; margin-bottom: 4px; }
+  .buzz-cnt {
+    font-size: 32px; font-weight: 900; font-family: 'DM Mono', monospace;
+    line-height: 1; margin-bottom: 3px;
+  }
+  .buzz-kw { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 4px; }
+  .buzz-trend { font-size: 11px; font-weight: 700; }
+  .t-up { color: var(--green); } .t-dn { color: var(--red); } .t-eq { color: var(--amber); }
+
+  /* AI Daily Alert */
+  .alert-cards { display: flex; flex-direction: column; gap: 7px; }
+  .alert-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 9px; padding: 11px 13px;
+    display: flex; align-items: flex-start; gap: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .al-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+  .al-ttl { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .al-txt { font-size: 11px; color: var(--muted); line-height: 1.55; }
+  .al-action {
+    display: inline-block; margin-top: 6px;
+    font-size: 10.5px; font-weight: 700;
+    padding: 4px 11px; border-radius: 7px; cursor: pointer;
+    font-family: 'Plus Jakarta Sans', sans-serif; border: none;
+  }
+
+  /* ── AI INSIGHTS ── */
+  .insight-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 12px; padding: 13px 14px; margin-bottom: 9px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    position: relative; overflow: hidden;
+  }
+  .insight-card::before {
+    content:''; position:absolute; left:0;top:0;bottom:0;width:4px; border-radius:12px 0 0 12px;
+  }
+  .ic-1::before{background:linear-gradient(180deg,#F59E0B,#EF4444)}
+  .ic-2::before{background:linear-gradient(180deg,#6366F1,#8B5CF6)}
+  .ic-3::before{background:linear-gradient(180deg,#059669,#10B981)}
+  .ic-hdr { display:flex;align-items:flex-start;gap:10px;margin-bottom:9px; }
+  .ic-emoji { font-size:24px;flex-shrink:0;margin-top:1px; }
+  .ic-ttl { font-size:14px;font-weight:800;color:var(--text);letter-spacing:-0.3px; }
+  .ic-badge { font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;display:inline-block;margin-top:3px; }
+  .ic-1 .ic-badge{background:#FEF3C7;color:#D97706}
+  .ic-2 .ic-badge{background:#EDE9FE;color:#7C3AED}
+  .ic-3 .ic-badge{background:#D1FAE5;color:#059669}
+  .ic-body { font-size:11px;color:var(--text2);line-height:1.6;margin-bottom:10px; }
+
+  .rev-row { display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px; }
+  .rev-item { background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 11px; }
+  .rev-lbl { font-size:10.5px;color:var(--muted);margin-bottom:4px; }
+  .rev-val { font-size:20px;font-weight:900;font-family:'DM Mono',monospace; }
+  .rev-sub { font-size:9.5px;color:var(--muted);margin-top:2px; }
+
+  .rev-total {
+    background:linear-gradient(135deg,#059669,#10B981);
+    border-radius:9px;padding:12px 14px;margin-top:8px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .rt-lbl { font-size:11.5px;font-weight:700;color:rgba(255,255,255,0.85); }
+  .rt-val { font-size:26px;font-weight:900;color:white;font-family:'DM Mono',monospace; }
+
+  .reply-orig {
+    background:#FEF2F2;border-left:3px solid var(--red);
+    border-radius:0 8px 8px 0;padding:9px 11px;font-size:11px;
+    color:var(--text2);line-height:1.55;margin-bottom:8px;font-style:italic;
+  }
+  .reply-draft {
+    background:#F0FDF4;border:1px solid #A7F3D0;
+    border-radius:8px;padding:10px 11px;margin-bottom:8px;
+  }
+  .rd-lbl { font-size:10px;font-weight:700;color:var(--green);margin-bottom:5px; }
+  .rd-text { font-size:11px;color:var(--text2);line-height:1.55; }
+  .copy-btn {
+    display:inline-flex;align-items:center;gap:5px;
+    background:var(--blue);color:white;border:none;border-radius:7px;
+    padding:7px 14px;font-size:11px;font-weight:700;cursor:pointer;
+    font-family:'Plus Jakarta Sans',sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="device">
+
+  <!-- ══ SIDEBAR ══ -->
+  <div class="sidebar">
+    <div class="rest-info">
+      <div class="rest-logo">🍽️</div>
+      <div class="rest-name">Northwest Restaurant</div>
+      <div class="rest-loc">📍 Irvine, California<br>Korean BBQ &amp; Grill</div>
+      <div class="live-pill"><div class="live-dot"></div>LIVE DATA</div>
+    </div>
+
+    <!-- Platform scores -->
+    <div class="pl-scores">
+      <div class="pl-row">
+        <div class="pl-name"><div class="pl-dot" style="background:#4285F4"></div>Google</div>
+        <div class="pl-score g">4.3 <span style="font-size:9px;color:rgba(255,255,255,0.35)">★ 312</span></div>
+      </div>
+      <div class="pl-row">
+        <div class="pl-name"><div class="pl-dot" style="background:#D32323"></div>Yelp</div>
+        <div class="pl-score y">3.9 <span style="font-size:9px;color:rgba(255,255,255,0.35)">★ 187</span></div>
+      </div>
+      <div class="pl-row">
+        <div class="pl-name"><div class="pl-dot" style="background:#E1306C"></div>Instagram</div>
+        <div class="pl-score i">4.1 <span style="font-size:9px;color:rgba(255,255,255,0.35)">2.4K</span></div>
+      </div>
+    </div>
+
+    <!-- Sentiment -->
+    <div class="sent-mini">
+      <div style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,0.45);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:6px;">Sentiment</div>
+      <div class="sent-bar">
+        <div class="s-g" style="width:58%"></div>
+        <div class="s-y" style="width:24%"></div>
+        <div class="s-r" style="width:18%"></div>
+      </div>
+      <div class="sent-leg">
+        <div class="sl"><div class="sd" style="background:#16A34A"></div>58%</div>
+        <div class="sl"><div class="sd" style="background:#D97706"></div>24%</div>
+        <div class="sl"><div class="sd" style="background:#DC2626"></div>18%</div>
+      </div>
+    </div>
+
+    <!-- Today highlight in sidebar -->
+    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,0.06);">
+      <div style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">Today's Hot 🔥</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:11px;color:rgba(255,255,255,0.8);">🥩 galbi</span>
+          <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:#FCD34D;">12×</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:11px;color:rgba(255,255,255,0.8);">⏳ wait time</span>
+          <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:#FCA5A5;">8× ↑</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:11px;color:rgba(255,255,255,0.8);">🌙 date night</span>
+          <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:#86EFAC;">6× ↑</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">Apr 10, 2026 · 09:41 AM</div>
+  </div>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main">
+    <div class="tabs-bar">
+      <button class="tab active" onclick="sw('overview',this)"><span class="tab-icon">🏠</span>Overview</button>
+      <button class="tab" onclick="sw('buzz',this)"><span class="tab-icon">🔥</span>Buzz <span class="buzz-badge">LIVE</span></button>
+      <button class="tab" onclick="sw('hall',this)"><span class="tab-icon">🪑</span>Hall</button>
+      <button class="tab" onclick="sw('menu',this)"><span class="tab-icon">🍜</span>Menu</button>
+      <button class="tab" onclick="sw('mkt',this)"><span class="tab-icon">📣</span>Marketing</button>
+      <button class="tab" onclick="sw('torder',this)"><span class="tab-icon">📲</span>T.Order</button>
+      <button class="tab" onclick="sw('ai',this)"><span class="tab-icon">✨</span>AI Ideas</button>
+    </div>
+
+    <div class="content">
+
+      <!-- ════ OVERVIEW ════ -->
+      <div class="tab-pane active" id="pane-overview">
+        <div class="sec-label">Live Review Stream</div>
+        <div class="stream-box">
+          <div class="stream-inner">
+
+            <div class="rv">
+              <div class="rv-hdr">
+                <div class="rv-av" style="background:#2563EB">J</div>
+                <div><div class="rv-name">Jessica M.</div><div class="rv-stars">★★★★★</div></div>
+                <div class="rv-src g">Google</div>
+              </div>
+              <div class="rv-imgs">
+                <div class="rv-img"><div class="rv-img-inner" style="background:linear-gradient(135deg,#7C2D12,#B45309,#D97706);">🥩</div></div>
+                <div class="rv-img"><div class="rv-img-inner" style="background:linear-gradient(135deg,#14532D,#16A34A,#4ADE80);">🥗</div></div>
+                <div class="rv-img"><div class="rv-img-inner" style="background:linear-gradient(135deg,#1C1917,#44403C,#78716C);">🔥</div></div>
+              </div>
+              <div class="rv-text">"The galbi was absolutely incredible — tender, perfectly marinated. But had to wait 25 mins just to flag a server for ordering."</div>
+              <div class="rv-tags"><span class="rt pos">galbi ❤️</span><span class="rt pos">great ambience</span><span class="rt neg">slow ordering</span></div>
+            </div>
+
+            <div class="rv">
+              <div class="rv-hdr">
+                <div class="rv-av" style="background:#DC2626">K</div>
+                <div><div class="rv-name">Kevin T.</div><div class="rv-stars">★★★☆☆</div></div>
+                <div class="rv-src y">Yelp</div>
+              </div>
+              <div class="rv-text">"Food is solid but the ordering system is chaos. Server took my order wrong TWICE. Kimchi pancake = fire 🔥 but service let it down."</div>
+              <div class="rv-tags"><span class="rt neg">order errors</span><span class="rt pos">kimchi pancake</span></div>
+            </div>
+
+            <div class="rv">
+              <div class="rv-hdr">
+                <div class="rv-av" style="background:#DB2777">S</div>
+                <div><div class="rv-name">@sofiaeats_oc</div><div class="rv-stars">★★★★★</div></div>
+                <div class="rv-src i">Instagram</div>
+              </div>
+              <div class="rv-imgs">
+                <div class="rv-img"><div class="rv-img-inner" style="background:linear-gradient(135deg,#92400E,#D97706,#FBBF24);">🍗</div></div>
+                <div class="rv-img"><div class="rv-img-inner" style="background:linear-gradient(135deg,#831843,#DB2777,#F472B6);">🌸</div></div>
+              </div>
+              <div class="rv-text">"This KFC is UNREAL 😍 Perfect date night spot in Irvine! Interior is so photogenic #KoreanBBQ #OCfoodie"</div>
+              <div class="rv-tags"><span class="rt pos">KFC ⭐</span><span class="rt pos">date night</span><span class="rt pos">photogenic</span></div>
+            </div>
+
+            <div class="rv">
+              <div class="rv-hdr">
+                <div class="rv-av" style="background:#92400E">R</div>
+                <div><div class="rv-name">Robert L.</div><div class="rv-stars">★★★☆☆</div></div>
+                <div class="rv-src y">Yelp</div>
+              </div>
+              <div class="rv-text">"Peak hours are brutal — 40 min wait and orders still got confused. Management really needs a self-ordering system!"</div>
+              <div class="rv-tags"><span class="rt neg">long wait</span><span class="rt neg">peak chaos</span></div>
+            </div>
+
+            <div class="rv">
+              <div class="rv-hdr">
+                <div class="rv-av" style="background:#0369A1">A</div>
+                <div><div class="rv-name">Amy Chen</div><div class="rv-stars">★★★★★</div></div>
+                <div class="rv-src g">Google</div>
+              </div>
+              <div class="rv-imgs">
+                <div class="rv-img"><div class="rv-img-inner" style="background:linear-gradient(135deg,#7F1D1D,#EF4444,#FCA5A5);">🥘</div></div>
+                <div class="rv-img"><div class="rv-img-inner" style="background:linear-gradient(135deg,#14532D,#22C55E,#86EFAC);">🥬</div></div>
+                <div class="rv-img"><div class="rv-img-inner" style="background:linear-gradient(135deg,#1E3A5F,#3B82F6,#93C5FD);">🍺</div></div>
+              </div>
+              <div class="rv-text">"Birthday dinner for 10 — tteokbokki and bulgogi were crowd favorites! Staff was friendly once we got seated 😊"</div>
+              <div class="rv-tags"><span class="rt pos">tteokbokki</span><span class="rt pos">group-friendly</span></div>
+            </div>
+
+            <!-- loop duplicates -->
+            <div class="rv">
+              <div class="rv-hdr"><div class="rv-av" style="background:#2563EB">J</div><div><div class="rv-name">Jessica M.</div><div class="rv-stars">★★★★★</div></div><div class="rv-src g">Google</div></div>
+              <div class="rv-imgs"><div class="rv-img"><div class="rv-img-inner" style="background:linear-gradient(135deg,#7C2D12,#B45309,#D97706);">🥩</div></div><div class="rv-img"><div class="rv-img-inner" style="background:linear-gradient(135deg,#14532D,#16A34A,#4ADE80);">🥗</div></div><div class="rv-img"><div class="rv-img-inner" style="background:linear-gradient(135deg,#1C1917,#44403C,#78716C);">🔥</div></div></div>
+              <div class="rv-text">"The galbi was absolutely incredible — tender, perfectly marinated. But had to wait 25 mins just to flag a server for ordering."</div>
+              <div class="rv-tags"><span class="rt pos">galbi ❤️</span><span class="rt pos">great ambience</span><span class="rt neg">slow ordering</span></div>
+            </div>
+            <div class="rv">
+              <div class="rv-hdr"><div class="rv-av" style="background:#DC2626">K</div><div><div class="rv-name">Kevin T.</div><div class="rv-stars">★★★☆☆</div></div><div class="rv-src y">Yelp</div></div>
+              <div class="rv-text">"Food is solid but the ordering system is chaos. Server took my order wrong TWICE. Kimchi pancake = fire 🔥"</div>
+              <div class="rv-tags"><span class="rt neg">order errors</span><span class="rt pos">kimchi pancake</span></div>
+            </div>
+            <div class="rv">
+              <div class="rv-hdr"><div class="rv-av" style="background:#DB2777">S</div><div><div class="rv-name">@sofiaeats_oc</div><div class="rv-stars">★★★★★</div></div><div class="rv-src i">Instagram</div></div>
+              <div class="rv-imgs"><div class="rv-img"><div class="rv-img-inner" style="background:linear-gradient(135deg,#92400E,#D97706,#FBBF24);">🍗</div></div><div class="rv-img"><div class="rv-img-inner" style="background:linear-gradient(135deg,#831843,#DB2777,#F472B6);">🌸</div></div></div>
+              <div class="rv-text">"This KFC is UNREAL 😍 Perfect date night spot! #KoreanBBQ #OCfoodie"</div>
+              <div class="rv-tags"><span class="rt pos">KFC ⭐</span><span class="rt pos">date night</span></div>
+            </div>
+            <div class="rv">
+              <div class="rv-hdr"><div class="rv-av" style="background:#0369A1">A</div><div><div class="rv-name">Amy Chen</div><div class="rv-stars">★★★★★</div></div><div class="rv-src g">Google</div></div>
+              <div class="rv-imgs"><div class="rv-img"><div class="rv-img-inner" style="background:linear-gradient(135deg,#7F1D1D,#EF4444,#FCA5A5);">🥘</div></div><div class="rv-img"><div class="rv-img-inner" style="background:linear-gradient(135deg,#14532D,#22C55E,#86EFAC);">🥬</div></div></div>
+              <div class="rv-text">"Birthday dinner for 10 — tteokbokki and bulgogi were crowd favorites! 😊"</div>
+              <div class="rv-tags"><span class="rt pos">tteokbokki</span><span class="rt pos">group-friendly</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ TODAY'S BUZZ ════ -->
+      <div class="tab-pane" id="pane-buzz">
+
+        <!-- Ticker -->
+        <div class="buzz-ticker">
+          <div class="bt-flame">🔥</div>
+          <div class="bt-label">Today's Buzz</div>
+          <div class="bt-ticker-wrap">
+            <div class="bt-ticker-inner">
+              <div class="bt-item">🥩 galbi <span class="bt-up">↑ 12×</span></div>
+              <div class="bt-item">⏳ wait time <span class="bt-dn">↑ 8× ⚠️</span></div>
+              <div class="bt-item">🌙 date night <span class="bt-up">↑ 6×</span></div>
+              <div class="bt-item">🍗 KFC <span class="bt-up">↑ 5×</span></div>
+              <div class="bt-item">👥 group <span class="bt-up">↑ 4×</span></div>
+              <div class="bt-item">😤 staff <span class="bt-dn">↑ 3× ⚠️</span></div>
+              <!-- duplicate -->
+              <div class="bt-item">🥩 galbi <span class="bt-up">↑ 12×</span></div>
+              <div class="bt-item">⏳ wait time <span class="bt-dn">↑ 8× ⚠️</span></div>
+              <div class="bt-item">🌙 date night <span class="bt-up">↑ 6×</span></div>
+              <div class="bt-item">🍗 KFC <span class="bt-up">↑ 5×</span></div>
+              <div class="bt-item">👥 group <span class="bt-up">↑ 4×</span></div>
+              <div class="bt-item">😤 staff <span class="bt-dn">↑ 3× ⚠️</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Keyword cards -->
+        <div class="sec-label">오늘의 키워드 순위</div>
+        <div class="buzz-grid">
+          <div class="buzz-card bc-galbi">
+            <div class="buzz-emoji">🥩</div>
+            <div class="buzz-cnt" style="color:#D97706">12</div>
+            <div class="buzz-kw">galbi</div>
+            <div class="buzz-trend t-up">↑ 40% vs 어제</div>
+          </div>
+          <div class="buzz-card bc-wait">
+            <div class="buzz-emoji">⏳</div>
+            <div class="buzz-cnt" style="color:#DC2626">8</div>
+            <div class="buzz-kw">wait time</div>
+            <div class="buzz-trend t-dn">↑ 22% ⚠️ 주의</div>
+          </div>
+          <div class="buzz-card bc-night">
+            <div class="buzz-emoji">🌙</div>
+            <div class="buzz-cnt" style="color:#6366F1">6</div>
+            <div class="buzz-kw">date night</div>
+            <div class="buzz-trend t-up">↑ 15% 인스타 확산</div>
+          </div>
+          <div class="buzz-card bc-kfc">
+            <div class="buzz-emoji">🍗</div>
+            <div class="buzz-cnt" style="color:#16A34A">5</div>
+            <div class="buzz-kw">fried chicken</div>
+            <div class="buzz-trend t-up">↑ 8% 꾸준한 인기</div>
+          </div>
+          <div class="buzz-card bc-group">
+            <div class="buzz-emoji">👥</div>
+            <div class="buzz-cnt" style="color:#0D9488">4</div>
+            <div class="buzz-kw">group dining</div>
+            <div class="buzz-trend t-eq">→ 유지</div>
+          </div>
+          <div class="buzz-card bc-staff">
+            <div class="buzz-emoji">😤</div>
+            <div class="buzz-cnt" style="color:#F97316">3</div>
+            <div class="buzz-kw">staff issue</div>
+            <div class="buzz-trend t-dn">↑ 50% ⚠️ 점검 요</div>
+          </div>
+        </div>
+
+        <!-- Daily AI Alert -->
+        <div class="sec-label">AI 데일리 알림</div>
+        <div class="alert-cards">
+          <div class="alert-card">
+            <div class="al-icon">🚨</div>
+            <div>
+              <div class="al-ttl">대기 불만 급증 — 오늘 피크 전 점검 필요</div>
+              <div class="al-txt">"wait time" 언급이 어제 대비 22% 증가했습니다. 금요일 6pm 피크 전에 홀 배치를 확인하세요. T.Order 도입 시 즉시 해결 가능한 항목입니다.</div>
+              <button class="al-action" style="background:#FEE2E2;color:#DC2626;">지금 확인 →</button>
+            </div>
+          </div>
+          <div class="alert-card">
+            <div class="al-icon">🌟</div>
+            <div>
+              <div class="al-ttl">갈비 인기 급상승 — 오늘의 히어로 메뉴</div>
+              <div class="al-txt">"galbi" 오늘 12회 언급, 전일 대비 40% 증가. 태블릿 메뉴판 상단에 갈비 콤보를 노출하면 추가 주문 전환율 상승이 예상됩니다.</div>
+              <button class="al-action" style="background:#DCFCE7;color:#16A34A;">메뉴 조정 →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ HALL ════ -->
+      <div class="tab-pane" id="pane-hall">
+        <div class="sec-label">Service Issue Analysis</div>
+        <div class="card" style="margin-bottom:9px;">
+          <div class="card-title">Top Complaint Keywords (Last 90 days)</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div><div class="il"><span class="il-label">Order Errors / Wrong Items</span><span class="il-count">38 mentions</span></div><div class="bar-bg"><div class="bar-fill" style="width:85%"></div></div></div>
+            <div><div class="il"><span class="il-label">Long Wait Time (ordering)</span><span class="il-count">31 mentions</span></div><div class="bar-bg"><div class="bar-fill" style="width:70%"></div></div></div>
+            <div><div class="il"><span class="il-label">Food Delivery Delay</span><span class="il-count">22 mentions</span></div><div class="bar-bg"><div class="bar-fill" style="width:50%"></div></div></div>
+            <div><div class="il"><span class="il-label">Server Inattentiveness</span><span class="il-count">18 mentions</span></div><div class="bar-bg"><div class="bar-fill" style="width:40%"></div></div></div>
+            <div><div class="il"><span class="il-label">Bill / Payment Issues</span><span class="il-count">11 mentions</span></div><div class="bar-bg"><div class="bar-fill" style="width:25%"></div></div></div>
+          </div>
+        </div>
+        <div class="sec-label">Peak Hour Heatmap</div>
+        <div class="card" style="margin-bottom:9px;">
+          <div class="hmap">
+            <div class="hm-lbl"></div>
+            <div class="hm-hdr">Mon</div><div class="hm-hdr">Tue</div><div class="hm-hdr">Wed</div>
+            <div class="hm-hdr">Thu</div><div class="hm-hdr" style="color:#DC2626;font-weight:800;">Fri</div>
+            <div class="hm-hdr" style="color:#DC2626;font-weight:800;">Sat</div><div class="hm-hdr">Sun</div>
+            <div class="hm-lbl">12pm</div>
+            <div class="hm-c" style="background:rgba(239,68,68,0.07)"></div><div class="hm-c" style="background:rgba(239,68,68,0.1)"></div>
+            <div class="hm-c" style="background:rgba(239,68,68,0.14)"></div><div class="hm-c" style="background:rgba(239,68,68,0.22)"></div>
+            <div class="hm-c" style="background:rgba(239,68,68,0.42)"></div>
+            <div class="hm-c" style="background:rgba(239,68,68,0.68);font-size:9px;font-weight:700;color:#DC2626;">!</div>
+            <div class="hm-c" style="background:rgba(239,68,68,0.52)"></div>
+            <div class="hm-lbl">6pm</div>
+            <div class="hm-c" style="background:rgba(239,68,68,0.08)"></div><div class="hm-c" style="background:rgba(239,68,68,0.12)"></div>
+            <div class="hm-c" style="background:rgba(239,68,68,0.18)"></div><div class="hm-c" style="background:rgba(239,68,68,0.28)"></div>
+            <div class="hm-c" style="background:rgba(239,68,68,0.78);font-size:9px;font-weight:700;color:#DC2626;">!</div>
+            <div class="hm-c" style="background:rgba(239,68,68,0.95);font-size:9px;font-weight:700;color:#DC2626;">!</div>
+            <div class="hm-c" style="background:rgba(239,68,68,0.72);font-size:9px;font-weight:700;color:#DC2626;">!</div>
+            <div class="hm-lbl">9pm</div>
+            <div class="hm-c" style="background:rgba(239,68,68,0.05)"></div><div class="hm-c" style="background:rgba(239,68,68,0.05)"></div>
+            <div class="hm-c" style="background:rgba(239,68,68,0.07)"></div><div class="hm-c" style="background:rgba(239,68,68,0.14)"></div>
+            <div class="hm-c" style="background:rgba(239,68,68,0.45)"></div>
+            <div class="hm-c" style="background:rgba(239,68,68,0.60)"></div>
+            <div class="hm-c" style="background:rgba(239,68,68,0.35)"></div>
+          </div>
+        </div>
+        <div class="sec-label">T.Order Solution Match</div>
+        <div class="cta-box">
+          <div class="cta-hdr">
+            <div class="cta-icon">📲</div>
+            <div><div class="cta-ttl">T.Order Tablet Directly Solves This</div><div class="cta-sub">3 critical pain points → resolved Day 1</div></div>
+          </div>
+          <div class="cta-items">
+            <div class="cta-item"><div class="cta-chk">✓</div><div class="cta-txt"><strong>Order errors → zero.</strong> Guests input directly. No miscommunication between table and kitchen.</div></div>
+            <div class="cta-item"><div class="cta-chk">✓</div><div class="cta-txt"><strong>Wait time cut 65%.</strong> Self-order eliminates the queue for server attention.</div></div>
+            <div class="cta-item"><div class="cta-chk">✓</div><div class="cta-txt"><strong>Staff freed up to serve.</strong> More attentive, better tips, lower turnover.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ MENU ════ -->
+      <div class="tab-pane" id="pane-menu">
+        <div class="sec-label">Most Mentioned Items</div>
+        <div class="menu-grid">
+          <div class="menu-card"><div class="menu-emoji">🥩</div><div class="menu-name">Galbi (Ribs)</div><div class="menu-cnt">89 mentions · avg ★4.8</div><div class="mbar-bg"><div class="mbar" style="width:95%;background:linear-gradient(90deg,#16A34A,#4ADE80)"></div></div></div>
+          <div class="menu-card"><div class="menu-emoji">🍗</div><div class="menu-name">Korean Fried Chicken</div><div class="menu-cnt">72 mentions · avg ★4.6</div><div class="mbar-bg"><div class="mbar" style="width:82%;background:linear-gradient(90deg,#16A34A,#4ADE80)"></div></div></div>
+          <div class="menu-card"><div class="menu-emoji">🥘</div><div class="menu-name">Bulgogi</div><div class="menu-cnt">68 mentions · avg ★4.5</div><div class="mbar-bg"><div class="mbar" style="width:78%;background:linear-gradient(90deg,#16A34A,#4ADE80)"></div></div></div>
+          <div class="menu-card"><div class="menu-emoji">🥩</div><div class="menu-name">Brisket</div><div class="menu-cnt">31 mentions · avg ★2.9</div><div class="mbar-bg"><div class="mbar" style="width:32%;background:linear-gradient(90deg,#DC2626,#F97316)"></div></div></div>
+        </div>
+        <div class="sec-label">Pros & Cons</div>
+        <div class="pcgrid" style="margin-bottom:9px;">
+          <div class="pros">
+            <div class="pc-ttl">👍 Top Praised</div>
+            <div class="pc-item"><div class="pc-dot" style="background:#16A34A"></div>Galbi portions generous</div>
+            <div class="pc-item"><div class="pc-dot" style="background:#16A34A"></div>KFC best in OC (regulars)</div>
+            <div class="pc-item"><div class="pc-dot" style="background:#16A34A"></div>Kimchi pancake consistently ❤️</div>
+            <div class="pc-item"><div class="pc-dot" style="background:#16A34A"></div>Tteokbokki = crowd pleaser</div>
+          </div>
+          <div class="cons">
+            <div class="pc-ttl">👎 Top Complaints</div>
+            <div class="pc-item"><div class="pc-dot" style="background:#DC2626"></div>Brisket often overcooked</div>
+            <div class="pc-item"><div class="pc-dot" style="background:#DC2626"></div>Portion sizes shrinking</div>
+            <div class="pc-item"><div class="pc-dot" style="background:#DC2626"></div>Sides feel rushed / cold</div>
+            <div class="pc-item"><div class="pc-dot" style="background:#DC2626"></div>No vegetarian options</div>
+          </div>
+        </div>
+        <div class="sec-label">AI Action Items</div>
+        <div class="ai-box">
+          <div class="ai-item"><div class="ai-chk" style="background:#FEF3C7;border:1px solid #FDE68A;color:#D97706;">!</div><div class="ai-txt"><strong style="color:#D97706">Promote "Galbi Combo" as hero item</strong> — highest sentiment. Feature on T.Order tablet display.</div></div>
+          <div class="ai-item"><div class="ai-chk" style="background:#FEE2E2;border:1px solid #FECACA;color:#DC2626;">✕</div><div class="ai-txt"><strong style="color:#DC2626">Revisit brisket recipe</strong> — consistent negative feedback. Remove or rework urgently.</div></div>
+          <div class="ai-item"><div class="ai-chk" style="background:#EDE9FE;border:1px solid #C4B5FD;color:#7C3AED;">+</div><div class="ai-txt"><strong style="color:#7C3AED">Add 2 plant-based options</strong> — gap in 14% of reviews mentioning dietary needs.</div></div>
+        </div>
+      </div>
+
+      <!-- ════ MARKETING ════ -->
+      <div class="tab-pane" id="pane-mkt">
+        <div class="slogan-card" style="background:linear-gradient(135deg,#EFF6FF,#F0F9FF);border:1px solid #BAE6FD;">
+          <div class="sl-badge" style="color:#2563EB;">⭐ Recommended Ad Copy</div>
+          <div class="sl-text">"Where Korean BBQ meets California nights."</div>
+          <div class="sl-sub">Resonates with OC's date-night, group-dining culture. Use for Instagram Reels + Google Ads targeting 25–34 age group.</div>
+        </div>
+        <div class="slogan-card" style="background:linear-gradient(135deg,#FFFBEB,#FEF3C7);border:1px solid #FDE68A;">
+          <div class="sl-badge" style="color:#D97706;">🔥 Secondary Hook</div>
+          <div class="sl-text">"Best Galbi in Irvine — they said it, not us."</div>
+          <div class="sl-sub">UGC-style social proof framing. Effective for Story ads targeting Korean-American diners aged 25–40.</div>
+        </div>
+        <div class="sec-label">Target Audience</div>
+        <div class="tg-grid">
+          <div class="tg-card">
+            <div class="tg-ttl">Age Distribution</div>
+            <div class="tg-row"><span class="tg-lbl">18–24</span><div class="tg-bg"><div class="tg-fill" style="width:25%;background:#6366F1"></div></div><span class="tg-pct">25%</span></div>
+            <div class="tg-row"><span class="tg-lbl">25–34</span><div class="tg-bg"><div class="tg-fill" style="width:42%;background:#2563EB"></div></div><span class="tg-pct">42%</span></div>
+            <div class="tg-row"><span class="tg-lbl">35–44</span><div class="tg-bg"><div class="tg-fill" style="width:22%;background:#6366F1"></div></div><span class="tg-pct">22%</span></div>
+            <div class="tg-row"><span class="tg-lbl">45+</span><div class="tg-bg"><div class="tg-fill" style="width:11%;background:#94A3B8"></div></div><span class="tg-pct">11%</span></div>
+          </div>
+          <div class="tg-card">
+            <div class="tg-ttl">Top Locations</div>
+            <div class="tg-row"><span class="tg-lbl">Irvine</span><div class="tg-bg"><div class="tg-fill" style="width:58%;background:#0D9488"></div></div><span class="tg-pct">58%</span></div>
+            <div class="tg-row"><span class="tg-lbl">Newport</span><div class="tg-bg"><div class="tg-fill" style="width:18%;background:#2563EB"></div></div><span class="tg-pct">18%</span></div>
+            <div class="tg-row"><span class="tg-lbl">Tustin</span><div class="tg-bg"><div class="tg-fill" style="width:12%;background:#6366F1"></div></div><span class="tg-pct">12%</span></div>
+            <div class="tg-row"><span class="tg-lbl">Other</span><div class="tg-bg"><div class="tg-fill" style="width:12%;background:#94A3B8"></div></div><span class="tg-pct">12%</span></div>
+          </div>
+        </div>
+        <div class="sec-label">Lifestyle Keywords</div>
+        <div class="card">
+          <div class="lf-wrap">
+            <span class="lf-tag" style="background:#ECFDF5;color:#059669;">Date Night 🌙</span>
+            <span class="lf-tag" style="background:#EDE9FE;color:#7C3AED;">Foodie Culture</span>
+            <span class="lf-tag" style="background:#FEF3C7;color:#D97706;">Group Dining</span>
+            <span class="lf-tag" style="background:#FEE2E2;color:#DC2626;">Korean-American</span>
+            <span class="lf-tag" style="background:#EFF6FF;color:#2563EB;">College Social</span>
+            <span class="lf-tag" style="background:#ECFDF5;color:#16A34A;">Instagram-worthy</span>
+            <span class="lf-tag" style="background:#F0F9FF;color:#0284C7;">BBQ Lovers 🔥</span>
+            <span class="lf-tag" style="background:#FEF9C3;color:#CA8A04;">Weekend Treat</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ T.ORDER ════ -->
+      <div class="tab-pane" id="pane-torder">
+        <div class="urgency-banner">
+          <div class="ub-ring">
+            <div class="ub-num">80</div>
+            <div class="ub-of">/100</div>
+          </div>
+          <div>
+            <div class="ub-ttl">HIGH PRIORITY for T.Order</div>
+            <div class="ub-sub">Review data reveals critical operational gaps T.Order resolves on Day 1. Strong ROI signal.</div>
+            <div class="ub-tags">
+              <span class="ub-tag r">38 order errors/mo</span>
+              <span class="ub-tag a">Fri–Sat peak chaos</span>
+            </div>
+          </div>
+        </div>
+        <div class="sec-label">4 Key Benefits After T.Order</div>
+        <div class="benefit-grid">
+          <div class="bc bc-1">
+            <div class="bc-ico">💰</div>
+            <div class="bc-ttl">인건비 절감</div>
+            <div class="bc-val">−20%</div>
+            <div class="bc-desc">주문 실수·재확인 인력 낭비 제거. 서버 1인이 더 많은 테이블 담당</div>
+          </div>
+          <div class="bc bc-2">
+            <div class="bc-ico">📈</div>
+            <div class="bc-ttl">주문 활성화</div>
+            <div class="bc-val">+31%</div>
+            <div class="bc-desc">태블릿 메뉴 브라우징 중 추가 주문 발생. 사이드·음료 추가 주문율 급증</div>
+          </div>
+          <div class="bc bc-3">
+            <div class="bc-ico">🧾</div>
+            <div class="bc-ttl">결제 누락 Zero</div>
+            <div class="bc-val">0건</div>
+            <div class="bc-desc">모든 주문 디지털 기록. 결제 누락·무단 퇴장 자동 차단</div>
+          </div>
+          <div class="bc bc-4">
+            <div class="bc-ico">⚡</div>
+            <div class="bc-ttl">테이블 회전율</div>
+            <div class="bc-val">×1.3</div>
+            <div class="bc-desc">주문→서빙 시간 단축으로 피크 테이블 추가 1회전 가능</div>
+          </div>
+        </div>
+        <div class="sec-label">Competitor Review Score (Irvine)</div>
+        <div class="card">
+          <div class="comp-row">
+            <div class="comp-item hl"><div class="comp-nm">Northwest ⬅</div><div class="comp-bg"><div class="comp-fill" style="width:86%;background:linear-gradient(90deg,#2563EB,#6366F1)"></div></div><div class="comp-sc">4.3</div></div>
+            <div class="comp-item"><div class="comp-nm">Seoul Garden</div><div class="comp-bg"><div class="comp-fill" style="width:92%;background:#DDE3EC"></div></div><div class="comp-sc">4.6</div></div>
+            <div class="comp-item"><div class="comp-nm">Jinjuu K-BBQ</div><div class="comp-bg"><div class="comp-fill" style="width:80%;background:#DDE3EC"></div></div><div class="comp-sc">4.0</div></div>
+            <div class="comp-item"><div class="comp-nm">Haru House</div><div class="comp-bg"><div class="comp-fill" style="width:76%;background:#DDE3EC"></div></div><div class="comp-sc">3.8</div></div>
+          </div>
+          <div style="margin-top:8px;padding:7px 10px;background:#EFF6FF;border-radius:7px;border-left:3px solid #2563EB;font-size:10px;color:var(--text2);line-height:1.5;">
+            <strong style="color:#2563EB">Gap to #1: +0.3★</strong> — achievable by resolving service issues alone. T.Order converts complaints into positive reviews.
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ AI IDEAS ════ -->
+      <div class="tab-pane" id="pane-ai">
+        <div class="insight-card ic-2">
+          <div class="ic-hdr">
+            <div class="ic-emoji">💬</div>
+            <div>
+              <div class="ic-ttl">Smart Reply Draft</div>
+              <div class="ic-badge">리뷰 대응 시간 90% 절감</div>
+            </div>
+          </div>
+          <div class="ic-body">부정 리뷰에 AI가 자동으로 답변 초안 작성. 클릭 한 번으로 복사 → 해당 플랫폼에 붙여넣기. "감사합니다"를 타이핑할 필요가 없어집니다.</div>
+          <div class="reply-orig">★★☆☆☆ "Waited 40 minutes and still got the wrong dish. Won't be coming back..." — Robert L., Yelp</div>
+          <div class="reply-draft">
+            <div class="rd-lbl">🤖 AI Draft Reply</div>
+            <div class="rd-text">Hi Robert — we're so sorry about your experience. A 40-min wait and wrong dish is unacceptable, and we take full responsibility. We're actively improving our ordering process and would love to make it right — please DM us for a complimentary return visit.</div>
+          </div>
+          <button class="copy-btn">📋 Copy to Clipboard</button>
+        </div>
+
+        <div class="insight-card ic-3">
+          <div class="ic-hdr">
+            <div class="ic-emoji">💵</div>
+            <div>
+              <div class="ic-ttl">Revenue Impact Estimator</div>
+              <div class="ic-badge">점주가 가장 빠르게 반응하는 숫자</div>
+            </div>
+          </div>
+          <div class="ic-body">불만들이 해결됐을 때 월 매출이 얼마나 늘어날지 추정합니다. T.Order 도입 제안 시 가장 강력한 설득 도구.</div>
+          <div class="rev-row">
+            <div class="rev-item"><div class="rev-lbl">테이블 회전율 +1회/일</div><div class="rev-val" style="color:#16A34A">+$4,800</div><div class="rev-sub">월 추정 증가 매출</div></div>
+            <div class="rev-item"><div class="rev-lbl">결제 누락 Zero</div><div class="rev-val" style="color:#2563EB">+$940</div><div class="rev-sub">월 회수 가능 금액</div></div>
+          </div>
+          <div class="rev-total">
+            <div class="rt-lbl">Estimated Monthly Upside<br>after T.Order</div>
+            <div class="rt-val">+$5,740</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  function sw(id, btn) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('pane-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>
