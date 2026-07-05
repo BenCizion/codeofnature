@@ -22,9 +22,14 @@ SERVICES = [
      "name": {"ko": "댓글 API (api.livere.org)", "en": "Comment API (api.livere.org)", "zh": "评论 API (api.livere.org)"},
      "url": "https://api.livere.org/api/v2/widget-hash?client_id=9TdXiy9Vk9NTePPebJYP",
      "body_check": {"path": ["data", "client", "id"], "equals": "9TdXiy9Vk9NTePPebJYP"}},
+    # ★v11 위젯 본체 (현행) — www.livere.org/livere-widget.js 로더가 실제 댓글 위젯을 렌더.
+    # S3 livere.org + CF E13AY7BKXMIF3X, hash 포인터 무중단 배포. 이게 진짜 v11 위젯 진입점.
+    {"key": "widget-v11", "tier": 1, "expect": 200, "degradedMs": 1500,
+     "name": {"ko": "위젯 v11 — 본체 (www.livere.org)", "en": "Widget v11 — core (www.livere.org)", "zh": "挂件 v11 — 主体 (www.livere.org)"},
+     "url": "https://www.livere.org/livere-widget.js"},
     # cdn-city = v9 임베드 페이지에서 v11 위젯을 띄우는 '브릿지 로더'(embed.dist.js). 메인 진입 CDN, 330만 req/일.
     {"key": "widget-cdn", "tier": 1, "expect": 200, "degradedMs": 1500,
-     "name": {"ko": "위젯 CDN — 브릿지 (cdn-city.livere.com)", "en": "Widget CDN — bridge (cdn-city.livere.com)", "zh": "挂件 CDN — 桥接 (cdn-city.livere.com)"},
+     "name": {"ko": "위젯 CDN — v9→v11 브릿지 (cdn-city.livere.com)", "en": "Widget CDN — v9→v11 bridge (cdn-city.livere.com)", "zh": "挂件 CDN — 桥接 (cdn-city.livere.com)"},
      "url": "https://cdn-city.livere.com/js/embed.dist.js"},
     # cdn.livere.com = 옛 v9 위젯 라이브러리(livere8_lib.js 등) 직접 서빙. 신계정 재호스팅(2026-07-06 E2ATQ74UMIBW9V). 15~23만 req/일.
     {"key": "widget-cdn-livere", "tier": 1, "expect": 200, "degradedMs": 1500,

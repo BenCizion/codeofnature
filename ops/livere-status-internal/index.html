@@ -90,9 +90,10 @@ header .meta{font-size:12px;color:#cfd2d4;text-align:right}
 
   <div class="section">서비스 <span class="count" id="svcCount"></span></div>
   <div class="apidesc" style="margin-top:-8px">
-    ★ <b>위젯 CDN 2종 구분</b> —
-    <b>브릿지(cdn-city)</b>: 언론사 v9 임베드 페이지에서 v11 위젯을 띄우는 진입 로더(embed.dist.js, 330만 req/일, 메인).
-    <b>v9 라이브러리(cdn.livere.com)</b>: 옛 v9 위젯 스크립트(livere8_lib.js 등) 직접 서빙(15~23만 req/일). 둘 중 하나만 죽어도 일부 매체 위젯 미표시.
+    ★ <b>위젯 서빙 자원 3종</b> — 로드 순서: 언론사 페이지 → 브릿지/v9라이브러리 → <b>v11 본체</b> → 댓글 API.<br>
+    ① <b>위젯 v11 본체(www.livere.org)</b>: 실제 댓글 위젯을 렌더하는 현행 v11 진입점(livere-widget.js, S3+CF, hash 무중단배포). <b>이게 죽으면 전 매체 위젯 다운.</b><br>
+    ② <b>v9→v11 브릿지(cdn-city)</b>: v9 임베드 페이지가 v11 위젯을 띄우도록 잇는 로더(embed.dist.js, 330만 req/일).<br>
+    ③ <b>v9 라이브러리(cdn.livere.com)</b>: 옛 v9 위젯 스크립트 직접 서빙(livere8_lib.js 등, 15~23만 req/일). 어느 하나만 죽어도 해당 경로 매체 위젯 미표시.
   </div>
   <div class="grid" id="services"></div>
 
