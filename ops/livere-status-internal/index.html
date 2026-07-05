@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LiveRe 내부 상태 · Internal Status</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{
+  --red:#E5496E; --dark:#232526; --bg:#F4F5F8; --border:#E6E8EB;
+  --text:#393B3C; --sub:#858596;
+  --ok:#2E7D32; --ok-bg:#E7F4E8; --degr:#B76E00; --degr-bg:#FFF4E5;
+  --down:#D32F2F; --down-bg:#FFE5E9;
+}
+*{box-sizing:border-box}
+body{font-family:'Pretendard',sans-serif;margin:0;background:var(--bg);color:var(--text)}
+header{background:var(--dark);color:#fff;padding:20px 32px;display:flex;align-items:center;justify-content:space-between}
+header .brand{font-weight:800;font-size:18px;color:var(--red);letter-spacing:-.5px}
+header .brand small{display:block;font-size:11px;color:#a7a8a8;font-weight:400;margin-top:2px}
+header .meta{font-size:12px;color:#cfd2d4;text-align:right}
+.wrap{max-width:1200px;margin:0 auto;padding:28px 32px}
+.overall{display:flex;align-items:center;gap:14px;padding:18px 24px;border-radius:12px;margin-bottom:24px;font-weight:700;font-size:16px}
+.overall.operational{background:var(--ok-bg);color:var(--ok)}
+.overall.degraded{background:var(--degr-bg);color:var(--degr)}
+.overall.partial_outage,.overall.major_outage{background:var(--down-bg);color:var(--down)}
+.dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.dot.operational{background:var(--ok)} .dot.degraded{background:var(--degr)}
+.dot.down,.dot.partial_outage,.dot.major_outage{background:var(--down)}
+.section{font-weight:700;font-size:14px;margin:28px 0 14px;color:var(--dark);display:flex;align-items:center;gap:10px}
+.section .count{font-size:12px;color:var(--sub);font-weight:500}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.card{background:#fff;border-radius:10px;padding:16px;border:1px solid var(--border);border-left:4px solid var(--border)}
+.card.operational{border-left-color:var(--ok)}
+.card.degraded{border-left-color:var(--degr)}
+.card.down{border-left-color:var(--down)}
+.card .name{font-weight:700;font-size:14px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.card .tier{font-size:10px;color:var(--sub);font-weight:600;border:1px solid var(--border);border-radius:4px;padding:1px 5px}
+.card .line{font-size:12px;color:var(--sub);margin-top:4px;font-variant-numeric:tabular-nums}
+.card .err{font-size:11px;color:var(--down);margin-top:6px;word-break:break-all}
+.badge{padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700}
+.badge.operational{background:var(--ok-bg);color:var(--ok)}
+.badge.degraded{background:var(--degr-bg);color:var(--degr)}
+.badge.down{background:var(--down-bg);color:var(--down)}
+.press-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.pcard{background:#fff;border:1px solid var(--border);border-radius:8px;padding:11px 13px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pcard.down{border-color:var(--down);background:var(--down-bg)}
+.pcard .pn{font-size:13px;font-weight:600}
+.pcard .pg{font-size:10px;color:var(--sub)}
+.apitag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;vertical-align:middle}
+.apitag.connect{background:var(--ok-bg);color:var(--ok)}
+.apitag.count{background:var(--degr-bg);color:var(--degr)}
+.apitag.seqmap{background:#eceef1;color:var(--sub)}
+.apidesc{font-size:11px;color:var(--sub);margin:-6px 0 14px;line-height:1.6}
+.apidesc b{color:var(--text)}
+.howto{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:6px 0 8px}
+.howto-title{font-weight:700;font-size:13px;color:var(--dark);margin-bottom:8px}
+.howto-body{font-size:12px;color:var(--sub);line-height:1.65}
+.howto-body b{color:var(--text)}
+.howto-legend{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.howto-legend>span{display:flex;align-items:flex-start;gap:8px}
+.howto-legend .badge{flex:none;margin-top:1px}
+.howto-note{border-top:1px dashed var(--border);padding-top:10px;margin-top:4px;color:var(--text)}
+.howto code{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:0 4px;font-size:11px}
+.apidesc code{background:#eceef1;padding:1px 5px;border-radius:3px;font-size:10.5px}
+.err-banner{background:var(--down-bg);color:var(--down);padding:14px 20px;border-radius:10px;font-weight:600;margin-bottom:20px;display:none}
+.foot{margin-top:36px;font-size:11px;color:var(--sub);text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">LiveRe 내부 상태<small>Internal Status · Cizion only</small></div>
+  <div class="meta" id="meta">불러오는 중…</div>
+</header>
+<div class="wrap">
+  <div class="err-banner" id="errBanner"></div>
+  <div class="overall" id="overall"><span class="dot"></span><span id="overallText">…</span></div>
+
+  <div class="howto">
+    <div class="howto-title">이 페이지는 무엇을 체크하나요?</div>
+    <div class="howto-body">
+      각 서비스·매체의 실제 주소를 <b>1분마다 직접 호출</b>해서, 진짜 응답하는지 확인합니다. (트래픽 양이 아니라 <b>살아있는지</b>를 봅니다.)
+      <div class="howto-legend">
+        <span><span class="badge operational">정상</span> 200 응답 + 내용까지 정상 (예: 댓글수 API는 인증 통과해 <code>code 2000</code>, 위젯은 실제 파일이 옴)</span>
+        <span><span class="badge degraded">저하</span> 응답은 오는데 <b>느림</b> (기준: 대부분 1.5초, 로그인 3초 초과)</span>
+        <span><span class="badge down">다운</span> 응답이 없거나(4xx/5xx·타임아웃) <b>내용이 틀림</b> (예: 200이지만 인증거부 <code>4010</code>, 위젯 클라이언트 못 찾음)</span>
+      </div>
+      <div class="howto-note">★ <b>200이어도 다운으로 잡는 게 핵심.</b> 겉으로 200을 주지만 실제 인증·조회가 실패하는 경우(예: 매체 API 키 만료)를 내용 검사(body_check)로 걸러냅니다. 맨 위 종합 상태는 가장 나쁜 항목을 따릅니다.</div>
+    </div>
+  </div>
+
+  <div class="section">서비스 <span class="count" id="svcCount"></span></div>
+  <div class="grid" id="services"></div>
+
+  <div class="section">
+    발급 API — Connect API <span class="apitag connect">현행·유료</span>
+    <span class="count" id="connectCount"></span>
+  </div>
+  <div class="apidesc">connect.livere.org · Bearer 토큰 · v11 백엔드 직접.<br>
+    <b>발급 정본 = v11 Postgres <code>livere_prod_client_operators</code></b> (+운영팀 발급대장 시트).</div>
+  <div class="press-grid" id="pressConnect"></div>
+
+  <div class="section">
+    발급 API — Count API <span class="apitag count">레거시</span>
+    <span class="count" id="countCount"></span>
+  </div>
+  <div class="apidesc">api.livere.net · x-auth-api-key/secret · SEQUENCE_MAP 경유. 옛 명칭 Media API(2022 개명).<br>
+    <b>발급 정본 = 신 Aurora MySQL <code>api_key</code> 테이블</b> (isDeleted≠1이 활성). was.me(10.0.72.84) 경유 조회. <b>일부 일몰 예정</b>.</div>
+  <div class="press-grid" id="pressCount"></div>
+
+  <div class="section">
+    모니터링만 (미발급) <span class="apitag seqmap">SEQUENCE_MAP</span>
+    <span class="count" id="seqmapCount"></span>
+  </div>
+  <div class="apidesc">media-api 코드 <code>SEQUENCE_MAP</code>에 seq→clientId 매핑은 있으나 <b>api_key 발급은 없음</b>(count 인증 비활성). 위젯은 살아있어 모니터링 대상이나 서버사이드 count 미제공.</div>
+  <div class="press-grid" id="pressSeqmap"></div>
+
+  <div class="section" id="journeysSection" style="display:none">
+    사용자 여정 (E2E) <span class="count" id="journeyCount"></span>
+  </div>
+  <div class="apidesc" id="journeysDesc" style="display:none">엔드포인트 200이 아니라 실제 사용자 흐름(로그인·댓글 작성/삭제)이 끝까지 되는지. <b>unknown</b>=아직 미구현.</div>
+  <div class="grid" id="journeys"></div>
+
+  <div class="section" id="incidentsSection" style="display:none">
+    진행 중 인시던트 <span class="count" id="incidentCount"></span>
+  </div>
+  <div class="press-grid" id="incidents"></div>
+
+  <div class="foot" id="foot"></div>
+</div>
+
+<script>
+const SRC = "status-internal.json";  // same-origin (IP-restricted bucket/CF)
+const OVERALL_KO = {operational:"전체 정상", degraded:"성능 저하", partial_outage:"부분 장애", major_outage:"심각 장애"};
+const STATUS_KO = {operational:"정상", degraded:"저하", down:"다운"};
+
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+async function load(){
+  const banner=document.getElementById('errBanner');
+  try{
+    const r=await fetch(SRC+"?t="+Date.now());
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const d=await r.json();
+    banner.style.display="none";
+    render(d);
+  }catch(e){
+    banner.textContent="상태 데이터를 불러오지 못했습니다: "+e.message;
+    banner.style.display="block";
+  }
+}
+
+function render(d){
+  // overall
+  const ov=document.getElementById('overall');
+  ov.className="overall "+d.overall;
+  ov.querySelector('.dot').className="dot "+d.overall;
+  document.getElementById('overallText').textContent=OVERALL_KO[d.overall]||d.overall;
+  document.getElementById('meta').innerHTML="갱신 "+esc(d.updatedAt);
+
+  // services
+  const svc=d.services||[];
+  document.getElementById('svcCount').textContent=svc.length+"개";
+  document.getElementById('services').innerHTML=svc.map(s=>{
+    const st=s.status;
+    const detail=(s.error?("오류: "+esc(s.error)):("HTTP "+s.httpCode+" · "+s.latencyMs+"ms"));
+    const berr=s.bodyError?`<div class="err">body: ${esc(s.bodyError)}</div>`:"";
+    const cold=s.cold?" · cold":"";
+    return `<div class="card ${st}">
+      <div class="name">${esc(s.name.ko)}<span class="tier">T${s.tier}</span></div>
+      <div><span class="badge ${st}">${STATUS_KO[st]||st}</span></div>
+      <div class="line">${detail}${cold}</div>${berr}
+    </div>`;
+  }).join("");
+
+  // press — 발급 API 종류별 그룹핑 (connect / count = 발급 정본 / seqmap = 미발급 모니터링)
+  const press=d.press||[];
+  const byType={connect:[], count:[], seqmap:[]};
+  press.forEach(p=> (byType[p.group]||byType.seqmap).push(p));
+
+  function sumTxt(list){
+    const down=list.filter(p=>p.status!=="operational").length;
+    return (down>0?(down+" 다운 · "):"") + list.length+"개 중 "+(list.length-down)+" 정상";
+  }
+  function cardsHtml(list){
+    const sorted=[...list].sort((a,b)=> (a.status==="operational"?1:0)-(b.status==="operational"?1:0));
+    return sorted.map(p=>{
+      const st=p.status;
+      const berr=p.bodyError?` · ${esc(p.bodyError)}`:"";
+      return `<div class="pcard ${st==='operational'?'':'down'}">
+        <div><div class="pn">${esc(p.name.ko)}</div><div class="pg">${esc(p.clientId||'')}${berr}</div></div>
+        <span class="badge ${st}">${STATUS_KO[st]||st}</span>
+      </div>`;
+    }).join("");
+  }
+  document.getElementById('connectCount').textContent=sumTxt(byType.connect);
+  document.getElementById('pressConnect').innerHTML=cardsHtml(byType.connect);
+  document.getElementById('countCount').textContent=sumTxt(byType.count);
+  document.getElementById('pressCount').innerHTML=cardsHtml(byType.count);
+  document.getElementById('seqmapCount').textContent=sumTxt(byType.seqmap);
+  document.getElementById('pressSeqmap').innerHTML=cardsHtml(byType.seqmap);
+
+  // journeys — 사용자 여정(E2E). 데이터에 있을 때만 표시.
+  const journeys=d.journeys||[];
+  if(journeys.length){
+    document.getElementById('journeysSection').style.display="";
+    document.getElementById('journeysDesc').style.display="";
+    document.getElementById('journeyCount').textContent=journeys.length+"개";
+    document.getElementById('journeys').innerHTML=journeys.map(j=>{
+      const st=j.status||"unknown";
+      const stko=STATUS_KO[st]||(st==="unknown"?"미구현":st);
+      const detail=j.detail?esc(j.detail):(st==="unknown"?"아직 구현 안 됨":"");
+      return `<div class="card ${st==='operational'?'operational':(st==='down'?'down':'')}">
+        <div class="name">${esc(j.name&&j.name.ko||j.name||j.key||'?')}</div>
+        <div><span class="badge ${st==='operational'?'operational':(st==='down'?'down':'')}">${stko}</span></div>
+        <div class="line">${detail}</div>
+      </div>`;
+    }).join("");
+  }
+
+  // incidents — 진행 중 장애. 있을 때만 표시.
+  const incidents=d.incidents||[];
+  if(incidents.length){
+    document.getElementById('incidentsSection').style.display="";
+    document.getElementById('incidentCount').textContent=incidents.length+"건";
+    document.getElementById('incidents').innerHTML=incidents.map(i=>
+      `<div class="pcard down"><div><div class="pn">${esc(i.title||i.name||'인시던트')}</div><div class="pg">${esc(i.detail||i.startedAt||'')}</div></div><span class="badge down">진행중</span></div>`
+    ).join("");
+  }
+
+  document.getElementById('foot').textContent="30초마다 자동 갱신 · 발급정본: Connect=client_operators / Count=api_key 테이블 · Media→Count→Connect (API 세대)";
+}
+
+load();
+setInterval(load, 30000);
+</script>
+</body>
+</html>
