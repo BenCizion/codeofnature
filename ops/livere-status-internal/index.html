@@ -89,22 +89,27 @@ header .meta{font-size:12px;color:#cfd2d4;text-align:right}
   </div>
 
   <div class="section">서비스 <span class="count" id="svcCount"></span></div>
+  <div class="apidesc" style="margin-top:-8px">
+    ★ <b>위젯 CDN 2종 구분</b> —
+    <b>브릿지(cdn-city)</b>: 언론사 v9 임베드 페이지에서 v11 위젯을 띄우는 진입 로더(embed.dist.js, 330만 req/일, 메인).
+    <b>v9 라이브러리(cdn.livere.com)</b>: 옛 v9 위젯 스크립트(livere8_lib.js 등) 직접 서빙(15~23만 req/일). 둘 중 하나만 죽어도 일부 매체 위젯 미표시.
+  </div>
   <div class="grid" id="services"></div>
 
   <div class="section">
-    발급 API — Connect API <span class="apitag connect">현행·유료</span>
+    Connect API — 댓글수·랭킹·최신 <span class="apitag connect">현행·유료</span>
     <span class="count" id="connectCount"></span>
   </div>
-  <div class="apidesc">connect.livere.org · Bearer 토큰 · v11 백엔드 직접.<br>
+  <div class="apidesc">connect.livere.org · Bearer 토큰 · v11 백엔드 직접. 댓글수·랭킹·최신 댓글 등 현행 유료 API.<br>
     <b>발급 정본 = v11 Postgres <code>livere_prod_client_operators</code></b> (+운영팀 발급대장 시트).</div>
   <div class="press-grid" id="pressConnect"></div>
 
   <div class="section">
-    발급 API — Count API <span class="apitag count">레거시</span>
+    Count API — 댓글수(레거시) <span class="apitag count">레거시</span>
     <span class="count" id="countCount"></span>
   </div>
-  <div class="apidesc">api.livere.net · x-auth-api-key/secret · SEQUENCE_MAP 경유. 옛 명칭 Media API(2022 개명).<br>
-    <b>발급 정본 = 신 Aurora MySQL <code>api_key</code> 테이블</b> (isDeleted≠1이 활성). was.me(10.0.72.84) 경유 조회. <b>일부 일몰 예정</b>.</div>
+  <div class="apidesc">api.livere.net · x-auth-api-key/secret · SEQUENCE_MAP 경유. 옛 명칭 Media API(2022 개명), 기사별 댓글수 조회 전용.<br>
+    <b>발급 정본 = 신 Aurora MySQL <code>api_key</code> 테이블</b> (isDeleted≠1이 활성). was.me(10.0.72.84) 경유 조회. <b>Connect API로 대체·일부 일몰 예정</b>.</div>
   <div class="press-grid" id="pressCount"></div>
 
   <div class="section">

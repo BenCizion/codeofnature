@@ -19,32 +19,31 @@ SERVICES = [
     # client:null). body_check confirms the real client resolved, so a broken
     # client lookup surfaces as down instead of a false operational.
     {"key": "comment-api", "tier": 1, "expect": 200, "degradedMs": 1500,
-     "name": {"ko": "댓글 API", "en": "Comment API", "zh": "评论 API"},
+     "name": {"ko": "댓글 API (api.livere.org)", "en": "Comment API (api.livere.org)", "zh": "评论 API (api.livere.org)"},
      "url": "https://api.livere.org/api/v2/widget-hash?client_id=9TdXiy9Vk9NTePPebJYP",
      "body_check": {"path": ["data", "client", "id"], "equals": "9TdXiy9Vk9NTePPebJYP"}},
+    # cdn-city = v9 임베드 페이지에서 v11 위젯을 띄우는 '브릿지 로더'(embed.dist.js). 메인 진입 CDN, 330만 req/일.
     {"key": "widget-cdn", "tier": 1, "expect": 200, "degradedMs": 1500,
-     "name": {"ko": "위젯 CDN", "en": "Widget CDN", "zh": "挂件 CDN"},
+     "name": {"ko": "위젯 CDN — 브릿지 (cdn-city.livere.com)", "en": "Widget CDN — bridge (cdn-city.livere.com)", "zh": "挂件 CDN — 桥接 (cdn-city.livere.com)"},
      "url": "https://cdn-city.livere.com/js/embed.dist.js"},
-    # cdn.livere.com — separate v9 widget CDN (rehosted to new account 2026-07-06,
-    # E2ATQ74UMIBW9V). Distinct from cdn-city; press outlets embed v9 widget bundles
-    # (livere8_lib.js / embed.dist.js) directly. Verify byte-serving is alive.
+    # cdn.livere.com = 옛 v9 위젯 라이브러리(livere8_lib.js 등) 직접 서빙. 신계정 재호스팅(2026-07-06 E2ATQ74UMIBW9V). 15~23만 req/일.
     {"key": "widget-cdn-livere", "tier": 1, "expect": 200, "degradedMs": 1500,
-     "name": {"ko": "위젯 CDN(livere.com)", "en": "Widget CDN (livere.com)", "zh": "挂件 CDN (livere.com)"},
+     "name": {"ko": "위젯 CDN — v9 라이브러리 (cdn.livere.com)", "en": "Widget CDN — v9 libs (cdn.livere.com)", "zh": "挂件 CDN — v9 库 (cdn.livere.com)"},
      "url": "https://cdn.livere.com/LiveReX/tower/js/embed.dist.js"},
     {"key": "keycloak", "tier": 1, "expect": 200, "degradedMs": 1500,
-     "name": {"ko": "인증(Keycloak)", "en": "Auth (Keycloak)", "zh": "认证 (Keycloak)"},
+     "name": {"ko": "인증 Keycloak (vault.livere.org)", "en": "Auth Keycloak (vault.livere.org)", "zh": "认证 Keycloak (vault.livere.org)"},
      "url": "https://vault.livere.org/realms/livere/.well-known/openid-configuration"},
     {"key": "admin", "tier": 2, "expect": 200, "degradedMs": 1500,
-     "name": {"ko": "관리자", "en": "Admin", "zh": "管理后台"},
+     "name": {"ko": "관리자 (admin.livere.org)", "en": "Admin (admin.livere.org)", "zh": "管理后台 (admin.livere.org)"},
      "url": "https://admin.livere.org/"},
     {"key": "connect-api", "tier": 2, "expect": 200, "degradedMs": 1500,
-     "name": {"ko": "Connect API(유료)", "en": "Connect API", "zh": "Connect API"},
+     "name": {"ko": "Connect API — 댓글수·랭킹·최신 (connect.livere.org)", "en": "Connect API — counts/rank/recent (connect.livere.org)", "zh": "Connect API (connect.livere.org)"},
      "url": "https://connect.livere.org/swagger/index.html"},
     {"key": "dotcom", "tier": 2, "expect": 200, "degradedMs": 1500,
-     "name": {"ko": "닷컴 웹사이트", "en": "Website", "zh": "官网"},
+     "name": {"ko": "닷컴 웹사이트 (www.livere.com)", "en": "Website (www.livere.com)", "zh": "官网 (www.livere.com)"},
      "url": "https://www.livere.com/"},
     {"key": "passport", "tier": 3, "expect": 200, "degradedMs": 3000,
-     "name": {"ko": "v9 로그인 게이트웨이", "en": "v9 Login Gateway", "zh": "v9 登录网关"},
+     "name": {"ko": "v9 로그인 게이트웨이 (passport.livere.com)", "en": "v9 Login Gateway (passport.livere.com)", "zh": "v9 登录网关 (passport.livere.com)"},
      "url": "https://passport.livere.com/v1/login/city"},
     # v9 인사이트(premium.livere.com)는 서비스 종료(2026-07)되어 프로브에서 제거함.
 ]
@@ -61,7 +60,7 @@ SERVICES = [
 if os.environ.get("MEDIAAPI_CANARY_KEY") and os.environ.get("MEDIAAPI_CANARY_REFERER"):
     SERVICES.append({
         "key": "count-api", "tier": 2, "expect": 200, "degradedMs": 2000,
-        "name": {"ko": "댓글수 API(레거시)", "en": "Count API (legacy)", "zh": "评论数 API"},
+        "name": {"ko": "Count API — 댓글수·레거시 (api.livere.net)", "en": "Count API — counts/legacy (api.livere.net)", "zh": "Count API (api.livere.net)"},
         "url": "https://api.livere.net/v1/article/comments/count?referer="
                + urllib.parse.quote(os.environ["MEDIAAPI_CANARY_REFERER"], safe=""),
         "headers": {"x-auth-api-key": "${MEDIAAPI_CANARY_KEY}",
