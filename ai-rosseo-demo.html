@@ -1,0 +1,1879 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="AI가 변호사를 추천할 때 법률신문을 출처로 인용하게 하는 GEO 기반 법조인 검색 플랫폼 (샘플 데모)">
+<style>*{margin:0;padding:0;box-sizing:border-box}html,body{width:100%;min-height:100%}</style>
+<title>AI로써 · 법률신문 — 법조인 GEO 플랫폼</title>
+<meta name="description" content="AI가 변호사를 추천할 때, 법률신문을 출처로 인용하게 하는 GEO 기반 법조인 검색 플랫폼 (샘플 데모)">
+<style>
+/* ═══════════════ A. RESET + BASE ═══════════════ */
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--t1);
+  background:radial-gradient(1100px 520px at 50% -120px,var(--surface),transparent 70%),var(--paper);
+  font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;overflow-x:hidden;
+  word-break:keep-all;overflow-wrap:break-word}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+img{max-width:100%}
+::selection{background:var(--gold-soft);color:var(--navy)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:3px}
+
+/* ═══════════════ B. DESIGN TOKENS ═══════════════ */
+:root{
+  /* LIGHT — warm ivory + legal navy + brass seal */
+  --paper:#f5f2ec; --surface:#ffffff; --surface2:#efe9de; --surface3:#e7dfd0;
+  --border:#e2d9c8; --line:#ece5d7; --hair:rgba(27,42,74,.08);
+  --navy:#1b2a4a; --navy2:#2c3e64; --navy-soft:#e7ecf4;
+  --gold:#b0842a; --gold2:#8f6a1f; --gold-soft:#f2e7cc;
+  --seal:#b23a2e; --seal-soft:#f5e2de;
+  --t1:#1b1d22; --t2:#5d5850; --t3:#8f887b; --t-inv:#f5f2ec;
+  /* category tints */
+  --c-blue:#2f5f9e; --c-blue-bg:#e6eef7;
+  --c-green:#2f7d52; --c-green-bg:#e4f1e9;
+  --c-purple:#6a4a92; --c-purple-bg:#ede7f5;
+  --c-orange:#b5741d; --c-orange-bg:#f8ecd6;
+  --c-gray:#6a6459;  --c-gray-bg:#ece6da;
+  /* verdict / status */
+  --ok:#2f7d52; --ok-bg:#e4f1e9; --warn:#b5741d; --warn-bg:#f8ecd6;
+  --bad:#b23a2e; --bad-bg:#f5e2de;
+  /* 신호색 — 라이트 모드용(레이더 화이트톤). 다크에서 .theme-dark가 재정의 */
+  --amber:#b0842a; --amber2:#8f6a1f; --cyan:#2f5f9e; --green:#2f7d52; --red:#b23a2e; --violet:#6a4a92;
+  --radius:8px; --radius-sm:5px; --radius-lg:14px;
+  --shadow-sm:0 1px 2px rgba(27,25,10,.05);
+  --shadow:0 1px 3px rgba(27,25,10,.06),0 8px 24px rgba(27,25,10,.06);
+  --shadow-lg:0 4px 12px rgba(27,25,10,.09),0 24px 60px rgba(27,25,10,.11);
+  --serif:Georgia,'Times New Roman','Apple Myungjo','AppleMyungjo','Nanum Myeongjo','Batang',serif;
+  --sans:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mono:'SF Mono',ui-monospace,'JetBrains Mono',Menlo,Consolas,monospace;
+  --maxw:1120px;
+  --ease-out:cubic-bezier(.2,.6,.2,1);
+  --ease-spring:cubic-bezier(.34,1.35,.4,1);
+  --dur-fast:.14s; --dur-med:.22s;
+  --label-fs:10.5px; --track-label:.07em;
+}
+/* DARK terminal — applied via .theme-dark wrapper (radar inset + admin) */
+.theme-dark{
+  --paper:#0A0E1A; --surface:#141929; --surface2:#1E2640; --surface3:#2A3454;
+  --border:#242c46; --line:#1c2338; --hair:rgba(255,255,255,.08);
+  --navy:#0A0E1A; --navy2:#141929; --navy-soft:#1E2640;
+  --gold:#F5A623; --gold2:#FFCA6B; --gold-soft:#2a2410;
+  --seal:#FF5A5A; --seal-soft:#2a1518;
+  --t1:#F0EDE8; --t2:#9BA3B8; --t3:#5a6484; --t-inv:#0A0E1A;
+  --c-blue:#4DC8E8; --c-blue-bg:#12283a;
+  --c-green:#3DD68C; --c-green-bg:#0f2a20;
+  --c-purple:#A78BFA; --c-purple-bg:#1e1836;
+  --c-orange:#F5A623; --c-orange-bg:#2a2410;
+  --c-gray:#9BA3B8;  --c-gray-bg:#1a2138;
+  --ok:#3DD68C; --ok-bg:#0f2a20; --warn:#F5A623; --warn-bg:#2a2410;
+  --bad:#FF5A5A; --bad-bg:#2a1518;
+  --amber:#F5A623; --amber2:#FFCA6B; --cyan:#4DC8E8; --green:#3DD68C; --red:#FF5A5A;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+  --shadow:0 2px 8px rgba(0,0,0,.4),0 12px 40px rgba(0,0,0,.35);
+  --shadow-lg:0 4px 16px rgba(0,0,0,.5),0 30px 70px rgba(0,0,0,.45);
+}
+/* 다크 표면의 고도 = 상단 1px 하이라이트(입사광) + 깊은 암부 그림자 */
+.theme-dark .card,.theme-dark .pnode,.theme-dark .tile,.theme-dark .rcard,
+.theme-dark .ticker,.theme-dark .hitl-step,.theme-dark .verdict{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),
+             0 1px 2px rgba(0,0,0,.5),0 10px 28px rgba(0,0,0,.3)}
+
+/* ═══════════════ C. LAYOUT PRIMITIVES ═══════════════ */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+.stack{display:flex;flex-direction:column}
+.row{display:flex;align-items:center}
+.grid{display:grid;gap:16px}
+.card{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
+.tnum{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--mono)}
+.serif{font-family:var(--serif)}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--gold2)}
+.muted{color:var(--t2)}
+.dim{color:var(--t3)}
+
+/* ═══════════════ D. SHARED CHROME ═══════════════ */
+/* 마스트헤드 — 브로드시트 이중 괘선(thick-thin Oxford rule) */
+#app-header{position:sticky;top:0;z-index:60;background:rgba(245,242,236,.88);
+  backdrop-filter:saturate(1.6) blur(12px);
+  border-bottom:2px solid var(--navy)}
+#app-header::after{content:"";position:absolute;left:0;right:0;bottom:3px;height:1px;
+  background:color-mix(in srgb,var(--navy) 40%,transparent)}
+.hd{max-width:var(--maxw);margin:0 auto;padding:0 24px;height:62px;
+  display:flex;align-items:center;gap:28px}
+.brand{display:flex;align-items:baseline;gap:9px;font-weight:800}
+.brand .logo{font-family:var(--serif);font-size:22px;color:var(--navy);letter-spacing:-.01em}
+.brand .logo b{color:var(--gold2)}
+.brand .by{font-size:10.5px;color:var(--t3);font-weight:700;letter-spacing:.04em;
+  border-left:1px solid var(--border);padding-left:9px;position:relative;top:-1px}
+.nav{display:flex;gap:2px;margin-left:6px}
+.nav a{padding:8px 13px;border-radius:var(--radius-sm);font-size:13.5px;font-weight:600;
+  color:var(--t2);transition:background var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out)}
+.nav a:hover{background:var(--surface2);color:var(--t1)}
+.nav a[aria-current="page"]{color:var(--navy);background:var(--navy-soft)}
+.hd-sp{flex:1}
+.hd-admin{display:flex;align-items:center;gap:7px;padding:7px 13px;border-radius:99px;
+  font-size:12.5px;font-weight:700;color:var(--gold2);background:var(--gold-soft);
+  border:1px solid var(--border);
+  transition:transform var(--dur-fast) var(--ease-spring),box-shadow var(--dur-fast) var(--ease-out)}
+.hd-admin:hover{box-shadow:var(--shadow-sm);transform:translateY(-1px)}
+.hd-admin .dot{width:6px;height:6px;border-radius:99px;background:var(--gold);
+  box-shadow:0 0 0 0 var(--gold);animation:ld 2.4s infinite}
+/* 페이지 진입 — 섹션·카드 캐스케이드 (한 덩어리 페이드 금지) */
+#view{min-height:70vh}
+#view section.wrap{animation:fadeUp .5s var(--ease-out) backwards}
+#view section.wrap:nth-of-type(2){animation-delay:.06s}
+#view section.wrap:nth-of-type(3){animation-delay:.12s}
+#view section.wrap:nth-of-type(4){animation-delay:.18s}
+#view section.wrap:nth-of-type(5){animation-delay:.24s}
+#view section.wrap:nth-of-type(6){animation-delay:.3s}
+.grid>.card{animation:fadeUp .45s var(--ease-out) backwards}
+.grid>.card:nth-child(2){animation-delay:.05s}
+.grid>.card:nth-child(3){animation-delay:.1s}
+.grid>.card:nth-child(4){animation-delay:.15s}
+.grid>.card:nth-child(5){animation-delay:.2s}
+/* 히어로 내부 순차 등장 */
+.hero>*{animation:fadeUp .55s var(--ease-out) backwards}
+.hero>*:nth-child(2){animation-delay:.07s}
+.hero>*:nth-child(3){animation-delay:.14s}
+.hero>*:nth-child(4){animation-delay:.21s}
+.hero>*:nth-child(5){animation-delay:.28s}
+.hero>*:nth-child(6){animation-delay:.36s}
+footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
+  background:var(--surface2)}
+.ft{max-width:var(--maxw);margin:0 auto;padding:0 24px;display:flex;
+  justify-content:space-between;gap:24px;flex-wrap:wrap;font-size:12.5px;color:var(--t3)}
+.ft .serif{font-size:17px;color:var(--navy);margin-bottom:6px}
+.ft-note{max-width:440px;line-height:1.7}
+
+/* ═══════════════ E. COMPONENTS ═══════════════ */
+/* — buttons — */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:var(--radius);
+  font-size:13.5px;font-weight:700;border:1px solid transparent;white-space:nowrap;
+  transition:transform var(--dur-med) var(--ease-spring),box-shadow var(--dur-med) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out)}
+.btn:active{transform:scale(.985)}
+.btn-primary{background:var(--navy);color:var(--t-inv)}
+.theme-dark .btn-primary{background:var(--amber);color:#0A0E1A}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-ghost{border-color:var(--border);color:var(--t1);background:var(--surface)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold2)}
+.btn-sm{padding:8px 13px;font-size:12.5px}
+
+/* — badges / chips — */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:99px;
+  font-size:11px;font-weight:800;letter-spacing:.04em;font-family:var(--mono)}
+.b-HOT{color:var(--red);background:var(--bad-bg)}
+.b-RISE{color:var(--green);background:var(--c-green-bg)}
+.b-WATCH{color:var(--amber);background:var(--c-orange-bg)}
+.b-FALL{color:var(--red);background:var(--bad-bg)}
+.b-NEW{color:var(--cyan);background:var(--c-blue-bg)}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;
+  font-size:12px;font-weight:600;background:var(--surface2);color:var(--t2);
+  border:1px solid var(--border)}
+.chip-field{background:var(--navy-soft);color:var(--navy2);border-color:transparent}
+.theme-dark .chip-field{color:var(--cyan)}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;
+  padding:3px 8px;border-radius:var(--radius-sm)}
+.tag-blue{color:var(--c-blue);background:var(--c-blue-bg)}
+.tag-green{color:var(--c-green);background:var(--c-green-bg)}
+.tag-purple{color:var(--c-purple);background:var(--c-purple-bg)}
+.tag-orange{color:var(--c-orange);background:var(--c-orange-bg)}
+.tag-gray{color:var(--c-gray);background:var(--c-gray-bg)}
+/* 검수 씰 — 황동 인장(judicial seal). 그린은 감사 상태 전용으로 남긴다 */
+.verified-seal{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;
+  font-size:12.5px;font-weight:700;color:var(--gold2);background:var(--gold-soft);
+  font-family:var(--serif);letter-spacing:.02em;
+  border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);
+  box-shadow:inset 0 0 0 2.5px var(--surface)}
+
+/* — avatar — */
+.av{display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  border-radius:14px;font-family:var(--serif);font-weight:700;color:#fff;
+  background:linear-gradient(150deg,var(--navy),var(--navy2));letter-spacing:.02em}
+.av-lg{width:112px;height:112px;font-size:40px;border-radius:20px}
+.av-md{width:52px;height:52px;font-size:20px}
+.av-sm{width:38px;height:38px;font-size:15px;border-radius:11px}
+
+/* — stars — */
+.stars{color:var(--gold);letter-spacing:1px;font-size:13px}
+.stars .off{color:var(--border)}
+
+/* — section head — */
+/* 섹션 헤드 — 괘선 + 황동 키커 바(브로드시트 섹션 구분자) */
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+  margin:0 0 18px;padding-bottom:12px;border-bottom:1px solid var(--border);position:relative}
+.sec-head::after{content:"";position:absolute;left:0;bottom:-1px;width:48px;height:2px;background:var(--gold)}
+.sec-head h2{font-family:var(--serif);font-size:24px;color:var(--navy);font-weight:700;
+  letter-spacing:-.01em;text-wrap:balance;line-height:1.3}
+.sec-head .more{font-size:13px;font-weight:700;color:var(--gold2)}
+.sec-head .more:hover{text-decoration:underline}
+
+/* — review card — */
+.rev{padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.rev .rev-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.rev .rev-src{font-family:var(--mono);font-size:10.5px;font-weight:800;color:var(--seal);
+  background:var(--seal-soft);padding:2px 7px;border-radius:99px;letter-spacing:.03em}
+.rev p{font-size:13.5px;color:var(--t1);line-height:1.62}
+.rev .rev-by{font-size:12px;color:var(--t3)}
+
+/* — lawyer / case / news mini card — */
+.mini{padding:16px 18px;display:flex;gap:14px;align-items:flex-start;border-radius:var(--radius-lg);
+  box-shadow:none;
+  transition:transform var(--dur-med) var(--ease-spring),box-shadow var(--dur-med) var(--ease-out),
+    border-color var(--dur-med) var(--ease-out)}
+.mini:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--gold)}
+.mini .mini-body{flex:1;min-width:0}
+.mini h3{font-size:15px;font-weight:700;color:var(--t1);margin-bottom:3px;line-height:1.3}
+.mini .mini-sub{font-size:12.5px;color:var(--t2);margin-bottom:8px}
+.mini .mini-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+
+/* — gauge — */
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;gap:2px}
+.gauge text.g-num{font-family:var(--mono);font-weight:800;font-size:26px;fill:var(--t1)}
+.gauge text.g-lbl{font-size:8.5px;fill:var(--t3);font-weight:700;letter-spacing:.03em}
+
+/* — 정량 수치 듀오(AI 인용수 · 사람 조회수) — */
+.metric-duo{display:flex;gap:10px}
+.metric-duo .metric{flex:1;min-width:104px;background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:3px}
+.metric-duo .m-lbl{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;
+  color:var(--t2);letter-spacing:.01em}
+.metric-duo .m-ic{font-size:12px}
+.metric-duo .m-val{font-family:var(--mono);font-size:22px;font-weight:800;color:var(--t1);
+  line-height:1;font-variant-numeric:tabular-nums}
+.metric-duo .metric.ai .m-val{color:var(--gold2)}
+.metric-duo .metric.ai{background:linear-gradient(180deg,var(--gold-soft),var(--surface) 75%);
+  border-color:color-mix(in srgb,var(--gold) 28%,transparent)}
+.metric-duo .m-sub{font-size:9.5px;color:var(--t3);font-family:var(--mono)}
+
+/* — 법조인 지표 스트립(경력·수임·응답) — */
+.stat-strip{display:flex;gap:0;margin-top:16px;border:1px solid var(--border);
+  border-radius:10px;overflow:hidden;width:fit-content;max-width:100%;flex-wrap:wrap}
+.stat-strip .ss-item{display:flex;align-items:center;gap:7px;padding:9px 16px;
+  font-size:12.5px;font-weight:600;color:var(--t2);background:var(--surface)}
+.stat-strip .ss-item+.ss-item{border-left:1px solid var(--line)}
+.stat-strip .ss-item b{color:var(--navy);font-weight:800}
+.stat-strip .ss-ic{font-size:13px}
+
+/* — 대표 성과(하이라이트) — */
+.hl-row{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+.hl-row:last-child{border-bottom:none}
+.hl-y{font-family:var(--serif);font-style:italic;font-size:15px;font-weight:700;
+  color:var(--gold2);flex-shrink:0;width:44px;padding-top:1px}
+.hl-t{font-size:13.5px;font-weight:700;color:var(--t1);line-height:1.4}
+.hl-d{font-size:12.5px;color:var(--t2);margin-top:3px;line-height:1.5}
+
+/* — 분야별 수임 분포(가로 바) — */
+.fbar{display:flex;flex-direction:column;gap:10px}
+.fbar .fb-row{display:grid;grid-template-columns:92px 1fr 34px;gap:10px;align-items:center}
+.fbar .fb-lbl{font-size:12px;font-weight:600;color:var(--t2);white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.fbar .fb-track{height:8px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.fbar .fb-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--gold2));
+  transform-origin:left;animation:fbGrow .8s var(--ease-out) backwards}
+.fbar .fb-row:nth-child(2) .fb-fill{animation-delay:.08s}
+.fbar .fb-row:nth-child(3) .fb-fill{animation-delay:.16s}
+.fbar .fb-row:nth-child(4) .fb-fill{animation-delay:.24s}
+.fbar .fb-n{font-family:var(--mono);font-size:11.5px;font-weight:800;color:var(--t1);text-align:right}
+@keyframes fbGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+/* — entity highlight + tooltip — */
+.ent{position:relative;cursor:help;font-weight:600;white-space:nowrap;
+  border-bottom:1.5px solid;padding-bottom:.5px;transition:background .15s}
+.ent-lawyer{color:var(--navy2);border-color:var(--gold)}
+.ent-case{color:var(--c-blue);border-color:var(--c-blue)}
+.ent-company{color:var(--c-green);border-color:var(--c-green)}
+.ent-judge{color:var(--c-purple);border-color:var(--c-purple)}
+.ent-firm{color:var(--seal);border-color:var(--seal)}
+.ent:hover{background:var(--gold-soft)}
+/* — 정규화 툴팁 (화이트톤 · 고객 화면) — */
+#tooltip{position:fixed;z-index:200;max-width:290px;background:var(--surface);color:var(--t1);
+  padding:12px 14px;border-radius:10px;box-shadow:var(--shadow-lg);font-size:12.5px;
+  border:1px solid var(--border);border-top:3px solid var(--gold);
+  opacity:0;transform:translateY(4px);pointer-events:none;transition:.14s;line-height:1.5}
+#tooltip.on{opacity:1;transform:translateY(0)}
+#tooltip .tt-type{font-family:var(--mono);font-size:9.5px;font-weight:800;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--gold2);margin-bottom:5px}
+#tooltip .tt-name{font-family:var(--serif);font-size:15px;margin-bottom:8px;color:var(--navy)}
+#tooltip .tt-row{display:flex;justify-content:space-between;gap:14px;padding:3px 0;
+  font-family:var(--mono);font-size:11px;border-bottom:1px solid var(--line)}
+#tooltip .tt-row:last-of-type{border-bottom:none}
+#tooltip .tt-row span:first-child{color:var(--t3)}
+#tooltip .tt-row span:last-child{color:var(--t1);font-weight:700}
+#tooltip .tt-cite{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);
+  font-size:10.5px;color:var(--gold2);font-weight:700}
+
+/* — 메타정보 박스 (화이트톤 · 고객 화면) — */
+.metabox{background:var(--surface);color:var(--t1);border-radius:var(--radius-lg);
+  border:1px solid var(--border);box-shadow:var(--shadow-sm);
+  padding:22px 24px;margin-top:32px}
+.metabox .mb-head{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.metabox .mb-head .serif{font-size:17px;color:var(--navy)}
+.metabox .mb-sub{font-size:12px;color:var(--t3);margin-bottom:18px;
+  font-family:var(--mono);padding-bottom:14px;border-bottom:1px solid var(--line)}
+.mb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.mb-item{background:var(--surface2);border:1px solid var(--border);
+  border-radius:9px;padding:11px 13px;transition:.15s}
+.mb-item:hover{background:var(--gold-soft);transform:translateY(-1px);border-color:var(--gold)}
+.mb-item .mb-t{font-family:var(--mono);font-size:9px;font-weight:800;letter-spacing:.07em;
+  text-transform:uppercase;margin-bottom:5px;color:var(--gold2)}
+.mb-item .mb-n{font-size:13.5px;font-weight:700;color:var(--navy)}
+.mb-item .mb-v{font-family:var(--mono);font-size:10.5px;color:var(--t2);margin-top:3px}
+
+/* — data table — */
+.dtable{width:100%;border-collapse:collapse;font-size:13px}
+.dtable th{text-align:left;font-size:var(--label-fs);font-weight:800;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--navy2);padding:9px 12px;
+  border-bottom:2px solid var(--navy)} /* 장부(ledger)식 헤더 괘선 */
+.theme-dark .dtable th{border-bottom-color:var(--amber);color:var(--t2)}
+.dtable td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:middle;
+  font-variant-numeric:tabular-nums}
+.dtable tr:last-child td{border-bottom:none}
+.dtable tr.clk{cursor:pointer;transition:.13s}
+.dtable tr.clk:hover td{background:var(--surface2)}
+.dtable .mono{font-size:12px;color:var(--t2)}
+
+/* — timeline — */
+.tl{position:relative;padding-left:26px}
+.tl::before{content:"";position:absolute;left:7px;top:5px;bottom:5px;width:2px;
+  background:linear-gradient(to bottom,
+    color-mix(in srgb,var(--gold) 55%,var(--border)),var(--border) 80%)}
+.tl-item:not(.done)::before{border-color:var(--border);border-style:dashed}
+.tl-item:not(.done) .tl-d,.tl-item:not(.done) .tl-e{color:var(--t3)}
+.tl-item{position:relative;padding:0 0 20px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:"";position:absolute;left:-24px;top:4px;width:12px;height:12px;
+  border-radius:99px;background:var(--surface);border:2.5px solid var(--gold)}
+.tl-item.done::before{background:var(--gold)}
+.tl-d{font-family:var(--mono);font-size:11px;color:var(--gold2);font-weight:700}
+.tl-e{font-size:13.5px;color:var(--t1);margin-top:2px}
+
+/* ── 실시간 레이더 (화이트톤) — 상단 황동 블룸 + 헤어라인 프레임 ── */
+.radar{background:
+    radial-gradient(120% 70% at 50% -10%,var(--gold-soft),transparent 55%),
+    var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;padding:26px 26px 30px;overflow:hidden;
+  position:relative;box-shadow:var(--shadow)}
+.radar .breaking{display:flex;align-items:center;gap:0;background:var(--amber);color:#0A0E1A;
+  border-radius:8px;overflow:hidden;margin-bottom:22px;font-weight:800;font-size:12px}
+.radar .bk-lbl{padding:7px 12px;background:rgba(0,0,0,.16);white-space:nowrap;
+  font-family:var(--mono);letter-spacing:.06em;display:flex;align-items:center;gap:6px}
+.radar .bk-scroll{overflow:hidden;flex:1;position:relative;height:32px}
+.radar .bk-track{position:absolute;white-space:nowrap;display:flex;gap:40px;
+  padding-left:16px;line-height:32px;animation:marquee 26s linear infinite}
+.radar-head{display:flex;align-items:center;gap:11px;margin-bottom:18px}
+.radar-head .serif{font-size:21px;color:var(--t1);font-style:italic}
+.live-dot{width:8px;height:8px;border-radius:99px;background:var(--red);
+  box-shadow:0 0 0 0 rgba(255,90,90,.6);animation:ld 2s infinite}
+.radar-head .lv{font-family:var(--mono);font-size:10.5px;font-weight:800;color:var(--red);
+  letter-spacing:.1em}
+.radar-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}
+@media(max-width:760px){.radar-grid{grid-template-columns:1fr}}
+.rcards{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+@media(max-width:520px){.rcards{grid-template-columns:1fr}}
+.rcard{background:var(--surface2);border-radius:9px;padding:13px 14px 13px 17px;
+  position:relative;overflow:hidden;cursor:default;
+  transition:transform var(--dur-med) var(--ease-spring),background var(--dur-fast) var(--ease-out)}
+.rcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--rc)}
+.rcard:hover{background:var(--surface3);transform:translateY(-2px)}
+.rcard .rc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.rcard .rc-rank{font-family:var(--serif);font-style:italic;font-size:20px;
+  color:color-mix(in srgb,var(--gold) 70%,var(--t3))}
+.rcard .rc-label{font-size:13px;font-weight:700;color:var(--t1);line-height:1.35;
+  margin-bottom:10px;min-height:34px}
+.rcard .rc-bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+.rc-spark{display:flex;align-items:flex-end;gap:2px;height:24px}
+.rc-spark i{width:5px;background:var(--rc);border-radius:1px;opacity:.85;display:block}
+.rc-mo{font-family:var(--mono);font-size:15px;font-weight:800;color:var(--t1)}
+.ticker{background:var(--surface2);border-radius:9px;overflow:hidden;
+  border:1px solid var(--border)}
+/* 앰버는 '신호'로만 — 티커 헤더는 다크 서피스 + 앰버 타이프로 절제 */
+.ticker .tk-head{background:var(--gold-soft);color:var(--amber);padding:9px 15px;font-weight:800;
+  font-size:12px;font-family:var(--mono);letter-spacing:.05em;display:flex;
+  align-items:center;justify-content:space-between;
+  border-bottom:1px solid color-mix(in srgb,var(--amber) 25%,transparent)}
+.tk-row{display:flex;align-items:center;gap:12px;padding:11px 15px;
+  border-bottom:1px solid var(--line);transition:.13s;cursor:default}
+.tk-row:last-child{border-bottom:none}
+.tk-row:hover{background:var(--surface3)}
+.tk-num{font-family:var(--serif);font-style:italic;font-size:17px;color:var(--gold);
+  width:22px;flex-shrink:0}
+.tk-label{flex:1;font-size:12.5px;font-weight:600;color:var(--t1)}
+.tk-val{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--t2)}
+
+/* — verdict card (audit) — */
+.verdict{border-radius:var(--radius-lg);padding:18px 20px;border:1px solid var(--border);
+  border-left:4px solid var(--warn);background:var(--surface);transition:.2s}
+.verdict.v-verified{border-left-color:var(--ok)}
+.verdict.v-disputed{border-left-color:var(--bad)}
+.verdict.auditing{border-left-color:var(--cyan)}
+.v-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.v-status{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;
+  font-family:var(--mono);letter-spacing:.05em;padding:4px 10px;border-radius:99px}
+.v-status.s-pending{color:var(--warn);background:var(--warn-bg)}
+.v-status.s-verified{color:var(--ok);background:var(--ok-bg)}
+.v-status.s-disputed{color:var(--bad);background:var(--bad-bg)}
+.v-quote{font-family:var(--serif);font-size:14.5px;line-height:1.55;color:var(--t1);
+  padding:10px 14px;background:var(--surface2);border-radius:8px;margin-bottom:12px;
+  border-left:2px solid var(--hair)} /* 좌측 액센트는 카드 상태 엣지 하나만 */
+.v-claim{font-size:12.5px;color:var(--t2);margin-bottom:12px}
+.v-claim b{color:var(--t1)}
+.v-sources{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.v-src{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t2);
+  font-family:var(--mono)}
+.v-src .ic{width:20px;text-align:center}
+.v-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding-top:12px;border-top:1px solid var(--line);font-size:11.5px;color:var(--t3);
+  font-family:var(--mono);flex-wrap:wrap}
+.v-audit-meta{display:flex;gap:14px;flex-wrap:wrap}
+.v-audit-meta b{color:var(--t2);font-weight:700}
+.spinner{width:13px;height:13px;border:2px solid var(--cyan);border-top-color:transparent;
+  border-radius:99px;animation:spin .7s linear infinite;display:inline-block}
+
+/* — HITL rail — */
+.hitl{display:flex;align-items:stretch;gap:0;margin-bottom:26px;flex-wrap:wrap}
+.hitl-step{flex:1;min-width:130px;display:flex;flex-direction:column;gap:5px;
+  padding:15px 16px;background:var(--surface);border:1px solid var(--border);position:relative}
+.hitl-step:first-child{border-radius:var(--radius) 0 0 var(--radius)}
+.hitl-step:last-child{border-radius:0 var(--radius) var(--radius) 0}
+.hitl-step.human{background:var(--warn-bg);border-color:color-mix(in srgb,var(--warn) 35%,transparent)}
+.hitl-step .hs-ic{font-size:19px}
+.hitl-step .hs-n{font-family:var(--mono);font-size:9.5px;font-weight:800;color:var(--t3);
+  letter-spacing:.08em}
+.hitl-step .hs-t{font-size:12.5px;font-weight:700;color:var(--t1)}
+.hitl-step .hs-d{font-size:11px;color:var(--t2);line-height:1.4}
+.hitl-step+.hitl-step{margin-left:-1px} /* 이중 seam 제거 */
+.audit-criteria{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-12px 0 22px;
+  padding:12px 16px;background:var(--surface);border:1px dashed var(--border);border-radius:10px}
+.audit-criteria .ac-lbl{font-family:var(--mono);font-size:10px;font-weight:800;
+  letter-spacing:.07em;color:var(--amber);margin-right:4px}
+.audit-criteria .ac-chip{font-size:11.5px;font-weight:600;color:var(--t2);
+  background:var(--surface2);border:1px solid var(--border);padding:4px 10px;border-radius:99px}
+.hitl-step .hs-arrow{position:absolute;right:-11px;top:50%;transform:translateY(-50%);
+  z-index:2;color:var(--gold);font-size:11px;width:20px;height:20px;border-radius:99px;
+  background:var(--surface2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 1px 3px rgba(0,0,0,.4)}
+
+/* — pipeline (crawler) — */
+.pipe{position:relative;padding:8px 0}
+.pipe-stage{display:flex;flex-direction:column;gap:11px}
+.pnode{background:var(--surface);border:1px solid var(--border);border-radius:11px;
+  padding:13px 15px;display:flex;align-items:center;gap:11px;transition:.16s;position:relative}
+.pnode:hover{border-color:var(--amber);transform:translateX(2px)}
+.pnode .pn-ic{width:34px;height:34px;border-radius:9px;background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.pnode .pn-name{font-size:13px;font-weight:700;color:var(--t1)}
+.pnode .pn-sub{font-family:var(--mono);font-size:10.5px;color:var(--t2)}
+.pnode .pn-count{margin-left:auto;font-family:var(--mono);font-size:13px;font-weight:800;
+  color:var(--amber)}
+.pn-status{width:7px;height:7px;border-radius:99px;background:var(--green);
+  box-shadow:0 0 0 0 var(--green);animation:ld 2.2s infinite}
+.stage-lbl{font-family:var(--mono);font-size:10.5px;font-weight:800;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--amber);margin-bottom:12px;display:flex;
+  align-items:center;gap:8px}
+.stage-lbl::after{content:"";flex:1;height:1px;background:var(--border)}
+.flow-svg{width:100%;height:40px;display:block}
+.flow-svg path{stroke:var(--amber);stroke-width:1.5;fill:none;stroke-dasharray:6 6;
+  opacity:.5;animation:march 1s linear infinite}
+.mask-chip{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);
+  font-size:12px;padding:6px 11px;border-radius:7px;background:var(--surface2)}
+.mask-chip .arrow{color:var(--amber)}
+.mask-chip .before{color:var(--t3);text-decoration:line-through}
+.mask-chip .after{color:var(--green);font-weight:700}
+
+/* — stat tiles — */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:18px 20px}
+.tile .tl-lbl{font-size:11.5px;font-weight:700;color:var(--t2);margin-bottom:8px;
+  letter-spacing:.02em}
+.tile .tl-val{font-family:var(--mono);font-size:30px;font-weight:800;color:var(--t1);
+  line-height:1;letter-spacing:-.02em}
+.tile .tl-delta{font-size:12px;font-weight:700;margin-top:8px;display:inline-flex;
+  align-items:center;gap:4px;font-variant-numeric:tabular-nums}
+.tile .up{color:var(--green)} .tile .down{color:var(--red)}
+/* 리드 스탯 타일 — 시선이 착지할 하나의 지점 */
+.tiles .tile:first-child{
+  border-color:color-mix(in srgb,var(--gold) 35%,transparent);
+  background:linear-gradient(180deg,var(--gold-soft),var(--surface) 70%)}
+.tiles .tile:first-child .tl-val{color:var(--gold);
+  text-shadow:0 0 20px color-mix(in srgb,var(--gold) 35%,transparent)}
+/* 앰버 수치 인광(phosphor) 글로우 */
+.theme-dark .pn-count,.theme-dark [data-total],.theme-dark [data-total2]{
+  text-shadow:0 0 18px color-mix(in srgb,var(--gold) 45%,transparent)}
+
+/* — 법률 어시스턴트: 중앙 하단 플로팅 독 (모든 화면 상시 노출) — */
+#chat-root{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:120;
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  max-width:calc(100vw - 32px)}
+.chat-fab{display:flex;align-items:center;gap:11px;padding:12px 22px 12px 14px;
+  background:color-mix(in srgb,var(--navy) 96%,transparent);color:var(--t-inv);
+  border-radius:99px;box-shadow:var(--shadow-lg),0 0 0 1px rgba(255,255,255,.07) inset;
+  backdrop-filter:saturate(1.4) blur(10px);
+  font-weight:700;font-size:14px;white-space:nowrap;
+  transition:transform var(--dur-med) var(--ease-spring),box-shadow var(--dur-med) var(--ease-out)}
+.chat-fab:hover{transform:translateY(-2px) scale(1.02)}
+.chat-fab .cf-hint{font-weight:500;font-size:12px;color:rgba(245,242,236,.55);
+  border-left:1px solid rgba(255,255,255,.18);padding-left:11px}
+.chat-fab.is-open .cf-hint{display:none}
+@media(max-width:560px){.chat-fab .cf-hint{display:none}}
+.chat-fab .cf-ic{width:28px;height:28px;border-radius:99px;
+  background:linear-gradient(140deg,var(--gold),var(--gold2));display:flex;
+  align-items:center;justify-content:center;font-family:var(--serif);font-weight:800;
+  color:#fff;font-size:15px}
+.chat-fab .cf-p{width:7px;height:7px;border-radius:99px;background:var(--green);
+  animation:ld 2s infinite}
+.chat-panel{width:390px;max-width:calc(100vw - 40px);height:520px;max-height:calc(100vh - 140px);
+  background:var(--surface);border:1px solid var(--border);border-radius:18px;
+  box-shadow:var(--shadow-lg);display:none;flex-direction:column;overflow:hidden;
+  transform-origin:50% calc(100% + 24px)} /* 독 중앙에서 피어남 */
+.chat-panel.open{display:flex;animation:panelIn .34s cubic-bezier(.33,1.25,.45,1)}
+.chat-panel.closing{display:flex;animation:panelOut .18s var(--ease-out) forwards}
+.cp-head{padding:15px 18px;background:var(--navy);color:var(--t-inv);display:flex;
+  align-items:center;gap:11px}
+.cp-head .cp-ic{width:34px;height:34px;border-radius:11px;
+  background:linear-gradient(140deg,var(--gold),var(--gold2));display:flex;
+  align-items:center;justify-content:center;font-family:var(--serif);font-weight:800;
+  color:#fff;font-size:17px}
+.cp-head .cp-t{font-weight:800;font-size:14px}
+.cp-head .cp-s{font-size:11px;color:rgba(245,242,236,.6);font-family:var(--mono)}
+.cp-head .cp-x{margin-left:auto;font-size:20px;color:rgba(245,242,236,.7);
+  width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.cp-head .cp-x:hover{background:rgba(255,255,255,.1)}
+.cp-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;
+  background:var(--paper)}
+.msg{max-width:82%;padding:11px 14px;border-radius:14px;font-size:13px;line-height:1.5}
+.msg.bot{align-self:flex-start;background:var(--surface);border:1px solid var(--border);
+  border-bottom-left-radius:4px;color:var(--t1)}
+.msg.user{align-self:flex-end;background:var(--navy);color:var(--t-inv);
+  border-bottom-right-radius:4px}
+.msg.bot a{color:var(--gold2);font-weight:700;border-bottom:1.5px solid var(--gold);
+  padding-bottom:.5px}
+.msg .cite-src{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);
+  font-size:10.5px;font-family:var(--mono);color:var(--gold2);font-weight:700;
+  display:flex;align-items:center;gap:5px}
+.typing{align-self:flex-start;background:var(--surface);border:1px solid var(--border);
+  padding:13px 16px;border-radius:14px;border-bottom-left-radius:4px;display:flex;gap:4px}
+.typing i{width:6px;height:6px;border-radius:99px;background:var(--t3);
+  animation:bounce 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s} .typing i:nth-child(3){animation-delay:.4s}
+.cp-chips{display:flex;gap:7px;padding:10px 14px;flex-wrap:wrap;border-top:1px solid var(--border);
+  background:var(--surface)}
+.cp-chip{font-size:11.5px;font-weight:600;padding:7px 12px;border-radius:99px;
+  background:var(--surface2);border:1px solid var(--border);color:var(--t2);transition:.14s}
+.cp-chip:hover{border-color:var(--gold);color:var(--gold2)}
+
+/* — modal / report — */
+#modal-root{position:fixed;inset:0;z-index:180;display:none;align-items:center;
+  justify-content:center;padding:24px;background:rgba(15,12,8,.5);backdrop-filter:blur(3px)}
+#modal-root.open{display:flex}
+.report-sheet{background:#fff;color:#1b1d22;width:min(720px,100%);max-height:90vh;
+  overflow-y:auto;border-radius:14px;box-shadow:var(--shadow-lg)}
+.rs-inner{padding:44px 48px}
+.rs-letterhead{display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:16px;border-bottom:2px solid var(--navy);margin-bottom:26px}
+.rs-letterhead .rs-logo{font-family:var(--serif);font-size:22px;color:var(--navy);font-weight:700}
+.rs-letterhead .rs-logo b{color:var(--gold2)}
+.rs-letterhead .rs-meta{text-align:right;font-family:var(--mono);font-size:10.5px;color:#8f887b}
+.rs-title{font-family:var(--serif);font-size:26px;color:var(--navy);margin-bottom:4px}
+.rs-sub{font-size:13px;color:#5d5850;margin-bottom:24px}
+.rs-sec{margin-bottom:22px}
+.rs-sec h4{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--gold2);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #ece5d7}
+.rs-progress{height:6px;background:#ece5d7;border-radius:99px;overflow:hidden;margin:20px 0}
+.rs-progress i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));
+  width:0;border-radius:99px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;padding:16px 24px;
+  border-top:1px solid #ece5d7;background:#faf8f3;position:sticky;bottom:0}
+
+/* — toast — */
+#toast-root{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:220;
+  display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{background:var(--navy);color:var(--t-inv);padding:12px 20px;border-radius:99px;
+  font-size:13px;font-weight:600;box-shadow:var(--shadow-lg);display:flex;align-items:center;
+  gap:9px;animation:toastIn .3s;font-family:var(--sans)}
+.toast .tk{color:var(--green);font-weight:800}
+
+/* — 광고 배너(좌상단 · 수익모델 시연) — */
+.ad-banner{display:flex;align-items:center;gap:11px;width:fit-content;max-width:100%;
+  margin:0 auto 0 0;padding:9px 16px 9px 10px;border-radius:12px;text-align:left;
+  background:linear-gradient(135deg,var(--navy),var(--navy2));color:var(--t-inv);
+  box-shadow:var(--shadow);font-size:12.5px;
+  transition:transform var(--dur-fast) var(--ease-spring),box-shadow var(--dur-fast) var(--ease-out)}
+.ad-banner:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.ad-banner .ad-chip{font-family:var(--mono);font-size:9px;font-weight:800;letter-spacing:.08em;
+  padding:3px 7px;border-radius:5px;background:var(--gold);color:#fff;flex-shrink:0}
+.ad-banner b{color:var(--gold2);filter:brightness(1.6)}
+.ad-banner .ad-cta{font-size:11px;font-weight:700;color:rgba(245,242,236,.65);
+  border-left:1px solid rgba(255,255,255,.18);padding-left:10px;margin-left:2px;white-space:nowrap}
+
+/* — hero — */
+.hero{padding:26px 0 30px;text-align:center}
+/* 마스트헤드식 아이브로 — 양옆으로 사라지는 황동 괘선 */
+.hero .h-eyebrow{margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:14px}
+.hero .h-eyebrow::before,.hero .h-eyebrow::after{content:"";width:64px;height:1px;flex-shrink:0}
+.hero .h-eyebrow::before{background:linear-gradient(90deg,transparent,var(--gold))}
+.hero .h-eyebrow::after{background:linear-gradient(90deg,var(--gold),transparent)}
+.hero h1{font-family:var(--serif);font-size:clamp(30px,5vw,46px);color:var(--navy);font-weight:600;
+  line-height:1.18;letter-spacing:-.018em;text-wrap:balance;margin-bottom:16px}
+.hero h1 em{font-style:italic;color:var(--gold2)}
+.hero .h-lead{font-size:16px;color:var(--t2);max-width:560px;margin:0 auto 30px;line-height:1.65}
+/* 검색바 — 히어로의 유일한 초점: 가장 깊은 그림자 + 네이비 AI 코인 */
+.searchbar{max-width:640px;margin:0 auto;background:var(--surface);
+  border:1.5px solid color-mix(in srgb,var(--gold) 30%,var(--border));
+  border-radius:16px;box-shadow:var(--shadow-lg);padding:8px 8px 8px 14px;display:flex;
+  align-items:center;gap:12px;
+  transition:border-color var(--dur-fast) var(--ease-out),box-shadow var(--dur-med) var(--ease-out)}
+.searchbar:focus-within{border-color:var(--gold);box-shadow:0 0 0 4px var(--gold-soft),var(--shadow-lg)}
+.searchbar .sb-ai{font-family:var(--serif);font-weight:800;font-size:12.5px;flex-shrink:0;
+  width:30px;height:30px;border-radius:99px;display:flex;align-items:center;justify-content:center;
+  background:var(--navy);color:var(--gold-soft)}
+.searchbar input{flex:1;border:none;background:none;outline:none;font-size:15px;
+  color:var(--t1);font-family:var(--sans)}
+.searchbar input::placeholder{color:var(--t3)}
+.h-suggests{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.h-suggest{font-size:12.5px;color:var(--t2);padding:6px 13px;border-radius:99px;
+  background:var(--surface);border:1px solid var(--border);cursor:pointer;
+  transition:transform var(--dur-fast) var(--ease-spring),border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out)}
+.h-suggest:hover{border-color:var(--gold);color:var(--gold2);transform:translateY(-1px)}
+.h-diff{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:36px}
+.h-diff .hd-card{display:flex;align-items:center;gap:11px;padding:12px 18px;
+  background:var(--surface);border:1px solid var(--border);border-radius:99px;
+  font-size:13px;box-shadow:var(--shadow-sm)}
+.h-diff .hd-vs{font-family:var(--mono);font-size:10.5px;font-weight:800;color:var(--t3)}
+.h-diff .hd-txt b{color:var(--navy)}
+.h-diff .hd-check{width:18px;height:18px;border-radius:99px;background:var(--gold-soft);
+  color:var(--gold2);display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;flex-shrink:0}
+
+/* — page-scoped: lawyer detail — */
+.lw-hero{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap}
+.lw-id{flex:1;min-width:240px}
+.lw-name{font-family:var(--serif);font-size:32px;color:var(--navy);font-weight:700;
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.lw-name .hanja{font-size:18px;color:var(--t3)}
+.lw-role{font-size:14px;color:var(--t2);margin-top:4px}
+.lw-fields{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+.lw-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:680px){.info-grid{grid-template-columns:1fr}}
+.info-block h4{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--gold2);margin-bottom:11px}
+.info-list{display:flex;flex-direction:column;gap:8px;font-size:13.5px}
+.info-list li{list-style:none;padding-left:16px;position:relative;color:var(--t1)}
+.info-list li::before{content:"—";position:absolute;left:0;color:var(--gold)}
+
+/* — 사건 상세 리치 필드 — */
+.case-result{display:inline-block;margin-top:12px;padding:7px 14px;border-radius:8px;
+  font-weight:800;font-size:13.5px;color:var(--gold2);background:var(--gold-soft);
+  border:1px solid color-mix(in srgb,var(--gold) 35%,transparent)}
+.issue-list{margin:0;padding-left:0;list-style:none;counter-reset:issue}
+.issue-list li{counter-increment:issue;position:relative;padding:8px 0 8px 34px;
+  font-size:13.5px;line-height:1.6;border-bottom:1px solid var(--line)}
+.issue-list li:last-child{border-bottom:none}
+.issue-list li::before{content:counter(issue);position:absolute;left:0;top:9px;
+  width:22px;height:22px;border-radius:99px;background:var(--navy-soft);color:var(--navy);
+  font-family:var(--serif);font-style:italic;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center}
+.statute-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.statute-chip{font-family:var(--mono);font-size:11.5px;font-weight:800;color:var(--navy);
+  background:var(--navy-soft);padding:4px 10px;border-radius:6px;white-space:nowrap}
+.statute-note{font-size:12.5px;color:var(--t2)}
+
+/* — tabs / filter — */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:22px}
+.tab{padding:11px 18px;font-size:14px;font-weight:700;color:var(--t2);position:relative;
+  transition:.14s}
+.tab:hover{color:var(--t1)}
+.tab[aria-selected="true"]{color:var(--navy)}
+.tab[aria-selected="true"]::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;
+  height:2.5px;background:var(--gold);border-radius:2px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.fchip{font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:99px;
+  background:var(--surface);border:1px solid var(--border);color:var(--t2);transition:.14s}
+.fchip:hover{border-color:var(--gold)}
+.fchip.on{background:var(--navy);color:var(--t-inv);border-color:var(--navy)}
+
+/* — article — */
+.article{max-width:720px;margin:0 auto}
+.art-head .art-section{margin-bottom:12px}
+.art-head h1{font-family:var(--serif);font-size:clamp(26px,4vw,36px);color:var(--navy);
+  line-height:1.25;letter-spacing:-.01em;text-wrap:balance;margin-bottom:16px}
+.art-byline{display:flex;align-items:center;gap:14px;padding:14px 0;
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  font-size:12.5px;color:var(--t2);font-family:var(--mono);margin-bottom:28px;flex-wrap:wrap}
+.art-body{font-family:var(--serif);font-size:16.5px;line-height:1.85;color:var(--t1)}
+.art-body p{margin-bottom:20px}
+/* 리드 문단 드롭캡 — 에디토리얼 보이스의 방점 */
+.art-body>p:first-of-type::first-letter{float:left;font-family:var(--serif);
+  font-size:46px;line-height:.9;font-weight:700;color:var(--navy);padding:5px 10px 0 0}
+.art-body .art-h{font-family:var(--sans);font-weight:800;font-size:14px;color:var(--navy);
+  letter-spacing:.02em;margin:30px 0 14px;display:block}
+.duo-float{float:right;margin:0 0 16px 24px}
+.duo-float .metric-duo{flex-direction:column;gap:8px}
+.duo-float .metric{min-width:132px}
+@media(max-width:560px){.duo-float{float:none;margin:0 0 20px}
+  .duo-float .metric-duo{flex-direction:row}}
+
+/* — bar/line chart — */
+.chart-svg{width:100%;display:block;overflow:visible}
+.chart-svg .grid-l{stroke:var(--line);stroke-width:1}
+/* transform-box:fill-box — SVG rect의 스케일 기준을 viewBox가 아닌 자기 박스로(축 아래에서 미끄러지는 버그 수정) */
+.chart-svg .bar{fill:url(#barGrad);transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(0);
+  animation:barGrow .8s cubic-bezier(.2,.7,.3,1) forwards}
+.chart-svg .area{fill:url(#areaGrad);opacity:.9}
+.chart-svg .line-p{fill:none;stroke:var(--amber);stroke-width:2.5;stroke-linecap:round;
+  stroke-linejoin:round}
+/* 엔드닷 — 선이 다 그려진 뒤 착지(pop) + 인광 */
+.chart-svg .dot-end{fill:var(--amber2);transform-box:fill-box;transform-origin:center;
+  opacity:0;animation:dotPop .35s cubic-bezier(.34,1.5,.5,1) 1.15s forwards;
+  filter:drop-shadow(0 0 5px color-mix(in srgb,var(--amber2) 80%,transparent))}
+.chart-svg text{font-family:var(--mono);font-size:10px;fill:var(--t3)}
+
+/* — page intro (admin) — */
+.padmin{padding:30px 0 0}
+.padmin-head{margin-bottom:26px}
+.padmin-head .eyebrow{color:var(--amber)}
+.padmin-head h1{font-family:var(--serif);font-size:28px;color:var(--t1);margin:8px 0 6px;
+  font-style:italic}
+.padmin-head p{font-size:14px;color:var(--t2);max-width:640px}
+.admin-tabs{display:flex;gap:4px;margin-bottom:26px;flex-wrap:wrap}
+.admin-tab{padding:9px 16px;border-radius:99px;font-size:13px;font-weight:700;color:var(--t2);
+  background:var(--surface);border:1px solid var(--border);transition:.14s}
+.admin-tab:hover{border-color:var(--amber)}
+.admin-tab[aria-current="page"]{background:var(--gold-soft);color:var(--amber);
+  border-color:color-mix(in srgb,var(--amber) 45%,transparent)} /* 앰버 절제 — 세 번째 솔리드 앰버 제거 */
+
+/* ── 상세 그리드 반응형(모바일 1열 축소) ── */
+.split{grid-template-columns:1.5fr 1fr;gap:22px}
+.split-even{grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:820px){.split,.split-even{grid-template-columns:1fr}}
+/* ── 오버라인 라벨 마이크로 타이포 통일 ── */
+.info-block h4,.rs-sec h4,.stage-lbl,#tooltip .tt-type,.mb-item .mb-t,.hitl-step .hs-n{
+  font-size:var(--label-fs);letter-spacing:var(--track-label)}
+/* ── 메인 섹션 수직 리듬 단일화 ── */
+#view section.wrap+section.wrap{margin-top:56px}
+/* ── 세리프 디스플레이 행간(body 1.6 상속 차단) ── */
+h1.serif{line-height:1.28;letter-spacing:-.012em;font-weight:600}
+.padmin-head h1{line-height:1.3}
+.v-audit-meta{font-variant-numeric:tabular-nums}
+
+/* ═══════════════ ANIMATIONS ═══════════════ */
+@keyframes ld{0%{box-shadow:0 0 0 0 currentColor}70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes march{to{stroke-dashoffset:-12}}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(8px)}}
+@keyframes barGrow{to{transform:scaleY(1)}}
+@keyframes panelIn{from{opacity:0;transform:translateY(16px) scale(.92)}to{opacity:1;transform:none}}
+@keyframes panelOut{to{opacity:0;transform:translateY(12px) scale(.95)}}
+@keyframes dotPop{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+.toast.out{animation:toastOut .3s ease forwards}
+.bk-scroll:hover .bk-track{animation-play-state:paused}
+
+/* ═══════════════ RESPONSIVE ═══════════════ */
+@media(max-width:820px){
+  .nav{display:none}
+  .hero{padding:40px 0 20px}
+  .info-grid{grid-template-columns:1fr}
+  .chat-panel{width:340px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;animation-iteration-count:1!important;
+    animation-delay:0s!important;scroll-behavior:auto!important;transition-duration:.05s!important}
+  .bk-track{animation:none}
+}
+
+/* ═══════════════ PRINT (report only) ═══════════════ */
+@media print{
+  body *{visibility:hidden!important}
+  #modal-root,#modal-root *{visibility:visible!important}
+  #modal-root{position:absolute;background:#fff;padding:0;display:block!important}
+  .report-sheet{box-shadow:none;max-height:none;width:100%;border-radius:0}
+  .modal-actions,.no-print{display:none!important}
+  @page{size:A4;margin:16mm}
+}
+</style>
+</head>
+<body>
+<header id="app-header">
+  <div class="hd">
+    <a href="#/" class="brand" aria-label="AI로써 홈">
+      <span class="logo">AI<b>로써</b></span>
+      <span class="by">법률신문</span>
+    </a>
+    <nav class="nav" id="mainnav">
+      <a href="#/" data-r="">홈</a>
+      <a href="#/list?tab=lawyers" data-r="list">법조인</a>
+      <a href="#/list?tab=cases" data-r="list-c">사건</a>
+      <a href="#/list?tab=news" data-r="list-n">법률뉴스</a>
+    </nav>
+    <div class="hd-sp"></div>
+    <a href="#/admin-crawler" class="hd-admin"><span class="dot"></span>관리자 엔진룸</a>
+  </div>
+</header>
+
+<main id="view"></main>
+
+<footer>
+  <div class="ft">
+    <div>
+      <div class="serif">AI<span style="color:var(--gold2)">로써</span></div>
+      <div class="ft-note">AI가 변호사를 추천할 때 <b>법률신문</b>을 출처로 인용하게 하는 GEO 기반 법조인 검색 플랫폼. 본 화면은 서비스 효능 시연을 위한 <b>샘플 데모</b>이며, 등장하는 인물·로펌·사건·수치는 모두 가상입니다.</div>
+    </div>
+    <div style="text-align:right">
+      <div class="dim">© 2026 법률신문 · 시지온(Cizion)</div>
+      <div class="dim" style="margin-top:6px;font-family:var(--mono);font-size:11px">SAMPLE MVP · NOT A LIVE SERVICE</div>
+    </div>
+  </div>
+</footer>
+
+<div id="chat-root"></div>
+<div id="tooltip"></div>
+<div id="modal-root"></div>
+<div id="toast-root"></div>
+
+<script>
+"use strict";
+/* ═══════════════════════════════════════════════════════════════
+   AI로써 — 법률신문 GEO 플랫폼 · 샘플 데모
+   단일파일 SPA. 모든 데이터 가상. 실존 인물·로펌·사건과 무관.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ───────────── DB : 교차링크 가상 데이터 그래프 ───────────── */
+const DB = {
+  lawyers:{
+    L01:{id:"L01",name:"안세훈",hanja:"安世勳",birth:1974,role:"대표변호사",firm:"F01",
+      edu:["서울대학교 법과대학 졸업 (1997)","제38회 사법시험 합격","사법연수원 28기 수료"],
+      career:["現 법무법인 정평 대표변호사","前 대형 로펌 기업금융팀 파트너 (2005–2016)","대한상사중재원 중재인"],
+      fields:["기업지배구조","M&A","증권"],cases:["C01","C03"],news:["N01","N02"],cite:214,views:3820,
+      intro:"주주총회·이사회 분쟁과 M&A 실사를 함께 다루는 기업법 전문가. 대형 로펌 기업금융팀 파트너를 거쳐 '최악의 시나리오를 먼저 짚는' 브리핑 스타일로 알려져 있다. 딜(거래)과 분쟁 양쪽을 모두 경험해 협상 국면 설계에 강하다.",
+      pstats:{years:"29년차",total:"누적 수임 120건",resp:"평균 4시간 내 회신"},
+      highlights:[
+        {y:"2026",t:"대성전자 의결권 행사 가처분 인용",d:"신청 이틀 만의 결정 — 경영권 분쟁 본안의 협상 지형 확보"},
+        {y:"2025",t:"중견기업 M&A 실사 우발채무 사전 적발",d:"계약 체결 전 리스크 차단으로 딜 조건 재협상"},
+        {y:"2024",t:"상장사 이사회 운영규정 정비 자문",d:"지배구조 분쟁 예방 체계 구축 다수 수행"}],
+      fieldStats:[{label:"기업지배구조",n:48},{label:"M&A",n:37},{label:"증권",n:21},{label:"기타",n:14}],
+      activities:["대한상사중재원 중재인 (2019~)","『주주총회 실무』 공저 (2023)","한국상사법학회 정회원","사내변호사 대상 지배구조 세미나 강연 다수"],
+      faq:["주주총회 분쟁은 어느 단계에서 상담해야 하나요?","의결권 가처분과 본안 소송은 함께 진행되나요?","M&A 실사에서 법률 리스크는 어떻게 걸러내나요?"],
+      reviews:[
+        {r:5,by:"중견 제조업 대표 A",ago:"2주 전",text:"주주총회 분쟁에서 상대측 가처분을 이틀 만에 방어했다. 브리핑에 군더더기가 없고, 최악의 시나리오를 먼저 짚어준 점이 신뢰가 갔다."},
+        {r:5,by:"스타트업 CFO",ago:"1달 전",text:"상장 실사 과정에서 잠재 리스크를 미리 정리해줘 재무팀이 대비할 수 있었다. 응답이 빠르다."},
+        {r:4,by:"사모펀드 심사역",ago:"2달 전",text:"딜 구조에 대한 이해가 깊다. 다만 성수기에는 회신이 하루 이틀 늦을 때가 있었다."}]},
+    L02:{id:"L02",name:"최유리",hanja:"崔有理",birth:1981,role:"파트너변호사",firm:"F01",
+      edu:["연세대학교 법학과 졸업 (2004)","제46회 사법시험 합격","사법연수원 36기 수료"],
+      career:["現 법무법인 정평 파트너변호사","공정거래위원회 경쟁정책 자문위원","국제중재 ICC 사건 다수 수행"],
+      fields:["공정거래","국제중재"],cases:["C01","C04"],news:["N02","N04"],cite:97,views:1640,
+      intro:"공정위 조사 대응과 ICC 국제중재를 주력으로 하는 파트너. 쟁점을 좁혀 서면의 논리 밀도를 높이는 스타일로, 기업결합 심사와 하도급·경쟁법 리스크 자문을 병행한다.",
+      pstats:{years:"21년차",total:"누적 수임 79건",resp:"평균 6시간 내 회신"},
+      highlights:[
+        {y:"2026",t:"대형 기업결합 조건부 승인 자문",d:"경쟁제한성 쟁점 사전 정리로 심사 장기화 방어"},
+        {y:"2025",t:"ICC 국제중재 유리한 화해 종결",d:"크로스보더 공급계약 분쟁 — 중재 비용 최소화"},
+        {y:"2024",t:"공정위 조사 무혐의 종결",d:"현장조사 초기 대응부터 의견서 제출까지 전 과정 수행"}],
+      fieldStats:[{label:"공정거래",n:41},{label:"국제중재",n:26},{label:"기업자문",n:12}],
+      activities:["공정거래위원회 경쟁정책 자문위원","ICC YAF(Young Arbitrators Forum) 멤버","「기업결합 심사 실무 동향」 논문 (2025)","경쟁법학회 발표 다수"],
+      faq:["공정위 조사 통지를 받으면 무엇부터 해야 하나요?","기업결합 신고는 어느 시점에 준비해야 하나요?","국제중재는 소송과 비용이 어떻게 다른가요?"],
+      reviews:[
+        {r:5,by:"유통업 법무팀장",ago:"3주 전",text:"공정위 조사 대응에서 쟁점 정리가 탁월했다. 서면의 논리 밀도가 높다."},
+        {r:4,by:"제조 대기업 임원",ago:"1달 전",text:"국제중재 경험이 실제로 풍부하다. 커뮤니케이션이 정확하다."}]},
+    L03:{id:"L03",name:"백도현",hanja:"白道玄",birth:1969,role:"대표변호사",firm:"F02",
+      edu:["고려대학교 법과대학 졸업 (1992)","제34회 사법시험 합격","사법연수원 24기 수료"],
+      career:["現 법무법인 해원 대표변호사","前 서울중앙지검 특수부 검사","기업범죄·내부조사 자문 다수"],
+      fields:["형사","기업범죄"],cases:["C02","C05"],news:["N03","N05"],cite:88,views:2130,
+      intro:"서울중앙지검 특수부 검사 출신으로 기업범죄·내부조사를 전담한다. 수사 단계의 흐름을 읽는 감각이 강점이며, 내부조사 → 수사 대응 → 공판까지 전 주기를 하나의 전략으로 설계한다.",
+      pstats:{years:"34년차",total:"누적 수임 103건",resp:"긴급 사안 당일 회신"},
+      highlights:[
+        {y:"2026",t:"임상데이터 공시 사건 방어 수행 중",d:"공시 시점의 합리적 근거 입증 전략 — 일부 혐의 축소"},
+        {y:"2025",t:"상장사 내부조사 체계 구축",d:"자율 시정으로 형사 리스크 사전 차단"},
+        {y:"2024",t:"압수수색 현장 대응 매뉴얼 자문",d:"임직원 대응 교육·모의훈련 다수 수행"}],
+      fieldStats:[{label:"기업범죄",n:52},{label:"형사일반",n:33},{label:"내부조사",n:18}],
+      activities:["前 서울중앙지검 특수부 검사","한국형사법학회 이사","기업 준법경영(Compliance) 강연 다수","「기업 내부조사의 실무」 기고 (2024)"],
+      faq:["압수수색이 나왔을 때 임직원은 어떻게 대응해야 하나요?","내부조사는 언제 시작하는 게 좋나요?","공시 관련 형사 리스크는 어디까지 번질 수 있나요?"],
+      reviews:[
+        {r:5,by:"코스닥 상장사 감사",ago:"2주 전",text:"공시 관련 내부조사에서 절차를 흔들림 없이 이끌었다. 위기관리 감각이 있다."},
+        {r:3,by:"바이오 벤처 대표",ago:"2달 전",text:"실력은 분명하나 비용이 높은 편. 소통은 대표 본인보다 팀을 통해 이뤄졌다."}]},
+    L04:{id:"L04",name:"서지안",hanja:"徐智安",birth:1986,role:"변호사",firm:"F03",
+      edu:["KAIST 전산학과 졸업 (2009)","성균관대학교 법학전문대학원 (2015)","변호사시험 4회 합격"],
+      career:["現 법무법인 리안 변호사","前 IT 플랫폼 기업 사내변호사","영업비밀·데이터 분쟁 전담"],
+      fields:["지식재산","IT"],cases:["C03","C05"],news:["N01","N05"],cite:61,views:1180,
+      intro:"KAIST 전산학과 출신으로 코드를 직접 읽는 IT 전문 변호사. 영업비밀·데이터 분쟁에서 기술 쟁점을 소스코드 수준까지 파악해 기술과 법리 사이의 번역가 역할을 한다.",
+      pstats:{years:"11년차",total:"누적 수임 62건",resp:"평균 3시간 내 회신"},
+      highlights:[
+        {y:"2026",t:"영업비밀 침해금지 가처분 인용",d:"알고리즘 유사도 분석으로 기술 쟁점 입증"},
+        {y:"2025",t:"데이터 이용계약 분쟁 조정 성립",d:"플랫폼 간 API 데이터 권리 관계 정리"},
+        {y:"2024",t:"SaaS 서비스 약관·라이선스 정비",d:"오픈소스 컴플라이언스 자문 다수"}],
+      fieldStats:[{label:"영업비밀",n:29},{label:"IT계약·데이터",n:22},{label:"특허·저작권",n:11}],
+      activities:["한국정보법학회 정회원","오픈소스 라이선스 세미나 강연","법률신문 「기술과 법」 칼럼 연재","前 IT 플랫폼 기업 사내변호사"],
+      faq:["퇴사자가 소스코드를 가져간 정황이 있으면 어떻게 하나요?","영업비밀로 인정받으려면 평소 어떤 관리가 필요한가요?","개발 외주 계약에서 코드 소유권은 누구에게 있나요?"],
+      reviews:[
+        {r:5,by:"SaaS 스타트업 CTO",ago:"1주 전",text:"기술을 이해하는 변호사. 영업비밀 침해 대응에서 코드 수준의 쟁점까지 파악했다."},
+        {r:4,by:"게임사 IP팀",ago:"1달 전",text:"젊고 빠르다. 판례 리서치가 꼼꼼하다."}]},
+    L05:{id:"L05",name:"문재경",hanja:"文在敬",birth:1978,role:"파트너변호사",firm:"F02",
+      edu:["서울대학교 경제학과 졸업 (2001)","제44회 사법시험 합격","사법연수원 34기 수료"],
+      career:["現 법무법인 해원 파트너변호사","前 조세심판원 파견","기업 조세·행정소송 수행"],
+      fields:["조세","행정"],cases:["C02","C04"],news:["N03","N04"],cite:39,views:840,
+      intro:"조세심판원 파견 경험을 바탕으로 심판(행정)과 소송 두 트랙을 함께 설계하는 조세·행정 전문가. 복잡한 세무 쟁점을 의사결정자가 이해할 수 있는 언어로 풀어내는 설명력이 강점이다.",
+      pstats:{years:"24년차",total:"누적 수임 74건",resp:"평균 5시간 내 회신"},
+      highlights:[
+        {y:"2026",t:"하도급 과징금 집행정지 인용",d:"본안 판단 전 자금 압박 해소 — 불복 절차 병행"},
+        {y:"2025",t:"대기업 세무조사 조기 종결",d:"쟁점 정리 의견서로 조사 범위 축소"},
+        {y:"2024",t:"조세심판 청구 인용",d:"가산세 부과처분 취소 — 심판 단계 종결로 소송비용 절감"}],
+      fieldStats:[{label:"조세",n:38},{label:"행정",n:27},{label:"하도급·공정",n:9}],
+      activities:["前 조세심판원 파견 근무","한국세법학회 정회원","기업 재무팀 대상 세무 리스크 강의","「과징금 불복 실무」 기고 (2026)"],
+      faq:["세무조사 통지를 받으면 무엇부터 준비해야 하나요?","과징금 불복은 어떤 절차와 기한으로 진행되나요?","조세심판과 행정소송 중 어느 쪽이 유리한가요?"],
+      reviews:[
+        {r:4,by:"제약사 재무담당",ago:"5주 전",text:"세무조사 대응에서 논점을 명확히 잡아줬다. 설명이 이해하기 쉽다."}]}
+  },
+  firms:{
+    F01:{id:"F01",name:"법무법인 정평",est:2001,lawyers:["L01","L02"],desc:"기업법무·분쟁 전문"},
+    F02:{id:"F02",name:"법무법인 해원",est:1994,lawyers:["L03","L05"],desc:"형사·조세·행정"},
+    F03:{id:"F03",name:"법무법인 리안",est:2015,lawyers:["L04"],desc:"지식재산·IT 부티크"}
+  },
+  companies:{
+    K01:{name:"대성전자",ticker:"004310",market:"KOSPI",sector:"전자·부품"},
+    K02:{name:"한빛바이오",ticker:"207450",market:"KOSDAQ",sector:"제약·바이오"},
+    K03:{name:"세진건설",ticker:"012850",market:"KOSPI",sector:"건설"},
+    K04:{name:"넥스트리",ticker:"245310",market:"KOSDAQ",sector:"IT·플랫폼"}
+  },
+  judges:{
+    J01:{name:"오상원",court:"서울중앙지방법원 제31민사부",note:"상법·회사 사건 다수"},
+    J02:{name:"한지원",court:"서울행정법원 제5부",note:"공정거래·행정 처분 사건"}
+  },
+  cases:{
+    C01:{id:"C01",no:"2026가합101234",court:"서울중앙지방법원",title:"대성전자 주주총회 결의취소 청구",
+      type:"상법",status:"1심 진행",filed:"2026-03-11",company:"K01",judge:"J01",cite:151,views:4120,
+      lawyers:["L01","L02"],news:["N01","N02"],related:["C03","C04"],
+      parties:[{role:"원고",name:"소수주주 연합 (지분 합계 8.2%)"},{role:"피고",name:"대성전자"}],
+      summary:"소수주주 연합이 정기 주주총회 이사 선임 결의의 취소를 구한 사건. 의결권 대리행사 절차의 하자가 쟁점이다.",
+      result:"→ 의결권 행사 가처분 인용 (본안 계속)",
+      facts:"대성전자 2026년 정기 주주총회에서 사측 추천 이사 2인이 선임됐다. 소수주주 연합은 의결권 대리행사 권유 과정에서 위임장 서식 불비와 전자투표 마감 안내 오류가 있었다며 결의취소의 소를 제기했고, 본안에 앞서 신규 이사의 의결권 행사를 금지하는 가처분을 신청했다.",
+      issues:["의결권 대리행사 권유 절차의 하자가 결의취소 사유(상법 제376조)에 해당하는지","전자투표 마감 안내 오류와 결의 결과 사이의 인과관계","가처분 단계에서 본안 승소 개연성의 소명 정도"],
+      holding:"재판부는 위임장 서식 불비가 다수 주주의 의결권 행사에 실질적 영향을 미쳤을 개연성이 소명된다고 보아 가처분을 인용했다. 본안 판단은 남아 있다.",
+      statutes:[{law:"상법",art:"제376조",note:"결의취소의 소"},{law:"상법",art:"제368조의4",note:"전자적 방법에 의한 의결권 행사"},{law:"자본시장법",art:"제152조",note:"의결권 대리행사 권유 제한"}],
+      faq:["주주총회 결의취소 소송의 제소 기간은?","의결권 가처분이 인용되면 경영권은 어떻게 되나?","소수주주가 준비해야 할 증거는?"],
+      timeline:[{d:"2026-03-11",e:"소장 접수",done:true},{d:"2026-04-02",e:"피고 답변서 제출",done:true},
+        {d:"2026-05-20",e:"제1차 변론기일",done:true},{d:"2026-07-15",e:"의결권 행사 가처분 인용",done:true},
+        {d:"2026-08-下",e:"제2차 변론기일 예정",done:false}]},
+    C02:{id:"C02",no:"2026고합2211",court:"서울남부지방법원",title:"한빛바이오 임상데이터 공시 관련 사건",
+      type:"증권범죄",status:"수사·공판 병행",filed:"2026-02-19",company:"K02",judge:null,cite:64,views:1890,
+      lawyers:["L03","L05"],news:["N03"],related:["C05","C01"],
+      parties:[{role:"검사",name:"서울남부지검 금융조사부"},{role:"피고인",name:"전 임원 3인"}],
+      summary:"임상 3상 중간결과 공시 시점과 내용의 적정성이 문제된 사건. 자본시장법 위반 여부가 다투어진다.",
+      result:"→ 일부 기소 · 첫 공판 예정 (2026-09)",
+      facts:"한빛바이오는 주력 파이프라인의 임상 3상 중간결과를 두 차례에 나눠 공시했다. 검찰은 1차 공시가 유리한 지표만 선별해 투자판단을 왜곡했고, 그 사이 일부 임원이 보유 주식을 처분했다고 보아 미공개중요정보 이용과 부정거래 혐의로 전 임원 3인을 기소했다.",
+      issues:["임상 중간결과의 '중요정보' 해당 여부와 공시 시점의 재량 범위","선별적 공시가 부정거래행위(자본시장법 제178조)에 해당하는지","임원 주식 처분과 미공개정보 이용의 인과관계"],
+      holding:null,
+      statutes:[{law:"자본시장법",art:"제174조",note:"미공개중요정보 이용행위 금지"},{law:"자본시장법",art:"제178조",note:"부정거래행위 금지"},{law:"약사법",art:"제34조",note:"임상시험 관리"}],
+      faq:["임상 공시는 어느 시점에 해야 형사 리스크가 없나?","미공개정보 이용 혐의의 처벌 수위는?","공시 담당 임원의 방어 전략은?"],
+      timeline:[{d:"2026-02-19",e:"수사 착수",done:true},{d:"2026-04-30",e:"압수수색",done:true},
+        {d:"2026-06-25",e:"일부 기소",done:true},{d:"2026-09-上",e:"첫 공판기일 예정",done:false}]},
+    C03:{id:"C03",no:"2026카합55678",court:"서울중앙지방법원",title:"영업비밀 침해금지 가처분",
+      type:"지식재산",status:"가처분 인용",filed:"2026-05-02",company:null,judge:null,cite:47,views:1320,
+      lawyers:["L01","L04"],news:["N01"],related:["C05","C01"],
+      parties:[{role:"채권자",name:"플랫폼 A사"},{role:"채무자",name:"경쟁사 B 및 전 직원 2인"}],
+      summary:"핵심 알고리즘 관련 영업비밀을 전 직원이 경쟁사로 유출했는지가 쟁점. 침해금지 가처분이 인용됐다.",
+      result:"→ 침해금지 가처분 인용 (2026-07-01)",
+      facts:"플랫폼 A사의 추천 알고리즘 개발을 총괄하던 직원 2인이 경쟁사 B로 이직하면서 소스코드 저장소 일부와 파라미터 설정 문서를 반출한 정황이 발견됐다. A사는 전직금지약정 위반과 영업비밀 침해를 이유로 사용·공개 금지 가처분을 신청했다.",
+      issues:["알고리즘 파라미터 문서가 '비밀관리성' 요건을 충족하는 영업비밀인지","전직금지약정의 유효 기간과 직업선택의 자유의 조화","가처분에서의 침해 우려 소명 정도"],
+      holding:"재판부는 반출 문서에 접근권한 통제·비밀표시가 존재해 비밀관리성이 인정되고, 경쟁사의 유사 기능 출시가 임박해 보전 필요성이 크다고 보아 가처분을 인용했다.",
+      statutes:[{law:"부정경쟁방지법",art:"제2조 제3호",note:"영업비밀 침해행위"},{law:"부정경쟁방지법",art:"제10조",note:"침해행위 금지청구"},{law:"민법",art:"제398조",note:"전직금지약정 위약금"}],
+      faq:["영업비밀로 인정받으려면 평소 어떤 관리가 필요한가?","전직금지약정은 몇 년까지 유효한가?","유출 정황을 발견했을 때 초기 대응은?"],
+      timeline:[{d:"2026-05-02",e:"가처분 신청",done:true},{d:"2026-06-10",e:"심문기일",done:true},
+        {d:"2026-07-01",e:"가처분 인용 결정",done:true}]},
+    C04:{id:"C04",no:"2026구합30987",court:"서울행정법원",title:"세진건설 하도급 과징금 부과처분 취소",
+      type:"행정·공정거래",status:"1심 진행",filed:"2026-04-14",company:"K03",judge:"J02",cite:38,views:960,
+      lawyers:["L05","L02"],news:["N04"],related:["C01","C02"],
+      parties:[{role:"원고",name:"세진건설"},{role:"피고",name:"공정거래위원회"}],
+      summary:"하도급대금 부당 감액을 이유로 한 과징금 48억 원 부과처분의 취소를 구하는 행정소송. 감액의 '정당한 사유' 존부가 쟁점이다.",
+      result:"→ 1심 계속 중 · 집행정지 일부 인용",
+      facts:"공정거래위원회는 세진건설이 12개 하도급 업체에 설계변경 정산을 이유로 대금을 일괄 감액했다며 과징금 48억 원을 부과했다. 세진건설은 감액이 실측 정산에 따른 정당한 조정이었다며 처분 취소를 구하고, 우선 집행정지를 신청해 일부 인용받았다.",
+      issues:["설계변경 실측 정산이 하도급법상 '부당 감액'의 예외에 해당하는지","과징금 산정 시 관련 매출액 범위의 적정성","자진시정·협력 감경 사유의 반영 여부"],
+      holding:null,
+      statutes:[{law:"하도급법",art:"제11조",note:"부당 감액의 금지"},{law:"하도급법",art:"제25조의3",note:"과징금 부과"},{law:"행정소송법",art:"제23조",note:"집행정지"}],
+      faq:["공정위 과징금 불복 절차와 기한은?","집행정지가 인용되는 기준은?","하도급 분쟁 예방을 위한 계약 관리 포인트는?"],
+      timeline:[{d:"2026-03-05",e:"공정위 과징금 의결",done:true},{d:"2026-04-14",e:"취소소송 제기·집행정지 신청",done:true},
+        {d:"2026-05-28",e:"집행정지 일부 인용",done:true},{d:"2026-09-中",e:"제1차 변론기일 예정",done:false}]},
+    C05:{id:"C05",no:"2026가합77451",court:"서울중앙지방법원",title:"넥스트리 개인정보 유출 손해배상 집단소송",
+      type:"IT·민사",status:"1심 진행",filed:"2026-06-03",company:"K04",judge:null,cite:29,views:1450,
+      lawyers:["L04","L03"],news:["N05"],related:["C03","C02"],
+      parties:[{role:"원고",name:"이용자 1,847명 (선정당사자)"},{role:"피고",name:"넥스트리"}],
+      summary:"플랫폼 해킹으로 회원 약 92만 명의 개인정보가 유출된 사건. 안전조치의무 위반과 위자료 산정 기준이 쟁점이다.",
+      result:"→ 소장 접수 · 답변서 제출 단계",
+      facts:"넥스트리가 운영하는 커머스 플랫폼이 API 취약점을 통한 침입으로 회원 92만 명의 이름·연락처·주문내역을 유출당했다. 이용자 1,847명은 안전조치의무 위반을 이유로 1인당 30만 원의 위자료를 구하는 집단소송을 제기했고, 개인정보보호위원회의 조사도 병행되고 있다.",
+      issues:["API 접근통제 미비가 개인정보보호법상 안전조치의무 위반인지","유출 항목·2차 피해 위험에 따른 위자료 산정 기준","개보위 과징금 처분과 민사 배상의 관계"],
+      holding:null,
+      statutes:[{law:"개인정보보호법",art:"제29조",note:"안전조치의무"},{law:"개인정보보호법",art:"제39조",note:"손해배상책임"},{law:"정보통신망법",art:"제32조",note:"손해배상"}],
+      faq:["개인정보 유출 시 기업의 초동 대응 의무는?","이용자 1인당 배상액은 통상 얼마나 되나?","유출 사고 후 형사·행정·민사 리스크의 순서는?"],
+      timeline:[{d:"2026-05-19",e:"유출 사고 공지·개보위 신고",done:true},{d:"2026-06-03",e:"집단소송 소장 접수",done:true},
+        {d:"2026-07-10",e:"피고 답변서 제출",done:true},{d:"2026-10-上",e:"제1차 변론기일 예정",done:false}]}
+  },
+  news:{
+    N01:{id:"N01",title:"대성전자 지배구조 분쟁, 의결권 가처분 인용…경영권 향방은",
+      date:"2026-07-16",section:"기업법무",reporter:"편집국",cite:188,views:5240,
+      lawyers:["L01","L04"],cases:["C01","C03"],companies:["K01"],judges:["J01"],
+      body:[
+        {h:"[사건 개요]"},
+        {p:"§judge:J01 는 §case:C01 사건에서 소수주주 측이 낸 의결권 행사 가처분을 인용했다. 이번 결정으로 §company:K01 의 정기 주주총회 이사 선임 결의를 둘러싼 다툼은 본안 소송에서 더욱 치열해질 전망이다."},
+        {p:"원고 측 대리를 맡은 §lawyer:L01 변호사는 \"의결권 대리행사 과정의 절차적 하자가 명백하다\"며 \"본안에서도 결의의 효력을 다툴 것\"이라고 밝혔다."},
+        {h:"[관련 분쟁]"},
+        {p:"한편 같은 대리인이 수행 중인 §case:C03 사건에서도 최근 가처분이 인용되며, 기업 간 인적·기술 이동을 둘러싼 분쟁이 잇따르고 있다. 이 사건에서는 §lawyer:L04 변호사가 기술 쟁점 분석을 맡았다."},
+        {p:"법조계는 이번 사안을 기업지배구조와 소수주주 권리 보호의 접점에서 주목하고 있다."}
+      ]},
+    N02:{id:"N02",title:"M&A 심사 장기화…공정위 기업결합 심사 트렌드는",
+      date:"2026-07-12",section:"공정거래",reporter:"편집국",cite:83,views:2970,
+      lawyers:["L01","L02"],cases:["C01"],companies:[],judges:[],
+      body:[
+        {h:"[심사 동향]"},
+        {p:"최근 대형 기업결합 심사가 장기화되는 가운데, §lawyer:L02 변호사는 \"경쟁제한성 판단의 기준이 정교해지면서 사전 자료 준비의 중요성이 커졌다\"고 진단했다."},
+        {p:"§lawyer:L01 변호사는 §case:C01 와 같은 지배구조 분쟁이 기업결합 심사와 맞물릴 경우 리스크가 복합적으로 커진다고 지적했다."},
+        {h:"[실무 시사점]"},
+        {p:"기업들은 심사 대응 초기 단계부터 경쟁법·회사법 자문을 병행하는 추세다."}
+      ]},
+    N03:{id:"N03",title:"바이오 공시 리스크, 민사 넘어 형사로 번지나",
+      date:"2026-07-09",section:"형사",reporter:"편집국",cite:71,views:2410,
+      lawyers:["L03","L05"],cases:["C02"],companies:["K02"],judges:[],
+      body:[
+        {h:"[사건 개요]"},
+        {p:"§company:K02 의 임상데이터 공시를 둘러싼 §case:C02 사건이 형사 절차로 확대되고 있다. 피고인 측 대리를 맡은 §lawyer:L03 변호사는 \"공시 시점의 판단은 당시 합리적 근거에 따른 것\"이라고 반박했다."},
+        {p:"조세·행정 쟁점을 함께 검토 중인 §lawyer:L05 변호사는 \"자본시장법과 세무 이슈가 얽혀 있어 다층적 접근이 필요하다\"고 말했다."},
+        {h:"[전망]"},
+        {p:"바이오 업계 공시 관행 전반에 대한 규제 당국의 시선이 엄격해지고 있다는 분석이 나온다."}
+      ]},
+    N04:{id:"N04",title:"하도급 과징금 불복 소송 급증…행정법원 판단 기준 주목",
+      date:"2026-07-05",section:"공정거래",reporter:"편집국",cite:52,views:1760,
+      lawyers:["L05","L02"],cases:["C04"],companies:["K03"],judges:["J02"],
+      body:[
+        {h:"[사건 개요]"},
+        {p:"§company:K03 이 공정거래위원회의 과징금 48억 원 부과처분에 불복해 제기한 §case:C04 사건에서, §judge:J02 재판부가 최근 집행정지를 일부 인용했다. 설계변경 실측 정산이 하도급법상 '부당 감액'에 해당하는지가 본안의 핵심이다."},
+        {p:"원고 측 대리인 §lawyer:L05 변호사는 \"실측에 근거한 정산까지 일률적으로 부당 감액으로 보면 현장 계약 실무가 마비된다\"고 주장했다. 함께 사건을 수행하는 §lawyer:L02 변호사는 경쟁법적 쟁점 분석을 맡고 있다."},
+        {h:"[업계 동향]"},
+        {p:"올해 상반기 하도급 과징금 불복 소송은 전년 동기 대비 크게 늘었다. 건설·조선 업계를 중심으로 정산 관행과 규제 사이의 긴장이 이어지고 있다는 분석이다."}
+      ]},
+    N05:{id:"N05",title:"개인정보 유출 배상책임 확대…'집단소송 시대' 열리나",
+      date:"2026-07-02",section:"IT·개인정보",reporter:"편집국",cite:44,views:2280,
+      lawyers:["L04","L03"],cases:["C05"],companies:["K04"],judges:[],
+      body:[
+        {h:"[사건 개요]"},
+        {p:"§company:K04 플랫폼에서 회원 약 92만 명의 개인정보가 유출된 §case:C05 사건이 집단소송으로 비화했다. 이용자 1,847명이 1인당 30만 원의 위자료를 청구했고, 개인정보보호위원회 조사도 병행되고 있다."},
+        {p:"원고 측을 대리하는 §lawyer:L04 변호사는 \"API 접근통제 미비는 명백한 안전조치의무 위반\"이라며 기술 감정을 신청하겠다고 밝혔다. 기업 측 위기대응 자문 경험이 많은 §lawyer:L03 변호사는 \"초동 대응과 통지 의무 이행 여부가 배상액을 가른다\"고 짚었다."},
+        {h:"[판례 흐름]"},
+        {p:"최근 법원은 유출 항목의 민감도와 2차 피해 가능성을 위자료 산정에 적극 반영하는 추세다. IT 업계 전반의 보안 투자 확대가 불가피하다는 전망이 나온다."}
+      ]}
+  },
+  radar:[
+    {rank:1,label:"대성전자 주주총회 지배구조 분쟁",badge:"HOT",rc:"var(--red)",spark:[3,5,4,8,12,18,24],mo:"+218%",to:"#/news/N01"},
+    {rank:2,label:"공정위 기업결합 심사 장기화",badge:"RISE",rc:"var(--green)",spark:[6,6,7,9,10,13,15],mo:"+41%",to:"#/news/N02"},
+    {rank:3,label:"바이오 임상공시 형사 리스크",badge:"WATCH",rc:"var(--amber)",spark:[9,8,8,7,7,6,6],mo:"−12%",to:"#/news/N03"},
+    {rank:4,label:"영업비밀 침해 가처분 급증",badge:"NEW",rc:"var(--cyan)",spark:[0,0,1,2,4,5,7],mo:"NEW",to:"#/case/C03"}
+  ],
+  ticker:[
+    {label:"주주총회 결의취소",v:"인용 12건"},{label:"기업결합 신고",v:"심사 34건"},
+    {label:"영업비밀 가처분",v:"신청 21건"},{label:"자본시장법 위반",v:"기소 8건"},
+    {label:"조세 행정소송",v:"계류 47건"}
+  ],
+  audit:[
+    {id:"A1",status:"pending",quote:"저는 국내 M&A 자문 분야에서 부동의 1위입니다.",
+      claim:"프로필 문구 <b>\"부동의 1위\"</b> — 객관적 근거가 필요한 최상급 표현 (변호사법 광고규정 검토 대상)",
+      lawyer:"L01",sources:[{ic:"🏛️",t:"대한변호사협회 광고심사 가이드"},{ic:"📊",t:"LCR 2026 분야별 평가 데이터"}],
+      auditor:"—",at:"—",reason:"—"},
+    {id:"A2",status:"verified",quote:"제38회 사법시험 합격, 사법연수원 28기 수료.",
+      claim:"경력 사항 <b>사법시험 회차·연수원 기수</b> — 공적 기록과 대조 검증",
+      lawyer:"L01",sources:[{ic:"🏛️",t:"법조인 대관 DB (자체망)"},{ic:"📄",t:"법률신문 인물 아카이브"}],
+      auditor:"법률신문 검증팀 3",at:"2026-07-19 14:22 KST",reason:"URL: 자체망 인물레코드 #L01 대조 일치"},
+    {id:"A3",status:"disputed",quote:"대법원 판결 100% 승소 경력.",
+      claim:"성과 문구 <b>\"100% 승소\"</b> — 통계적 근거 불충분, 정정 요청 발송",
+      lawyer:"L03",sources:[{ic:"⚖️",t:"판결서 인터넷열람 (scourt.go.kr)"},{ic:"📊",t:"LCR 수임사건 표본"}],
+      auditor:"법률신문 검증팀 1",at:"2026-07-18 10:05 KST",reason:"TEXT: 표본 대비 승소율 불일치 → 정정 요청"},
+    {id:"A4",status:"pending",quote:"대법원 판례에 따르면 이 유형의 사안은 승소 가능성이 90% 이상입니다.",
+      claim:"인용·전언 문장 <b>\"~에 따르면\"</b> + 수치 주장 — 원판례 존재·해석 적정성 대조 필요 (발췌 기준 ①·③ 해당)",
+      lawyer:"L05",sources:[{ic:"⚖️",t:"판결서 인터넷열람 (scourt.go.kr)"},{ic:"📰",t:"법률신문 판례 아카이브"}],
+      auditor:"—",at:"—",reason:"—"}
+  ],
+  citation:{
+    trend:[12,18,22,20,28,34,41,47,52,60,68,79],
+    months:["8","9","10","11","12","1","2","3","4","5","6","7"],
+    top:[{type:"lawyer",id:"L01",n:214},{type:"news",id:"N01",n:188},
+      {type:"case",id:"C01",n:151},{type:"lawyer",id:"L02",n:97},
+      {type:"news",id:"N02",n:83},{type:"news",id:"N03",n:71},
+      {type:"lawyer",id:"L04",n:61},{type:"news",id:"N04",n:52}],
+    byModel:[{m:"Claude",n:38},{m:"GPT",n:31},{m:"Gemini",n:22},{m:"Kakao",n:9}]
+  }
+};
+
+/* ───────────── 헬퍼 ───────────── */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const initials=n=>n.slice(0,2);
+const lw=id=>DB.lawyers[id], cs=id=>DB.cases[id], nw=id=>DB.news[id], fm=id=>DB.firms[id];
+const fieldTag=(f,i)=>`<span class="tag tag-${["blue","green","purple","orange","gray"][i%5]}">${esc(f)}</span>`;
+let activeTimers=[];
+function clearTimers(){activeTimers.forEach(t=>{clearInterval(t);clearTimeout(t)});activeTimers=[]}
+function stars(r){let s="";for(let i=1;i<=5;i++)s+=i<=r?"★":'<span class="off">★</span>';return `<span class="stars">${s}</span>`}
+function nowKST(){return "2026-07-23 "+["11:47","11:48","11:49","11:52"][Math.floor(Math.random()*4)]+" KST"}
+
+/* ───────────── 엔티티 렌더 (뉴스 본문의 §type:ID → span) ───────────── */
+const ENT_LABEL={
+  lawyer:id=>lw(id)?.name+" 변호사", case:id=>cs(id)?.no,
+  company:id=>DB.companies[id]?.name, judge:id=>DB.judges[id]?.name+" 판사",
+  firm:id=>fm(id)?.name };
+function renderEntities(str){
+  return esc(str).replace(/§(\w+):(\w+)/g,(_,type,id)=>{
+    const label=ENT_LABEL[type]?ENT_LABEL[type](id):id;
+    return `<span class="ent ent-${type}" data-etype="${type}" data-eid="${id}">${esc(label)}</span>`;
+  });
+}
+function describeEntity(type,id){
+  if(type==="lawyer"){const x=lw(id);return{t:"법조인 · LAWYER",n:x.name+" ("+x.hanja+")",rows:[["소속",fm(x.firm).name],["주요분야",x.fields.join(" · ")],["AI 인용",x.cite+"건"],["조회",x.views.toLocaleString()]],to:"#/lawyer/"+id};}
+  if(type==="case"){const x=cs(id);return{t:"사건 · CASE",n:x.no,rows:[["사건명",x.title],["법원",x.court],["상태",x.status]],to:"#/case/"+id};}
+  if(type==="company"){const x=DB.companies[id];return{t:"상장사 · LISTED CO.",n:x.name,rows:[["종목코드",x.ticker],["시장",x.market],["섹터",x.sector]],to:null};}
+  if(type==="judge"){const x=DB.judges[id];return{t:"판사 · JUDGE",n:x.name,rows:[["재판부",x.court],["비고",x.note]],to:null};}
+  if(type==="firm"){const x=fm(id);return{t:"로펌 · LAW FIRM",n:x.name,rows:[["설립",x.est+"년"],["구성",x.desc]],to:"#/firm/"+id};}
+  return{t:type,n:id,rows:[]};
+}
+
+/* ───────────── 컴포넌트 (문자열 반환) ───────────── */
+const C={
+  gauge(n,size=118){
+    const R=42,CIRC=2*Math.PI*R,off=CIRC*(1-n/100);
+    const col=n>=80?"var(--ok)":n>=60?"var(--warn)":"var(--seal)";
+    return `<div class="gauge-wrap"><svg class="gauge" width="${size}" height="${size}" viewBox="0 0 118 118">
+      <circle cx="59" cy="59" r="${R}" fill="none" stroke="var(--surface2)" stroke-width="9"/>
+      <circle cx="59" cy="59" r="${R}" fill="none" stroke="${col}" stroke-width="9" stroke-linecap="round"
+        stroke-dasharray="${CIRC.toFixed(1)}" stroke-dashoffset="${CIRC.toFixed(1)}" data-goff="${off.toFixed(1)}"
+        transform="rotate(-90 59 59)" style="transition:stroke-dashoffset 1.1s cubic-bezier(.2,.7,.3,1)"/>
+      <text x="59" y="56" text-anchor="middle" class="g-num">${n}</text>
+      <text x="59" y="74" text-anchor="middle" class="g-lbl">AI 인용 용이성</text></svg></div>`;
+  },
+  metricDuo(cite,views){
+    return `<div class="metric-duo">
+      <div class="metric ai"><span class="m-lbl"><span class="m-ic">🤖</span>AI 인용수</span><span class="m-val">${(cite||0).toLocaleString()}</span><span class="m-sub">generative citations</span></div>
+      <div class="metric"><span class="m-lbl"><span class="m-ic">👁</span>사람 조회수</span><span class="m-val">${(views||0).toLocaleString()}</span><span class="m-sub">human pageviews</span></div>
+    </div>`;
+  },
+  spark(arr){
+    const mx=Math.max(...arr)||1;
+    return `<div class="rc-spark">${arr.map(v=>`<i style="height:${Math.max(3,v/mx*24)}px"></i>`).join("")}</div>`;
+  },
+  review(rv){
+    return `<div class="card rev"><div class="rev-top">${stars(rv.r)}<span class="rev-src">LCR 2026</span></div>
+      <p>“${esc(rv.text)}”</p><div class="rev-by">— ${esc(rv.by)} · ${esc(rv.ago)}</div></div>`;
+  },
+  lawyerMini(id){const x=lw(id);
+    return `<a href="#/lawyer/${id}" class="card mini"><div class="av av-md">${initials(x.name)}</div>
+      <div class="mini-body"><h3>${esc(x.name)} <span class="dim" style="font-weight:400;font-size:13px">${esc(x.role)}</span></h3>
+      <div class="mini-sub">${esc(fm(x.firm).name)}</div>
+      <div class="mini-meta">${x.fields.slice(0,2).map(fieldTag).join("")}<span class="chip" style="font-family:var(--mono);font-size:11px">AI ${x.cite}</span></div>
+      </div></a>`;
+  },
+  caseMini(id){const x=cs(id);
+    return `<a href="#/case/${id}" class="card mini"><div class="av av-sm" style="background:linear-gradient(150deg,var(--c-blue),#1d4e85)">§</div>
+      <div class="mini-body"><h3>${esc(x.title)}</h3>
+      <div class="mini-sub mono">${esc(x.no)} · ${esc(x.court)}</div>
+      <div class="mini-meta"><span class="tag tag-blue">${esc(x.type)}</span><span class="chip">${esc(x.status)}</span></div>
+      </div></a>`;
+  },
+  newsMini(id){const x=nw(id);
+    return `<a href="#/news/${id}" class="card mini"><div class="mini-body"><h3>${esc(x.title)}</h3>
+      <div class="mini-sub mono">${esc(x.date)} · ${esc(x.section)}</div>
+      <div class="mini-meta"><span class="chip" style="font-family:var(--mono);font-size:11px">AI 인용 ${x.cite}</span>
+      ${x.lawyers.slice(0,1).map(l=>`<span class="chip-field chip">${esc(lw(l).name)}</span>`).join("")}</div>
+      </div></a>`;
+  },
+  entLink(type,id){const d=describeEntity(type,id);
+    const inner=`<div class="mb-t ent-${type}" style="color:var(--gold2)">${esc(d.t)}</div><div class="mb-n">${esc(d.n)}</div>${d.rows[0]?`<div class="mb-v">${esc(d.rows[0][1])}</div>`:""}`;
+    return d.to?`<a href="${d.to}" class="mb-item">${inner}</a>`:`<div class="mb-item">${inner}</div>`;
+  },
+  metaBox(news){
+    const ents=[];const seen=new Set();
+    news.body.forEach(b=>{if(b.p){const m=b.p.matchAll(/§(\w+):(\w+)/g);for(const x of m){const k=x[1]+x[2];if(!seen.has(k)){seen.add(k);ents.push([x[1],x[2]])}}}});
+    return `<div class="metabox"><div class="mb-head"><span style="font-size:18px">🧩</span><span class="serif">AI 인용 메타정보 박스</span></div>
+      <div class="mb-sub">structured entities · AI가 이 기사를 인용할 때 그대로 가져가는 정규화 데이터</div>
+      <div class="mb-grid">${ents.map(e=>C.entLink(e[0],e[1])).join("")}</div></div>`;
+  }
+};
+
+/* ───────────── PAGES : 공개 화면 1~5 ───────────── */
+const PAGES={};
+
+/* 1. 메인 */
+PAGES.main=()=>`
+<section class="wrap hero">
+  <div class="ad-banner" role="complementary" aria-label="광고">
+    <span class="ad-chip">AD</span>
+    <span><b>법무법인 정평</b> — 주주총회 시즌, 기업분쟁 특별 상담</span>
+    <span class="ad-cta">상담 예약 →</span>
+  </div>
+  <div class="h-eyebrow eyebrow" style="margin-top:34px">GEO · Generative Engine Optimization</div>
+  <h1>AI가 변호사를 찾을 때,<br><em>법률신문</em>을 인용하게 합니다</h1>
+  <p class="h-lead">실제 고객 리뷰, 법률신문이 검수한 정보, 그리고 뉴스·사건과 연결된 법조인 프로필. AI에게 물어보세요.</p>
+  <form class="searchbar" id="heroSearch">
+    <span class="sb-ai">AI</span>
+    <input type="text" id="heroInput" placeholder="예) 주주총회 분쟁을 잘 다루는 기업법 변호사 추천해줘" aria-label="AI 검색">
+    <button type="submit" class="btn btn-primary btn-sm">질문하기</button>
+  </form>
+  <div class="h-suggests">
+    ${["영업비밀 유출, 가처분까지 간 변호사","공정위 기업결합 대응 경험","바이오 공시 형사 리스크 자문"].map(s=>`<button class="h-suggest" data-ask="${esc(s)}">${esc(s)}</button>`).join("")}
+  </div>
+  <div class="h-diff">
+    <div class="hd-card"><span class="hd-vs">vs 로파**</span><span class="hd-check">✓</span><span class="hd-txt"><b>실제 고객 리뷰</b>가 있다</span></div>
+    <div class="hd-card"><span class="hd-vs">vs **톡</span><span class="hd-check">✓</span><span class="hd-txt"><b>법률신문이 검수</b>한 정보</span></div>
+    <div class="hd-card"><span class="hd-vs">vs **협회</span><span class="hd-check">✓</span><span class="hd-txt"><b>뉴스·사건과 매칭</b>된다</span></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="radar">
+    <div class="breaking"><span class="bk-lbl"><span class="live-dot"></span>BREAKING</span>
+      <div class="bk-scroll"><div class="bk-track">
+        <span>대성전자 의결권 가처분 인용 — 경영권 분쟁 본안으로</span><span>공정위 기업결합 심사 34건 계류</span><span>영업비밀 침해 가처분 신청 전년比 2배</span>
+        <span>대성전자 의결권 가처분 인용 — 경영권 분쟁 본안으로</span><span>공정위 기업결합 심사 34건 계류</span><span>영업비밀 침해 가처분 신청 전년比 2배</span>
+      </div></div></div>
+    <div class="radar-head"><span class="live-dot"></span><span class="lv">LIVE</span><span class="serif">실시간 법률이슈 레이더</span></div>
+    <div class="radar-grid">
+      <div class="rcards">${DB.radar.map(r=>`
+        <a href="${r.to}" class="rcard" style="--rc:${r.rc}">
+          <div class="rc-top"><span class="rc-rank">${r.rank}</span><span class="badge b-${r.badge}">${r.badge}</span></div>
+          <div class="rc-label">${esc(r.label)}</div>
+          <div class="rc-bottom">${C.spark(r.spark)}<span class="rc-mo">${r.mo}</span></div></a>`).join("")}
+      </div>
+      <div class="ticker"><div class="tk-head"><span>이슈 유형별 버즈</span><span>최근 7일</span></div>
+        ${DB.ticker.map((t,i)=>`<div class="tk-row"><span class="tk-num">${i+1}</span><span class="tk-label">${esc(t.label)}</span><span class="tk-val">${esc(t.v)}</span></div>`).join("")}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="sec-head"><h2>법조인 최근 리뷰</h2><span class="dim" style="font-size:12.5px;font-family:var(--mono)">LCR 2026 · 실제 고객</span></div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
+    ${C.review(lw("L01").reviews[0])}${C.review(lw("L04").reviews[0])}${C.review(lw("L02").reviews[0])}
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="sec-head"><h2>주목할 법조인</h2><a href="#/list?tab=lawyers" class="more">전체 보기 →</a></div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+    ${["L01","L02","L04"].map(C.lawyerMini).join("")}</div>
+</section>
+
+<section class="wrap">
+  <div class="sec-head"><h2>주목할 사건</h2><a href="#/list?tab=cases" class="more">전체 보기 →</a></div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
+    ${["C01","C03","C02"].map(C.caseMini).join("")}</div>
+</section>
+
+<section class="wrap">
+  <div class="sec-head"><h2>주목할 법률뉴스</h2><a href="#/list?tab=news" class="more">전체 보기 →</a></div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+    ${["N01","N02","N03"].map(C.newsMini).join("")}</div>
+</section>`;
+
+/* 2. 세부 목록 */
+PAGES.list=(r)=>{
+  const tab=r.q.get("tab")||"lawyers";
+  const tabs=[["lawyers","법조인"],["cases","사건"],["news","법률뉴스"]];
+  let body="";
+  if(tab==="lawyers"){
+    body=`<div class="filters">${["전체","기업지배구조","공정거래","형사","지식재산","조세"].map((f,i)=>`<button class="fchip${i===0?" on":""}">${f}</button>`).join("")}</div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">${Object.keys(DB.lawyers).map(C.lawyerMini).join("")}</div>`;
+  }else if(tab==="cases"){
+    body=`<div class="filters">${["전체","상법","증권범죄","지식재산","행정·공정거래","IT·민사"].map((f,i)=>`<button class="fchip${i===0?" on":""}">${f}</button>`).join("")}</div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr))">${Object.keys(DB.cases).map(C.caseMini).join("")}</div>`;
+  }else{
+    body=`<div class="filters">${["전체","기업법무","공정거래","형사","IT·개인정보"].map((f,i)=>`<button class="fchip${i===0?" on":""}">${f}</button>`).join("")}</div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr))">${Object.keys(DB.news).map(C.newsMini).join("")}</div>`;
+  }
+  return `<section class="wrap" style="padding-top:34px">
+    <div class="eyebrow" style="margin-bottom:8px">DIRECTORY</div>
+    <h1 class="serif" style="font-size:30px;color:var(--navy);margin-bottom:20px">법조인 · 사건 · 뉴스</h1>
+    <div class="tabs">${tabs.map(t=>`<a href="#/list?tab=${t[0]}" class="tab" aria-selected="${t[0]===tab}">${t[1]}</a>`).join("")}</div>
+    ${body}</section>`;
+};
+
+/* 3. 법조인 상세 */
+PAGES.lawyer=(r)=>{
+  const x=lw(r.id);if(!x)return PAGES.notFound();
+  const avgR=(x.reviews.reduce((s,v)=>s+v.r,0)/x.reviews.length).toFixed(1);
+  const fbMax=x.fieldStats?Math.max(...x.fieldStats.map(f=>f.n)):1;
+  // 함께 사건을 수행한 법조인 — 공동 수임 사건 기준으로 계산
+  const peers=[...new Set(x.cases.flatMap(c=>cs(c).lawyers))].filter(id=>id!==x.id);
+  return `<section class="wrap" style="padding-top:30px">
+    <div class="card" style="padding:30px 32px;margin-bottom:22px">
+      <div class="lw-hero">
+        <div class="av av-lg">${initials(x.name)}</div>
+        <div class="lw-id">
+          <div class="lw-name">${esc(x.name)}<span class="hanja">${esc(x.hanja)}</span>
+            <span class="dim" style="font-size:15px;font-weight:400">· ${x.birth}년생</span></div>
+          <div class="lw-role">${esc(x.role)} · <a href="#/firm/${x.firm}" style="color:var(--gold2);font-weight:600">${esc(fm(x.firm).name)}</a></div>
+          <div style="margin-top:12px;display:flex;gap:9px;flex-wrap:wrap;align-items:center">
+            <span class="verified-seal">◈ 법률신문 검수 완료 · ${x.reviews.length}건 리뷰 검증</span>
+            <span class="chip" style="font-weight:700">${stars(Math.round(avgR))} <b class="mono" style="color:var(--navy)">${avgR}</b><span class="dim mono" style="font-size:10.5px">/5.0</span></span>
+          </div>
+          <div class="lw-fields">${x.fields.map(fieldTag).join("")}</div>
+          ${x.pstats?`<div class="stat-strip">
+            <span class="ss-item"><span class="ss-ic">⚖️</span><b>${esc(x.pstats.years)}</b></span>
+            <span class="ss-item"><span class="ss-ic">📁</span><b>${esc(x.pstats.total)}</b></span>
+            <span class="ss-item"><span class="ss-ic">⚡</span><b>${esc(x.pstats.resp)}</b></span>
+          </div>`:""}
+          <div class="lw-actions">
+            <button class="btn btn-primary" data-action="consult" data-name="${esc(x.name)}">💬 바로 상담하기</button>
+            <button class="btn btn-ghost" data-action="report" data-id="${x.id}">📄 리포트 생성 및 PDF 출력</button>
+          </div>
+        </div>
+        <div>${C.metricDuo(x.cite,x.views)}</div>
+      </div>
+    </div>
+
+    <div class="grid split" style="align-items:start" id="lwGrid">
+      <div class="stack" style="gap:22px">
+        ${x.intro?`<div class="card" style="padding:24px 26px">
+          <div class="sec-head" style="margin-bottom:12px"><h2 style="font-size:19px">변호사 소개</h2><span class="dim mono" style="font-size:11px">법률신문 검수 프로필</span></div>
+          <p style="font-size:14.5px;line-height:1.75;color:var(--t1)">${esc(x.intro)}</p></div>`:""}
+        ${x.highlights?`<div class="card" style="padding:24px 26px">
+          <div class="sec-head" style="margin-bottom:8px"><h2 style="font-size:19px">대표 성과</h2><span class="dim" style="font-size:12px">최근 3년 · 검수 확인 건</span></div>
+          ${x.highlights.map(h=>`<div class="hl-row"><span class="hl-y">${esc(h.y)}</span>
+            <div><div class="hl-t">${esc(h.t)}</div><div class="hl-d">${esc(h.d)}</div></div></div>`).join("")}</div>`:""}
+        <div class="card" style="padding:24px 26px">
+          <div class="sec-head" style="margin-bottom:14px"><h2 style="font-size:19px">고객 리뷰 <span class="dim" style="font-size:13px;font-family:var(--mono)">LCR 2026</span></h2></div>
+          <div class="stack" style="gap:12px">${x.reviews.map(rv=>`
+            <div style="padding:14px 0;border-bottom:1px solid var(--line)"><div class="rev-top" style="margin-bottom:8px">${stars(rv.r)}<span class="rev-by mono">${esc(rv.by)} · ${esc(rv.ago)}</span></div>
+            <p style="font-size:14px;line-height:1.6;color:var(--t1)">“${esc(rv.text)}”</p></div>`).join("")}</div>
+        </div>
+        <div class="card" style="padding:24px 26px">
+          <div class="sec-head" style="margin-bottom:14px"><h2 style="font-size:19px">수임 사건</h2></div>
+          <table class="dtable"><thead><tr><th>사건번호</th><th>사건명</th><th>유형</th><th>상태</th></tr></thead>
+          <tbody>${x.cases.map(c=>{const cc=cs(c);return `<tr class="clk" data-href="#/case/${c}"><td class="mono">${esc(cc.no)}</td><td>${esc(cc.title)}</td><td><span class="tag tag-blue">${esc(cc.type)}</span></td><td class="muted">${esc(cc.status)}</td></tr>`}).join("")}</tbody></table>
+        </div>
+      </div>
+      <div class="stack" style="gap:22px">
+        ${x.fieldStats?`<div class="card" style="padding:24px 26px">
+          <div class="info-block"><h4>분야별 수임 분포</h4>
+          <div class="fbar" style="margin-top:6px">${x.fieldStats.map(f=>`
+            <div class="fb-row"><span class="fb-lbl">${esc(f.label)}</span>
+              <div class="fb-track"><div class="fb-fill" style="width:${(f.n/fbMax*100).toFixed(0)}%"></div></div>
+              <span class="fb-n">${f.n}</span></div>`).join("")}</div></div></div>`:""}
+        <div class="card" style="padding:24px 26px">
+          <div class="info-block"><h4>학력 · 자격</h4><ul class="info-list">${x.edu.map(e=>`<li>${esc(e)}</li>`).join("")}</ul></div>
+          <div class="info-block" style="margin-top:20px"><h4>주요 경력</h4><ul class="info-list">${x.career.map(e=>`<li>${esc(e)}</li>`).join("")}</ul></div>
+          ${x.activities?`<div class="info-block" style="margin-top:20px"><h4>활동 · 저술</h4><ul class="info-list">${x.activities.map(e=>`<li>${esc(e)}</li>`).join("")}</ul></div>`:""}
+        </div>
+        <div class="card" style="padding:24px 26px">
+          <div class="info-block"><h4>관련 뉴스</h4>
+          <div class="stack" style="gap:10px;margin-top:4px">${x.news.map(n=>{const nn=nw(n);return `<a href="#/news/${n}" style="display:block"><div style="font-size:13.5px;font-weight:600;color:var(--t1);line-height:1.4">${esc(nn.title)}</div><div class="mono dim" style="font-size:11px;margin-top:3px">${esc(nn.date)} · AI 인용 ${nn.cite}</div></a>`}).join("")}</div></div>
+        </div>
+      </div>
+    </div>
+
+    ${x.faq?`<div class="card" style="padding:24px 26px;margin-top:22px">
+      <div class="sec-head" style="margin-bottom:14px"><h2 style="font-size:19px">이런 점이 궁금하신가요?</h2><span class="dim" style="font-size:12px">클릭하면 AI 법률 어시스턴트가 답합니다</span></div>
+      <div class="row" style="gap:8px;flex-wrap:wrap">${x.faq.map(q=>`<button class="h-suggest" data-action="ask" data-q="${esc(q)}">💬 ${esc(q)}</button>`).join("")}</div></div>`:""}
+    ${peers.length?`<div style="margin-top:34px"><div class="sec-head"><h2>함께 사건을 수행한 법조인</h2><span class="dim" style="font-size:12px">공동 수임 이력 기준</span></div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">${peers.map(C.lawyerMini).join("")}</div></div>`:""}
+  </section>`;
+};
+
+/* 3-b. 로펌 (부가) */
+PAGES.firm=(r)=>{const x=fm(r.id);if(!x)return PAGES.notFound();
+  return `<section class="wrap" style="padding-top:34px">
+    <div class="eyebrow" style="margin-bottom:8px">LAW FIRM</div>
+    <h1 class="serif" style="font-size:30px;color:var(--navy)">${esc(x.name)}</h1>
+    <div class="muted mono" style="margin:6px 0 22px">설립 ${x.est}년 · ${esc(x.desc)}</div>
+    <div class="sec-head"><h2>소속 법조인</h2></div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">${x.lawyers.map(C.lawyerMini).join("")}</div>
+  </section>`;
+};
+
+/* 4. 사건 상세 */
+PAGES.caseDetail=(r)=>{
+  const x=cs(r.id);if(!x)return PAGES.notFound();
+  return `<section class="wrap" style="padding-top:30px">
+    <div class="card" style="padding:28px 30px;margin-bottom:22px">
+      <div class="row" style="align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap">
+        <div style="flex:1;min-width:260px">
+          <div class="row" style="gap:10px;flex-wrap:wrap;margin-bottom:12px">
+            <span class="chip mono" style="font-weight:700">${esc(x.no)}</span>
+            <span class="tag tag-blue">${esc(x.type)}</span>
+            <span class="chip">${esc(x.status)}</span>
+          </div>
+          <h1 class="serif" style="font-size:28px;color:var(--navy);line-height:1.25;margin-bottom:10px">${esc(x.title)}</h1>
+          <p class="muted" style="font-size:14.5px;max-width:640px">${esc(x.summary)}</p>
+          ${x.result?`<div class="case-result">${esc(x.result)}</div>`:""}
+          <div class="row mono dim" style="gap:16px;margin-top:14px;font-size:12px;flex-wrap:wrap">
+            <span>📍 ${esc(x.court)}</span><span>🗓 접수 ${esc(x.filed)}</span>${x.judge?`<span>⚖ ${esc(DB.judges[x.judge].name)} 판사</span>`:""}</div>
+        </div>
+        ${C.metricDuo(x.cite,x.views)}
+      </div>
+    </div>
+    <div class="grid split" style="align-items:start">
+      <div class="stack" style="gap:22px">
+        ${x.facts?`<div class="card" style="padding:24px 26px"><div class="sec-head" style="margin-bottom:14px"><h2 style="font-size:19px">사건 내용</h2></div>
+          <p style="font-size:14px;line-height:1.75;color:var(--t1)">${esc(x.facts)}</p></div>`:""}
+        ${x.issues?`<div class="card" style="padding:24px 26px"><div class="sec-head" style="margin-bottom:14px"><h2 style="font-size:19px">핵심 쟁점</h2></div>
+          <ol class="issue-list">${x.issues.map(i=>`<li>${esc(i)}</li>`).join("")}</ol></div>`:""}
+        ${x.holding?`<div class="card" style="padding:24px 26px;border-left:3px solid var(--gold)"><div class="sec-head" style="margin-bottom:14px"><h2 style="font-size:19px">법원의 판단</h2></div>
+          <p style="font-size:14px;line-height:1.75;color:var(--t1)">${esc(x.holding)}</p></div>`:""}
+        <div class="card" style="padding:24px 26px"><div class="sec-head" style="margin-bottom:16px"><h2 style="font-size:19px">진행 경과</h2></div>
+          <div class="tl">${x.timeline.map(t=>`<div class="tl-item ${t.done?"done":""}"><div class="tl-d">${esc(t.d)}</div><div class="tl-e">${esc(t.e)}</div></div>`).join("")}</div>
+        </div>
+      </div>
+      <div class="stack" style="gap:22px">
+        <div class="card" style="padding:24px 26px"><div class="sec-head" style="margin-bottom:14px"><h2 style="font-size:19px">당사자</h2></div>
+          <table class="dtable"><tbody>${x.parties.map(p=>`<tr><td style="width:80px"><span class="chip">${esc(p.role)}</span></td><td style="font-weight:600">${esc(p.name)}</td></tr>`).join("")}</tbody></table>
+          ${x.company?`<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)"><div class="dim mono" style="font-size:11px;margin-bottom:6px">관련 상장사</div><div class="row" style="gap:8px"><span class="tag tag-green">${esc(DB.companies[x.company].name)}</span><span class="mono dim">${esc(DB.companies[x.company].ticker)} · ${esc(DB.companies[x.company].market)}</span></div></div>`:""}
+        </div>
+        ${x.statutes?`<div class="card" style="padding:24px 26px"><div class="sec-head" style="margin-bottom:14px"><h2 style="font-size:19px">연관 법령</h2></div>
+          <div class="stack" style="gap:9px">${x.statutes.map(s=>`<div class="statute-row"><span class="statute-chip">${esc(s.law)} ${esc(s.art)}</span><span class="statute-note">${esc(s.note)}</span></div>`).join("")}</div></div>`:""}
+        <div class="card" style="padding:24px 26px"><div class="sec-head" style="margin-bottom:14px"><h2 style="font-size:19px">대리 법조인</h2></div>
+          <div class="stack" style="gap:12px">${x.lawyers.map(C.lawyerMini).join("")}</div></div>
+        <div class="card" style="padding:24px 26px"><div class="sec-head" style="margin-bottom:14px"><h2 style="font-size:19px">관련 뉴스</h2></div>
+          <div class="stack" style="gap:12px">${x.news.map(C.newsMini).join("")}</div></div>
+      </div>
+    </div>
+    ${x.faq?`<div class="card" style="padding:24px 26px;margin-top:22px">
+      <div class="sec-head" style="margin-bottom:14px"><h2 style="font-size:19px">이런 점이 궁금하신가요?</h2><span class="dim" style="font-size:12px">클릭하면 AI 법률 어시스턴트가 답합니다</span></div>
+      <div class="row" style="gap:8px;flex-wrap:wrap">${x.faq.map(q=>`<button class="h-suggest" data-action="ask" data-q="${esc(q)}">💬 ${esc(q)}</button>`).join("")}</div></div>`:""}
+    ${x.related?`<div style="margin-top:34px"><div class="sec-head"><h2>관련 사건</h2></div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">${x.related.map(C.caseMini).join("")}</div></div>`:""}
+  </section>`;
+};
+
+/* 5. 법률뉴스 상세 */
+PAGES.news=(r)=>{
+  const x=nw(r.id);if(!x)return PAGES.notFound();
+  const body=x.body.map(b=>b.h?`<span class="art-h">${esc(b.h)}</span>`:`<p>${renderEntities(b.p)}</p>`).join("");
+  return `<section class="wrap" style="padding-top:34px">
+    <article class="article">
+      <div class="art-head">
+        <div class="art-section"><span class="tag tag-orange">${esc(x.section)}</span></div>
+        <h1>${esc(x.title)}</h1>
+        <div class="art-byline"><span>법률신문 ${esc(x.reporter)}</span><span>입력 ${esc(x.date)}</span>
+          <span style="margin-left:auto;color:var(--gold2);font-weight:700">◈ 검수 완료</span></div>
+      </div>
+      <div class="art-body">
+        <div class="duo-float">${C.metricDuo(x.cite,x.views)}</div>
+        ${body}
+      </div>
+      ${C.metaBox(x)}
+      <div style="margin-top:22px;padding:16px 20px;background:var(--surface2);border-radius:12px;font-size:12.5px;color:var(--t2);line-height:1.6">
+        💡 <b>이 기사가 AI에 인용되기 쉬운 이유:</b> 본문 속 인물·사건·기업이 모두 구조화된 엔티티로 태깅되어 있고(위 하이라이트에 마우스를 올려보세요), 하단 메타박스가 정규화된 데이터를 한곳에 모아 AI가 그대로 가져갈 수 있습니다.
+      </div>
+    </article>
+  </section>`;
+};
+
+PAGES.notFound=()=>`<section class="wrap" style="padding:80px 0;text-align:center">
+  <div class="serif" style="font-size:60px;color:var(--gold2)">404</div>
+  <p class="muted" style="margin:10px 0 24px">요청하신 페이지를 찾을 수 없습니다.</p>
+  <a href="#/" class="btn btn-primary">홈으로</a></section>`;
+
+/* ───────────── PAGES : 어드민 6~8 (theme-dark) ───────────── */
+function adminTabs(cur){
+  const t=[["admin-crawler","🕸 크롤러 파이프라인"],["admin-audit","◈ 팩트체크 · AUDIT"],["admin-citation","📈 AI 인용 현황"]];
+  return `<div class="admin-tabs">${t.map(x=>`<a href="#/${x[0]}" class="admin-tab" aria-current="${x[0]===cur?"page":"false"}">${x[1]}</a>`).join("")}</div>`;
+}
+
+/* 6. 크롤러 */
+PAGES.adminCrawler=()=>`
+<div class="theme-dark" style="background:radial-gradient(120% 640px at 50% -160px,var(--surface),var(--paper) 60%);min-height:100vh;margin-top:-1px">
+<section class="wrap padmin">
+  <div class="padmin-head"><div class="eyebrow">ENGINE ROOM · INGESTION</div>
+    <h1>데이터 수집 파이프라인</h1>
+    <p>여러 채널에서 법조인·사건 데이터를 수집하고, 정규화·비식별화를 거쳐 색인합니다. 모든 단계는 감사 로그로 남습니다.</p></div>
+  ${adminTabs("admin-crawler")}
+  <div class="grid" style="grid-template-columns:1fr 40px 1fr 40px 1fr;align-items:stretch" id="pipeGrid">
+    <div class="pipe-stage">
+      <div class="stage-lbl">① 수집 SOURCES</div>
+      ${[["**협회","공개 인명부","🏛️","live"],["**톡","공개 프로필","💬","live"],["로파**","공개 프로필","🔎","live"],["대법원","scourt.go.kr 판결서","⚖️","live"],["공공데이터 OPEN API","data.go.kr 포털","🔓","live"],["법률신문 자체망","기사·인물 아카이브","📰","own"]].map(s=>`
+        <div class="pnode"><div class="pn-ic">${s[2]}</div><div><div class="pn-name">${s[0]}</div><div class="pn-sub">${s[1]}</div></div><span class="pn-count" data-count>0</span><span class="pn-status" style="margin-left:8px"></span></div>`).join("")}
+    </div>
+    <div class="row" style="justify-content:center"><svg class="flow-svg" viewBox="0 0 40 40" preserveAspectRatio="none"><path d="M2,20 H38"/></svg></div>
+    <div class="pipe-stage">
+      <div class="stage-lbl">② 정제 NORMALIZE</div>
+      <div class="pnode"><div class="pn-ic">🧬</div><div><div class="pn-name">스키마 정규화</div><div class="pn-sub">컬럼 매핑 · 중복 제거</div></div></div>
+      <div class="pnode"><div class="pn-ic">🔗</div><div><div class="pn-name">엔티티 매칭</div><div class="pn-sub">인물·사건·기업 크로스링크</div></div></div>
+      <div class="pnode"><div class="pn-ic">🌐</div><div><div class="pn-name">영문 1:1 매핑</div><div class="pn-sub">글로벌 표기 정합</div></div></div>
+      <div class="pnode"><div class="pn-ic">🕶️</div><div><div class="pn-name">수집경로 익명화</div><div class="pn-sub">Source Anonymization · 출처 역추적 방지</div></div></div>
+      <div style="padding:14px 15px;background:var(--surface);border:1px solid var(--border);border-radius:11px">
+        <div class="dim mono" style="font-size:10.5px;margin-bottom:9px">③ 비식별화 MASKING</div>
+        <div class="stack" style="gap:8px">
+          <span class="mask-chip"><span class="before">주민번호 74****-*******</span><span class="arrow">→</span><span class="after">MASKED</span></span>
+          <span class="mask-chip"><span class="before">직통 010-****-1234</span><span class="arrow">→</span><span class="after">MASKED</span></span>
+        </div></div>
+    </div>
+    <div class="row" style="justify-content:center"><svg class="flow-svg" viewBox="0 0 40 40" preserveAspectRatio="none"><path d="M2,20 H38"/></svg></div>
+    <div class="pipe-stage">
+      <div class="stage-lbl">④ 색인 INDEX</div>
+      <div class="pnode" style="border-color:var(--amber)"><div class="pn-ic">🗂️</div><div><div class="pn-name">GEO 색인</div><div class="pn-sub">개별 URL · 메타태그 생성</div></div><span class="pn-status"></span></div>
+      <div class="card" style="padding:16px 18px;background:var(--surface)">
+        <div class="dim mono" style="font-size:10.5px;margin-bottom:10px">누적 처리</div>
+        <div class="stack" style="gap:12px">
+          <div><div class="mono" style="font-size:26px;font-weight:800;color:var(--amber)" data-total>36,986</div><div class="dim" style="font-size:11px">법조인 레코드</div></div>
+          <div><div class="mono" style="font-size:20px;font-weight:800;color:var(--cyan)" data-total2>1,204</div><div class="dim" style="font-size:11px">사건·판결 링크</div></div>
+        </div>
+      </div>
+      <div style="padding:12px 15px;background:var(--surface);border:1px solid var(--border);border-radius:11px;font-size:11.5px;color:var(--t2);line-height:1.5">✓ 마지막 실행 <b style="color:var(--t1)">2026-07-23 03:00 KST</b><br>주기: 월 1회 전수 + 상시 증분</div>
+    </div>
+  </div>
+</section></div>`;
+
+/* 7. AUDIT */
+PAGES.adminAudit=()=>`
+<div class="theme-dark" style="background:radial-gradient(120% 640px at 50% -160px,var(--surface),var(--paper) 60%);min-height:100vh;margin-top:-1px">
+<section class="wrap padmin">
+  <div class="padmin-head"><div class="eyebrow">ENGINE ROOM · FACT-CHECK</div>
+    <h1>팩트체크 · 감사 (AUDIT)</h1>
+    <p>AI가 1차로 선별하고, 애매한 건은 사람이 검증합니다. Human-in-the-Loop. 검증 주체·시각·근거가 모두 기록됩니다.</p></div>
+  ${adminTabs("admin-audit")}
+  <div class="hitl">
+    <div class="hitl-step"><span class="hs-ic">🤖</span><span class="hs-n">STEP 1</span><span class="hs-t">AI 자동 발췌</span><span class="hs-d">“~에 따르면” 인용문·최상급·수치 주장 탐지</span><span class="hs-arrow">→</span></div>
+    <div class="hitl-step human"><span class="hs-ic">👤</span><span class="hs-n">STEP 2</span><span class="hs-t">사람이 클릭</span><span class="hs-d">검증 대상 확정</span><span class="hs-arrow">→</span></div>
+    <div class="hitl-step"><span class="hs-ic">⚡</span><span class="hs-n">STEP 3</span><span class="hs-t">AI 자동 검증</span><span class="hs-d">출처와 교차 대조</span><span class="hs-arrow">→</span></div>
+    <div class="hitl-step human"><span class="hs-ic">👤</span><span class="hs-n">STEP 4</span><span class="hs-t">사람이 최종 확인</span><span class="hs-d">판정 · 서명</span></div>
+  </div>
+  <div class="audit-criteria">
+    <span class="ac-lbl">AI 자동 발췌 기준</span>
+    <span class="ac-chip">“~에 따르면” 인용·전언 문장</span>
+    <span class="ac-chip">“최고·1위·유일” 최상급 표현</span>
+    <span class="ac-chip">승소율 등 수치 주장</span>
+    <span class="ac-chip">경력·자격 공적기록 대조 항목</span>
+  </div>
+  <div class="row" style="gap:14px;margin-bottom:18px;flex-wrap:wrap">
+    <div class="tile" style="flex:1;min-width:120px;padding:14px 18px"><div class="tl-lbl">AI 선별</div><div class="tl-val" style="font-size:24px;color:var(--amber)">${DB.audit.length}</div></div>
+    <div class="tile" style="flex:1;min-width:120px;padding:14px 18px"><div class="tl-lbl">검증 완료</div><div class="tl-val" style="font-size:24px;color:var(--green)" id="verifiedCount">1</div></div>
+    <div class="tile" style="flex:1;min-width:120px;padding:14px 18px"><div class="tl-lbl">이의·정정</div><div class="tl-val" style="font-size:24px;color:var(--red)">1</div></div>
+  </div>
+  <div class="grid" style="grid-template-columns:1fr;gap:14px">
+    ${DB.audit.map(a=>{const st={pending:"s-pending",verified:"s-verified",disputed:"s-disputed"}[a.status];
+      const stl={pending:"AI 선별 · 대기",verified:"검증 완료",disputed:"이의 있음 · 정정 요청"}[a.status];
+      const vcl={pending:"",verified:"v-verified",disputed:"v-disputed"}[a.status];
+      return `<div class="verdict ${vcl}" data-vid="${a.id}">
+        <div class="v-head"><span class="v-status ${st}" data-vstatus>${a.status==="verified"?"✓ ":a.status==="disputed"?"⚠ ":"● "}${stl}</span>
+          <span class="mono dim" style="font-size:11px">${esc(lw(a.lawyer).name)} 변호사 프로필</span></div>
+        <div class="v-quote">“${esc(a.quote)}”</div>
+        <div class="v-claim">${a.claim}</div>
+        <div class="v-sources">${a.sources.map(s=>`<div class="v-src"><span class="ic">${s.ic}</span>${esc(s.t)}</div>`).join("")}</div>
+        <div class="v-foot"><div class="v-audit-meta" data-ameta>
+          <span>Auditor: <b>${esc(a.auditor)}</b></span><span>Audit time: <b>${esc(a.at)}</b></span><span>Reason: <b>${esc(a.reason)}</b></span></div>
+          ${a.status==="pending"?`<button class="btn btn-primary btn-sm" data-action="run-audit" data-id="${a.id}">👤 검증 실행 (클릭)</button>`:""}</div>
+      </div>`}).join("")}
+  </div>
+</section></div>`;
+
+/* 8. Citation */
+PAGES.adminCitation=()=>{
+  const ct=DB.citation;
+  return `<div class="theme-dark" style="background:radial-gradient(120% 640px at 50% -160px,var(--surface),var(--paper) 60%);min-height:100vh;margin-top:-1px">
+<section class="wrap padmin">
+  <div class="padmin-head"><div class="eyebrow">ENGINE ROOM · GEO ANALYTICS</div>
+    <h1>AI 인용 현황</h1>
+    <p>생성형 AI가 우리 플랫폼의 법조인·사건·뉴스 페이지를 얼마나 인용해 가는지 추적합니다. 이것이 GEO의 성과 지표입니다.</p></div>
+  ${adminTabs("admin-citation")}
+  <div class="tiles" style="margin-bottom:22px">
+    <div class="tile"><div class="tl-lbl">총 누적 인용</div><div class="tl-val">4,281</div><div class="tl-delta up">▲ 전월 대비 +16%</div></div>
+    <div class="tile"><div class="tl-lbl">이번 달 인용</div><div class="tl-val">79</div><div class="tl-delta up">▲ +11 vs 6월</div></div>
+    <div class="tile"><div class="tl-lbl">인용 AI 모델</div><div class="tl-val">4</div><div class="tl-delta"><span class="dim">Claude · GPT · Gemini · Kakao</span></div></div>
+    <div class="tile"><div class="tl-lbl">평균 인용 용이성</div><div class="tl-val">73<span style="font-size:16px;color:var(--t3)">/100</span></div><div class="tl-delta up">▲ +5</div></div>
+  </div>
+  <div class="grid split" style="align-items:start">
+    <div class="card" style="padding:24px 26px;background:var(--surface)">
+      <div class="sec-head" style="margin-bottom:18px"><h2 style="font-size:19px;color:var(--t1)">월별 AI 인용 추이</h2><span class="dim mono" style="font-size:11px">최근 12개월</span></div>
+      <div id="lineChart"></div>
+    </div>
+    <div class="card" style="padding:24px 26px;background:var(--surface)">
+      <div class="sec-head" style="margin-bottom:18px"><h2 style="font-size:19px;color:var(--t1)">인용 AI 모델 분포</h2></div>
+      <div id="barChart"></div>
+    </div>
+  </div>
+  <div class="card" style="padding:24px 26px;margin-top:22px;background:var(--surface)">
+    <div class="sec-head" style="margin-bottom:14px"><h2 style="font-size:19px;color:var(--t1)">가장 많이 인용된 페이지</h2><span class="dim mono" style="font-size:11px">클릭 시 실제 페이지로 이동 — 인용의 착지점</span></div>
+    <table class="dtable">
+      <thead><tr><th>순위</th><th>유형</th><th>페이지</th><th style="text-align:right">인용 수</th></tr></thead>
+      <tbody>${ct.top.map((t,i)=>{
+        const label=t.type==="lawyer"?lw(t.id).name+" 변호사":t.type==="news"?nw(t.id).title:cs(t.id).title;
+        const href=t.type==="lawyer"?"#/lawyer/"+t.id:t.type==="news"?"#/news/"+t.id:"#/case/"+t.id;
+        const tg=t.type==="lawyer"?"tag-blue":t.type==="news"?"tag-orange":"tag-green";
+        const tn={lawyer:"법조인",news:"뉴스",case:"사건"}[t.type];
+        const mx=ct.top[0].n;
+        return `<tr class="clk" data-href="${href}"><td class="mono" style="color:var(--amber);font-weight:800">${i+1}</td><td><span class="tag ${tg}">${tn}</span></td>
+          <td style="font-weight:600">${esc(label)}</td>
+          <td style="text-align:right"><div class="row" style="justify-content:flex-end;gap:10px"><div style="width:90px;height:6px;background:var(--surface2);border-radius:99px;overflow:hidden"><div style="width:${t.n/mx*100}%;height:100%;background:var(--amber);border-radius:99px"></div></div><span class="mono" style="font-weight:800;color:var(--t1);width:34px">${t.n}</span></div></td></tr>`}).join("")}</tbody>
+    </table>
+  </div>
+</section></div>`;
+};
+
+/* ───────────── 라우터 ───────────── */
+const routes={"":PAGES.main,"list":PAGES.list,"lawyer":PAGES.lawyer,"firm":PAGES.firm,
+  "case":PAGES.caseDetail,"news":PAGES.news,"admin-crawler":PAGES.adminCrawler,
+  "admin-audit":PAGES.adminAudit,"admin-citation":PAGES.adminCitation};
+
+function parseHash(){
+  const raw=location.hash.replace(/^#\/?/,"");
+  const [path,qs]=raw.split("?");
+  const [name,id]=path.split("/");
+  return{name:name||"",id,q:new URLSearchParams(qs||"")};
+}
+function setActiveNav(name,q){
+  document.querySelectorAll("#mainnav a").forEach(a=>a.removeAttribute("aria-current"));
+  const tab=q&&q.get("tab");
+  let sel=name;
+  if(name==="list")sel=tab==="cases"?"list-c":tab==="news"?"list-n":"list";
+  const el=document.querySelector(`#mainnav a[data-r="${sel}"]`);
+  if(el)el.setAttribute("aria-current","page");
+}
+function render(){
+  clearTimers();
+  const r=parseHash();
+  const page=routes[r.name]||PAGES.notFound;
+  const view=$("#view");
+  view.innerHTML=page(r);
+  view.classList.remove("fadeUp");void view.offsetWidth;view.style.animation="none";void view.offsetWidth;view.style.animation="";
+  window.scrollTo(0,0);
+  setActiveNav(r.name,r.q);
+  runBehaviors(r);
+}
+window.addEventListener("hashchange",render);
+
+/* ───────────── 페이지별 후처리 ───────────── */
+function runBehaviors(r){
+  // 게이지 애니메이션 — 아크 스윕과 동기화된 숫자 카운트업
+  requestAnimationFrame(()=>{document.querySelectorAll("circle[data-goff]").forEach(c=>{c.style.strokeDashoffset=c.dataset.goff})});
+  if(!matchMedia("(prefers-reduced-motion: reduce)").matches){
+    document.querySelectorAll(".gauge text.g-num,.metric-duo .m-val").forEach(tx=>{
+      const end=+tx.textContent.replace(/,/g,"");if(!end)return;const t0=performance.now();
+      const fmt=tx.classList.contains("m-val")?(n=>n.toLocaleString()):(n=>String(n));
+      const step=now=>{const p=Math.min((now-t0)/1100,1);
+        tx.textContent=fmt(Math.round(end*(1-Math.pow(1-p,3))));
+        if(p<1)requestAnimationFrame(step)};
+      requestAnimationFrame(step);
+    });
+  }
+  // 클릭 가능한 테이블 행
+  document.querySelectorAll("tr.clk[data-href]").forEach(tr=>tr.addEventListener("click",()=>{location.hash=tr.dataset.href}));
+  // 필터 칩 (시각 토글만)
+  document.querySelectorAll(".fchip").forEach(c=>c.addEventListener("click",()=>{
+    c.parentElement.querySelectorAll(".fchip").forEach(x=>x.classList.remove("on"));c.classList.add("on")}));
+  if(r.name==="admin-crawler")animateCrawler();
+  if(r.name==="admin-citation")drawCharts();
+  if(r.name===""||!r.name)wireHero();
+}
+
+/* ───────────── 히어로 검색 → 채팅 핸드오프 ───────────── */
+function wireHero(){
+  const form=$("#heroSearch");
+  if(form)form.addEventListener("submit",e=>{e.preventDefault();
+    const v=$("#heroInput").value.trim()||"주주총회 분쟁을 잘 다루는 변호사 추천해줘";askChat(v)});
+  document.querySelectorAll(".h-suggest").forEach(b=>b.addEventListener("click",()=>askChat(b.dataset.ask)));
+}
+
+/* ───────────── 크롤러 애니메이션 (타이머 정리) ───────────── */
+function animateCrawler(){
+  const counters=document.querySelectorAll("[data-count]");
+  const targets=[12290,8420,7650,4310,5230,36986];
+  counters.forEach((el,i)=>{let n=0;const tgt=Math.floor(targets[i]/60);
+    const t=setInterval(()=>{n+=Math.ceil(tgt*(0.6+Math.random()));if(n>=targets[i]){n=targets[i];clearInterval(t)}
+      el.textContent=n.toLocaleString()},90);activeTimers.push(t)});
+  // 누적 total 미세 증가(살아있는 느낌)
+  const tot=$("[data-total]");if(tot){let base=36986;const t=setInterval(()=>{base+=Math.floor(Math.random()*3);tot.textContent=base.toLocaleString()},1400);activeTimers.push(t)}
+}
+
+/* ───────────── 검증 실행 플립 ───────────── */
+function runAudit(id){
+  const card=document.querySelector(`.verdict[data-vid="${id}"]`);if(!card)return;
+  const st=card.querySelector("[data-vstatus]");
+  const btn=card.querySelector('[data-action="run-audit"]');
+  card.classList.add("auditing");
+  st.className="v-status s-pending";st.innerHTML='<span class="spinner"></span> AI 검증 중…';
+  if(btn)btn.disabled=true,btn.style.opacity=".5";
+  const t=setTimeout(()=>{
+    card.classList.remove("auditing");card.classList.add("v-verified");
+    st.className="v-status s-verified";st.innerHTML="✓ 검증 완료";
+    const meta=card.querySelector("[data-ameta]");
+    meta.innerHTML=`<span>Auditor: <b>법률신문 검증팀 2</b></span><span>Audit time: <b>${nowKST()}</b></span><span>Reason: <b>URL: 변협 광고심사 가이드 §4 대조</b></span>`;
+    if(btn)btn.remove();
+    const vc=$("#verifiedCount");if(vc)vc.textContent=String(+vc.textContent+1);
+    toast("검증 완료 · 출처 2건 확인");
+  },1500+Math.random()*700);activeTimers.push(t);
+}
+
+/* ───────────── 차트 (SVG 손그림) ───────────── */
+function drawCharts(){
+  const ct=DB.citation;
+  // 라인차트
+  const lc=$("#lineChart");
+  if(lc){const W=440,H=180,pad=28,mx=Math.max(...ct.trend);
+    const pts=ct.trend.map((v,i)=>[pad+i*((W-pad*2)/(ct.trend.length-1)),H-pad-(v/mx)*(H-pad*2)]);
+    const path=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+    const area=path+` L${pts[pts.length-1][0].toFixed(1)} ${H-pad} L${pad} ${H-pad} Z`;
+    const grid=[0,.25,.5,.75,1].map(g=>`<line class="grid-l" x1="${pad}" y1="${(pad+g*(H-pad*2)).toFixed(1)}" x2="${W-pad}" y2="${(pad+g*(H-pad*2)).toFixed(1)}"/>`).join("");
+    lc.innerHTML=`<svg class="chart-svg" viewBox="0 0 ${W} ${H}"><defs><linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="var(--amber)" stop-opacity=".28"/><stop offset="1" stop-color="var(--amber)" stop-opacity="0"/></linearGradient></defs>
+      ${grid}<path class="area" d="${area}"/><path class="line-p" d="${path}" pathLength="1" style="stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.3s ease forwards"/>
+      <circle class="dot-end" cx="${pts[pts.length-1][0].toFixed(1)}" cy="${pts[pts.length-1][1].toFixed(1)}" r="4.5"/>
+      ${ct.months.map((m,i)=>i%2===0?`<text x="${pts[i][0].toFixed(1)}" y="${H-8}" text-anchor="middle">${m}월</text>`:"").join("")}
+    </svg><style>@keyframes draw{to{stroke-dashoffset:0}}</style>`;
+  }
+  // 바차트
+  const bc=$("#barChart");
+  if(bc){const W=280,H=180,pad=30,mx=Math.max(...ct.byModel.map(b=>b.n)),bw=42,gap=(W-pad*2-bw*ct.byModel.length)/(ct.byModel.length-1);
+    // 리더=풀 앰버, 팔로워=감쇠 — 순위를 색으로도 인코딩
+    bc.innerHTML=`<svg class="chart-svg" viewBox="0 0 ${W} ${H}"><defs><linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--amber2)"/><stop offset="1" stop-color="var(--amber)"/></linearGradient></defs>${ct.byModel.map((b,i)=>{
+      const x=pad+i*(bw+gap),h=(b.n/mx)*(H-pad*2),y=H-pad-h;
+      return `<rect class="bar" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw}" height="${h.toFixed(1)}" rx="4" style="animation-delay:${i*0.12}s;opacity:${i===0?1:.55}"/>
+        <text x="${(x+bw/2).toFixed(1)}" y="${y-7}" text-anchor="middle" style="fill:var(--t1);font-weight:800">${b.n}</text>
+        <text x="${(x+bw/2).toFixed(1)}" y="${H-10}" text-anchor="middle">${esc(b.m)}</text>`}).join("")}</svg>`;
+  }
+}
+
+/* ───────────── 툴팁 (엔티티 호버) ───────────── */
+const tip=$("#tooltip");
+$("#view").addEventListener("mouseover",e=>{
+  const s=e.target.closest(".ent");if(!s)return;
+  const d=describeEntity(s.dataset.etype,s.dataset.eid);
+  tip.innerHTML=`<div class="tt-type">${esc(d.t)}</div><div class="tt-name">${esc(d.n)}</div>
+    ${d.rows.map(r=>`<div class="tt-row"><span>${esc(r[0])}</span><span>${esc(r[1])}</span></div>`).join("")}
+    <div class="tt-cite">◈ 정규화 완료 · AI가 이 값을 그대로 인용${d.to?" · 클릭하면 이동":""}</div>`;
+  const rc=s.getBoundingClientRect();
+  tip.style.left=Math.min(rc.left,window.innerWidth-310)+"px";
+  tip.style.top=(rc.bottom+8)+"px";
+  tip.classList.add("on");
+});
+$("#view").addEventListener("mouseout",e=>{if(e.target.closest(".ent"))tip.classList.remove("on")});
+$("#view").addEventListener("click",e=>{
+  const s=e.target.closest(".ent");if(s){const d=describeEntity(s.dataset.etype,s.dataset.eid);if(d.to)location.hash=d.to;return}
+  const act=e.target.closest("[data-action]");if(!act)return;
+  const a=act.dataset.action;
+  if(a==="run-audit")runAudit(act.dataset.id);
+  else if(a==="report")openReport(act.dataset.id);
+  else if(a==="consult")openChat(),askChat(`${act.dataset.name} 변호사에게 상담을 받고 싶어요`,true);
+  else if(a==="ask")askChat(act.dataset.q);
+});
+
+/* ───────────── 리포트 모달 + 인쇄 ───────────── */
+function openReport(id){
+  const x=lw(id);const mr=$("#modal-root");
+  mr.innerHTML=`<div class="report-sheet"><div class="rs-inner" id="rsInner">
+    <div style="text-align:center;padding:30px 0">
+      <div class="dim mono" style="font-size:12px;margin-bottom:16px">법률신문 · AI로써 리포트 생성 중…</div>
+      <div class="rs-progress"><i id="rsBar"></i></div>
+    </div></div></div>`;
+  mr.classList.add("open");
+  const bar=$("#rsBar");requestAnimationFrame(()=>{bar.style.transition="width .85s ease";bar.style.width="100%"});
+  const t=setTimeout(()=>renderReport(x),900);activeTimers.push(t);
+}
+function renderReport(x){
+  const avgR=(x.reviews.reduce((s,r)=>s+r.r,0)/x.reviews.length).toFixed(1);
+  $("#rsInner").innerHTML=`
+    <div class="rs-letterhead"><div class="rs-logo">AI<b>로써</b> <span style="font-size:12px;color:#8f887b;font-weight:400">· 법률신문</span></div>
+      <div class="rs-meta">법조인 리포트<br>발행 2026-07-23 KST<br>검수: 법률신문</div></div>
+    <div class="rs-title">${esc(x.name)} <span style="font-size:16px;color:#8f887b">${esc(x.hanja)} · ${x.birth}년생</span></div>
+    <div class="rs-sub">${esc(x.role)} · ${esc(fm(x.firm).name)} · 주요분야 ${esc(x.fields.join(", "))}</div>
+    <div class="rs-sec"><h4>고객 평가 요약 (LCR 2026)</h4>
+      <div style="display:flex;gap:24px;align-items:center"><div><span style="font-family:Georgia,serif;font-size:34px;color:#1b2a4a;font-weight:700">${avgR}</span><span style="color:#8f887b">/5.0</span></div>
+      <div style="font-size:13px;color:#5d5850">검증된 실제 고객 리뷰 ${x.reviews.length}건 · AI 인용 <b>${x.cite}</b>건 · 사람 조회 ${x.views.toLocaleString()}</div></div></div>
+    <div class="rs-sec"><h4>대표 리뷰</h4>${x.reviews.slice(0,2).map(r=>`<div style="margin-bottom:10px;font-family:Georgia,serif;font-size:13.5px;color:#1b1d22;line-height:1.6">“${esc(r.text)}” <span style="color:#8f887b;font-family:sans-serif;font-size:11px">— ${esc(r.by)}</span></div>`).join("")}</div>
+    <div class="rs-sec"><h4>학력 · 경력</h4><div style="font-size:13px;color:#3a352e;line-height:1.9">${x.edu.concat(x.career).map(e=>"· "+esc(e)).join("<br>")}</div></div>
+    <div class="rs-sec"><h4>수임 사건</h4>${x.cases.map(c=>{const cc=cs(c);return `<div style="font-size:12.5px;color:#3a352e;margin-bottom:4px"><b>${esc(cc.no)}</b> — ${esc(cc.title)} (${esc(cc.status)})</div>`}).join("")}</div>
+    <div style="margin-top:26px;padding-top:14px;border-top:1px solid #ece5d7;font-size:10.5px;color:#8f887b;font-family:'SF Mono',monospace">본 리포트의 데이터는 법률신문이 검수했습니다. 등장 정보는 데모용 가상 데이터입니다. © 법률신문 · Cizion</div>`;
+  const sheet=$(".report-sheet");
+  sheet.insertAdjacentHTML("beforeend",`<div class="modal-actions no-print"><button class="btn btn-ghost btn-sm" data-close>닫기</button><button class="btn btn-primary btn-sm" data-print>🖨 PDF로 저장 / 인쇄</button></div>`);
+  sheet.querySelector("[data-close]").addEventListener("click",closeModal);
+  sheet.querySelector("[data-print]").addEventListener("click",()=>window.print());
+}
+function closeModal(){$("#modal-root").classList.remove("open");$("#modal-root").innerHTML=""}
+$("#modal-root").addEventListener("click",e=>{if(e.target.id==="modal-root")closeModal()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+
+/* ───────────── 토스트 ───────────── */
+function toast(msg){const el=document.createElement("div");el.className="toast";
+  el.innerHTML=`<span class="tk">✓</span>${esc(msg)}`;$("#toast-root").appendChild(el);
+  const t=setTimeout(()=>{el.classList.add("out");setTimeout(()=>el.remove(),300)},2300);
+  activeTimers.push(t)}
+
+/* ───────────── 채팅 위젯 (지속) ───────────── */
+let chatOpen=false,chatSeeded=false;
+function mountChat(){
+  const root=$("#chat-root");
+  root.innerHTML=`
+    <div class="chat-panel" id="chatPanel">
+      <div class="cp-head"><div class="cp-ic">로</div><div><div class="cp-t">AI로써 법률 어시스턴트</div><div class="cp-s">법률신문 데이터 기반 · 상시 응답</div></div><button class="cp-x" id="chatX">×</button></div>
+      <div class="cp-body" id="chatBody"></div>
+      <div class="cp-chips" id="chatChips">
+        ${["주주총회 분쟁 변호사?","영업비밀 유출 대응은?","공정위 심사 경험자?"].map(c=>`<button class="cp-chip" data-ask="${esc(c)}">${esc(c)}</button>`).join("")}
+      </div>
+    </div>
+    <button class="chat-fab" id="chatFab"><span class="cf-ic">로</span>AI 법률 어시스턴트<span class="cf-hint">무엇이든 물어보세요</span><span class="cf-p"></span></button>`;
+  $("#chatFab").addEventListener("click",toggleChat);
+  $("#chatX").addEventListener("click",toggleChat);
+  $("#chatChips").addEventListener("click",e=>{const b=e.target.closest("[data-ask]");if(b)askChat(b.dataset.ask)});
+}
+function openChat(){if(!chatOpen)toggleChat()}
+function toggleChat(){
+  chatOpen=!chatOpen;
+  const p=$("#chatPanel"),fab=$("#chatFab");
+  fab.classList.toggle("is-open",chatOpen); /* 독은 항상 노출 — 숨기지 않는다 */
+  if(chatOpen){p.classList.remove("closing");p.classList.add("open")}
+  else{p.classList.remove("open");p.classList.add("closing");
+    const t=setTimeout(()=>{p.classList.remove("closing")},180);
+    activeTimers.push(t)}
+  if(chatOpen&&!chatSeeded){chatSeeded=true;
+    botSay("안녕하세요. <b>법률신문 데이터</b>로 답하는 AI 어시스턴트입니다. 어떤 법률 문제로 변호사를 찾으시나요?",null)}
+}
+function addMsg(who,html){const b=$("#chatBody");const el=document.createElement("div");
+  el.className="msg "+who;el.innerHTML=html;b.appendChild(el);b.scrollTop=b.scrollHeight;return el}
+function addTyping(){const b=$("#chatBody");const el=document.createElement("div");
+  el.className="typing";el.innerHTML="<i></i><i></i><i></i>";b.appendChild(el);b.scrollTop=b.scrollHeight;return el}
+function botSay(html,cite){
+  const t=addTyping();
+  const d=setTimeout(()=>{t.remove();
+    const c=cite?`<div class="cite-src">◈ 출처: ${esc(cite)} · 법률신문 검수</div>`:"";
+    addMsg("bot",renderChatLinks(html)+c);
+  },800+Math.min(html.length*7,1200));activeTimers.push(d);
+}
+function renderChatLinks(html){
+  return html.replace(/§(\w+):(\w+)/g,(_,type,id)=>{
+    const label=ENT_LABEL[type]?ENT_LABEL[type](id):id;
+    const to=type==="lawyer"?"#/lawyer/"+id:type==="case"?"#/case/"+id:"#/news/"+id;
+    return `<a href="${to}">${esc(label)}</a>`;
+  });
+}
+const CHAT_REPLIES=[
+  {k:["주주총회","지배구조","경영권","의결권"],r:"주주총회·지배구조 분쟁이라면 §lawyer:L01 를 추천합니다. 최근 §case:C01 에서 의결권 가처분을 이끌어냈고, 실제 고객 리뷰 평점도 높습니다.",c:"법조인 대관 + LCR 2026"},
+  {k:["영업비밀","유출","기술","특허","지식재산","IP"],r:"영업비밀·기술 분쟁은 §lawyer:L04 가 적합합니다. §case:C03 가처분 인용을 이끌었고, 기술 쟁점 이해도가 높다는 평이 많습니다.",c:"법조인 대관 + 판결서"},
+  {k:["공정","기업결합","심사","경쟁","M&A"],r:"공정거래·기업결합 분야는 §lawyer:L02 를 추천합니다. 관련 동향은 §news:N02 기사에서 확인하실 수 있습니다.",c:"법률신문 기사 아카이브"},
+  {k:["형사","공시","바이오","검찰","수사"],r:"기업 형사·공시 리스크는 §lawyer:L03 가 경험이 많습니다. 진행 중인 §case:C02 사건이 대표적입니다.",c:"법조인 대관 + 기사"},
+  {k:["개인정보","유출","해킹","집단소송"],r:"개인정보 유출·집단소송 대응은 §lawyer:L04 가 적합합니다. 진행 중인 §case:C05 사건의 원고 측 대리를 맡고 있고, 기업 위기대응은 §lawyer:L03 도 경험이 많습니다.",c:"법조인 대관 + 사건 DB"},
+  {k:["하도급","과징금","집행정지","불복"],r:"공정위 처분 불복·행정소송은 §lawyer:L05 를 추천합니다. §case:C04 에서 집행정지 일부 인용을 이끌어냈습니다. 경쟁법 쟁점은 §lawyer:L02 가 함께 봅니다.",c:"법조인 대관 + 판결서"},
+  {k:["세금","조세","행정","세무"],r:"조세·행정 사건은 §lawyer:L05 를 추천합니다. 세무조사 대응 경험이 있습니다.",c:"법조인 대관"}
+];
+function askChat(q,silent){
+  openChat();
+  if(!silent)addMsg("user",esc(q));
+  let hit=CHAT_REPLIES.find(x=>x.k.some(k=>q.includes(k)));
+  if(!hit)hit={r:"말씀하신 분야로는 §lawyer:L01 를 우선 추천합니다. 상단 검색이나 아래 예시 질문으로 더 좁혀보실 수 있어요.",c:"법조인 대관"};
+  botSay(hit.r,hit.c);
+}
+
+/* ───────────── 부팅 ───────────── */
+mountChat();
+if(!location.hash)location.hash="#/";
+render();
+</script>
+
+
+
+
+</body>
+</html>
