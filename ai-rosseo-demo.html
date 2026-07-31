@@ -489,6 +489,61 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .mask-chip .before{color:var(--t3);text-decoration:line-through}
 .mask-chip .after{color:var(--green);font-weight:700}
 
+/* — live crawler (크롤러 실황) — */
+.lc-engines{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.lc-engine{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11.5px;
+  font-weight:700;color:var(--t1);background:var(--surface2);border:1px solid var(--border);
+  padding:7px 13px;border-radius:99px}
+.lc-engine em{font-style:normal;color:var(--cyan);font-size:10px;font-weight:600}
+.lc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+@media(max-width:900px){.lc-grid{grid-template-columns:1fr}}
+.lc-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:16px 17px;display:flex;flex-direction:column;gap:11px;transition:border-color var(--dur-med) var(--ease-out)}
+.lc-card.on{border-color:var(--amber)}
+.lc-card.done{border-color:color-mix(in srgb,var(--green) 45%,transparent)}
+.lc-head{display:flex;align-items:flex-start;gap:11px}
+.lc-ic{width:34px;height:34px;border-radius:9px;background:var(--surface2);display:flex;
+  align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.lc-name{font-size:13px;font-weight:700;color:var(--t1);line-height:1.3}
+.lc-url{font-size:10.5px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.lc-badge{flex-shrink:0;font-family:var(--mono);font-size:10.5px;font-weight:800;letter-spacing:.03em;
+  padding:3px 9px;border-radius:99px;background:var(--surface2)}
+.lc-badge.lc-wait{color:var(--t3)}
+.lc-badge.lc-conn,.lc-badge.lc-recv{color:var(--cyan)}
+.lc-badge.lc-parse,.lc-badge.lc-norm{color:var(--amber)}
+.lc-badge.lc-done{color:var(--green)}
+.lc-badge .spinner{width:9px;height:9px;border-width:2px;vertical-align:-1px;margin-right:3px}
+.lc-bar{height:6px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.lc-bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--amber),var(--amber2));
+  border-radius:99px;transition:width .45s var(--ease-out)}
+.lc-net{font-size:10.5px;color:var(--t2);display:flex;gap:6px;flex-wrap:wrap}
+.lc-xform{position:relative;background:var(--paper);border:1px solid var(--border);border-radius:8px;
+  min-height:132px;overflow:hidden}
+.lc-raw{margin:0;padding:11px 13px;font-size:10px;line-height:1.5;color:var(--t3);white-space:pre-wrap;
+  word-break:break-all;max-height:132px;overflow:auto;transition:opacity .35s var(--ease-out)}
+.lc-raw.fade-out{opacity:0}
+.lc-fields{position:absolute;inset:0;width:100%;border-collapse:collapse;opacity:0;
+  padding:6px;transition:opacity .35s var(--ease-out);pointer-events:none}
+.lc-fields.fade-in{opacity:1;pointer-events:auto}
+.lc-fields td{padding:6px 12px;border-bottom:1px solid var(--line);font-size:11.5px;vertical-align:top}
+.lc-fields tr:last-child td{border-bottom:none}
+.lc-fields td:first-child{color:var(--t3);font-family:var(--mono);font-size:10px;white-space:nowrap;width:1%}
+.lc-fields td:last-child{color:var(--t1);font-weight:700}
+.lc-fields tr.golink td{color:var(--cyan);font-weight:700;cursor:pointer}
+.lc-console{background:#05070f;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.lc-console-head{padding:8px 15px;font-size:11px;color:var(--amber);font-weight:800;
+  border-bottom:1px solid var(--border);background:var(--surface2)}
+.lc-log{padding:12px 15px;font-size:11px;line-height:1.7;max-height:190px;overflow:auto;color:var(--t2)}
+.lc-log-line{white-space:pre-wrap;word-break:break-all}
+.lc-log-line .ts{color:var(--t3)}
+.lc-log-line.ok{color:var(--green)}
+.lc-export-out{margin-top:18px;background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:16px 18px}
+.lc-export-out .lc-export-head{font-family:var(--mono);font-size:11.5px;color:var(--amber);
+  font-weight:800;margin-bottom:10px}
+.lc-export-out pre{font-family:var(--mono);font-size:10.5px;line-height:1.5;color:var(--t1);
+  white-space:pre-wrap;word-break:break-all;max-height:280px;overflow:auto}
+
 /* — stat tiles — */
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
 .tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
@@ -1480,7 +1535,7 @@ PAGES.notFound=()=>`<section class="wrap" style="padding:80px 0;text-align:cente
 
 /* ───────────── PAGES : 어드민 6~8 (theme-dark) ───────────── */
 function adminTabs(cur){
-  const t=[["admin-crawler","🕸 크롤러 파이프라인"],["admin-audit","◈ 팩트체크 · AUDIT"],["admin-citation","📈 AI 인용 현황"]];
+  const t=[["admin-crawler","🕸 크롤러 파이프라인"],["admin-live","📡 크롤러 실황"],["admin-audit","◈ 팩트체크 · AUDIT"],["admin-citation","📈 AI 인용 현황"]];
   return `<div class="admin-tabs">${t.map(x=>`<a href="#/${x[0]}" class="admin-tab" aria-current="${x[0]===cur?"page":"false"}">${x[1]}</a>`).join("")}</div>`;
 }
 
@@ -1526,6 +1581,61 @@ PAGES.adminCrawler=()=>`
       <div style="padding:12px 15px;background:var(--surface);border:1px solid var(--border);border-radius:11px;font-size:11.5px;color:var(--t2);line-height:1.5">✓ 마지막 실행 <b style="color:var(--t1)">2026-07-23 03:00 KST</b><br>주기: 월 1회 전수 + 상시 증분</div>
     </div>
   </div>
+</section></div>`;
+
+/* 6-b. 크롤러 실황 (Live Crawler) — 연출 데모 */
+const LC_TARGETS=[
+  {ic:"🔎",label:"로파** 변호사 프로필",url:"https://lawfind.example/lawyer/ansehun",code:200,bytes:18432,
+    raw:`<div class="profile">\n  <h1 class="name">안세훈 변호사</h1>\n  <p class="firm">법무법인 정평 · 대표변호사</p>\n  <ul class="career">\n    <li>서울대학교 법과대학 졸업 (1997)</li>\n    <li>제38회 사법시험 · 사법연수원 28기</li>\n  </ul>\n  <div class="tags"><span>기업지배구조</span><span>M&A</span><span>증권</span></div>\n</div>`,
+    fields:[["이름","안세훈"],["소속","법무법인 정평"],["직위","대표변호사"],["경력","제38회 사법시험 · 연수원 28기"],["주요분야","기업지배구조 · M&A · 증권"]],
+    record:{source:"lawfind",type:"lawyer",id:"L01",name:"안세훈",firm:"법무법인 정평",role:"대표변호사",fields:["기업지배구조","M&A","증권"]},go:"#/lawyer/L01"},
+  {ic:"🏛️",label:"**협회 법조인 인명부(판사)",url:"https://assoc.example/judge/osangwon",code:200,bytes:9216,
+    raw:`<article class="judge">\n  <h2>오상원</h2>\n  <dl>\n    <dt>법원</dt><dd>서울중앙지방법원</dd>\n    <dt>재판부</dt><dd>제31민사부</dd>\n    <dt>주요사건</dt><dd>상법·회사 사건 다수</dd>\n  </dl>\n</article>`,
+    fields:[["이름","오상원"],["법원","서울중앙지방법원"],["재판부","제31민사부"],["주요사건","상법·회사 사건 다수"]],
+    record:{source:"assoc",type:"judge",name:"오상원",court:"서울중앙지방법원 제31민사부",note:"상법·회사 사건 다수"},go:null},
+  {ic:"⚖️",label:"대법원 판결서",url:"https://www.scourt.go.kr/portal/dcboard/…?caseNo=2026가합101234",code:200,bytes:27648,
+    raw:`<div id="judgment">\n  <span class="caseno">2026가합101234</span>\n  <p class="court">서울중앙지방법원 제31민사부</p>\n  <p class="party">원고 소수주주 연합 / 피고 대성전자</p>\n  <div class="holding">위임장 서식 불비가 의결권 행사에 영향을 미쳤을 개연성이 소명되어 가처분을 인용한다…</div>\n</div>`,
+    fields:[["사건번호","2026가합101234"],["법원","서울중앙지방법원"],["재판부","제31민사부 (오상원)"],["당사자","원고 소수주주 연합 / 피고 대성전자"],["판결요지","의결권 대리행사 절차 하자 개연성 소명 — 가처분 인용"]],
+    record:{source:"scourt",type:"case",id:"C01",caseNo:"2026가합101234",court:"서울중앙지방법원",judge:"오상원",plaintiff:"소수주주 연합",defendant:"대성전자",holding:"의결권 대리행사 절차 하자 개연성 소명 — 가처분 인용"},go:"#/case/C01"}
+];
+
+PAGES.adminLiveCrawler=()=>`
+<div class="theme-dark" style="background:radial-gradient(120% 640px at 50% -160px,var(--surface),var(--paper) 60%);min-height:100vh;margin-top:-1px">
+<section class="wrap padmin">
+  <div class="padmin-head"><div class="eyebrow">ENGINE ROOM · LIVE INGESTION</div>
+    <h1>크롤러 실황</h1>
+    <p>공개 소스 3곳에 접속해 HTML을 수신하고, 파싱·필드 추출·정규화를 거쳐 구조화 레코드로 저장하는 과정을 실시간으로 보여줍니다. <span class="mono" style="color:var(--t3)">(데모 · 실제 네트워크 요청 없음)</span></p></div>
+  ${adminTabs("admin-live")}
+
+  <div class="lc-engines">
+    <span class="lc-engine">🧩 Ultimate Web Scraper <em>브라우저 확장</em></span>
+    <span class="lc-engine">🔌 Claude Connector <em>MCP</em></span>
+    <span style="flex:1"></span>
+    <button class="btn btn-primary btn-sm" id="lcRun">▶ 수집 시작</button>
+    <button class="btn btn-ghost btn-sm" id="lcExport" disabled>⬇ Export (JSON·CSV)</button>
+  </div>
+
+  <div class="lc-grid" id="lcCards">
+    ${LC_TARGETS.map((t,i)=>`
+      <div class="lc-card" data-lc="${i}">
+        <div class="lc-head"><span class="lc-ic">${t.ic}</span>
+          <div style="min-width:0;flex:1"><div class="lc-name">${esc(t.label)}</div><div class="lc-url mono">${esc(t.url)}</div></div>
+          <span class="lc-badge lc-wait" data-status>대기</span></div>
+        <div class="lc-bar"><i data-bar></i></div>
+        <div class="lc-net mono"><span data-code>—</span> · <span data-bytes>0 B</span> · <span data-ms>0 ms</span></div>
+        <div class="lc-xform">
+          <pre class="lc-raw mono" data-raw></pre>
+          <table class="lc-fields" data-fields></table>
+        </div>
+      </div>`).join("")}
+  </div>
+
+  <div class="lc-console">
+    <div class="lc-console-head mono">◈ crawler.log <span class="dim">— tail -f</span></div>
+    <div class="lc-log mono" id="lcLog"></div>
+  </div>
+
+  <div class="lc-export-out" id="lcExportOut" hidden></div>
 </section></div>`;
 
 /* 7. AUDIT */
@@ -1617,6 +1727,7 @@ PAGES.adminCitation=()=>{
 /* ───────────── 라우터 ───────────── */
 const routes={"":PAGES.main,"list":PAGES.list,"lawyer":PAGES.lawyer,"firm":PAGES.firm,
   "case":PAGES.caseDetail,"news":PAGES.news,"admin-crawler":PAGES.adminCrawler,
+  "admin-live":PAGES.adminLiveCrawler,
   "admin-audit":PAGES.adminAudit,"admin-citation":PAGES.adminCitation};
 
 function parseHash(){
@@ -1666,6 +1777,7 @@ function runBehaviors(r){
   document.querySelectorAll(".fchip").forEach(c=>c.addEventListener("click",()=>{
     c.parentElement.querySelectorAll(".fchip").forEach(x=>x.classList.remove("on"));c.classList.add("on")}));
   if(r.name==="admin-crawler")animateCrawler();
+  if(r.name==="admin-live")initLiveCrawler();
   if(r.name==="admin-citation")drawCharts();
   if(r.name===""||!r.name)wireHero();
 }
@@ -1687,6 +1799,126 @@ function animateCrawler(){
       el.textContent=n.toLocaleString()},90);activeTimers.push(t)});
   // 누적 total 미세 증가(살아있는 느낌)
   const tot=$("[data-total]");if(tot){let base=36986;const t=setInterval(()=>{base+=Math.floor(Math.random()*3);tot.textContent=base.toLocaleString()},1400);activeTimers.push(t)}
+}
+
+/* ───────────── 크롤러 실황 (연출 데모) ───────────── */
+function fmtBytes(n){return n<1024?n+" B":(n/1024).toFixed(1)+" KB"}
+function initLiveCrawler(){
+  const run=$("#lcRun"),exp=$("#lcExport");
+  if(run)run.addEventListener("click",()=>{clearTimers();resetLiveCrawler();runLiveCrawler()});
+  runLiveCrawler(); // 진입 시 1회 자동 재생
+}
+function resetLiveCrawler(){
+  document.querySelectorAll(".lc-card").forEach(card=>{
+    card.classList.remove("on","done");
+    const b=card.querySelector("[data-status]");b.className="lc-badge lc-wait";b.textContent="대기";
+    card.querySelector("[data-bar]").style.width="0";
+    card.querySelector("[data-code]").textContent="—";
+    card.querySelector("[data-bytes]").textContent="0 B";
+    card.querySelector("[data-ms]").textContent="0 ms";
+    const raw=card.querySelector("[data-raw]");raw.textContent="";raw.classList.remove("fade-out");
+    const f=card.querySelector("[data-fields]");f.innerHTML="";f.classList.remove("fade-in");
+  });
+  const log=$("#lcLog");if(log)log.innerHTML="";
+  const out=$("#lcExportOut");if(out){out.hidden=true;out.innerHTML=""}
+  const exp=$("#lcExport");if(exp)exp.disabled=true;
+}
+function runLiveCrawler(){
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const log=$("#lcLog");const results=[];
+  let clock=0; // 로그 타임스탬프 유사 진행(ms)
+  function logLine(txt,ok){
+    if(!log)return;
+    clock+=Math.floor(120+Math.random()*280);
+    const ts=("00"+Math.floor(clock/1000)).slice(-2)+"."+("000"+clock%1000).slice(-3);
+    const el=document.createElement("div");
+    el.className="lc-log-line"+(ok?" ok":"");
+    el.innerHTML=`<span class="ts">[${ts}]</span> ${esc(txt)}`;
+    log.appendChild(el);log.scrollTop=log.scrollHeight;
+  }
+  function setStatus(card,txt,cls,spin){
+    const b=card.querySelector("[data-status]");
+    b.className="lc-badge "+cls;
+    b.innerHTML=(spin?'<span class="spinner"></span>':"")+esc(txt);
+  }
+  function rampBar(card,pct){card.querySelector("[data-bar]").style.width=pct+"%"}
+  function countUp(el,end,suffix,ms){
+    if(reduce){el.textContent=(suffix==="bytes"?fmtBytes(end):end+" ms");return}
+    const t0=performance.now();
+    const step=now=>{const p=Math.min((now-t0)/(ms||600),1);const v=Math.round(end*(1-Math.pow(1-p,3)));
+      el.textContent=suffix==="bytes"?fmtBytes(v):v+" ms";
+      if(p<1){const id=requestAnimationFrame(step)}};
+    requestAnimationFrame(step);
+  }
+  function typeRaw(card,raw){
+    const pre=card.querySelector("[data-raw]");
+    if(reduce){pre.textContent=raw;return}
+    let i=0;const chunk=Math.max(3,Math.round(raw.length/40));
+    const t=setInterval(()=>{i+=chunk;pre.textContent=raw.slice(0,i);pre.scrollTop=pre.scrollHeight;
+      if(i>=raw.length)clearInterval(t)},28);activeTimers.push(t);
+  }
+  function xformToFields(card,T){
+    const raw=card.querySelector("[data-raw]"),f=card.querySelector("[data-fields]");
+    f.innerHTML=T.fields.map(kv=>`<tr><td>${esc(kv[0])}</td><td>${esc(kv[1])}</td></tr>`).join("")
+      +(T.go?`<tr class="golink" data-go="${T.go}"><td>→</td><td>플랫폼 레코드로 이동</td></tr>`:"");
+    raw.classList.add("fade-out");f.classList.add("fade-in");
+    f.querySelectorAll("tr.golink").forEach(tr=>tr.addEventListener("click",()=>{location.hash=tr.dataset.go}));
+  }
+  function runCard(idx,cb){
+    const card=document.querySelector(`.lc-card[data-lc="${idx}"]`);
+    const T=LC_TARGETS[idx];card.classList.add("on");
+    const seq=[
+      [0,()=>{setStatus(card,"접속중","lc-conn",true);logLine(`GET ${T.url}`)}],
+      [420,()=>{setStatus(card,"수신","lc-recv",true);card.querySelector("[data-code]").textContent="200 OK";
+        countUp(card.querySelector("[data-bytes]"),T.bytes,"bytes",700);
+        countUp(card.querySelector("[data-ms]"),140+Math.floor(Math.random()*90),"ms",700);
+        rampBar(card,45);logLine(`200 OK · ${fmtBytes(T.bytes)} 수신`,true)}],
+      [980,()=>{setStatus(card,"파싱","lc-parse",true);typeRaw(card,T.raw);rampBar(card,70);
+        logLine(`DOM 파싱 · 노드 ${Math.round(T.raw.length/9)}개 스캔`)}],
+      [1620,()=>{setStatus(card,"필드 추출","lc-parse",true);rampBar(card,88);
+        logLine(`셀렉터 매칭 · 필드 ${T.fields.length}개 추출`)}],
+      [2050,()=>{setStatus(card,"정규화","lc-norm",true);xformToFields(card,T);rampBar(card,100);
+        logLine(`정규화 · 스키마 매핑 → ${T.record.type} 레코드`)}],
+      [2500,()=>{setStatus(card,"완료","lc-done",false);card.classList.remove("on");card.classList.add("done");
+        results.push(T.record);logLine(`✓ 저장 · ${T.record.name||T.record.caseNo}`,true)}]
+    ];
+    seq.forEach(([d,fn])=>{const t=setTimeout(fn,reduce?0:d);activeTimers.push(t)});
+    const done=setTimeout(cb,reduce?0:2560);activeTimers.push(done);
+  }
+  const GAP=reduce?0:900;
+  [0,1,2].forEach(i=>{const t=setTimeout(()=>runCard(i,i===2?finish:()=>{}),i*GAP);activeTimers.push(t)});
+  function finish(){
+    const t=setTimeout(()=>{
+      const exp=$("#lcExport");if(exp){exp.disabled=false;exp.onclick=()=>exportRecords(results)}
+      logLine(`ingest 완료 · 레코드 ${results.length}건 정규화·저장`,true);
+      toast("수집 완료 · 3건 정규화");
+    },reduce?0:2600);activeTimers.push(t);
+  }
+}
+function toCSV(records){
+  const keys=[...new Set(records.flatMap(r=>Object.keys(r)))];
+  const cell=v=>{const s=typeof v==="object"?JSON.stringify(v):String(v);
+    return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
+  return keys.join(",")+"\n"+records.map(r=>keys.map(k=>cell(r[k]??"")).join(",")).join("\n");
+}
+function triggerDownload(name,text,mime){
+  const blob=new Blob([text],{type:mime});const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");a.href=url;a.download=name;
+  document.body.appendChild(a);a.click();a.remove();
+  const t=setTimeout(()=>URL.revokeObjectURL(url),1500);activeTimers.push(t);
+}
+function exportRecords(records){
+  const json=JSON.stringify(records,null,2);const csv=toCSV(records);
+  let ok=false;
+  try{triggerDownload("live_crawl_export.json",json,"application/json");
+    triggerDownload("live_crawl_export.csv",csv,"text/csv");ok=true}catch(e){ok=false}
+  const out=$("#lcExportOut");
+  if(ok){toast("Export 완료 · JSON·CSV 다운로드");
+    if(out){out.hidden=false;out.innerHTML=`<div class="lc-export-head">✓ live_crawl_export.json · live_crawl_export.csv 다운로드됨</div><pre>${esc(json)}</pre>`}
+  }else{
+    if(out){out.hidden=false;out.innerHTML=`<div class="lc-export-head">Export 결과 (다운로드가 제한된 환경 — 아래 표시)</div><pre>${esc(json)}</pre>`}
+    toast("Export 완료 · 화면에 표시");
+  }
 }
 
 /* ───────────── 검증 실행 플립 ───────────── */
