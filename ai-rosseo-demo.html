@@ -8,7 +8,6 @@
 <title>AI로써 · 법률신문 — 법조인 GEO 플랫폼</title>
 <meta name="description" content="AI가 변호사를 추천할 때, 법률신문을 출처로 인용하게 하는 GEO 기반 법조인 검색 플랫폼 (샘플 데모)">
 <style>
-/* ═══════════════ A. RESET + BASE ═══════════════ */
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:var(--sans);color:var(--t1);
@@ -22,32 +21,26 @@ img{max-width:100%}
 ::selection{background:var(--gold-soft);color:var(--navy)}
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:3px}
 
-/* ═══════════════ B. DESIGN TOKENS ═══════════════ */
 :root{
-  /* LIGHT — cool neutral + deep indigo (베이지 제거) */
   --paper:#f7f8fa; --surface:#ffffff; --surface2:#f0f2f5; --surface3:#e4e7ec;
   --border:#dfe3e9; --line:#eceef2; --hair:rgba(28,37,66,.08);
   --navy:#1c2542; --navy2:#2f3d63; --navy-soft:#e8ecf5;
   --gold:#4f6ef0; --gold2:#3b55c9; --gold-soft:#e9edfd;
   --seal:#c0392b; --seal-soft:#fbeae8;
   --t1:#15181f; --t2:#525a6b; --t3:#8a92a3; --t-inv:#f7f8fa;
-  /* category tints */
   --c-blue:#2f5f9e; --c-blue-bg:#e7eefa;
   --c-green:#1f7a4d; --c-green-bg:#e3f3ea;
   --c-purple:#6a4a92; --c-purple-bg:#eee9f7;
   --c-orange:#b26a12; --c-orange-bg:#fbeeda;
   --c-gray:#5c6472;  --c-gray-bg:#eceef2;
-  /* verdict / status */
   --ok:#1f7a4d; --ok-bg:#e3f3ea; --warn:#b26a12; --warn-bg:#fbeeda;
   --bad:#c0392b; --bad-bg:#fbeae8;
-  /* 신호색 — 라이트 모드용(레이더 화이트톤). 다크에서 .theme-dark가 재정의 */
   --amber:#4f6ef0; --amber2:#3b55c9; --cyan:#2f5f9e; --green:#1f7a4d; --red:#c0392b; --violet:#6a4a92;
   --chart:#4f6ef0; --chart2:#7b93f7;
   --radius:8px; --radius-sm:5px; --radius-lg:14px;
   --shadow-sm:0 1px 2px rgba(20,26,44,.05);
   --shadow:0 1px 3px rgba(20,26,44,.06),0 8px 24px rgba(20,26,44,.06);
   --shadow-lg:0 4px 12px rgba(20,26,44,.09),0 24px 60px rgba(20,26,44,.12);
-  /* 폰트 단일화 — Pretendard (세리프 제거, --serif는 하위호환용 별칭) */
   --sans:'Pretendard Variable','Pretendard','Apple SD Gothic Neo','Malgun Gothic',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   --serif:var(--sans);
   --mono:'SF Mono',ui-monospace,'JetBrains Mono',Menlo,Consolas,monospace;
@@ -57,14 +50,12 @@ img{max-width:100%}
   --dur-fast:.14s; --dur-med:.22s;
   --label-fs:10.5px; --track-label:.07em;
 }
-/* DARK terminal — applied via .theme-dark wrapper (radar inset + admin) */
 .theme-dark{
   --paper:#0d1220; --surface:#171d30; --surface2:#222a44; --surface3:#2f3958;
   --border:#333d5e; --line:#28314e; --hair:rgba(255,255,255,.10);
   --navy:#0d1220; --navy2:#171d30; --navy-soft:#222a44;
   --gold:#8ea4ff; --gold2:#b3c2ff; --gold-soft:#20284a;
   --seal:#FF7A7A; --seal-soft:#33191c;
-  /* 작은 글씨 가독성 — t2·t3를 대폭 상향 */
   --t1:#F4F6FB; --t2:#C3CAD9; --t3:#9AA3B8; --t-inv:#0d1220;
   --c-blue:#6FD4EE; --c-blue-bg:#16304a;
   --c-green:#5FE0A4; --c-green-bg:#123326;
@@ -79,7 +70,6 @@ img{max-width:100%}
   --shadow:0 2px 8px rgba(0,0,0,.4),0 12px 40px rgba(0,0,0,.35);
   --shadow-lg:0 4px 16px rgba(0,0,0,.5),0 30px 70px rgba(0,0,0,.45);
 }
-/* 다크 가독성 — 작은 글씨는 한 단계 밝게 + 살짝 크게 (엔진룸 판독성) */
 .theme-dark .dim{color:#A9B2C4}
 .theme-dark .muted{color:#CBD2E0}
 .theme-dark .pnode .pn-sub{color:#B2BACB;font-size:11px}
@@ -100,13 +90,11 @@ img{max-width:100%}
 .theme-dark .lc-engine em{color:#8FA8FF}
 .theme-dark .mask-chip .before{color:#95A0B5}
 .theme-dark .stage-lbl{color:#9FB4FF}
-/* 다크 표면의 고도 = 상단 1px 하이라이트(입사광) + 깊은 암부 그림자 */
 .theme-dark .card,.theme-dark .pnode,.theme-dark .tile,.theme-dark .rcard,
 .theme-dark .ticker,.theme-dark .hitl-step,.theme-dark .verdict{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.05),
              0 1px 2px rgba(0,0,0,.5),0 10px 28px rgba(0,0,0,.3)}
 
-/* ═══════════════ C. LAYOUT PRIMITIVES ═══════════════ */
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
 .stack{display:flex;flex-direction:column}
 .row{display:flex;align-items:center}
@@ -121,8 +109,6 @@ img{max-width:100%}
 .muted{color:var(--t2)}
 .dim{color:var(--t3)}
 
-/* ═══════════════ D. SHARED CHROME ═══════════════ */
-/* 마스트헤드 — 브로드시트 이중 괘선(thick-thin Oxford rule) */
 #app-header{position:sticky;top:0;z-index:60;background:rgba(247,248,250,.88);
   backdrop-filter:saturate(1.6) blur(12px);
   border-bottom:2px solid var(--navy)}
@@ -148,7 +134,6 @@ img{max-width:100%}
 .hd-admin:hover{box-shadow:var(--shadow-sm);transform:translateY(-1px)}
 .hd-admin .dot{width:6px;height:6px;border-radius:99px;background:var(--gold);
   box-shadow:0 0 0 0 var(--gold);animation:ld 2.4s infinite}
-/* 페이지 진입 — 섹션·카드 캐스케이드 (한 덩어리 페이드 금지) */
 #view{min-height:70vh}
 #view section.wrap{animation:fadeUp .5s var(--ease-out) backwards}
 #view section.wrap:nth-of-type(2){animation-delay:.06s}
@@ -161,7 +146,6 @@ img{max-width:100%}
 .grid>.card:nth-child(3){animation-delay:.1s}
 .grid>.card:nth-child(4){animation-delay:.15s}
 .grid>.card:nth-child(5){animation-delay:.2s}
-/* 히어로 내부 순차 등장 */
 .hero>*{animation:fadeUp .55s var(--ease-out) backwards}
 .hero>*:nth-child(2){animation-delay:.07s}
 .hero>*:nth-child(3){animation-delay:.14s}
@@ -175,8 +159,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .ft .serif{font-size:17px;color:var(--navy);margin-bottom:6px}
 .ft-note{max-width:440px;line-height:1.7}
 
-/* ═══════════════ E. COMPONENTS ═══════════════ */
-/* — buttons — */
 .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:var(--radius);
   font-size:13.5px;font-weight:700;border:1px solid transparent;white-space:nowrap;
   transition:transform var(--dur-med) var(--ease-spring),box-shadow var(--dur-med) var(--ease-out),
@@ -190,7 +172,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .btn-ghost:hover{border-color:var(--gold);color:var(--gold2)}
 .btn-sm{padding:8px 13px;font-size:12.5px}
 
-/* — badges / chips — */
 .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:99px;
   font-size:11px;font-weight:800;letter-spacing:.04em;font-family:var(--mono)}
 .b-HOT{color:var(--red);background:var(--bad-bg)}
@@ -210,14 +191,12 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .tag-purple{color:var(--c-purple);background:var(--c-purple-bg)}
 .tag-orange{color:var(--c-orange);background:var(--c-orange-bg)}
 .tag-gray{color:var(--c-gray);background:var(--c-gray-bg)}
-/* 검수 씰 — 황동 인장(judicial seal). 그린은 감사 상태 전용으로 남긴다 */
 .verified-seal{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;
   font-size:12.5px;font-weight:700;color:var(--gold2);background:var(--gold-soft);
   font-family:var(--serif);letter-spacing:.02em;
   border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);
   box-shadow:inset 0 0 0 2.5px var(--surface)}
 
-/* — avatar — */
 .av{display:flex;align-items:center;justify-content:center;flex-shrink:0;
   border-radius:14px;font-family:var(--serif);font-weight:700;color:#fff;
   background:linear-gradient(150deg,var(--navy),var(--navy2));letter-spacing:.02em}
@@ -225,12 +204,9 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .av-md{width:52px;height:52px;font-size:20px}
 .av-sm{width:38px;height:38px;font-size:15px;border-radius:11px}
 
-/* — stars — */
 .stars{color:var(--gold);letter-spacing:1px;font-size:13px}
 .stars .off{color:var(--border)}
 
-/* — section head — */
-/* 섹션 헤드 — 괘선 + 황동 키커 바(브로드시트 섹션 구분자) */
 .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
   margin:0 0 18px;padding-bottom:12px;border-bottom:1px solid var(--border);position:relative}
 .sec-head::after{content:"";position:absolute;left:0;bottom:-1px;width:48px;height:2px;background:var(--gold)}
@@ -239,7 +215,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .sec-head .more{font-size:13px;font-weight:700;color:var(--gold2)}
 .sec-head .more:hover{text-decoration:underline}
 
-/* — review card — */
 .rev{padding:18px 20px;display:flex;flex-direction:column;gap:10px}
 .rev .rev-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .rev .rev-src{font-family:var(--mono);font-size:10.5px;font-weight:800;color:var(--seal);
@@ -247,7 +222,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .rev p{font-size:13.5px;color:var(--t1);line-height:1.62}
 .rev .rev-by{font-size:12px;color:var(--t3)}
 
-/* — lawyer / case / news mini card — */
 .mini{padding:16px 18px;display:flex;gap:14px;align-items:flex-start;border-radius:var(--radius-lg);
   box-shadow:none;
   transition:transform var(--dur-med) var(--ease-spring),box-shadow var(--dur-med) var(--ease-out),
@@ -258,12 +232,10 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .mini .mini-sub{font-size:12.5px;color:var(--t2);margin-bottom:8px}
 .mini .mini-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 
-/* — gauge — */
 .gauge-wrap{display:flex;flex-direction:column;align-items:center;gap:2px}
 .gauge text.g-num{font-family:var(--mono);font-weight:800;font-size:26px;fill:var(--t1)}
 .gauge text.g-lbl{font-size:8.5px;fill:var(--t3);font-weight:700;letter-spacing:.03em}
 
-/* — 정량 수치 듀오(AI 인용수 · 사람 조회수) — */
 .metric-duo{display:flex;gap:10px}
 .metric-duo .metric{flex:1;min-width:104px;background:var(--surface);border:1px solid var(--border);
   border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:3px}
@@ -277,7 +249,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
   border-color:color-mix(in srgb,var(--gold) 28%,transparent)}
 .metric-duo .m-sub{font-size:9.5px;color:var(--t3);font-family:var(--mono)}
 
-/* — 법조인 지표 스트립(경력·수임·응답) — */
 .stat-strip{display:flex;gap:0;margin-top:16px;border:1px solid var(--border);
   border-radius:10px;overflow:hidden;width:fit-content;max-width:100%;flex-wrap:wrap}
 .stat-strip .ss-item{display:flex;align-items:center;gap:7px;padding:9px 16px;
@@ -286,7 +257,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .stat-strip .ss-item b{color:var(--navy);font-weight:800}
 .stat-strip .ss-ic{font-size:13px}
 
-/* — 대표 성과(하이라이트) — */
 .hl-row{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--line);align-items:flex-start}
 .hl-row:last-child{border-bottom:none}
 .hl-y{font-family:var(--serif);font-size:15px;font-weight:700;
@@ -294,7 +264,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .hl-t{font-size:13.5px;font-weight:700;color:var(--t1);line-height:1.4}
 .hl-d{font-size:12.5px;color:var(--t2);margin-top:3px;line-height:1.5}
 
-/* — 분야별 수임 분포(가로 바) — */
 .fbar{display:flex;flex-direction:column;gap:10px}
 .fbar .fb-row{display:grid;grid-template-columns:92px 1fr 34px;gap:10px;align-items:center}
 .fbar .fb-lbl{font-size:12px;font-weight:600;color:var(--t2);white-space:nowrap;
@@ -308,7 +277,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .fbar .fb-n{font-family:var(--mono);font-size:11.5px;font-weight:800;color:var(--t1);text-align:right}
 @keyframes fbGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 
-/* — entity highlight + tooltip — */
 .ent{position:relative;cursor:help;font-weight:600;white-space:nowrap;
   border-bottom:1.5px solid;padding-bottom:.5px;transition:background .15s}
 .ent-lawyer{color:var(--navy2);border-color:var(--gold)}
@@ -317,7 +285,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .ent-judge{color:var(--c-purple);border-color:var(--c-purple)}
 .ent-firm{color:var(--seal);border-color:var(--seal)}
 .ent:hover{background:var(--gold-soft)}
-/* — 정규화 툴팁 (화이트톤 · 고객 화면) — */
 #tooltip{position:fixed;z-index:200;max-width:290px;background:var(--surface);color:var(--t1);
   padding:12px 14px;border-radius:10px;box-shadow:var(--shadow-lg);font-size:12.5px;
   border:1px solid var(--border);border-top:3px solid var(--gold);
@@ -334,7 +301,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 #tooltip .tt-cite{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);
   font-size:10.5px;color:var(--gold2);font-weight:700}
 
-/* — 메타정보 박스 (화이트톤 · 고객 화면) — */
 .metabox{background:var(--surface);color:var(--t1);border-radius:var(--radius-lg);
   border:1px solid var(--border);box-shadow:var(--shadow-sm);
   padding:22px 24px;margin-top:32px}
@@ -351,11 +317,10 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .mb-item .mb-n{font-size:13.5px;font-weight:700;color:var(--navy)}
 .mb-item .mb-v{font-family:var(--mono);font-size:10.5px;color:var(--t2);margin-top:3px}
 
-/* — data table — */
 .dtable{width:100%;border-collapse:collapse;font-size:13px}
 .dtable th{text-align:left;font-size:var(--label-fs);font-weight:800;letter-spacing:.08em;
   text-transform:uppercase;color:var(--navy2);padding:9px 12px;
-  border-bottom:2px solid var(--navy)} /* 장부(ledger)식 헤더 괘선 */
+  border-bottom:2px solid var(--navy)} 
 .theme-dark .dtable th{border-bottom-color:var(--amber);color:var(--t2)}
 .dtable td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:middle;
   font-variant-numeric:tabular-nums}
@@ -364,7 +329,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .dtable tr.clk:hover td{background:var(--surface2)}
 .dtable .mono{font-size:12px;color:var(--t2)}
 
-/* — timeline — */
 .tl{position:relative;padding-left:26px}
 .tl::before{content:"";position:absolute;left:7px;top:5px;bottom:5px;width:2px;
   background:linear-gradient(to bottom,
@@ -379,7 +343,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .tl-d{font-family:var(--mono);font-size:11px;color:var(--gold2);font-weight:700}
 .tl-e{font-size:13.5px;color:var(--t1);margin-top:2px}
 
-/* ── 실시간 레이더 (화이트톤) — 상단 황동 블룸 + 헤어라인 프레임 ── */
 .radar{background:
     radial-gradient(120% 70% at 50% -10%,var(--gold-soft),transparent 55%),
     var(--surface);
@@ -419,7 +382,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .rc-mo{font-family:var(--mono);font-size:15px;font-weight:800;color:var(--t1)}
 .ticker{background:var(--surface2);border-radius:9px;overflow:hidden;
   border:1px solid var(--border)}
-/* 앰버는 '신호'로만 — 티커 헤더는 다크 서피스 + 앰버 타이프로 절제 */
 .ticker .tk-head{background:var(--gold-soft);color:var(--amber);padding:9px 15px;font-weight:800;
   font-size:12px;font-family:var(--mono);letter-spacing:.05em;display:flex;
   align-items:center;justify-content:space-between;
@@ -433,7 +395,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .tk-label{flex:1;font-size:12.5px;font-weight:600;color:var(--t1)}
 .tk-val{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--t2)}
 
-/* — verdict card (audit) — */
 .verdict{border-radius:var(--radius-lg);padding:18px 20px;border:1px solid var(--border);
   border-left:4px solid var(--warn);background:var(--surface);transition:.2s}
 .verdict.v-verified{border-left-color:var(--ok)}
@@ -447,7 +408,7 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .v-status.s-disputed{color:var(--bad);background:var(--bad-bg)}
 .v-quote{font-family:var(--serif);font-size:14.5px;line-height:1.55;color:var(--t1);
   padding:10px 14px;background:var(--surface2);border-radius:8px;margin-bottom:12px;
-  border-left:2px solid var(--hair)} /* 좌측 액센트는 카드 상태 엣지 하나만 */
+  border-left:2px solid var(--hair)} 
 .v-claim{font-size:12.5px;color:var(--t2);margin-bottom:12px}
 .v-claim b{color:var(--t1)}
 .v-sources{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
@@ -462,7 +423,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .spinner{width:13px;height:13px;border:2px solid var(--cyan);border-top-color:transparent;
   border-radius:99px;animation:spin .7s linear infinite;display:inline-block}
 
-/* — HITL rail — */
 .hitl{display:flex;align-items:stretch;gap:0;margin-bottom:26px;flex-wrap:wrap}
 .hitl-step{flex:1;min-width:130px;display:flex;flex-direction:column;gap:5px;
   padding:15px 16px;background:var(--surface);border:1px solid var(--border);position:relative}
@@ -474,7 +434,7 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
   letter-spacing:.08em}
 .hitl-step .hs-t{font-size:12.5px;font-weight:700;color:var(--t1)}
 .hitl-step .hs-d{font-size:11px;color:var(--t2);line-height:1.4}
-.hitl-step+.hitl-step{margin-left:-1px} /* 이중 seam 제거 */
+.hitl-step+.hitl-step{margin-left:-1px} 
 .audit-criteria{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-12px 0 22px;
   padding:12px 16px;background:var(--surface);border:1px dashed var(--border);border-radius:10px}
 .audit-criteria .ac-lbl{font-family:var(--mono);font-size:10px;font-weight:800;
@@ -487,7 +447,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 1px 3px rgba(0,0,0,.4)}
 
-/* — pipeline (crawler) — */
 .pipe{position:relative;padding:8px 0}
 .pipe-stage{display:flex;flex-direction:column;gap:11px}
 .pnode{background:var(--surface);border:1px solid var(--border);border-radius:11px;
@@ -514,7 +473,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .mask-chip .before{color:var(--t3);text-decoration:line-through}
 .mask-chip .after{color:var(--green);font-weight:700}
 
-/* — live crawler (크롤러 실황) — */
 .lc-engines{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
 .lc-engine{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11.5px;
   font-weight:700;color:var(--t1);background:var(--surface2);border:1px solid var(--border);
@@ -569,7 +527,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .lc-export-out pre{font-family:var(--mono);font-size:10.5px;line-height:1.5;color:var(--t1);
   white-space:pre-wrap;word-break:break-all;max-height:280px;overflow:auto}
 
-/* — MCP 배포 현황 — */
 .mcp-note{display:flex;align-items:flex-start;gap:10px;padding:13px 16px;margin-bottom:20px;
   background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--amber);
   border-radius:9px;font-size:12.5px;color:var(--t2);line-height:1.55}
@@ -591,7 +548,6 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .ch-num .n{font-family:var(--mono);font-size:15px;font-weight:800;color:var(--t1)}
 .ch-num .l{font-size:10px;color:var(--t3)}
 .ch-sync{font-family:var(--mono);font-size:9.5px;color:var(--t3)}
-/* 도구 랭킹 */
 .tool-row{display:grid;grid-template-columns:1fr 62px;gap:12px;align-items:center;
   padding:10px 0;border-bottom:1px solid var(--line)}
 .tool-row:last-child{border-bottom:none}
@@ -607,13 +563,11 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .tier-pro{color:var(--cyan);background:var(--c-blue-bg)}
 .tier-premium{color:var(--c-purple);background:var(--c-purple-bg)}
 .tier-ent{color:var(--amber);background:var(--warn-bg)}
-/* 출처표기 상태 */
 .attr{font-size:11.5px;font-weight:700;white-space:nowrap}
 .attr.ok{color:var(--green)}
 .attr.wl{color:var(--t3)}
 .attr.bad{color:var(--bad)}
 tr.row-warn td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
-/* 수익 요약 */
 .rev-split{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 @media(max-width:680px){.rev-split{grid-template-columns:1fr}}
 .rev-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:15px 17px}
@@ -621,7 +575,6 @@ tr.row-warn td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
 .rev-card .rv-amt{font-family:var(--mono);font-size:20px;font-weight:800;color:var(--t1)}
 .rev-card .rv-apps{font-size:11px;color:var(--t3);margin-top:3px}
 
-/* — stat tiles — */
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
 .tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
   padding:18px 20px}
@@ -632,17 +585,14 @@ tr.row-warn td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
 .tile .tl-delta{font-size:12px;font-weight:700;margin-top:8px;display:inline-flex;
   align-items:center;gap:4px;font-variant-numeric:tabular-nums}
 .tile .up{color:var(--green)} .tile .down{color:var(--red)}
-/* 리드 스탯 타일 — 시선이 착지할 하나의 지점 */
 .tiles .tile:first-child{
   border-color:color-mix(in srgb,var(--gold) 35%,transparent);
   background:linear-gradient(180deg,var(--gold-soft),var(--surface) 70%)}
 .tiles .tile:first-child .tl-val{color:var(--gold);
   text-shadow:0 0 20px color-mix(in srgb,var(--gold) 35%,transparent)}
-/* 앰버 수치 인광(phosphor) 글로우 */
 .theme-dark .pn-count,.theme-dark [data-total],.theme-dark [data-total2]{
   text-shadow:0 0 18px color-mix(in srgb,var(--gold) 45%,transparent)}
 
-/* — 법률 어시스턴트: 중앙 하단 플로팅 독 (모든 화면 상시 노출) — */
 #chat-root{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:120;
   display:flex;flex-direction:column;align-items:center;gap:12px;
   max-width:calc(100vw - 32px)}
@@ -666,7 +616,7 @@ tr.row-warn td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
 .chat-panel{width:390px;max-width:calc(100vw - 40px);height:520px;max-height:calc(100vh - 140px);
   background:var(--surface);border:1px solid var(--border);border-radius:18px;
   box-shadow:var(--shadow-lg);display:none;flex-direction:column;overflow:hidden;
-  transform-origin:50% calc(100% + 24px)} /* 독 중앙에서 피어남 */
+  transform-origin:50% calc(100% + 24px)} 
 .chat-panel.open{display:flex;animation:panelIn .34s cubic-bezier(.33,1.25,.45,1)}
 .chat-panel.closing{display:flex;animation:panelOut .18s var(--ease-out) forwards}
 .cp-head{padding:15px 18px;background:var(--navy);color:var(--t-inv);display:flex;
@@ -703,7 +653,6 @@ tr.row-warn td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
   background:var(--surface2);border:1px solid var(--border);color:var(--t2);transition:.14s}
 .cp-chip:hover{border-color:var(--gold);color:var(--gold2)}
 
-/* — modal / report — */
 #modal-root{position:fixed;inset:0;z-index:180;display:none;align-items:center;
   justify-content:center;padding:24px;background:rgba(15,12,8,.5);backdrop-filter:blur(3px)}
 #modal-root.open{display:flex}
@@ -726,7 +675,6 @@ tr.row-warn td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;padding:16px 24px;
   border-top:1px solid #eceef2;background:#f7f8fa;position:sticky;bottom:0}
 
-/* — toast — */
 #toast-root{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:220;
   display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
 .toast{background:var(--navy);color:var(--t-inv);padding:12px 20px;border-radius:99px;
@@ -734,7 +682,6 @@ tr.row-warn td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
   gap:9px;animation:toastIn .3s;font-family:var(--sans)}
 .toast .tk{color:var(--green);font-weight:800}
 
-/* — 광고 배너(좌상단 · 수익모델 시연) — */
 .ad-banner{display:flex;align-items:center;gap:11px;width:fit-content;max-width:100%;
   margin:0 auto 0 0;padding:9px 16px 9px 10px;border-radius:12px;text-align:left;
   background:linear-gradient(135deg,var(--navy),var(--navy2));color:var(--t-inv);
@@ -747,9 +694,7 @@ tr.row-warn td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
 .ad-banner .ad-cta{font-size:11px;font-weight:700;color:rgba(247,248,250,.65);
   border-left:1px solid rgba(255,255,255,.18);padding-left:10px;margin-left:2px;white-space:nowrap}
 
-/* — hero — */
 .hero{padding:26px 0 30px;text-align:center}
-/* 마스트헤드식 아이브로 — 양옆으로 사라지는 황동 괘선 */
 .hero .h-eyebrow{margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:14px}
 .hero .h-eyebrow::before,.hero .h-eyebrow::after{content:"";width:64px;height:1px;flex-shrink:0}
 .hero .h-eyebrow::before{background:linear-gradient(90deg,transparent,var(--gold))}
@@ -758,7 +703,6 @@ tr.row-warn td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
   line-height:1.18;letter-spacing:-.018em;text-wrap:balance;margin-bottom:16px}
 .hero h1 em{color:var(--gold2)}
 .hero .h-lead{font-size:16px;color:var(--t2);max-width:560px;margin:0 auto 30px;line-height:1.65}
-/* 검색바 — 히어로의 유일한 초점: 가장 깊은 그림자 + 네이비 AI 코인 */
 .searchbar{max-width:640px;margin:0 auto;background:var(--surface);
   border:1.5px solid color-mix(in srgb,var(--gold) 30%,var(--border));
   border-radius:16px;box-shadow:var(--shadow-lg);padding:8px 8px 8px 14px;display:flex;
@@ -787,7 +731,6 @@ tr.row-warn td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
   color:var(--gold2);display:flex;align-items:center;justify-content:center;
   font-size:11px;font-weight:800;flex-shrink:0}
 
-/* — page-scoped: lawyer detail — */
 .lw-hero{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap}
 .lw-id{flex:1;min-width:240px}
 .lw-name{font-family:var(--serif);font-size:32px;color:var(--navy);font-weight:700;
@@ -804,7 +747,6 @@ tr.row-warn td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
 .info-list li{list-style:none;padding-left:16px;position:relative;color:var(--t1)}
 .info-list li::before{content:"—";position:absolute;left:0;color:var(--gold)}
 
-/* — 사건 상세 리치 필드 — */
 .case-result{display:inline-block;margin-top:12px;padding:7px 14px;border-radius:8px;
   font-weight:800;font-size:13.5px;color:var(--gold2);background:var(--gold-soft);
   border:1px solid color-mix(in srgb,var(--gold) 35%,transparent)}
@@ -821,7 +763,6 @@ tr.row-warn td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
   background:var(--navy-soft);padding:4px 10px;border-radius:6px;white-space:nowrap}
 .statute-note{font-size:12.5px;color:var(--t2)}
 
-/* — tabs / filter — */
 .tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:22px}
 .tab{padding:11px 18px;font-size:14px;font-weight:700;color:var(--t2);position:relative;
   transition:.14s}
@@ -835,7 +776,6 @@ tr.row-warn td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
 .fchip:hover{border-color:var(--gold)}
 .fchip.on{background:var(--navy);color:var(--t-inv);border-color:var(--navy)}
 
-/* — article — */
 .article{max-width:720px;margin:0 auto}
 .art-head .art-section{margin-bottom:12px}
 .art-head h1{font-family:var(--serif);font-size:clamp(26px,4vw,36px);color:var(--navy);
@@ -845,7 +785,6 @@ tr.row-warn td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
   font-size:12.5px;color:var(--t2);font-family:var(--mono);margin-bottom:28px;flex-wrap:wrap}
 .art-body{font-family:var(--serif);font-size:16.5px;line-height:1.85;color:var(--t1)}
 .art-body p{margin-bottom:20px}
-/* 리드 문단 드롭캡 — 에디토리얼 보이스의 방점 */
 .art-body>p:first-of-type::first-letter{float:left;font-family:var(--serif);
   font-size:46px;line-height:.9;font-weight:700;color:var(--navy);padding:5px 10px 0 0}
 .art-body .art-h{font-family:var(--sans);font-weight:800;font-size:14px;color:var(--navy);
@@ -856,28 +795,23 @@ tr.row-warn td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
 @media(max-width:560px){.duo-float{float:none;margin:0 0 20px}
   .duo-float .metric-duo{flex-direction:row}}
 
-/* — bar/line chart — */
 .chart-svg{width:100%;display:block;overflow:visible}
 .chart-svg .grid-l{stroke:var(--line);stroke-width:1}
-/* transform-box:fill-box — SVG rect의 스케일 기준을 viewBox가 아닌 자기 박스로(축 아래에서 미끄러지는 버그 수정) */
 .chart-svg .bar{fill:url(#barGrad);transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(0);
   animation:barGrow .8s cubic-bezier(.2,.7,.3,1) forwards}
 .chart-svg .area{fill:url(#areaGrad);opacity:.9}
 .chart-svg .line-p{fill:none;stroke:var(--amber);stroke-width:2.5;stroke-linecap:round;
   stroke-linejoin:round}
-/* 엔드닷 — 선이 다 그려진 뒤 착지(pop) + 인광 */
 .chart-svg .dot-end{fill:var(--amber2);transform-box:fill-box;transform-origin:center;
   opacity:0;animation:dotPop .35s cubic-bezier(.34,1.5,.5,1) 1.15s forwards;
   filter:drop-shadow(0 0 5px color-mix(in srgb,var(--amber2) 80%,transparent))}
 .chart-svg text{font-family:var(--mono);font-size:10px;fill:var(--t3)}
-/* 다크 차트 — 라인·엔드닷·축라벨을 밝게(어두운 배경 대비 확보) */
 .theme-dark .chart-svg .line-p{stroke:#9FB4FF;stroke-width:3}
 .theme-dark .chart-svg .dot-end{fill:#CBD7FF;
   filter:drop-shadow(0 0 6px rgba(159,180,255,.85))}
 .theme-dark .chart-svg text{fill:#A9B2C4}
 .theme-dark .chart-svg .grid-l{stroke:#2b3556}
 
-/* — page intro (admin) — */
 .padmin{padding:30px 0 0}
 .padmin-head{margin-bottom:26px}
 .padmin-head .eyebrow{color:var(--amber)}
@@ -889,23 +823,18 @@ tr.row-warn td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
   background:var(--surface);border:1px solid var(--border);transition:.14s}
 .admin-tab:hover{border-color:var(--amber)}
 .admin-tab[aria-current="page"]{background:var(--gold-soft);color:var(--amber);
-  border-color:color-mix(in srgb,var(--amber) 45%,transparent)} /* 앰버 절제 — 세 번째 솔리드 앰버 제거 */
+  border-color:color-mix(in srgb,var(--amber) 45%,transparent)} 
 
-/* ── 상세 그리드 반응형(모바일 1열 축소) ── */
 .split{grid-template-columns:1.5fr 1fr;gap:22px}
 .split-even{grid-template-columns:1fr 1fr;gap:22px}
 @media(max-width:820px){.split,.split-even{grid-template-columns:1fr}}
-/* ── 오버라인 라벨 마이크로 타이포 통일 ── */
 .info-block h4,.rs-sec h4,.stage-lbl,#tooltip .tt-type,.mb-item .mb-t,.hitl-step .hs-n{
   font-size:var(--label-fs);letter-spacing:var(--track-label)}
-/* ── 메인 섹션 수직 리듬 단일화 ── */
 #view section.wrap+section.wrap{margin-top:56px}
-/* ── 세리프 디스플레이 행간(body 1.6 상속 차단) ── */
 h1.serif{line-height:1.28;letter-spacing:-.012em;font-weight:600}
 .padmin-head h1{line-height:1.3}
 .v-audit-meta{font-variant-numeric:tabular-nums}
 
-/* ═══════════════ ANIMATIONS ═══════════════ */
 @keyframes ld{0%{box-shadow:0 0 0 0 currentColor}70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
@@ -921,7 +850,6 @@ h1.serif{line-height:1.28;letter-spacing:-.012em;font-weight:600}
 .toast.out{animation:toastOut .3s ease forwards}
 .bk-scroll:hover .bk-track{animation-play-state:paused}
 
-/* ═══════════════ RESPONSIVE ═══════════════ */
 @media(max-width:820px){
   .nav{display:none}
   .hero{padding:40px 0 20px}
@@ -934,7 +862,6 @@ h1.serif{line-height:1.28;letter-spacing:-.012em;font-weight:600}
   .bk-track{animation:none}
 }
 
-/* ═══════════════ PRINT (report only) ═══════════════ */
 @media print{
   body *{visibility:hidden!important}
   #modal-root,#modal-root *{visibility:visible!important}
@@ -985,12 +912,7 @@ h1.serif{line-height:1.28;letter-spacing:-.012em;font-weight:600}
 
 <script>
 "use strict";
-/* ═══════════════════════════════════════════════════════════════
-   AI로써 — 법률신문 GEO 플랫폼 · 샘플 데모
-   단일파일 SPA. 모든 데이터 가상. 실존 인물·로펌·사건과 무관.
-   ═══════════════════════════════════════════════════════════════ */
 
-/* ───────────── DB : 교차링크 가상 데이터 그래프 ───────────── */
 const DB = {
   lawyers:{
     L01:{id:"L01",name:"안세훈",hanja:"安世勳",birth:1974,role:"대표변호사",firm:"F01",
@@ -1248,7 +1170,6 @@ const DB = {
       {type:"lawyer",id:"L04",n:61},{type:"news",id:"N04",n:52}],
     byModel:[{m:"Claude",n:38},{m:"GPT",n:31},{m:"Gemini",n:22},{m:"Kakao",n:9}]
   },
-  /* ── MCP 배포 현황 ── */
   mcp:{
     kpi:{apps:217,appsNew:34,calls:184230,devs:126,mrr:10_450_000},
     channels:[
@@ -1282,7 +1203,6 @@ const DB = {
   }
 };
 
-/* ───────────── 헬퍼 ───────────── */
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const initials=n=>n.slice(0,2);
@@ -1293,7 +1213,6 @@ function clearTimers(){activeTimers.forEach(t=>{clearInterval(t);clearTimeout(t)
 function stars(r){let s="";for(let i=1;i<=5;i++)s+=i<=r?"★":'<span class="off">★</span>';return `<span class="stars">${s}</span>`}
 function nowKST(){return "2026-07-23 "+["11:47","11:48","11:49","11:52"][Math.floor(Math.random()*4)]+" KST"}
 
-/* ───────────── 엔티티 렌더 (뉴스 본문의 §type:ID → span) ───────────── */
 const ENT_LABEL={
   lawyer:id=>lw(id)?.name+" 변호사", case:id=>cs(id)?.no,
   company:id=>DB.companies[id]?.name, judge:id=>DB.judges[id]?.name+" 판사",
@@ -1313,7 +1232,6 @@ function describeEntity(type,id){
   return{t:type,n:id,rows:[]};
 }
 
-/* ───────────── 컴포넌트 (문자열 반환) ───────────── */
 const C={
   gauge(n,size=118){
     const R=42,CIRC=2*Math.PI*R,off=CIRC*(1-n/100);
@@ -1374,10 +1292,8 @@ const C={
   }
 };
 
-/* ───────────── PAGES : 공개 화면 1~5 ───────────── */
 const PAGES={};
 
-/* 1. 메인 */
 PAGES.main=()=>`
 <section class="wrap hero">
   <div class="ad-banner" role="complementary" aria-label="광고">
@@ -1450,7 +1366,6 @@ PAGES.main=()=>`
     ${["N01","N02","N03"].map(C.newsMini).join("")}</div>
 </section>`;
 
-/* 2. 세부 목록 */
 PAGES.list=(r)=>{
   const tab=r.q.get("tab")||"lawyers";
   const tabs=[["lawyers","법조인"],["cases","사건"],["news","법률뉴스"]];
@@ -1472,12 +1387,10 @@ PAGES.list=(r)=>{
     ${body}</section>`;
 };
 
-/* 3. 법조인 상세 */
 PAGES.lawyer=(r)=>{
   const x=lw(r.id);if(!x)return PAGES.notFound();
   const avgR=(x.reviews.reduce((s,v)=>s+v.r,0)/x.reviews.length).toFixed(1);
   const fbMax=x.fieldStats?Math.max(...x.fieldStats.map(f=>f.n)):1;
-  // 함께 사건을 수행한 법조인 — 공동 수임 사건 기준으로 계산
   const peers=[...new Set(x.cases.flatMap(c=>cs(c).lawyers))].filter(id=>id!==x.id);
   return `<section class="wrap" style="padding-top:30px">
     <div class="card" style="padding:30px 32px;margin-bottom:22px">
@@ -1554,7 +1467,6 @@ PAGES.lawyer=(r)=>{
   </section>`;
 };
 
-/* 3-b. 로펌 (부가) */
 PAGES.firm=(r)=>{const x=fm(r.id);if(!x)return PAGES.notFound();
   return `<section class="wrap" style="padding-top:34px">
     <div class="eyebrow" style="margin-bottom:8px">LAW FIRM</div>
@@ -1565,7 +1477,6 @@ PAGES.firm=(r)=>{const x=fm(r.id);if(!x)return PAGES.notFound();
   </section>`;
 };
 
-/* 4. 사건 상세 */
 PAGES.caseDetail=(r)=>{
   const x=cs(r.id);if(!x)return PAGES.notFound();
   return `<section class="wrap" style="padding-top:30px">
@@ -1619,7 +1530,6 @@ PAGES.caseDetail=(r)=>{
   </section>`;
 };
 
-/* 5. 법률뉴스 상세 */
 PAGES.news=(r)=>{
   const x=nw(r.id);if(!x)return PAGES.notFound();
   const body=x.body.map(b=>b.h?`<span class="art-h">${esc(b.h)}</span>`:`<p>${renderEntities(b.p)}</p>`).join("");
@@ -1648,13 +1558,11 @@ PAGES.notFound=()=>`<section class="wrap" style="padding:80px 0;text-align:cente
   <p class="muted" style="margin:10px 0 24px">요청하신 페이지를 찾을 수 없습니다.</p>
   <a href="#/" class="btn btn-primary">홈으로</a></section>`;
 
-/* ───────────── PAGES : 어드민 6~8 (theme-dark) ───────────── */
 function adminTabs(cur){
   const t=[["admin-crawler","🕸 크롤러 파이프라인"],["admin-live","📡 크롤러 실황"],["admin-audit","◈ 팩트체크 · AUDIT"],["admin-citation","📈 AI 인용 현황"],["admin-mcp","🔌 MCP 배포 현황"]];
   return `<div class="admin-tabs">${t.map(x=>`<a href="#/${x[0]}" class="admin-tab" aria-current="${x[0]===cur?"page":"false"}">${x[1]}</a>`).join("")}</div>`;
 }
 
-/* 6. 크롤러 */
 PAGES.adminCrawler=()=>`
 <div class="theme-dark" style="background:radial-gradient(120% 640px at 50% -160px,var(--surface),var(--paper) 60%);min-height:100vh;margin-top:-1px">
 <section class="wrap padmin">
@@ -1698,7 +1606,6 @@ PAGES.adminCrawler=()=>`
   </div>
 </section></div>`;
 
-/* 6-b. 크롤러 실황 (Live Crawler) — 연출 데모 */
 const LC_TARGETS=[
   {ic:"🔎",label:"로파** 변호사 프로필",url:"https://lawfind.example/lawyer/ansehun",code:200,bytes:18432,
     raw:`<div class="profile">\n  <h1 class="name">안세훈 변호사</h1>\n  <p class="firm">법무법인 정평 · 대표변호사</p>\n  <ul class="career">\n    <li>서울대학교 법과대학 졸업 (1997)</li>\n    <li>제38회 사법시험 · 사법연수원 28기</li>\n  </ul>\n  <div class="tags"><span>기업지배구조</span><span>M&A</span><span>증권</span></div>\n</div>`,
@@ -1753,7 +1660,6 @@ PAGES.adminLiveCrawler=()=>`
   <div class="lc-export-out" id="lcExportOut" hidden></div>
 </section></div>`;
 
-/* 7. AUDIT */
 PAGES.adminAudit=()=>`
 <div class="theme-dark" style="background:radial-gradient(120% 640px at 50% -160px,var(--surface),var(--paper) 60%);min-height:100vh;margin-top:-1px">
 <section class="wrap padmin">
@@ -1796,7 +1702,6 @@ PAGES.adminAudit=()=>`
   </div>
 </section></div>`;
 
-/* 8. Citation */
 PAGES.adminCitation=()=>{
   const ct=DB.citation;
   return `<div class="theme-dark" style="background:radial-gradient(120% 640px at 50% -160px,var(--surface),var(--paper) 60%);min-height:100vh;margin-top:-1px">
@@ -1839,7 +1744,6 @@ PAGES.adminCitation=()=>{
 </section></div>`;
 };
 
-/* 10. MCP 배포 현황 */
 PAGES.adminMcp=()=>{
   const M=DB.mcp,k=M.kpi;
   const tmax=Math.max(...M.tools.map(t=>t.n));
@@ -1934,7 +1838,6 @@ PAGES.adminMcp=()=>{
 </section></div>`;
 };
 
-/* ───────────── 라우터 ───────────── */
 const routes={"":PAGES.main,"list":PAGES.list,"lawyer":PAGES.lawyer,"firm":PAGES.firm,
   "case":PAGES.caseDetail,"news":PAGES.news,"admin-crawler":PAGES.adminCrawler,
   "admin-live":PAGES.adminLiveCrawler,
@@ -1968,9 +1871,7 @@ function render(){
 }
 window.addEventListener("hashchange",render);
 
-/* ───────────── 페이지별 후처리 ───────────── */
 function runBehaviors(r){
-  // 게이지 애니메이션 — 아크 스윕과 동기화된 숫자 카운트업
   requestAnimationFrame(()=>{document.querySelectorAll("circle[data-goff]").forEach(c=>{c.style.strokeDashoffset=c.dataset.goff})});
   if(!matchMedia("(prefers-reduced-motion: reduce)").matches){
     document.querySelectorAll(".gauge text.g-num,.metric-duo .m-val").forEach(tx=>{
@@ -1982,9 +1883,7 @@ function runBehaviors(r){
       requestAnimationFrame(step);
     });
   }
-  // 클릭 가능한 테이블 행
   document.querySelectorAll("tr.clk[data-href]").forEach(tr=>tr.addEventListener("click",()=>{location.hash=tr.dataset.href}));
-  // 필터 칩 (시각 토글만)
   document.querySelectorAll(".fchip").forEach(c=>c.addEventListener("click",()=>{
     c.parentElement.querySelectorAll(".fchip").forEach(x=>x.classList.remove("on"));c.classList.add("on")}));
   if(r.name==="admin-crawler")animateCrawler();
@@ -1993,7 +1892,6 @@ function runBehaviors(r){
   if(r.name===""||!r.name)wireHero();
 }
 
-/* ───────────── 히어로 검색 → 채팅 핸드오프 ───────────── */
 function wireHero(){
   const form=$("#heroSearch");
   if(form)form.addEventListener("submit",e=>{e.preventDefault();
@@ -2001,23 +1899,20 @@ function wireHero(){
   document.querySelectorAll(".h-suggest").forEach(b=>b.addEventListener("click",()=>askChat(b.dataset.ask)));
 }
 
-/* ───────────── 크롤러 애니메이션 (타이머 정리) ───────────── */
 function animateCrawler(){
   const counters=document.querySelectorAll("[data-count]");
   const targets=[12290,8420,7650,4310,5230,36986];
   counters.forEach((el,i)=>{let n=0;const tgt=Math.floor(targets[i]/60);
     const t=setInterval(()=>{n+=Math.ceil(tgt*(0.6+Math.random()));if(n>=targets[i]){n=targets[i];clearInterval(t)}
       el.textContent=n.toLocaleString()},90);activeTimers.push(t)});
-  // 누적 total 미세 증가(살아있는 느낌)
   const tot=$("[data-total]");if(tot){let base=36986;const t=setInterval(()=>{base+=Math.floor(Math.random()*3);tot.textContent=base.toLocaleString()},1400);activeTimers.push(t)}
 }
 
-/* ───────────── 크롤러 실황 (연출 데모) ───────────── */
 function fmtBytes(n){return n<1024?n+" B":(n/1024).toFixed(1)+" KB"}
 function initLiveCrawler(){
   const run=$("#lcRun"),exp=$("#lcExport");
   if(run)run.addEventListener("click",()=>{clearTimers();resetLiveCrawler();runLiveCrawler()});
-  runLiveCrawler(); // 진입 시 1회 자동 재생
+  runLiveCrawler();
 }
 function resetLiveCrawler(){
   document.querySelectorAll(".lc-card").forEach(card=>{
@@ -2037,7 +1932,7 @@ function resetLiveCrawler(){
 function runLiveCrawler(){
   const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
   const log=$("#lcLog");const results=[];
-  let clock=0; // 로그 타임스탬프 유사 진행(ms)
+  let clock=0;
   function logLine(txt,ok){
     if(!log)return;
     clock+=Math.floor(120+Math.random()*280);
@@ -2132,7 +2027,6 @@ function exportRecords(records){
   }
 }
 
-/* ───────────── 검증 실행 플립 ───────────── */
 function runAudit(id){
   const card=document.querySelector(`.verdict[data-vid="${id}"]`);if(!card)return;
   const st=card.querySelector("[data-vstatus]");
@@ -2151,10 +2045,8 @@ function runAudit(id){
   },1500+Math.random()*700);activeTimers.push(t);
 }
 
-/* ───────────── 차트 (SVG 손그림) ───────────── */
 function drawCharts(){
   const ct=DB.citation;
-  // 라인차트
   const lc=$("#lineChart");
   if(lc){const W=440,H=180,pad=28,mx=Math.max(...ct.trend);
     const pts=ct.trend.map((v,i)=>[pad+i*((W-pad*2)/(ct.trend.length-1)),H-pad-(v/mx)*(H-pad*2)]);
@@ -2168,10 +2060,8 @@ function drawCharts(){
       ${ct.months.map((m,i)=>i%2===0?`<text x="${pts[i][0].toFixed(1)}" y="${H-8}" text-anchor="middle">${m}월</text>`:"").join("")}
     </svg><style>@keyframes draw{to{stroke-dashoffset:0}}</style>`;
   }
-  // 바차트
   const bc=$("#barChart");
   if(bc){const W=280,H=180,pad=30,mx=Math.max(...ct.byModel.map(b=>b.n)),bw=42,gap=(W-pad*2-bw*ct.byModel.length)/(ct.byModel.length-1);
-    // 리더=풀 앰버, 팔로워=감쇠 — 순위를 색으로도 인코딩
     bc.innerHTML=`<svg class="chart-svg" viewBox="0 0 ${W} ${H}"><defs><linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--chart2)"/><stop offset="1" stop-color="var(--chart)"/></linearGradient></defs>${ct.byModel.map((b,i)=>{
       const x=pad+i*(bw+gap),h=(b.n/mx)*(H-pad*2),y=H-pad-h;
       return `<rect class="bar" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw}" height="${h.toFixed(1)}" rx="4" style="animation-delay:${i*0.12}s;opacity:${i===0?1:.55}"/>
@@ -2180,7 +2070,6 @@ function drawCharts(){
   }
 }
 
-/* ───────────── 툴팁 (엔티티 호버) ───────────── */
 const tip=$("#tooltip");
 $("#view").addEventListener("mouseover",e=>{
   const s=e.target.closest(".ent");if(!s)return;
@@ -2204,7 +2093,6 @@ $("#view").addEventListener("click",e=>{
   else if(a==="ask")askChat(act.dataset.q);
 });
 
-/* ───────────── 리포트 모달 + 인쇄 ───────────── */
 function openReport(id){
   const x=lw(id);const mr=$("#modal-root");
   mr.innerHTML=`<div class="report-sheet"><div class="rs-inner" id="rsInner">
@@ -2239,13 +2127,11 @@ function closeModal(){$("#modal-root").classList.remove("open");$("#modal-root")
 $("#modal-root").addEventListener("click",e=>{if(e.target.id==="modal-root")closeModal()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
 
-/* ───────────── 토스트 ───────────── */
 function toast(msg){const el=document.createElement("div");el.className="toast";
   el.innerHTML=`<span class="tk">✓</span>${esc(msg)}`;$("#toast-root").appendChild(el);
   const t=setTimeout(()=>{el.classList.add("out");setTimeout(()=>el.remove(),300)},2300);
   activeTimers.push(t)}
 
-/* ───────────── 채팅 위젯 (지속) ───────────── */
 let chatOpen=false,chatSeeded=false;
 function mountChat(){
   const root=$("#chat-root");
@@ -2266,7 +2152,7 @@ function openChat(){if(!chatOpen)toggleChat()}
 function toggleChat(){
   chatOpen=!chatOpen;
   const p=$("#chatPanel"),fab=$("#chatFab");
-  fab.classList.toggle("is-open",chatOpen); /* 독은 항상 노출 — 숨기지 않는다 */
+  fab.classList.toggle("is-open",chatOpen); 
   if(chatOpen){p.classList.remove("closing");p.classList.add("open")}
   else{p.classList.remove("open");p.classList.add("closing");
     const t=setTimeout(()=>{p.classList.remove("closing")},180);
@@ -2309,13 +2195,10 @@ function askChat(q,silent){
   botSay(hit.r,hit.c);
 }
 
-/* ───────────── 부팅 ───────────── */
 mountChat();
 if(!location.hash)location.hash="#/";
 render();
 </script>
-
-
 
 
 </body>
