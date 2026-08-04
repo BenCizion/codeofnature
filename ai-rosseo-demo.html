@@ -569,6 +569,58 @@ footer{border-top:1px solid var(--border);margin-top:70px;padding:38px 0 60px;
 .lc-export-out pre{font-family:var(--mono);font-size:10.5px;line-height:1.5;color:var(--t1);
   white-space:pre-wrap;word-break:break-all;max-height:280px;overflow:auto}
 
+/* — MCP 배포 현황 — */
+.mcp-note{display:flex;align-items:flex-start;gap:10px;padding:13px 16px;margin-bottom:20px;
+  background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--amber);
+  border-radius:9px;font-size:12.5px;color:var(--t2);line-height:1.55}
+.mcp-note b{color:var(--t1)}
+.mcp-ch{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;margin-bottom:24px}
+.ch-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:14px 16px;
+  display:flex;flex-direction:column;gap:9px;
+  transition:transform var(--dur-med) var(--ease-spring),border-color var(--dur-fast) var(--ease-out)}
+.ch-card:hover{transform:translateY(-2px);border-color:var(--amber)}
+.ch-top{display:flex;align-items:center;gap:9px}
+.ch-ic{width:30px;height:30px;border-radius:8px;background:var(--surface2);display:flex;
+  align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.ch-name{font-size:12.5px;font-weight:700;color:var(--t1);line-height:1.25}
+.ch-state{font-family:var(--mono);font-size:10px;font-weight:800;padding:3px 8px;border-radius:99px;
+  align-self:flex-start}
+.ch-state.ok{color:var(--green);background:var(--ok-bg)}
+.ch-state.warn{color:var(--warn);background:var(--warn-bg)}
+.ch-nums{display:flex;gap:14px;padding-top:9px;border-top:1px solid var(--line)}
+.ch-num .n{font-family:var(--mono);font-size:15px;font-weight:800;color:var(--t1)}
+.ch-num .l{font-size:10px;color:var(--t3)}
+.ch-sync{font-family:var(--mono);font-size:9.5px;color:var(--t3)}
+/* 도구 랭킹 */
+.tool-row{display:grid;grid-template-columns:1fr 62px;gap:12px;align-items:center;
+  padding:10px 0;border-bottom:1px solid var(--line)}
+.tool-row:last-child{border-bottom:none}
+.tool-head{display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap}
+.tool-name{font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--t1)}
+.tool-desc{font-size:11px;color:var(--t3)}
+.tool-bar{height:7px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.tool-bar>i{display:block;height:100%;border-radius:99px;transform-origin:left;
+  animation:fbGrow .75s var(--ease-out) backwards}
+.tool-n{font-family:var(--mono);font-size:12px;font-weight:800;color:var(--t1);text-align:right}
+.tier-chip{font-family:var(--mono);font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:99px}
+.tier-free{color:var(--green);background:var(--ok-bg)}
+.tier-pro{color:var(--cyan);background:var(--c-blue-bg)}
+.tier-premium{color:var(--c-purple);background:var(--c-purple-bg)}
+.tier-ent{color:var(--amber);background:var(--warn-bg)}
+/* 출처표기 상태 */
+.attr{font-size:11.5px;font-weight:700;white-space:nowrap}
+.attr.ok{color:var(--green)}
+.attr.wl{color:var(--t3)}
+.attr.bad{color:var(--bad)}
+tr.row-warn td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
+/* 수익 요약 */
+.rev-split{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:680px){.rev-split{grid-template-columns:1fr}}
+.rev-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:15px 17px}
+.rev-card .rv-t{display:flex;align-items:center;gap:7px;margin-bottom:9px}
+.rev-card .rv-amt{font-family:var(--mono);font-size:20px;font-weight:800;color:var(--t1)}
+.rev-card .rv-apps{font-size:11px;color:var(--t3);margin-top:3px}
+
 /* — stat tiles — */
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
 .tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
@@ -1195,6 +1247,38 @@ const DB = {
       {type:"news",id:"N02",n:83},{type:"news",id:"N03",n:71},
       {type:"lawyer",id:"L04",n:61},{type:"news",id:"N04",n:52}],
     byModel:[{m:"Claude",n:38},{m:"GPT",n:31},{m:"Gemini",n:22},{m:"Kakao",n:9}]
+  },
+  /* ── MCP 배포 현황 ── */
+  mcp:{
+    kpi:{apps:217,appsNew:34,calls:184230,devs:126,mrr:10_450_000},
+    channels:[
+      {name:"Anthropic Connectors",ic:"🅰️",state:"게재중",tone:"ok",apps:64,installs:1820,sync:"2026-07-24 09:12"},
+      {name:"ChatGPT Apps",ic:"🅾️",state:"게재중",tone:"ok",apps:81,installs:2470,sync:"2026-07-24 09:12"},
+      {name:"카카오 PlayMCP",ic:"💬",state:"심사중 (2/3단계)",tone:"warn",apps:22,installs:410,sync:"2026-07-23 18:40"},
+      {name:"mcp.so",ic:"🌐",state:"게재중",tone:"ok",apps:31,installs:640,sync:"2026-07-24 06:00"},
+      {name:"Smithery",ic:"🔧",state:"게재중",tone:"ok",apps:19,installs:388,sync:"2026-07-24 06:00"}
+    ],
+    tools:[
+      {name:"verify_lawyer",tier:"premium",n:52400,desc:"법조인 진위·자격 검증"},
+      {name:"search_lawyers",tier:"free",n:41800,desc:"조건별 법조인 검색"},
+      {name:"get_lawyer_profile",tier:"free",n:33200,desc:"법조인 상세 프로필"},
+      {name:"search_news",tier:"free",n:24100,desc:"법률신문 기사 검색"},
+      {name:"get_case",tier:"pro",n:16700,desc:"사건 정보 조회"},
+      {name:"search_precedents",tier:"pro",n:9800,desc:"판례·판결 검색"},
+      {name:"get_lawyer_reviews",tier:"premium",n:4200,desc:"LCR 고객 평가"},
+      {name:"get_legal_entities",tier:"premium",n:2030,desc:"법률 엔티티 추출·정규화"}
+    ],
+    apps:[
+      {app:"리걸메이트",dev:"(주)로우테크",tier:"pro",calls:32400,top:"verify_lawyer",attr:"ok",state:"활성"},
+      {app:"사내 법무봇",dev:"대성전자",tier:"ent",calls:128000,top:"get_case",attr:"wl",state:"활성"},
+      {app:"케이스노트 어시스트",dev:"(주)판례랩",tier:"pro",calls:21600,top:"search_precedents",attr:"ok",state:"활성"},
+      {app:"HR 자격검증",dev:"한빛바이오",tier:"ent",calls:48200,top:"verify_lawyer",attr:"wl",state:"활성"},
+      {app:"변호사찾기",dev:"개인 개발자",tier:"free",calls:870,top:"search_lawyers",attr:"bad",state:"경고"},
+      {app:"로펌 인사이트",dev:"(주)리걸데이터",tier:"pro",calls:14300,top:"get_lawyer_profile",attr:"ok",state:"활성"},
+      {app:"법률 Q&A 봇",dev:"개인 개발자",tier:"free",calls:640,top:"search_news",attr:"ok",state:"활성"}
+    ],
+    revenue:[{t:"Free",label:"무료",apps:181,amt:0},{t:"Pro",label:"Pro",apps:32,amt:9_600_000},{t:"Ent",label:"Enterprise",apps:4,amt:12_000_000}],
+    callTrend:[38,52,61,74,88,97,112,128,141,156,170,184]
   }
 };
 
@@ -1566,7 +1650,7 @@ PAGES.notFound=()=>`<section class="wrap" style="padding:80px 0;text-align:cente
 
 /* ───────────── PAGES : 어드민 6~8 (theme-dark) ───────────── */
 function adminTabs(cur){
-  const t=[["admin-crawler","🕸 크롤러 파이프라인"],["admin-live","📡 크롤러 실황"],["admin-audit","◈ 팩트체크 · AUDIT"],["admin-citation","📈 AI 인용 현황"]];
+  const t=[["admin-crawler","🕸 크롤러 파이프라인"],["admin-live","📡 크롤러 실황"],["admin-audit","◈ 팩트체크 · AUDIT"],["admin-citation","📈 AI 인용 현황"],["admin-mcp","🔌 MCP 배포 현황"]];
   return `<div class="admin-tabs">${t.map(x=>`<a href="#/${x[0]}" class="admin-tab" aria-current="${x[0]===cur?"page":"false"}">${x[1]}</a>`).join("")}</div>`;
 }
 
@@ -1755,11 +1839,107 @@ PAGES.adminCitation=()=>{
 </section></div>`;
 };
 
+/* 10. MCP 배포 현황 */
+PAGES.adminMcp=()=>{
+  const M=DB.mcp,k=M.kpi;
+  const tmax=Math.max(...M.tools.map(t=>t.n));
+  const tierLabel={free:"Free",pro:"Pro",premium:"Premium",ent:"Enterprise"};
+  const tierCls={free:"tier-free",pro:"tier-pro",premium:"tier-premium",ent:"tier-ent"};
+  const attrLabel={ok:"✓ 준수",wl:"— 화이트라벨",bad:"⚠ 미표기"};
+  const won=n=>n===0?"—":(n/10000).toLocaleString()+"만원";
+  return `
+<div class="theme-dark" style="background:radial-gradient(120% 640px at 50% -160px,var(--surface),var(--paper) 60%);min-height:100vh;margin-top:-1px">
+<section class="wrap padmin">
+  <div class="padmin-head"><div class="eyebrow">ENGINE ROOM · MCP DISTRIBUTION</div>
+    <h1>MCP 배포 현황</h1>
+    <p>법률신문 데이터를 외부 앱이 호출해 쓰는 통로(MCP)의 배포·사용·수익 현황입니다. <b style="color:var(--t1)">호출 1건 = 확정 인용 1건</b>으로, AI 인용 추정치와 달리 전수 집계됩니다.</p></div>
+  ${adminTabs("admin-mcp")}
+
+  <div class="mcp-note"><span style="font-size:15px">🔌</span>
+    <div><b>AI가 인용해주길 기다리는 대신, 개발자가 우리를 자기 앱에 심게 만드는 전략.</b><br>
+    무료 티어도 <b>“법률신문 제공” 출처 표기가 의무</b>이므로, 무료 사용 앱도 브랜드 노출 채널이 됩니다.</div></div>
+
+  <div class="tiles" style="margin-bottom:24px">
+    <div class="tile"><div class="tl-lbl">등록 앱</div><div class="tl-val">${k.apps}</div>
+      <div class="tl-delta up">▲ 이번 달 신규 +${k.appsNew}</div></div>
+    <div class="tile"><div class="tl-lbl">월 API 호출 (확정 인용)</div><div class="tl-val">${(k.calls/1000).toFixed(1)}K</div>
+      <div class="tl-delta up">▲ 전월 대비 +8.2%</div></div>
+    <div class="tile"><div class="tl-lbl">활성 개발자</div><div class="tl-val">${k.devs}</div>
+      <div class="tl-delta"><span class="dim">MAU 기준</span></div></div>
+    <div class="tile"><div class="tl-lbl">MRR (월 반복 매출)</div><div class="tl-val">${(k.mrr/10000).toLocaleString()}<span style="font-size:15px;color:var(--t3)">만원</span></div>
+      <div class="tl-delta up">▲ 무료→유료 전환 14.9%</div></div>
+  </div>
+
+  <div class="sec-head" style="margin-bottom:14px"><h2 style="font-size:19px;color:var(--t1)">배포 채널</h2>
+    <span class="dim mono" style="font-size:11px">레지스트리별 등록 상태 · 유입 앱</span></div>
+  <div class="mcp-ch">
+    ${M.channels.map(c=>`<div class="ch-card">
+      <div class="ch-top"><span class="ch-ic">${c.ic}</span><span class="ch-name">${esc(c.name)}</span></div>
+      <span class="ch-state ${c.tone}">${esc(c.state)}</span>
+      <div class="ch-nums">
+        <div class="ch-num"><div class="n">${c.apps}</div><div class="l">앱</div></div>
+        <div class="ch-num"><div class="n">${c.installs.toLocaleString()}</div><div class="l">설치</div></div>
+      </div>
+      <div class="ch-sync">sync ${esc(c.sync)}</div>
+    </div>`).join("")}
+  </div>
+
+  <div class="grid split" style="align-items:start;margin-bottom:24px">
+    <div class="card" style="padding:24px 26px;background:var(--surface)">
+      <div class="sec-head" style="margin-bottom:14px"><h2 style="font-size:19px;color:var(--t1)">도구별 호출 랭킹</h2>
+        <span class="dim" style="font-size:11.5px">무엇이 실제로 팔리는가</span></div>
+      ${M.tools.map((t,i)=>`<div class="tool-row">
+        <div><div class="tool-head"><span class="tool-name">${esc(t.name)}</span>
+          <span class="tier-chip ${tierCls[t.tier]}">${tierLabel[t.tier]}</span></div>
+          <div class="tool-desc" style="margin-bottom:6px">${esc(t.desc)}</div>
+          <div class="tool-bar"><i style="width:${(t.n/tmax*100).toFixed(0)}%;background:${t.tier==="premium"?"linear-gradient(90deg,var(--c-purple),#d0c2ff)":t.tier==="pro"?"linear-gradient(90deg,var(--cyan),#a8e6f5)":"linear-gradient(90deg,var(--chart),var(--chart2))"};animation-delay:${(i*0.06).toFixed(2)}s"></i></div>
+        </div>
+        <div class="tool-n">${t.n.toLocaleString()}</div>
+      </div>`).join("")}
+    </div>
+    <div class="card" style="padding:24px 26px;background:var(--surface)">
+      <div class="sec-head" style="margin-bottom:14px"><h2 style="font-size:19px;color:var(--t1)">수익 요약</h2></div>
+      <div class="stack" style="gap:11px">
+        ${M.revenue.map(r=>`<div class="rev-card">
+          <div class="rv-t"><span class="tier-chip ${tierCls[r.t.toLowerCase()]}">${esc(r.label)}</span></div>
+          <div class="rv-amt">${won(r.amt)}</div>
+          <div class="rv-apps">${r.apps}개 앱</div></div>`).join("")}
+      </div>
+      <div style="margin-top:14px;padding-top:13px;border-top:1px solid var(--line);
+        display:flex;justify-content:space-between;align-items:baseline">
+        <span style="font-size:12px;color:var(--t2);font-weight:700">합계 MRR</span>
+        <span class="mono" style="font-size:19px;font-weight:800;color:var(--amber)">${won(k.mrr)}</span></div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:24px 26px;background:var(--surface)">
+    <div class="sec-head" style="margin-bottom:14px"><h2 style="font-size:19px;color:var(--t1)">등록 앱 목록</h2>
+      <span class="dim" style="font-size:11.5px">출처 표기 미준수 자동 탐지</span></div>
+    <table class="dtable">
+      <thead><tr><th>앱</th><th>개발사</th><th>티어</th><th style="text-align:right">월 호출</th><th>주요 도구</th><th>출처 표기</th><th>상태</th></tr></thead>
+      <tbody>${M.apps.map(a=>`<tr class="${a.attr==="bad"?"row-warn":""}">
+        <td style="font-weight:700">${esc(a.app)}</td>
+        <td class="muted">${esc(a.dev)}</td>
+        <td><span class="tier-chip ${tierCls[a.tier]}">${tierLabel[a.tier]}</span></td>
+        <td style="text-align:right" class="mono">${a.calls.toLocaleString()}</td>
+        <td class="mono" style="font-size:11.5px">${esc(a.top)}</td>
+        <td><span class="attr ${a.attr}">${attrLabel[a.attr]}</span></td>
+        <td><span class="chip" style="font-size:11px">${esc(a.state)}</span></td></tr>`).join("")}</tbody>
+    </table>
+    <div style="margin-top:14px;padding:11px 14px;background:var(--bad-bg);border-radius:8px;
+      font-size:12px;color:var(--t2);line-height:1.5">
+      ⚠ <b style="color:var(--bad)">‘변호사찾기’</b> 앱이 응답에 출처 표기를 누락했습니다 — 약관 위반 경고 발송 대상.
+      <span class="dim">(무료 티어의 대가는 브랜드 노출입니다)</span></div>
+  </div>
+</section></div>`;
+};
+
 /* ───────────── 라우터 ───────────── */
 const routes={"":PAGES.main,"list":PAGES.list,"lawyer":PAGES.lawyer,"firm":PAGES.firm,
   "case":PAGES.caseDetail,"news":PAGES.news,"admin-crawler":PAGES.adminCrawler,
   "admin-live":PAGES.adminLiveCrawler,
-  "admin-audit":PAGES.adminAudit,"admin-citation":PAGES.adminCitation};
+  "admin-audit":PAGES.adminAudit,"admin-citation":PAGES.adminCitation,
+  "admin-mcp":PAGES.adminMcp};
 
 function parseHash(){
   const raw=location.hash.replace(/^#\/?/,"");
